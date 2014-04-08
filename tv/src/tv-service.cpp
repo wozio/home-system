@@ -1,0 +1,213 @@
+#include "tv-service.h"
+#include "logger.h"
+#include "yamicontainer.h"
+#include "epg.h"
+
+#include <sstream>
+
+using namespace std;
+using namespace Poco::Data;
+using namespace boost::asio;
+using namespace boost::posix_time;
+using namespace boost;
+
+#define STATE_NOTSTARTED 0
+#define STATE_WAKEUPSENT 1
+#define STATE_ONGOING 2
+#define STATE_FINISHED 3
+
+#define NO_DURATION -1
+
+namespace home_system
+{
+namespace media
+{
+
+tv_service::tv_service()
+: service("tv"),
+  sources_(db_),
+  sessions_(sources_),
+  epg_(db_)
+{
+}
+
+tv_service::~tv_service()
+{
+}
+
+void tv_service::handle_source_available(yami::incoming_message& im)
+{
+  string source = im.get_parameters().get_string("name");
+  string ye = im.get_source();
+  size_t s = 0;
+  long long* ids = im.get_parameters().get_long_long_array("channel_ids", s);
+  
+  vector<string> names;
+  names.reserve(s);
+  
+  for (size_t i = 0; i < s; ++i)
+  {
+    names.push_back(im.get_parameters().get_string_in_array("channel_names", i));
+  }
+  
+  LOG("Source available: " << source << "("<< ye << ")");
+  for (size_t i = 0; i < s; ++i)
+  {
+    LOG("Channel: (" << std::hex << ids[i] << ") " << names[i]);
+  }
+
+  sources_.source_available(source, ye);
+  db_.check_and_add_local_channels(source, s, ids, names);
+  //RECORDINGS.check();
+}
+
+void tv_service::handle_new_channel(yami::incoming_message& im)
+{
+  long long local = im.get_parameters().get_long_long("channel");
+  string source = im.get_parameters().get_string("source");
+  string name = im.get_parameters().get_string("name");
+  db_.check_and_add_local_channel(source, local, name);
+}
+
+void tv_service::handle_get_channels(yami::incoming_message& im)
+{
+  vector<int> gcs;
+  vector<string> names;
+  db_.get_channels(gcs, names);
+
+  yami::parameters params;
+  params.create_string_array("name", names.size());
+
+  for (size_t i = 0; i < names.size(); ++i)
+    params.set_string_in_array("name", i, names[i]);
+
+  params.set_integer_array_shallow("channel", &gcs[0], gcs.size());
+  im.reply(params);
+}
+
+void tv_service::handle_schedule_event_record(yami::incoming_message& im)
+{
+//  yami::parameters params;
+//  // here we get global event id
+//  int global_channel = im.get_parameters().get_integer("channel");
+//  if (channels_.count(global_channel))
+//  {
+//    int event_id = im.get_parameters().get_integer("id");
+//    if (channels_[global_channel].events_.count(event_id))
+//    {
+//      
+//      
+//      int recording_id = db_.create_recording(global_channel, channels_[global_channel].events_[event_id]);
+//      
+//      params.set_integer("recording_id", recording_id);
+//
+//      //check_recordings();
+//    }
+//  }
+//  im.reply(params);
+}
+
+void tv_service::on_msg(yami::incoming_message& im)
+{
+  try
+  {
+    if (im.get_message_name() == "stream_part")
+    {
+      int source_session = im.get_parameters().get_integer("session");
+      size_t length;
+      const void* buf = im.get_parameters().get_binary("payload", length);
+      sources_.handle_stream_part(im.get_source(), source_session, buf, length);
+    }
+    else if (im.get_message_name() == "epg_data")
+    {
+      epg_.handle_epg_data(im.get_parameters());
+    }
+    else if (im.get_message_name() == "create_client_session")
+    {
+      int channel = im.get_parameters().get_integer("channel");
+      string endpoint = im.get_parameters().get_string("endpoint");
+      string destination = im.get_parameters().get_string("destination");
+      
+      int session = sessions_.handle_create_client_session(channel, endpoint, destination);
+      
+      yami::parameters reply;
+      reply.set_integer("session", session);
+      im.reply(reply);
+    }
+    else if (im.get_message_name() == "delete_client_session")
+    {
+      int session = im.get_parameters().get_integer("session");
+      sessions_.handle_delete_client_session(session);
+    }
+    else if (im.get_message_name() == "session_deleted")
+    {
+      int session = im.get_parameters().get_integer("session");
+      sources_.handle_session_deleted(im.get_source(), session);
+    }
+    else if (im.get_message_name() == "get_epg_info")
+    {
+      epg_.handle_get_epg_info(im);
+    }
+    else if (im.get_message_name() == "get_epg_data")
+    {
+      epg_.handle_get_epg_data(im);
+    }
+    else if (im.get_message_name() == "source_available")
+    {
+      handle_source_available(im);
+    }
+    else if (im.get_message_name() == "new_channel")
+    {
+      handle_new_channel(im);
+    }
+    else if (im.get_message_name() == "get_channels")
+    {
+      handle_get_channels(im);
+    }
+    else if (im.get_message_name() == "schedule_event_record")
+    {
+      handle_schedule_event_record(im);
+    }
+    else if (im.get_message_name() == "start_recording")
+    {
+//      int global_channel = im.get_parameters().get_integer("channel_id");
+//      if (db_.check_channel_existence(global_channel))
+//      {
+//        int recording_id = db_.create_recording(global_channel, time(NULL), NO_DURATION);
+//        yami::parameters params;
+//        params.set_integer("recording_id", recording_id);
+//        im.reply(params);
+//
+//        start_recording(recording_id);
+//      }
+//      else
+//      {
+//        im.reject("channel not found in the database");
+//      }
+    }
+    else if (im.get_message_name() == "stop_recording")
+    {
+//      int recording_id = im.get_parameters().get_integer("recording_id");
+//      if (db_.get_recording_state(recording_id) == STATE_ONGOING)
+//      {
+//        stop_recording(recording_id);
+//      }
+//      else
+//      {
+//        im.reject("recording not found in the database");
+//      }
+    }
+    else
+    {
+      service::on_msg(im);
+    }
+  }
+  catch (const std::exception& e)
+  {
+    LOGWARN("Exception: " << e.what());
+    im.reject(e.what());
+  }
+}
+
+}
+}

@@ -1,0 +1,711 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configurationDescriptor version="88">
+  <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
+    <logicalFolder name="HeaderFiles"
+                   displayName="Header Files"
+                   projectFiles="true">
+      <itemPath>agent.h</itemPath>
+      <itemPath>allocator.h</itemPath>
+      <itemPath>channel.h</itemPath>
+      <itemPath>channel_descriptor.h</itemPath>
+      <itemPath>channel_group.h</itemPath>
+      <itemPath>channel_holder.h</itemPath>
+      <itemPath>core.h</itemPath>
+      <itemPath>details-fwd.h</itemPath>
+      <itemPath>posix/details-types.h</itemPath>
+      <itemPath>dll.h</itemPath>
+      <itemPath>doxymain.h</itemPath>
+      <itemPath>fatal_errors.h</itemPath>
+      <itemPath>incoming_frame.h</itemPath>
+      <itemPath>incoming_message_frame_list.h</itemPath>
+      <itemPath>io_error_handler.h</itemPath>
+      <itemPath>listener.h</itemPath>
+      <itemPath>posix/mutex.h</itemPath>
+      <itemPath>network_utils.h</itemPath>
+      <itemPath>option_names.h</itemPath>
+      <itemPath>options.h</itemPath>
+      <itemPath>outgoing_frame.h</itemPath>
+      <itemPath>parameter_entry.h</itemPath>
+      <itemPath>parameter_iterator.h</itemPath>
+      <itemPath>parameter_type.h</itemPath>
+      <itemPath>parameters-details.h</itemPath>
+      <itemPath>parameters-details_dump_sink.h</itemPath>
+      <itemPath>parameters.h</itemPath>
+      <itemPath>raw_buffer_data_source.h</itemPath>
+      <itemPath>posix/selector.h</itemPath>
+      <itemPath>serializable.h</itemPath>
+      <itemPath>serialization.h</itemPath>
+    </logicalFolder>
+    <logicalFolder name="SourceFiles"
+                   displayName="Source Files"
+                   projectFiles="true">
+      <itemPath>agent.cpp</itemPath>
+      <itemPath>allocator.cpp</itemPath>
+      <itemPath>c_interface.cpp</itemPath>
+      <itemPath>channel.cpp</itemPath>
+      <itemPath>posix/channel.cpp</itemPath>
+      <itemPath>channel_group.cpp</itemPath>
+      <itemPath>channel_holder.cpp</itemPath>
+      <itemPath>fatal_errors.cpp</itemPath>
+      <itemPath>posix/io_error_handler.cpp</itemPath>
+      <itemPath>listener.cpp</itemPath>
+      <itemPath>posix/listener.cpp</itemPath>
+      <itemPath>posix/mutex.cpp</itemPath>
+      <itemPath>network_utils.cpp</itemPath>
+      <itemPath>posix/network_utils.cpp</itemPath>
+      <itemPath>options.cpp</itemPath>
+      <itemPath>parameter_entry.cpp</itemPath>
+      <itemPath>parameter_iterator.cpp</itemPath>
+      <itemPath>parameters-details.cpp</itemPath>
+      <itemPath>parameters.cpp</itemPath>
+      <itemPath>raw_buffer_data_source.cpp</itemPath>
+      <itemPath>posix/selector.cpp</itemPath>
+      <itemPath>serialization.cpp</itemPath>
+    </logicalFolder>
+    <logicalFolder name="TestFiles"
+                   displayName="Test Files"
+                   projectFiles="false"
+                   kind="TEST_LOGICAL_FOLDER">
+    </logicalFolder>
+    <logicalFolder name="ExternalFiles"
+                   displayName="Important Files"
+                   projectFiles="false"
+                   kind="IMPORTANT_FILES_FOLDER">
+      <itemPath>Makefile</itemPath>
+    </logicalFolder>
+  </logicalFolder>
+  <projectmakefile>Makefile</projectmakefile>
+  <confs>
+    <conf name="Debug" type="3">
+      <toolsSet>
+        <remote-sources-mode>LOCAL_SOURCES</remote-sources-mode>
+        <compilerSet>default</compilerSet>
+        <dependencyChecking>true</dependencyChecking>
+        <rebuildPropChanged>false</rebuildPropChanged>
+      </toolsSet>
+      <compileType>
+        <ccTool>
+          <incDir>
+            <pElem>posix</pElem>
+          </incDir>
+        </ccTool>
+        <archiverTool>
+          <output>../../${CND_CONF}/libyami4-core.a</output>
+        </archiverTool>
+      </compileType>
+      <item path="agent.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="agent.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="allocator.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="allocator.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="c_interface.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="channel.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="channel.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="channel_descriptor.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="channel_group.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="channel_group.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="channel_holder.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="channel_holder.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="core.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="details-fwd.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="dll.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="doxymain.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="fatal_errors.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="fatal_errors.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="incoming_frame.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="incoming_message_frame_list.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="io_error_handler.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="listener.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="listener.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="network_utils.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="network_utils.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="option_names.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="options.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="options.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="outgoing_frame.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="parameter_entry.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="parameter_entry.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="parameter_iterator.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="parameter_iterator.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="parameter_type.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="parameters-details.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="parameters-details.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="parameters-details_dump_sink.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="parameters.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="parameters.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="posix/channel.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="posix/details-types.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="posix/io_error_handler.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="posix/listener.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="posix/mutex.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="posix/mutex.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="posix/network_utils.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="posix/selector.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="posix/selector.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="raw_buffer_data_source.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="raw_buffer_data_source.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="serializable.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="serialization.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="serialization.h" ex="false" tool="3" flavor2="0">
+      </item>
+    </conf>
+    <conf name="Release" type="3">
+      <toolsSet>
+        <remote-sources-mode>LOCAL_SOURCES</remote-sources-mode>
+        <compilerSet>default</compilerSet>
+        <dependencyChecking>true</dependencyChecking>
+        <rebuildPropChanged>false</rebuildPropChanged>
+      </toolsSet>
+      <compileType>
+        <cTool>
+          <developmentMode>5</developmentMode>
+        </cTool>
+        <ccTool>
+          <developmentMode>5</developmentMode>
+          <incDir>
+            <pElem>posix</pElem>
+          </incDir>
+        </ccTool>
+        <fortranCompilerTool>
+          <developmentMode>5</developmentMode>
+        </fortranCompilerTool>
+        <asmTool>
+          <developmentMode>5</developmentMode>
+        </asmTool>
+        <archiverTool>
+          <output>../../${CND_CONF}/libyami4-core.a</output>
+        </archiverTool>
+      </compileType>
+      <item path="agent.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="agent.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="allocator.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="allocator.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="c_interface.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="channel.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="channel.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="channel_descriptor.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="channel_group.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="channel_group.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="channel_holder.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="channel_holder.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="core.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="details-fwd.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="dll.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="doxymain.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="fatal_errors.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="fatal_errors.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="incoming_frame.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="incoming_message_frame_list.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="io_error_handler.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="listener.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="listener.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="network_utils.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="network_utils.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="option_names.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="options.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="options.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="outgoing_frame.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="parameter_entry.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="parameter_entry.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="parameter_iterator.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="parameter_iterator.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="parameter_type.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="parameters-details.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="parameters-details.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="parameters-details_dump_sink.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="parameters.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="parameters.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="posix/channel.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="posix/details-types.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="posix/io_error_handler.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="posix/listener.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="posix/mutex.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="posix/mutex.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="posix/network_utils.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="posix/selector.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="posix/selector.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="raw_buffer_data_source.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="raw_buffer_data_source.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="serializable.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="serialization.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="serialization.h" ex="false" tool="3" flavor2="0">
+      </item>
+    </conf>
+    <conf name="Debug_laptop" type="3">
+      <toolsSet>
+        <remote-sources-mode>LOCAL_SOURCES</remote-sources-mode>
+        <compilerSet>default</compilerSet>
+        <dependencyChecking>true</dependencyChecking>
+        <rebuildPropChanged>false</rebuildPropChanged>
+      </toolsSet>
+      <compileType>
+        <ccTool>
+          <commandlineTool>g++</commandlineTool>
+          <incDir>
+            <pElem>posix</pElem>
+          </incDir>
+        </ccTool>
+        <archiverTool>
+          <output>../../${CND_CONF}/libyami4-core.a</output>
+        </archiverTool>
+      </compileType>
+      <item path="agent.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="agent.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="allocator.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="allocator.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="c_interface.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="channel.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="channel.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="channel_descriptor.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="channel_group.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="channel_group.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="channel_holder.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="channel_holder.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="core.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="details-fwd.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="dll.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="doxymain.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="fatal_errors.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="fatal_errors.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="incoming_frame.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="incoming_message_frame_list.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="io_error_handler.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="listener.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="listener.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="network_utils.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="network_utils.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="option_names.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="options.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="options.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="outgoing_frame.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="parameter_entry.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="parameter_entry.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="parameter_iterator.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="parameter_iterator.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="parameter_type.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="parameters-details.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="parameters-details.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="parameters-details_dump_sink.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="parameters.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="parameters.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="posix/channel.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="posix/details-types.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="posix/io_error_handler.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="posix/listener.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="posix/mutex.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="posix/mutex.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="posix/network_utils.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="posix/selector.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="posix/selector.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="raw_buffer_data_source.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="raw_buffer_data_source.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="serializable.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="serialization.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="serialization.h" ex="false" tool="3" flavor2="0">
+      </item>
+    </conf>
+    <conf name="Debug_praca" type="3">
+      <toolsSet>
+        <remote-sources-mode>LOCAL_SOURCES</remote-sources-mode>
+        <compilerSet>default</compilerSet>
+        <dependencyChecking>true</dependencyChecking>
+        <rebuildPropChanged>false</rebuildPropChanged>
+      </toolsSet>
+      <compileType>
+        <ccTool>
+          <incDir>
+            <pElem>posix</pElem>
+          </incDir>
+        </ccTool>
+        <archiverTool>
+          <output>../../${CND_CONF}/libyami4-core.a</output>
+        </archiverTool>
+      </compileType>
+      <item path="agent.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="agent.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="allocator.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="allocator.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="c_interface.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="channel.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="channel.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="channel_descriptor.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="channel_group.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="channel_group.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="channel_holder.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="channel_holder.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="core.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="details-fwd.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="dll.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="doxymain.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="fatal_errors.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="fatal_errors.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="incoming_frame.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="incoming_message_frame_list.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="io_error_handler.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="listener.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="listener.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="network_utils.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="network_utils.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="option_names.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="options.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="options.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="outgoing_frame.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="parameter_entry.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="parameter_entry.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="parameter_iterator.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="parameter_iterator.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="parameter_type.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="parameters-details.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="parameters-details.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="parameters-details_dump_sink.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="parameters.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="parameters.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="posix/channel.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="posix/details-types.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="posix/io_error_handler.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="posix/listener.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="posix/mutex.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="posix/mutex.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="posix/network_utils.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="posix/selector.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="posix/selector.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="raw_buffer_data_source.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="raw_buffer_data_source.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="serializable.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="serialization.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="serialization.h" ex="false" tool="3" flavor2="0">
+      </item>
+    </conf>
+    <conf name="Debug_tv" type="3">
+      <toolsSet>
+        <remote-sources-mode>LOCAL_SOURCES</remote-sources-mode>
+        <compilerSet>default</compilerSet>
+        <dependencyChecking>true</dependencyChecking>
+        <rebuildPropChanged>false</rebuildPropChanged>
+      </toolsSet>
+      <compileType>
+        <ccTool>
+          <incDir>
+            <pElem>posix</pElem>
+          </incDir>
+        </ccTool>
+        <archiverTool>
+          <output>../../${CND_CONF}/libyami4-core.a</output>
+        </archiverTool>
+      </compileType>
+      <item path="agent.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="agent.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="allocator.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="allocator.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="c_interface.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="channel.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="channel.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="channel_descriptor.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="channel_group.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="channel_group.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="channel_holder.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="channel_holder.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="core.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="details-fwd.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="dll.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="doxymain.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="fatal_errors.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="fatal_errors.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="incoming_frame.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="incoming_message_frame_list.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="io_error_handler.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="listener.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="listener.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="network_utils.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="network_utils.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="option_names.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="options.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="options.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="outgoing_frame.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="parameter_entry.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="parameter_entry.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="parameter_iterator.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="parameter_iterator.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="parameter_type.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="parameters-details.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="parameters-details.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="parameters-details_dump_sink.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="parameters.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="parameters.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="posix/channel.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="posix/details-types.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="posix/io_error_handler.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="posix/listener.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="posix/mutex.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="posix/mutex.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="posix/network_utils.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="posix/selector.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="posix/selector.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="raw_buffer_data_source.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="raw_buffer_data_source.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="serializable.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="serialization.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="serialization.h" ex="false" tool="3" flavor2="0">
+      </item>
+    </conf>
+  </confs>
+</configurationDescriptor>

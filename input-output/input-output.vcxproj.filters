@@ -1,0 +1,78 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Source Files\1wire">
+      <UniqueIdentifier>{bd058b8d-e5ba-4cb4-ab9d-0f34b305c582}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\input-output.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\1wire\common\crcutil.c">
+      <Filter>Source Files\1wire</Filter>
+    </ClCompile>
+    <ClCompile Include="src\1wire\common\findtype.c">
+      <Filter>Source Files\1wire</Filter>
+    </ClCompile>
+    <ClCompile Include="src\1wire\common\ioutil.c">
+      <Filter>Source Files\1wire</Filter>
+    </ClCompile>
+    <ClCompile Include="src\1wire\lib\other\libUSB\libusbds2490.c">
+      <Filter>Source Files\1wire</Filter>
+    </ClCompile>
+    <ClCompile Include="src\1wire\lib\other\libUSB\libusblnk.c">
+      <Filter>Source Files\1wire</Filter>
+    </ClCompile>
+    <ClCompile Include="src\1wire\lib\other\libUSB\libusbnet.c">
+      <Filter>Source Files\1wire</Filter>
+    </ClCompile>
+    <ClCompile Include="src\1wire\lib\other\libUSB\libusbses.c">
+      <Filter>Source Files\1wire</Filter>
+    </ClCompile>
+    <ClCompile Include="src\1wire\lib\other\libUSB\libusbtran.c">
+      <Filter>Source Files\1wire</Filter>
+    </ClCompile>
+    <ClCompile Include="src\1wire\common\owerr.c">
+      <Filter>Source Files\1wire</Filter>
+    </ClCompile>
+    <ClCompile Include="src\1wire\common\temp10.c">
+      <Filter>Source Files\1wire</Filter>
+    </ClCompile>
+    <ClCompile Include="src\io-service.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ownetwork.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\owtemp.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\io-service.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ownetwork.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\owtemp.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\1wire\lib\other\libUSB\win32\usb.h">
+      <Filter>Source Files\1wire</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
