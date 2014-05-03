@@ -18,7 +18,7 @@ session::session(sources& sources, int id, int channel, std::string endpoint, st
   
   // fetch source for channel and create session
   source_ = sources_.get_source_for_channel(channel);
-  source_->create_session(channel,
+  source_->connect_session(channel,
     [this] (const void* buf, size_t length) { handle_stream_part(buf, length); });
 }
 
@@ -26,7 +26,7 @@ session::~session()
 {
   LOG("Delete session id=" << id_);
   
-  source_->delete_session();
+  source_->disconnect_session();
   
   try
   {
@@ -51,7 +51,10 @@ void session::handle_stream_part(const void* buf, size_t length)
   }
   catch (const std::exception& e)
   {
-    LOGWARN("EXCEPTION: " << e.what());
+    LOGERROR("EXCEPTION: " << e.what());
+    std::string s("Exception when sending stream part to client: ");
+    s.append(e.what());
+    throw session_error(s, id_);
   }
 }
 

@@ -19,6 +19,7 @@ source::source(db& db, const std::string& name, const std::string& ye)
 
 source::~source()
 {
+  // TODO add session state callback to notify client about source problems
 }
 
 std::string source::endpoint()
@@ -26,7 +27,8 @@ std::string source::endpoint()
   return ye_;
 }
 
-void source::create_session(int channel, stream_part_callback_t stream_part_callback)
+// TODO add session state callback to notify client about source problems
+void source::connect_session(int channel, stream_part_callback_t stream_part_callback)
 {
   stream_part_callback_ = stream_part_callback;
   
@@ -53,8 +55,10 @@ void source::create_session(int channel, stream_part_callback_t stream_part_call
   }
 }
 
-void source::delete_session()
+void source::disconnect_session()
 {
+  stream_part_callback_ = nullptr;
+  
   LOG("Delete session " << source_session_id_);
   
   yami::parameters params;
@@ -62,7 +66,7 @@ void source::delete_session()
   
   YC.agent().send(ye_, name_, "delete_streaming_session", params);
   
-  stream_part_callback_ = nullptr;
+  
 }
 
 void source::handle_stream_part(int server_session, const void* buf, size_t length)
@@ -75,7 +79,7 @@ void source::handle_stream_part(int server_session, const void* buf, size_t leng
 
 void source::handle_session_deleted(int server_session)
 {
-  LOG("Session deleted " << server_session);
+  LOG("Source session deleted " << server_session);
 }
 
 }

@@ -1,8 +1,8 @@
 #ifndef CLIENTS_H
 #define	CLIENTS_H
 
-#include <boost/cstdint.hpp>
-#include <stddef.h>
+#include <cstdint>
+#include <cstddef>
 
 #define CLIENTS home_system::media::clients::instance()
 

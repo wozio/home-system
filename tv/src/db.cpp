@@ -14,6 +14,9 @@ namespace media
 
 db::db()
 {
+  lock_guard<mutex> lock(db_mutex_);
+
+  LOG("DB created");
   SQLite::Connector::registerConnector();
   
   session().begin();
@@ -21,10 +24,21 @@ db::db()
   session() << "CREATE TABLE IF NOT EXISTS names (channel INTEGER PRIMARY KEY, name TEXT)", now;
   session() << "CREATE TABLE IF NOT EXISTS recordings (id INTEGER PRIMARY KEY, channel INTEGER, start_time INTEGER, duration INTEGER)", now;
   session().commit();
+  
+  vector<string> sources;
+  vector<long long> locals;
+  vector<int> channels;
+  session() << "SELECT channel,source,local FROM channel_map",
+    into(channels), into(sources), into(locals), now;
+  
+  for (size_t i = 0; i < sources.size(); ++i){
+    source_local_to_global_[sources[i]][locals[i]] = channels[i];
+  }
 }
 
 db::~db()
 {
+  lock_guard<mutex> lock(db_mutex_);
   SQLite::Connector::unregisterConnector();
 }
 
@@ -36,6 +50,7 @@ Session& db::session()
 
 void db::check_and_add_local_channels(const std::string& source, size_t size, long long* local, const std::vector<std::string>& names)
 {
+  //LOG("Check and add local channels: source=" << source << ", size=" << size << ", size2=" << names.size());
   session().begin();
   for (size_t i = 0; i < size; ++i)
   {
@@ -46,10 +61,13 @@ void db::check_and_add_local_channels(const std::string& source, size_t size, lo
 
 void db::check_and_add_local_channel(const std::string& source, long long local, const std::string& name)
 {
+  lock_guard<mutex> lock(db_mutex_);
+  //LOG("Check and add local channel: source=" << source << ", local=" << local << ", name=" << name);
+  // TODO make try catch for out_of_range
   int global = get_channel_from_source_local(source, local);
   if (global == -1)
   {
-    LOG("New channel from " << source << ": [" << hex << local << "] " << name);
+    LOG("New channel from " << source << ": [" << local << "] " << name);
     add_channel(source, local, name);
   }
 }
@@ -57,7 +75,12 @@ void db::check_and_add_local_channel(const std::string& source, long long local,
 void db::add_channel(const std::string& source, long long local, const std::string& name)
 {
   session() << "INSERT INTO channel_map (local, source) VALUES (:local, :source)", use(local), use(source), now;
-  int channel = get_channel_from_source_local(source, local);
+  
+  int channel = -1;
+  session() << "SELECT channel FROM channel_map WHERE source = :s AND local = :l",
+    into(channel), use(source), use(local), now;
+  source_local_to_global_[source][local] = channel;
+  
   session() << "INSERT INTO names (channel, name) VALUES (:channel, :name)",
     use(channel), use(name), now;
 }
@@ -81,11 +104,14 @@ void db::get_channels(std::vector<int>& channels, std::vector<std::string>& name
 
 
 
-int db::get_channel_from_source_local(const std::string& source, long long local)
+int db::get_channel_from_source_local(const std::string& source, long long local) throw(std::out_of_range)
 {
-  int channel = -1;
-  session() << "SELECT channel FROM channel_map WHERE source = :source AND local = :lc",
-    into(channel), use(source), use(local), now;
+  //LOG("get channel from source local: source= " << source << ", local=" << local);
+  
+  int channel = source_local_to_global_.at(source).at(local);
+
+  //LOG("global channel=" << channel);
+
   return channel;
 }
 

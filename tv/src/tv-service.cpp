@@ -23,8 +23,9 @@ namespace home_system
 namespace media
 {
 
-tv_service::tv_service()
+tv_service::tv_service(db& db)
 : service("tv"),
+  db_(db),
   sources_(db_),
   sessions_(sources_),
   epg_(db_)
@@ -109,14 +110,23 @@ void tv_service::handle_schedule_event_record(yami::incoming_message& im)
 
 void tv_service::on_msg(yami::incoming_message& im)
 {
+  //LOG("message: " << im.get_message_name());
   try
   {
     if (im.get_message_name() == "stream_part")
     {
-      int source_session = im.get_parameters().get_integer("session");
-      size_t length;
-      const void* buf = im.get_parameters().get_binary("payload", length);
-      sources_.handle_stream_part(im.get_source(), source_session, buf, length);
+      try
+      {
+        int source_session = im.get_parameters().get_integer("session");
+        size_t length;
+        const void* buf = im.get_parameters().get_binary("payload", length);
+        sources_.handle_stream_part(im.get_source(), source_session, buf, length);
+      }
+      catch (const session_error& e)
+      {
+        LOGERROR("EXCEPTION: " << e.what() << ". Deleting client session: " << e.session());
+        sessions_.handle_delete_client_session(e.session());
+      }
     }
     else if (im.get_message_name() == "epg_data")
     {

@@ -73,48 +73,48 @@ LDLIBSOPTIONS=
 
 ${OBJECTDIR}/src/app.o: src/app.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
-	${RM} $@.d
-	$(COMPILE.cc) -O3 -Wall -s -I../yami4 -std=c++11 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/app.o src/app.cpp
+	${RM} "$@.d"
+	$(COMPILE.cc) -O3 -Wall -s -I../yami4/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/app.o src/app.cpp
 
 ${OBJECTDIR}/src/discovery.o: src/discovery.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
-	${RM} $@.d
-	$(COMPILE.cc) -O3 -Wall -s -I../yami4 -std=c++11 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/discovery.o src/discovery.cpp
+	${RM} "$@.d"
+	$(COMPILE.cc) -O3 -Wall -s -I../yami4/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/discovery.o src/discovery.cpp
 
 ${OBJECTDIR}/src/ios_wrapper.o: src/ios_wrapper.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
-	${RM} $@.d
-	$(COMPILE.cc) -O3 -Wall -s -I../yami4 -std=c++11 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/ios_wrapper.o src/ios_wrapper.cpp
+	${RM} "$@.d"
+	$(COMPILE.cc) -O3 -Wall -s -I../yami4/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/ios_wrapper.o src/ios_wrapper.cpp
 
 ${OBJECTDIR}/src/logger.o: src/logger.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
-	${RM} $@.d
-	$(COMPILE.cc) -O3 -Wall -s -I../yami4 -std=c++11 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/logger.o src/logger.cpp
+	${RM} "$@.d"
+	$(COMPILE.cc) -O3 -Wall -s -I../yami4/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/logger.o src/logger.cpp
 
 ${OBJECTDIR}/src/mcs.o: src/mcs.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
-	${RM} $@.d
-	$(COMPILE.cc) -O3 -Wall -s -I../yami4 -std=c++11 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/mcs.o src/mcs.cpp
+	${RM} "$@.d"
+	$(COMPILE.cc) -O3 -Wall -s -I../yami4/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/mcs.o src/mcs.cpp
 
 ${OBJECTDIR}/src/service.o: src/service.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
-	${RM} $@.d
-	$(COMPILE.cc) -O3 -Wall -s -I../yami4 -std=c++11 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/service.o src/service.cpp
+	${RM} "$@.d"
+	$(COMPILE.cc) -O3 -Wall -s -I../yami4/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/service.o src/service.cpp
 
 ${OBJECTDIR}/src/timer.o: src/timer.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
-	${RM} $@.d
-	$(COMPILE.cc) -O3 -Wall -s -I../yami4 -std=c++11 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/timer.o src/timer.cpp
+	${RM} "$@.d"
+	$(COMPILE.cc) -O3 -Wall -s -I../yami4/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/timer.o src/timer.cpp
 
 ${OBJECTDIR}/src/yamicontainer.o: src/yamicontainer.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
-	${RM} $@.d
-	$(COMPILE.cc) -O3 -Wall -s -I../yami4 -std=c++11 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/yamicontainer.o src/yamicontainer.cpp
+	${RM} "$@.d"
+	$(COMPILE.cc) -O3 -Wall -s -I../yami4/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/yamicontainer.o src/yamicontainer.cpp
 
 # Subprojects
 .build-subprojects:
-	cd ../yami4/yami4-core && ${MAKE}  -f Makefile CONF=Release
-	cd ../yami4/yami4-cpp && ${MAKE}  -f Makefile CONF=Release
+	cd ../yami4/src/core && ${MAKE} -f Makefile
+	cd ../yami4/src/cpp && ${MAKE} -f Makefile
 
 # Clean Targets
 .clean-conf: ${CLEAN_SUBPROJECTS}
@@ -123,8 +123,8 @@ ${OBJECTDIR}/src/yamicontainer.o: src/yamicontainer.cpp
 
 # Subprojects
 .clean-subprojects:
-	cd ../yami4/yami4-core && ${MAKE}  -f Makefile CONF=Release clean
-	cd ../yami4/yami4-cpp && ${MAKE}  -f Makefile CONF=Release clean
+	cd ../yami4/src/core && ${MAKE} -f Makefile clean
+	cd ../yami4/src/cpp && ${MAKE} -f Makefile clean
 
 # Enable dependency checking
 .dep.inc: .depcheck-impl

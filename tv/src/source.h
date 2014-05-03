@@ -18,8 +18,8 @@ public:
   ~source();
   
   typedef std::function<void (const void*, size_t)> stream_part_callback_t;
-  void create_session(int channel, stream_part_callback_t stream_part_callback);
-  void delete_session();
+  void connect_session(int channel, stream_part_callback_t stream_part_callback);
+  void disconnect_session();
   
   void handle_stream_part(int server_session, const void* buf, size_t length);
   void handle_session_deleted(int server_session);

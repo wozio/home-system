@@ -9,6 +9,25 @@ namespace home_system
 namespace media
 {
 
+class session_error
+  : public std::runtime_error
+{
+public:
+  session_error(const std::string& what_arg, int session)
+  : runtime_error(what_arg),
+    session_(session)
+  {
+  }
+  
+  int session() const
+  {
+    return session_;
+  }
+  
+private:
+  int session_;
+};
+
 class session
 {
 public:

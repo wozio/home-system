@@ -1,7 +1,6 @@
 #include "mcs.h"
 
 #include <boost/asio.hpp>
-#include <boost/thread.hpp>
 
 using namespace boost;
 using namespace boost::asio;

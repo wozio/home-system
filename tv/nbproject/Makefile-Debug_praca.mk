@@ -61,15 +61,11 @@ FFLAGS=
 ASFLAGS=
 
 # Link Libraries and Options
-LDLIBSOPTIONS=-lPocoData -lPocoFoundation -lPocoSQLite -lPocoNet -lboost_program_options -lboost_system -lboost_thread ../yami4/yami4-cpp/../../Debug_praca/libyami4-cpp.a ../yami4/yami4-core/../../Debug_praca/libyami4-core.a ../common/../Debug_praca/libcommon.a
+LDLIBSOPTIONS=-L../yami4/lib -lPocoData -lPocoFoundation -lPocoSQLite -lPocoNet -lboost_program_options -lboost_system -lboost_thread -lpthread -lyamicpp -lyamicore ../common/../Debug_praca/libcommon.a
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
 	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk ../${CND_CONF}/tv
-
-../${CND_CONF}/tv: ../yami4/yami4-cpp/../../Debug_praca/libyami4-cpp.a
-
-../${CND_CONF}/tv: ../yami4/yami4-core/../../Debug_praca/libyami4-core.a
 
 ../${CND_CONF}/tv: ../common/../Debug_praca/libcommon.a
 
@@ -79,53 +75,53 @@ LDLIBSOPTIONS=-lPocoData -lPocoFoundation -lPocoSQLite -lPocoNet -lboost_program
 
 ${OBJECTDIR}/src/clients.o: src/clients.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
-	${RM} $@.d
-	$(COMPILE.cc) -g -Wall -D_DEBUG -I../common/src -I../yami4 -std=c++11 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/clients.o src/clients.cpp
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -Wall -D_DEBUG -I../common/src -I../yami4/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/clients.o src/clients.cpp
 
 ${OBJECTDIR}/src/db.o: src/db.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
-	${RM} $@.d
-	$(COMPILE.cc) -g -Wall -D_DEBUG -I../common/src -I../yami4 -std=c++11 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/db.o src/db.cpp
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -Wall -D_DEBUG -I../common/src -I../yami4/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/db.o src/db.cpp
 
 ${OBJECTDIR}/src/epg.o: src/epg.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
-	${RM} $@.d
-	$(COMPILE.cc) -g -Wall -D_DEBUG -I../common/src -I../yami4 -std=c++11 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/epg.o src/epg.cpp
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -Wall -D_DEBUG -I../common/src -I../yami4/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/epg.o src/epg.cpp
 
 ${OBJECTDIR}/src/recordings.o: src/recordings.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
-	${RM} $@.d
-	$(COMPILE.cc) -g -Wall -D_DEBUG -I../common/src -I../yami4 -std=c++11 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/recordings.o src/recordings.cpp
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -Wall -D_DEBUG -I../common/src -I../yami4/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/recordings.o src/recordings.cpp
 
 ${OBJECTDIR}/src/session.o: src/session.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
-	${RM} $@.d
-	$(COMPILE.cc) -g -Wall -D_DEBUG -I../common/src -I../yami4 -std=c++11 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/session.o src/session.cpp
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -Wall -D_DEBUG -I../common/src -I../yami4/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/session.o src/session.cpp
 
 ${OBJECTDIR}/src/sessions.o: src/sessions.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
-	${RM} $@.d
-	$(COMPILE.cc) -g -Wall -D_DEBUG -I../common/src -I../yami4 -std=c++11 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/sessions.o src/sessions.cpp
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -Wall -D_DEBUG -I../common/src -I../yami4/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/sessions.o src/sessions.cpp
 
 ${OBJECTDIR}/src/source.o: src/source.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
-	${RM} $@.d
-	$(COMPILE.cc) -g -Wall -D_DEBUG -I../common/src -I../yami4 -std=c++11 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/source.o src/source.cpp
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -Wall -D_DEBUG -I../common/src -I../yami4/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/source.o src/source.cpp
 
 ${OBJECTDIR}/src/sources.o: src/sources.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
-	${RM} $@.d
-	$(COMPILE.cc) -g -Wall -D_DEBUG -I../common/src -I../yami4 -std=c++11 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/sources.o src/sources.cpp
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -Wall -D_DEBUG -I../common/src -I../yami4/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/sources.o src/sources.cpp
 
 ${OBJECTDIR}/src/tv-service.o: src/tv-service.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
-	${RM} $@.d
-	$(COMPILE.cc) -g -Wall -D_DEBUG -I../common/src -I../yami4 -std=c++11 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/tv-service.o src/tv-service.cpp
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -Wall -D_DEBUG -I../common/src -I../yami4/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/tv-service.o src/tv-service.cpp
 
 ${OBJECTDIR}/src/tv.o: src/tv.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
-	${RM} $@.d
-	$(COMPILE.cc) -g -Wall -D_DEBUG -I../common/src -I../yami4 -std=c++11 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/tv.o src/tv.cpp
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -Wall -D_DEBUG -I../common/src -I../yami4/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/tv.o src/tv.cpp
 
 # Subprojects
 .build-subprojects:

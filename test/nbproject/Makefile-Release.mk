@@ -64,8 +64,8 @@ LDLIBSOPTIONS=
 
 ${OBJECTDIR}/test.o: test.cpp 
 	${MKDIR} -p ${OBJECTDIR}
-	${RM} $@.d
-	$(COMPILE.cc) -O2 -std=c++11 -MMD -MP -MF $@.d -o ${OBJECTDIR}/test.o test.cpp
+	${RM} "$@.d"
+	$(COMPILE.cc) -O2 -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/test.o test.cpp
 
 # Subprojects
 .build-subprojects:

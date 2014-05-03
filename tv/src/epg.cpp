@@ -1,4 +1,5 @@
 #include "epg.h"
+#include "logger.h"
 #include <deque>
 
 using namespace std;
@@ -23,9 +24,18 @@ void epg::handle_epg_data(const yami::parameters& params)
 
   size_t cs, s, ds, sts;
   long long* channels = params.get_long_long_array("channel", cs);
+  //LOG("cs=" << cs);
   int* events = params.get_integer_array("event", s);
+  //LOG("s=" << s);
   int* durations = params.get_integer_array("duration", ds);
+  //LOG("ds=" << ds);
   long long* start_times = params.get_long_long_array("start_time", sts);
+  //LOG("sts=" << sts);
+
+  if (!(cs == s && s == ds && ds == sts))
+  {
+    throw runtime_error("Incorrect data in epg_data message (wrong sizes)");
+  }
 
   for (size_t i = 0; i < s; ++i)
   {

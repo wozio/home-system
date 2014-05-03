@@ -1,5 +1,6 @@
 #include "app.h"
 #include "logger.h"
+#include "db.h"
 #include "tv-service.h"
 #include <boost/program_options.hpp>
 #include <vector>
@@ -37,7 +38,8 @@ int main(int argc, char** argv)
 
   try
   {
-    home_system::media::tv_service service_;
+    home_system::media::db db_;
+    home_system::media::tv_service service_(db_);
     app.run();
   }
   catch (const std::exception & e)

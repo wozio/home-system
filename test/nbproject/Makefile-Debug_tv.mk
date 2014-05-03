@@ -23,7 +23,7 @@ AS=as
 # Macros
 CND_PLATFORM=GNU-Linux-x86
 CND_DLIB_EXT=so
-CND_CONF=Debug
+CND_CONF=Debug_tv
 CND_DISTDIR=dist
 CND_BUILDDIR=build
 
@@ -52,17 +52,17 @@ FFLAGS=
 ASFLAGS=
 
 # Link Libraries and Options
-LDLIBSOPTIONS=-lboost_system -lboost_thread ../common/../Debug/libcommon.a ../yami4/yami4-cpp/../../Debug/libyami4-cpp.a ../yami4/yami4-core/../../Debug/libyami4-core.a -lPocoNet -lPocoFoundation -lpthread
+LDLIBSOPTIONS=-lboost_system -lboost_thread ../common/../Debug_tv/libcommon.a ../yami4/yami4-cpp/../../Debug_tv/libyami4-cpp.a ../yami4/yami4-core/../../Debug_tv/libyami4-core.a -lPocoNet -lPocoFoundation -lpthread
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
 	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk ../${CND_CONF}/test
 
-../${CND_CONF}/test: ../common/../Debug/libcommon.a
+../${CND_CONF}/test: ../common/../Debug_tv/libcommon.a
 
-../${CND_CONF}/test: ../yami4/yami4-cpp/../../Debug/libyami4-cpp.a
+../${CND_CONF}/test: ../yami4/yami4-cpp/../../Debug_tv/libyami4-cpp.a
 
-../${CND_CONF}/test: ../yami4/yami4-core/../../Debug/libyami4-core.a
+../${CND_CONF}/test: ../yami4/yami4-core/../../Debug_tv/libyami4-core.a
 
 ../${CND_CONF}/test: ${OBJECTFILES}
 	${MKDIR} -p ../${CND_CONF}
@@ -75,9 +75,9 @@ ${OBJECTDIR}/test.o: test.cpp
 
 # Subprojects
 .build-subprojects:
-	cd ../common && ${MAKE}  -f Makefile CONF=Debug
-	cd ../yami4/yami4-cpp && ${MAKE}  -f Makefile CONF=Debug
-	cd ../yami4/yami4-core && ${MAKE}  -f Makefile CONF=Debug
+	cd ../common && ${MAKE}  -f Makefile CONF=Debug_tv
+	cd ../yami4/yami4-cpp && ${MAKE}  -f Makefile CONF=Debug_tv
+	cd ../yami4/yami4-core && ${MAKE}  -f Makefile CONF=Debug_tv
 
 # Clean Targets
 .clean-conf: ${CLEAN_SUBPROJECTS}
@@ -86,9 +86,9 @@ ${OBJECTDIR}/test.o: test.cpp
 
 # Subprojects
 .clean-subprojects:
-	cd ../common && ${MAKE}  -f Makefile CONF=Debug clean
-	cd ../yami4/yami4-cpp && ${MAKE}  -f Makefile CONF=Debug clean
-	cd ../yami4/yami4-core && ${MAKE}  -f Makefile CONF=Debug clean
+	cd ../common && ${MAKE}  -f Makefile CONF=Debug_tv clean
+	cd ../yami4/yami4-cpp && ${MAKE}  -f Makefile CONF=Debug_tv clean
+	cd ../yami4/yami4-core && ${MAKE}  -f Makefile CONF=Debug_tv clean
 
 # Enable dependency checking
 .dep.inc: .depcheck-impl

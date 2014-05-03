@@ -30,6 +30,14 @@ CND_ARTIFACT_PATH_Debug_laptop=../Debug_laptop/test
 CND_PACKAGE_DIR_Debug_laptop=dist/Debug_laptop/GNU-Linux-x86/package
 CND_PACKAGE_NAME_Debug_laptop=test.tar
 CND_PACKAGE_PATH_Debug_laptop=dist/Debug_laptop/GNU-Linux-x86/package/test.tar
+# Debug_tv configuration
+CND_PLATFORM_Debug_tv=GNU-Linux-x86
+CND_ARTIFACT_DIR_Debug_tv=../Debug_tv
+CND_ARTIFACT_NAME_Debug_tv=test
+CND_ARTIFACT_PATH_Debug_tv=../Debug_tv/test
+CND_PACKAGE_DIR_Debug_tv=dist/Debug_tv/GNU-Linux-x86/package
+CND_PACKAGE_NAME_Debug_tv=test.tar
+CND_PACKAGE_PATH_Debug_tv=dist/Debug_tv/GNU-Linux-x86/package/test.tar
 #
 # include compiler specific variables
 #

@@ -61,15 +61,11 @@ FFLAGS=
 ASFLAGS=
 
 # Link Libraries and Options
-LDLIBSOPTIONS=-lPocoData -lPocoFoundation -lPocoSQLite -lPocoNet -lboost_program_options -lboost_system -lboost_thread ../yami4/yami4-cpp/../../Release/libyami4-cpp.a ../yami4/yami4-core/../../Release/libyami4-core.a ../common/../Release/libcommon.a
+LDLIBSOPTIONS=-L../yami4/lib -lPocoData -lPocoFoundation -lPocoSQLite -lPocoNet -lboost_program_options -lboost_system -lboost_thread -lpthread -lyamicpp -lyamicore ../common/../Release/libcommon.a
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
 	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk ../${CND_CONF}/tv
-
-../${CND_CONF}/tv: ../yami4/yami4-cpp/../../Release/libyami4-cpp.a
-
-../${CND_CONF}/tv: ../yami4/yami4-core/../../Release/libyami4-core.a
 
 ../${CND_CONF}/tv: ../common/../Release/libcommon.a
 
@@ -80,57 +76,55 @@ LDLIBSOPTIONS=-lPocoData -lPocoFoundation -lPocoSQLite -lPocoNet -lboost_program
 ${OBJECTDIR}/src/clients.o: src/clients.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -Wall -s -I../common/src -I../yami4 -std=c++11 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/clients.o src/clients.cpp
+	$(COMPILE.cc) -O2 -Wall -s -I../common/src -I../yami4/include -std=c++11 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/clients.o src/clients.cpp
 
 ${OBJECTDIR}/src/db.o: src/db.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -Wall -s -I../common/src -I../yami4 -std=c++11 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/db.o src/db.cpp
+	$(COMPILE.cc) -O2 -Wall -s -I../common/src -I../yami4/include -std=c++11 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/db.o src/db.cpp
 
 ${OBJECTDIR}/src/epg.o: src/epg.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -Wall -s -I../common/src -I../yami4 -std=c++11 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/epg.o src/epg.cpp
+	$(COMPILE.cc) -O2 -Wall -s -I../common/src -I../yami4/include -std=c++11 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/epg.o src/epg.cpp
 
 ${OBJECTDIR}/src/recordings.o: src/recordings.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -Wall -s -I../common/src -I../yami4 -std=c++11 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/recordings.o src/recordings.cpp
+	$(COMPILE.cc) -O2 -Wall -s -I../common/src -I../yami4/include -std=c++11 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/recordings.o src/recordings.cpp
 
 ${OBJECTDIR}/src/session.o: src/session.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -Wall -s -I../common/src -I../yami4 -std=c++11 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/session.o src/session.cpp
+	$(COMPILE.cc) -O2 -Wall -s -I../common/src -I../yami4/include -std=c++11 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/session.o src/session.cpp
 
 ${OBJECTDIR}/src/sessions.o: src/sessions.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -Wall -s -I../common/src -I../yami4 -std=c++11 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/sessions.o src/sessions.cpp
+	$(COMPILE.cc) -O2 -Wall -s -I../common/src -I../yami4/include -std=c++11 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/sessions.o src/sessions.cpp
 
 ${OBJECTDIR}/src/source.o: src/source.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -Wall -s -I../common/src -I../yami4 -std=c++11 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/source.o src/source.cpp
+	$(COMPILE.cc) -O2 -Wall -s -I../common/src -I../yami4/include -std=c++11 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/source.o src/source.cpp
 
 ${OBJECTDIR}/src/sources.o: src/sources.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -Wall -s -I../common/src -I../yami4 -std=c++11 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/sources.o src/sources.cpp
+	$(COMPILE.cc) -O2 -Wall -s -I../common/src -I../yami4/include -std=c++11 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/sources.o src/sources.cpp
 
 ${OBJECTDIR}/src/tv-service.o: src/tv-service.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -Wall -s -I../common/src -I../yami4 -std=c++11 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/tv-service.o src/tv-service.cpp
+	$(COMPILE.cc) -O2 -Wall -s -I../common/src -I../yami4/include -std=c++11 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/tv-service.o src/tv-service.cpp
 
 ${OBJECTDIR}/src/tv.o: src/tv.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -Wall -s -I../common/src -I../yami4 -std=c++11 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/tv.o src/tv.cpp
+	$(COMPILE.cc) -O2 -Wall -s -I../common/src -I../yami4/include -std=c++11 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/tv.o src/tv.cpp
 
 # Subprojects
 .build-subprojects:
-	cd ../yami4/yami4-cpp && ${MAKE}  -f Makefile CONF=Release
-	cd ../yami4/yami4-core && ${MAKE}  -f Makefile CONF=Release
 	cd ../common && ${MAKE}  -f Makefile CONF=Release
 	cd ../common && ${MAKE}  -f Makefile CONF=Release
 
@@ -141,8 +135,6 @@ ${OBJECTDIR}/src/tv.o: src/tv.cpp
 
 # Subprojects
 .clean-subprojects:
-	cd ../yami4/yami4-cpp && ${MAKE}  -f Makefile CONF=Release clean
-	cd ../yami4/yami4-core && ${MAKE}  -f Makefile CONF=Release clean
 	cd ../common && ${MAKE}  -f Makefile CONF=Release clean
 	cd ../common && ${MAKE}  -f Makefile CONF=Release clean
 

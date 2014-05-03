@@ -70,8 +70,8 @@ LDLIBSOPTIONS=-lboost_system -lboost_thread ../common/../Debug_laptop/libcommon.
 
 ${OBJECTDIR}/test.o: test.cpp 
 	${MKDIR} -p ${OBJECTDIR}
-	${RM} $@.d
-	$(COMPILE.cc) -g -D_DEBUG -I../common/src -I../yami4 -std=c++11 -MMD -MP -MF $@.d -o ${OBJECTDIR}/test.o test.cpp
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -D_DEBUG -I../common/src -I../yami4 -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/test.o test.cpp
 
 # Subprojects
 .build-subprojects:

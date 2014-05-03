@@ -22,7 +22,7 @@ class tv_service
 : public home_system::service
 {
 public:
-  tv_service();
+  tv_service(db& db);
   ~tv_service();
 
   void on_msg(yami::incoming_message& im);
@@ -36,7 +36,7 @@ private:
   void handle_get_channels(yami::incoming_message& im);
   void handle_schedule_event_record(yami::incoming_message& im);
   
-  db db_;
+  db& db_;
   sources sources_;
   sessions sessions_;
   recordings recordings_;
