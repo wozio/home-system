@@ -66,17 +66,13 @@ FFLAGS=
 ASFLAGS=
 
 # Link Libraries and Options
-LDLIBSOPTIONS=-ldvbapi -ldvbcfg -ldvbsec -lucsi -lPocoFoundation -lboost_date_time -lboost_program_options -lboost_system -lboost_thread ../yami4/yami4-cpp/../../Debug_tv/libyami4-cpp.a ../yami4/yami4-core/../../Debug_tv/libyami4-core.a ../common/../Debug_tv/libcommon.a -lPocoNet -lpthread
+LDLIBSOPTIONS=-L../common/yami4/lib -ldvbapi -ldvbcfg -ldvbsec -lucsi -lPocoFoundation -lboost_date_time -lboost_program_options -lboost_system -lboost_thread -lPocoNet ../common/common/../Debug_tv/libcommon.a -lyamicpp -lyamicore
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
 	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk ../${CND_CONF}/dvb-source
 
-../${CND_CONF}/dvb-source: ../yami4/yami4-cpp/../../Debug_tv/libyami4-cpp.a
-
-../${CND_CONF}/dvb-source: ../yami4/yami4-core/../../Debug_tv/libyami4-core.a
-
-../${CND_CONF}/dvb-source: ../common/../Debug_tv/libcommon.a
+../${CND_CONF}/dvb-source: ../common/common/../Debug_tv/libcommon.a
 
 ../${CND_CONF}/dvb-source: ${OBJECTFILES}
 	${MKDIR} -p ../${CND_CONF}
@@ -84,83 +80,82 @@ LDLIBSOPTIONS=-ldvbapi -ldvbcfg -ldvbsec -lucsi -lPocoFoundation -lboost_date_ti
 
 ${OBJECTDIR}/src/channel.o: src/channel.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
-	${RM} $@.d
-	$(COMPILE.cc) -g -Wall -D_DEBUG -I../common/src -I../yami4 -std=c++11 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/channel.o src/channel.cpp
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -Wall -D_DEBUG -I../common/common/src -I../common/yami4/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/channel.o src/channel.cpp
 
 ${OBJECTDIR}/src/channels.o: src/channels.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
-	${RM} $@.d
-	$(COMPILE.cc) -g -Wall -D_DEBUG -I../common/src -I../yami4 -std=c++11 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/channels.o src/channels.cpp
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -Wall -D_DEBUG -I../common/common/src -I../common/yami4/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/channels.o src/channels.cpp
 
 ${OBJECTDIR}/src/demux.o: src/demux.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
-	${RM} $@.d
-	$(COMPILE.cc) -g -Wall -D_DEBUG -I../common/src -I../yami4 -std=c++11 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/demux.o src/demux.cpp
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -Wall -D_DEBUG -I../common/common/src -I../common/yami4/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/demux.o src/demux.cpp
 
 ${OBJECTDIR}/src/dvb-service.o: src/dvb-service.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
-	${RM} $@.d
-	$(COMPILE.cc) -g -Wall -D_DEBUG -I../common/src -I../yami4 -std=c++11 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/dvb-service.o src/dvb-service.cpp
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -Wall -D_DEBUG -I../common/common/src -I../common/yami4/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/dvb-service.o src/dvb-service.cpp
 
 ${OBJECTDIR}/src/dvb.o: src/dvb.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
-	${RM} $@.d
-	$(COMPILE.cc) -g -Wall -D_DEBUG -I../common/src -I../yami4 -std=c++11 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/dvb.o src/dvb.cpp
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -Wall -D_DEBUG -I../common/common/src -I../common/yami4/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/dvb.o src/dvb.cpp
 
 ${OBJECTDIR}/src/file-reader.o: src/file-reader.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
-	${RM} $@.d
-	$(COMPILE.cc) -g -Wall -D_DEBUG -I../common/src -I../yami4 -std=c++11 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/file-reader.o src/file-reader.cpp
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -Wall -D_DEBUG -I../common/common/src -I../common/yami4/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/file-reader.o src/file-reader.cpp
 
 ${OBJECTDIR}/src/frontend.o: src/frontend.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
-	${RM} $@.d
-	$(COMPILE.cc) -g -Wall -D_DEBUG -I../common/src -I../yami4 -std=c++11 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/frontend.o src/frontend.cpp
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -Wall -D_DEBUG -I../common/common/src -I../common/yami4/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/frontend.o src/frontend.cpp
 
 ${OBJECTDIR}/src/main.o: src/main.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
-	${RM} $@.d
-	$(COMPILE.cc) -g -Wall -D_DEBUG -I../common/src -I../yami4 -std=c++11 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/main.o src/main.cpp
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -Wall -D_DEBUG -I../common/common/src -I../common/yami4/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/main.o src/main.cpp
 
 ${OBJECTDIR}/src/param_convert.o: src/param_convert.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
-	${RM} $@.d
-	$(COMPILE.cc) -g -Wall -D_DEBUG -I../common/src -I../yami4 -std=c++11 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/param_convert.o src/param_convert.cpp
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -Wall -D_DEBUG -I../common/common/src -I../common/yami4/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/param_convert.o src/param_convert.cpp
 
 ${OBJECTDIR}/src/session.o: src/session.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
-	${RM} $@.d
-	$(COMPILE.cc) -g -Wall -D_DEBUG -I../common/src -I../yami4 -std=c++11 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/session.o src/session.cpp
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -Wall -D_DEBUG -I../common/common/src -I../common/yami4/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/session.o src/session.cpp
 
 ${OBJECTDIR}/src/transponder.o: src/transponder.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
-	${RM} $@.d
-	$(COMPILE.cc) -g -Wall -D_DEBUG -I../common/src -I../yami4 -std=c++11 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/transponder.o src/transponder.cpp
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -Wall -D_DEBUG -I../common/common/src -I../common/yami4/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/transponder.o src/transponder.cpp
 
 ${OBJECTDIR}/src/transponder_dvbs.o: src/transponder_dvbs.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
-	${RM} $@.d
-	$(COMPILE.cc) -g -Wall -D_DEBUG -I../common/src -I../yami4 -std=c++11 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/transponder_dvbs.o src/transponder_dvbs.cpp
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -Wall -D_DEBUG -I../common/common/src -I../common/yami4/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/transponder_dvbs.o src/transponder_dvbs.cpp
 
 ${OBJECTDIR}/src/transponder_dvbs2.o: src/transponder_dvbs2.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
-	${RM} $@.d
-	$(COMPILE.cc) -g -Wall -D_DEBUG -I../common/src -I../yami4 -std=c++11 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/transponder_dvbs2.o src/transponder_dvbs2.cpp
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -Wall -D_DEBUG -I../common/common/src -I../common/yami4/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/transponder_dvbs2.o src/transponder_dvbs2.cpp
 
 ${OBJECTDIR}/src/transponder_dvbt.o: src/transponder_dvbt.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
-	${RM} $@.d
-	$(COMPILE.cc) -g -Wall -D_DEBUG -I../common/src -I../yami4 -std=c++11 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/transponder_dvbt.o src/transponder_dvbt.cpp
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -Wall -D_DEBUG -I../common/common/src -I../common/yami4/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/transponder_dvbt.o src/transponder_dvbt.cpp
 
 ${OBJECTDIR}/src/transponders.o: src/transponders.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
-	${RM} $@.d
-	$(COMPILE.cc) -g -Wall -D_DEBUG -I../common/src -I../yami4 -std=c++11 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/transponders.o src/transponders.cpp
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -Wall -D_DEBUG -I../common/common/src -I../common/yami4/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/transponders.o src/transponders.cpp
 
 # Subprojects
 .build-subprojects:
-	cd ../common && ${MAKE}  -f Makefile CONF=Debug_tv
-	cd ../common && ${MAKE}  -f Makefile CONF=Debug_tv
+	cd ../common/common && ${MAKE}  -f Makefile CONF=Debug_tv
 
 # Clean Targets
 .clean-conf: ${CLEAN_SUBPROJECTS}
@@ -169,8 +164,7 @@ ${OBJECTDIR}/src/transponders.o: src/transponders.cpp
 
 # Subprojects
 .clean-subprojects:
-	cd ../common && ${MAKE}  -f Makefile CONF=Debug_tv clean
-	cd ../common && ${MAKE}  -f Makefile CONF=Debug_tv clean
+	cd ../common/common && ${MAKE}  -f Makefile CONF=Debug_tv clean
 
 # Enable dependency checking
 .dep.inc: .depcheck-impl
