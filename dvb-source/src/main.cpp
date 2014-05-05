@@ -1,6 +1,8 @@
 #include "dvb-service.h"
 #include "app.h"
 #include "logger.h"
+#include "discovery.h"
+#include "yamicontainer.h"
 #include <boost/program_options.hpp>
 #include <boost/asio.hpp>
 #include <iostream>
@@ -8,6 +10,9 @@
 
 using namespace std;
 namespace po = boost::program_options;
+
+home_system::yami_container _yc;
+home_system::discovery _discovery;
 
 int main(int argc, char** argv)
 {

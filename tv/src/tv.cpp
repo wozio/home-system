@@ -2,11 +2,16 @@
 #include "logger.h"
 #include "db.h"
 #include "tv-service.h"
+#include "discovery.h"
+#include "yamicontainer.h"
 #include <boost/program_options.hpp>
 #include <vector>
 
 using namespace std;
 namespace po = boost::program_options;
+
+home_system::yami_container _yc;
+home_system::discovery _discovery;
 
 int main(int argc, char** argv)
 {
