@@ -49,8 +49,8 @@
         <ccTool>
           <standard>8</standard>
           <incDir>
-            <pElem>../common/src</pElem>
-            <pElem>../yami4/include</pElem>
+            <pElem>../common/common/src</pElem>
+            <pElem>../common/yami4/include</pElem>
           </incDir>
           <preprocessorList>
             <Elem>_DEBUG</Elem>
@@ -60,7 +60,7 @@
         <linkerTool>
           <output>../${CND_CONF}/tv</output>
           <linkerAddLib>
-            <pElem>../yami4/lib</pElem>
+            <pElem>../common/yami4/lib</pElem>
           </linkerAddLib>
           <linkerLibItems>
             <linkerLibLibItem>PocoData</linkerLibLibItem>
@@ -74,12 +74,12 @@
             <linkerLibLibItem>yamicpp</linkerLibLibItem>
             <linkerLibLibItem>yamicore</linkerLibLibItem>
             <linkerLibProjectItem>
-              <makeArtifact PL="../common"
+              <makeArtifact PL="../common/common"
                             CT="3"
                             CN="Debug"
-                            AC="true"
+                            AC="false"
                             BL="true"
-                            WD="../common"
+                            WD="../common/common"
                             BC="${MAKE}  -f Makefile CONF=Debug"
                             CC="${MAKE}  -f Makefile CONF=Debug clean"
                             OP="../${CND_CONF}/libcommon.a">
@@ -87,18 +87,6 @@
             </linkerLibProjectItem>
           </linkerLibItems>
         </linkerTool>
-        <requiredProjects>
-          <makeArtifact PL="../common"
-                        CT="3"
-                        CN="Debug"
-                        AC="false"
-                        BL="true"
-                        WD="../common"
-                        BC="${MAKE}  -f Makefile CONF=Debug"
-                        CC="${MAKE}  -f Makefile CONF=Debug clean"
-                        OP="../${CND_CONF}/libcommon.a">
-          </makeArtifact>
-        </requiredProjects>
       </compileType>
       <item path="src/clients.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -156,8 +144,8 @@
           <stripSymbols>true</stripSymbols>
           <standard>8</standard>
           <incDir>
-            <pElem>../common/src</pElem>
-            <pElem>../yami4/include</pElem>
+            <pElem>../common/common/src</pElem>
+            <pElem>../common/yami4/include</pElem>
           </incDir>
           <warningLevel>2</warningLevel>
         </ccTool>
@@ -170,7 +158,7 @@
         <linkerTool>
           <output>../${CND_CONF}/tv</output>
           <linkerAddLib>
-            <pElem>../yami4/lib</pElem>
+            <pElem>../common/yami4/lib</pElem>
           </linkerAddLib>
           <linkerLibItems>
             <linkerLibLibItem>PocoData</linkerLibLibItem>
@@ -184,12 +172,12 @@
             <linkerLibLibItem>yamicpp</linkerLibLibItem>
             <linkerLibLibItem>yamicore</linkerLibLibItem>
             <linkerLibProjectItem>
-              <makeArtifact PL="../common"
+              <makeArtifact PL="../common/common"
                             CT="3"
                             CN="Release"
                             AC="false"
                             BL="true"
-                            WD="../common"
+                            WD="../common/common"
                             BC="${MAKE}  -f Makefile CONF=Release"
                             CC="${MAKE}  -f Makefile CONF=Release clean"
                             OP="../${CND_CONF}/libcommon.a">
@@ -197,18 +185,6 @@
             </linkerLibProjectItem>
           </linkerLibItems>
         </linkerTool>
-        <requiredProjects>
-          <makeArtifact PL="../common"
-                        CT="3"
-                        CN="Release"
-                        AC="false"
-                        BL="true"
-                        WD="../common"
-                        BC="${MAKE}  -f Makefile CONF=Release"
-                        CC="${MAKE}  -f Makefile CONF=Release clean"
-                        OP="../${CND_CONF}/libcommon.a">
-          </makeArtifact>
-        </requiredProjects>
       </compileType>
       <item path="src/clients.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -261,8 +237,8 @@
         <ccTool>
           <standard>8</standard>
           <incDir>
-            <pElem>../common/src</pElem>
-            <pElem>../yami4/include</pElem>
+            <pElem>../common/common/src</pElem>
+            <pElem>../common/yami4/include</pElem>
           </incDir>
           <preprocessorList>
             <Elem>_DEBUG</Elem>
@@ -272,7 +248,7 @@
         <linkerTool>
           <output>../${CND_CONF}/tv</output>
           <linkerAddLib>
-            <pElem>../yami4/lib</pElem>
+            <pElem>../common/yami4/lib</pElem>
           </linkerAddLib>
           <linkerLibItems>
             <linkerLibLibItem>PocoData</linkerLibLibItem>
@@ -286,12 +262,12 @@
             <linkerLibLibItem>yamicpp</linkerLibLibItem>
             <linkerLibLibItem>yamicore</linkerLibLibItem>
             <linkerLibProjectItem>
-              <makeArtifact PL="../common"
+              <makeArtifact PL="../common/common"
                             CT="3"
                             CN="Debug_laptop"
                             AC="false"
                             BL="true"
-                            WD="../common"
+                            WD="../common/common"
                             BC="${MAKE}  -f Makefile CONF=Debug_laptop"
                             CC="${MAKE}  -f Makefile CONF=Debug_laptop clean"
                             OP="../${CND_CONF}/libcommon.a">
@@ -299,18 +275,6 @@
             </linkerLibProjectItem>
           </linkerLibItems>
         </linkerTool>
-        <requiredProjects>
-          <makeArtifact PL="../common"
-                        CT="3"
-                        CN="Debug_laptop"
-                        AC="false"
-                        BL="true"
-                        WD="../common"
-                        BC="${MAKE}  -f Makefile CONF=Debug_laptop"
-                        CC="${MAKE}  -f Makefile CONF=Debug_laptop clean"
-                        OP="../${CND_CONF}/libcommon.a">
-          </makeArtifact>
-        </requiredProjects>
       </compileType>
       <item path="src/clients.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -363,8 +327,8 @@
         <ccTool>
           <standard>8</standard>
           <incDir>
-            <pElem>../common/src</pElem>
-            <pElem>../yami4/include</pElem>
+            <pElem>../common/common/src</pElem>
+            <pElem>../common/yami4/include</pElem>
           </incDir>
           <preprocessorList>
             <Elem>_DEBUG</Elem>
@@ -374,7 +338,7 @@
         <linkerTool>
           <output>../${CND_CONF}/tv</output>
           <linkerAddLib>
-            <pElem>../yami4/lib</pElem>
+            <pElem>../common/yami4/lib</pElem>
           </linkerAddLib>
           <linkerLibItems>
             <linkerLibLibItem>PocoData</linkerLibLibItem>
@@ -388,12 +352,12 @@
             <linkerLibLibItem>yamicpp</linkerLibLibItem>
             <linkerLibLibItem>yamicore</linkerLibLibItem>
             <linkerLibProjectItem>
-              <makeArtifact PL="../common"
+              <makeArtifact PL="../common/common"
                             CT="3"
                             CN="Debug_praca"
                             AC="true"
                             BL="true"
-                            WD="../common"
+                            WD="../common/common"
                             BC="${MAKE}  -f Makefile CONF=Debug_praca"
                             CC="${MAKE}  -f Makefile CONF=Debug_praca clean"
                             OP="../${CND_CONF}/libcommon.a">
@@ -401,18 +365,6 @@
             </linkerLibProjectItem>
           </linkerLibItems>
         </linkerTool>
-        <requiredProjects>
-          <makeArtifact PL="../common"
-                        CT="3"
-                        CN="Debug_praca"
-                        AC="true"
-                        BL="true"
-                        WD="../common"
-                        BC="${MAKE}  -f Makefile CONF=Debug_praca"
-                        CC="${MAKE}  -f Makefile CONF=Debug_praca clean"
-                        OP="../${CND_CONF}/libcommon.a">
-          </makeArtifact>
-        </requiredProjects>
       </compileType>
       <item path="src/clients.cpp" ex="false" tool="1" flavor2="0">
       </item>
