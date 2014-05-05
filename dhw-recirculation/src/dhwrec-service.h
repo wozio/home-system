@@ -2,6 +2,7 @@
 #define	DHWREC_SERVICE_H
 
 #include "service.h"
+#include "ios_wrapper.h"
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <set>
 #include <iostream>
@@ -73,9 +74,8 @@ private:
   
   std::string output_service_;
   int output_, output_state_;
-  
-  boost::mutex state_mutex;
-  
+
+  ios_wrapper ios_;
   boost::asio::deadline_timer dt_, interval_dt_;
   bool continue_, running_, continue_interval_;
   

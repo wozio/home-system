@@ -53,38 +53,31 @@ FFLAGS=
 ASFLAGS=
 
 # Link Libraries and Options
-LDLIBSOPTIONS=-L../yami4/lib -lPocoFoundation -lPocoNet -lboost_date_time -lboost_program_options -lboost_system -lboost_thread ../yami4/yami4-cpp/../../Release/libyami4-cpp.a ../yami4/yami4-core/../../Release/libyami4-core.a ../common/../Release/libcommon.a
+LDLIBSOPTIONS=-L../common/yami4/lib -lPocoFoundation -lPocoNet -lboost_date_time -lboost_program_options -lboost_system -lboost_thread ../common/common/../Release/libcommon.a -lyamicpp -lyamicore
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
 	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk ../${CND_CONF}/dhw-recirculation
 
-../${CND_CONF}/dhw-recirculation: ../yami4/yami4-cpp/../../Release/libyami4-cpp.a
-
-../${CND_CONF}/dhw-recirculation: ../yami4/yami4-core/../../Release/libyami4-core.a
-
-../${CND_CONF}/dhw-recirculation: ../common/../Release/libcommon.a
+../${CND_CONF}/dhw-recirculation: ../common/common/../Release/libcommon.a
 
 ../${CND_CONF}/dhw-recirculation: ${OBJECTFILES}
 	${MKDIR} -p ../${CND_CONF}
-	${LINK.cc} -o ../${CND_CONF}/dhw-recirculation -s ${OBJECTFILES} ${LDLIBSOPTIONS} 
+	${LINK.cc} -o ../${CND_CONF}/dhw-recirculation ${OBJECTFILES} ${LDLIBSOPTIONS} -s
 
 ${OBJECTDIR}/src/dhw-recirculation.o: src/dhw-recirculation.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
-	${RM} $@.d
-	$(COMPILE.cc) -O3 -Wall -s -I../common/src -I../yami4 -std=c++11 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/dhw-recirculation.o src/dhw-recirculation.cpp
+	${RM} "$@.d"
+	$(COMPILE.cc) -O3 -Wall -s -I../common/common/src -I../common/yami4/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/dhw-recirculation.o src/dhw-recirculation.cpp
 
 ${OBJECTDIR}/src/dhwrec-service.o: src/dhwrec-service.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
-	${RM} $@.d
-	$(COMPILE.cc) -O3 -Wall -s -I../common/src -I../yami4 -std=c++11 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/dhwrec-service.o src/dhwrec-service.cpp
+	${RM} "$@.d"
+	$(COMPILE.cc) -O3 -Wall -s -I../common/common/src -I../common/yami4/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/dhwrec-service.o src/dhwrec-service.cpp
 
 # Subprojects
 .build-subprojects:
-	cd ../yami4/yami4-cpp && ${MAKE}  -f Makefile CONF=Release
-	cd ../yami4/yami4-core && ${MAKE}  -f Makefile CONF=Release
-	cd ../common && ${MAKE}  -f Makefile CONF=Release
-	cd ../common && ${MAKE}  -f Makefile CONF=Release
+	cd ../common/common && ${MAKE}  -f Makefile CONF=Release
 
 # Clean Targets
 .clean-conf: ${CLEAN_SUBPROJECTS}
@@ -93,10 +86,7 @@ ${OBJECTDIR}/src/dhwrec-service.o: src/dhwrec-service.cpp
 
 # Subprojects
 .clean-subprojects:
-	cd ../yami4/yami4-cpp && ${MAKE}  -f Makefile CONF=Release clean
-	cd ../yami4/yami4-core && ${MAKE}  -f Makefile CONF=Release clean
-	cd ../common && ${MAKE}  -f Makefile CONF=Release clean
-	cd ../common && ${MAKE}  -f Makefile CONF=Release clean
+	cd ../common/common && ${MAKE}  -f Makefile CONF=Release clean
 
 # Enable dependency checking
 .dep.inc: .depcheck-impl

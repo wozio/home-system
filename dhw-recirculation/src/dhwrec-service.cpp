@@ -35,8 +35,8 @@ dhwrec_service::dhwrec_service(const std::string& output_service, int output)
   output_service_(output_service),
   output_(output),
   output_state_(-1),
-  dt_(ios_wrapper_.io_service()),
-  interval_dt_(ios_wrapper_.io_service()),
+  dt_(ios_.io_service()),
+  interval_dt_(ios_.io_service()),
   running_(false)
 {
   LOGINFO("Output service: " << output_service << " output: " << output);
@@ -243,8 +243,6 @@ void dhwrec_service::on_int_timeout(const boost::system::error_code& error)
 
 void dhwrec_service::start()
 {
-  mutex::scoped_lock lock(state_mutex);
-  
   LOGINFO("Starting circulation");
   continue_interval_ = true;
   running_ = true;
@@ -257,8 +255,6 @@ void dhwrec_service::start()
 
 void dhwrec_service::stop()
 {
-  mutex::scoped_lock lock(state_mutex);
-  
   LOGINFO("Stopping circulation");
   running_ = false;
   continue_interval_ = false;
