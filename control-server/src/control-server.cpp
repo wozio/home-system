@@ -1,6 +1,7 @@
 #include "http.h"
 #include "control-service.h"
 #include "logger.h"
+#include "yamicontainer.h"
 #include "discovery.h"
 #ifdef __linux__
 #include <unistd.h>
@@ -14,6 +15,9 @@
 
 using namespace std;
 namespace po = boost::program_options;
+
+home_system::yami_container _yc;
+home_system::discovery _discovery;
 
 int main(int argc, char** argv)
 {
@@ -87,9 +91,6 @@ int main(int argc, char** argv)
 
   try
   {
-    // just for creating it
-    DISCOVERY;
-    
     int port = vm["port"].as<int>();
     Poco::Net::ServerSocket svs(port);
     Poco::Net::HTTPServer srv(

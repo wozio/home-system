@@ -54,17 +54,13 @@ FFLAGS=
 ASFLAGS=
 
 # Link Libraries and Options
-LDLIBSOPTIONS=-L../yami4/lib -lPocoFoundation -lPocoNet -lPocoXML -lboost_filesystem -lboost_program_options -lboost_system -lboost_thread ../common/../Release/libcommon.a ../yami4/yami4-cpp/../../Release/libyami4-cpp.a ../yami4/yami4-core/../../Release/libyami4-core.a
+LDLIBSOPTIONS=-L../common/yami4/lib -lPocoFoundation -lPocoNet -lPocoXML -lboost_filesystem -lboost_program_options -lboost_system -lboost_thread ../common/common/../Release/libcommon.a -lyamicpp -lyamicore
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
 	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk ../${CND_CONF}/control-server
 
-../${CND_CONF}/control-server: ../common/../Release/libcommon.a
-
-../${CND_CONF}/control-server: ../yami4/yami4-cpp/../../Release/libyami4-cpp.a
-
-../${CND_CONF}/control-server: ../yami4/yami4-core/../../Release/libyami4-core.a
+../${CND_CONF}/control-server: ../common/common/../Release/libcommon.a
 
 ../${CND_CONF}/control-server: ${OBJECTFILES}
 	${MKDIR} -p ../${CND_CONF}
@@ -72,24 +68,22 @@ LDLIBSOPTIONS=-L../yami4/lib -lPocoFoundation -lPocoNet -lPocoXML -lboost_filesy
 
 ${OBJECTDIR}/src/control-server.o: src/control-server.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
-	${RM} $@.d
-	$(COMPILE.cc) -O3 -Wall -s -I../common/src -I../yami4 -std=c++11 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/control-server.o src/control-server.cpp
+	${RM} "$@.d"
+	$(COMPILE.cc) -O3 -Wall -s -I../common/common/src -I../common/yami4/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/control-server.o src/control-server.cpp
 
 ${OBJECTDIR}/src/control-service.o: src/control-service.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
-	${RM} $@.d
-	$(COMPILE.cc) -O3 -Wall -s -I../common/src -I../yami4 -std=c++11 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/control-service.o src/control-service.cpp
+	${RM} "$@.d"
+	$(COMPILE.cc) -O3 -Wall -s -I../common/common/src -I../common/yami4/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/control-service.o src/control-service.cpp
 
 ${OBJECTDIR}/src/http.o: src/http.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
-	${RM} $@.d
-	$(COMPILE.cc) -O3 -Wall -s -I../common/src -I../yami4 -std=c++11 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/http.o src/http.cpp
+	${RM} "$@.d"
+	$(COMPILE.cc) -O3 -Wall -s -I../common/common/src -I../common/yami4/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/http.o src/http.cpp
 
 # Subprojects
 .build-subprojects:
-	cd ../common && ${MAKE}  -f Makefile CONF=Release
-	cd ../yami4/yami4-cpp && ${MAKE}  -f Makefile CONF=Release
-	cd ../yami4/yami4-core && ${MAKE}  -f Makefile CONF=Release
+	cd ../common/common && ${MAKE}  -f Makefile CONF=Release
 
 # Clean Targets
 .clean-conf: ${CLEAN_SUBPROJECTS}
@@ -98,9 +92,7 @@ ${OBJECTDIR}/src/http.o: src/http.cpp
 
 # Subprojects
 .clean-subprojects:
-	cd ../common && ${MAKE}  -f Makefile CONF=Release clean
-	cd ../yami4/yami4-cpp && ${MAKE}  -f Makefile CONF=Release clean
-	cd ../yami4/yami4-core && ${MAKE}  -f Makefile CONF=Release clean
+	cd ../common/common && ${MAKE}  -f Makefile CONF=Release clean
 
 # Enable dependency checking
 .dep.inc: .depcheck-impl
