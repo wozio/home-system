@@ -21,7 +21,7 @@ FC=gfortran
 AS=as
 
 # Macros
-CND_PLATFORM=GNU-Linux-x86
+CND_PLATFORM=GNU_4.7.3-Linux-x86
 CND_DLIB_EXT=so
 CND_CONF=Debug
 CND_DISTDIR=dist
@@ -54,17 +54,13 @@ FFLAGS=
 ASFLAGS=
 
 # Link Libraries and Options
-LDLIBSOPTIONS=-lboost_program_options -lboost_thread -lboost_system -lPocoFoundation -lPocoNet ../yami4/yami4-cpp/../../Debug/libyami4-cpp.a ../yami4/yami4-core/../../Debug/libyami4-core.a ../common/../Debug/libcommon.a
+LDLIBSOPTIONS=-L../common/yami4/lib -lboost_program_options -lboost_thread -lboost_system -lPocoFoundation -lPocoNet ../common/common/../Debug/libcommon.a -lyamicpp -lyamicore
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
 	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk ../${CND_CONF}/io-relay-board
 
-../${CND_CONF}/io-relay-board: ../yami4/yami4-cpp/../../Debug/libyami4-cpp.a
-
-../${CND_CONF}/io-relay-board: ../yami4/yami4-core/../../Debug/libyami4-core.a
-
-../${CND_CONF}/io-relay-board: ../common/../Debug/libcommon.a
+../${CND_CONF}/io-relay-board: ../common/common/../Debug/libcommon.a
 
 ../${CND_CONF}/io-relay-board: ${OBJECTFILES}
 	${MKDIR} -p ../${CND_CONF}
@@ -72,24 +68,22 @@ LDLIBSOPTIONS=-lboost_program_options -lboost_thread -lboost_system -lPocoFounda
 
 ${OBJECTDIR}/src/io-relay-board.o: src/io-relay-board.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
-	${RM} $@.d
-	$(COMPILE.cc) -g -Wall -D_DEBUG -I../common/src -I../yami4 -std=c++11 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/io-relay-board.o src/io-relay-board.cpp
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -Wall -D_DEBUG -I../common/common/src -I../common/yami4/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/io-relay-board.o src/io-relay-board.cpp
 
 ${OBJECTDIR}/src/iorb-service.o: src/iorb-service.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
-	${RM} $@.d
-	$(COMPILE.cc) -g -Wall -D_DEBUG -I../common/src -I../yami4 -std=c++11 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/iorb-service.o src/iorb-service.cpp
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -Wall -D_DEBUG -I../common/common/src -I../common/yami4/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/iorb-service.o src/iorb-service.cpp
 
 ${OBJECTDIR}/src/rbport.o: src/rbport.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
-	${RM} $@.d
-	$(COMPILE.cc) -g -Wall -D_DEBUG -I../common/src -I../yami4 -std=c++11 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/rbport.o src/rbport.cpp
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -Wall -D_DEBUG -I../common/common/src -I../common/yami4/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/rbport.o src/rbport.cpp
 
 # Subprojects
 .build-subprojects:
-	cd ../yami4/yami4-cpp && ${MAKE}  -f Makefile CONF=Debug
-	cd ../yami4/yami4-core && ${MAKE}  -f Makefile CONF=Debug
-	cd ../common && ${MAKE}  -f Makefile CONF=Debug
+	cd ../common/common && ${MAKE}  -f Makefile CONF=Debug
 
 # Clean Targets
 .clean-conf: ${CLEAN_SUBPROJECTS}
@@ -98,9 +92,7 @@ ${OBJECTDIR}/src/rbport.o: src/rbport.cpp
 
 # Subprojects
 .clean-subprojects:
-	cd ../yami4/yami4-cpp && ${MAKE}  -f Makefile CONF=Debug clean
-	cd ../yami4/yami4-core && ${MAKE}  -f Makefile CONF=Debug clean
-	cd ../common && ${MAKE}  -f Makefile CONF=Debug clean
+	cd ../common/common && ${MAKE}  -f Makefile CONF=Debug clean
 
 # Enable dependency checking
 .dep.inc: .depcheck-impl

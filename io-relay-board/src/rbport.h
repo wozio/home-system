@@ -1,7 +1,7 @@
 #ifndef RBPORT_H
 #define	RBPORT_H
 
-#include <boost/asio.hpp>
+#include "ios_wrapper.h"
 #include <string>
 
 namespace home_system
@@ -28,7 +28,7 @@ public:
   void disable_all();
   int get_relay_state(unsigned int relay);
   
-  void operator()();
+  
 
 private:
   std::string port_;
@@ -36,6 +36,8 @@ private:
   int wanted_state_[8];
   bool opened_, write_timer_running_;
   iorb_service* service_;
+  
+  void thread_exec();
   
   boost::asio::serial_port* serial_port_;
   boost::asio::deadline_timer* write_timer_;

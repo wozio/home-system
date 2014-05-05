@@ -1,6 +1,7 @@
 #include "iorb-service.h"
 
 #include "logger.h"
+#include "yamicontainer.h"
 
 #include <boost/program_options.hpp>
 #include <iostream>
@@ -8,6 +9,8 @@
 #ifdef __linux__
 #include <signal.h>
 #endif
+
+home_system::yami_container _yc;
 
 using namespace std;
 

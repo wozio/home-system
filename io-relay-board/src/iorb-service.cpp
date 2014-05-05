@@ -14,7 +14,6 @@ iorb_service::iorb_service(const std::string& name, const std::string& port)
 : service(name),
   port_(port, this)
 {
-  port_thread_ = thread(boost::ref(port_));
 }
 
 iorb_service::~iorb_service()
@@ -60,7 +59,7 @@ void iorb_service::on_msg(yami::incoming_message & im)
     nrs.name_ = im.get_parameters().get_string("name");
 
     {
-      mutex::scoped_lock lock(subscription_mutex_);
+      lock_guard<mutex> lock(subscription_mutex_);
       output_state_subscriptions[output] = nrs;
     }
     
@@ -75,7 +74,7 @@ void iorb_service::on_msg(yami::incoming_message & im)
 
 void iorb_service::on_output_state_change(int output, int state)
 {
-  mutex::scoped_lock lock(subscription_mutex_);
+  lock_guard<mutex> lock(subscription_mutex_);
 
   if (output_state_subscriptions.find(output) != output_state_subscriptions.end())
   {

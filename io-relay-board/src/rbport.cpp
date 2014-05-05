@@ -1,8 +1,8 @@
 #include "rbport.h"
 #include "iorb-service.h"
 #include "logger.h"
-#include <boost/thread.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
+#include <thread>
 #include <iostream>
 
 using namespace std;
@@ -28,6 +28,8 @@ port::port(const std::string& port, iorb_service* service)
     state_[i] = -1;
     wanted_state_[i] = 0;
   }
+  
+  thread t([this]() { thread_exec(); });
 }
 
 class port_error
@@ -35,7 +37,7 @@ class port_error
 {
 };
 
-void port::operator()()
+void port::thread_exec()
 {
   try
   {
@@ -66,7 +68,7 @@ void port::operator()()
       {
         LOGWARN("Unable to open COM port " << port_ << ": " << e.what() <<
           ", keep trying...");
-        this_thread::sleep(seconds(1));
+        this_thread::sleep_for(std::chrono::seconds(1));
       }
       
       while (!opened_)
@@ -79,7 +81,7 @@ void port::operator()()
         }
         catch (const boost::system::system_error&)
         {
-          this_thread::sleep(seconds(1));
+          this_thread::sleep_for(std::chrono::seconds(1));
         }
       }
       
@@ -98,7 +100,7 @@ void port::operator()()
       }
     }
   }
-  catch (const thread_interrupted&)
+  catch (...)
   {
   }
 }

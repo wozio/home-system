@@ -35,9 +35,9 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
 OBJECTFILES= \
-	${OBJECTDIR}/src/rbport.o \
+	${OBJECTDIR}/src/io-relay-board.o \
 	${OBJECTDIR}/src/iorb-service.o \
-	${OBJECTDIR}/src/io-relay-board.o
+	${OBJECTDIR}/src/rbport.o
 
 
 # C Compiler Flags
@@ -54,42 +54,36 @@ FFLAGS=
 ASFLAGS=
 
 # Link Libraries and Options
-LDLIBSOPTIONS=-lboost_program_options -lboost_thread -lboost_system -lPocoFoundation -lPocoNet ../yami4/yami4-cpp/../../Release/libyami4-cpp.a ../yami4/yami4-core/../../Release/libyami4-core.a ../common/../Release/libcommon.a
+LDLIBSOPTIONS=-L../common/yami4/lib -lboost_program_options -lboost_thread -lboost_system -lPocoFoundation -lPocoNet ../common/common/../Release/libcommon.a -lyamicpp -lyamicore
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
 	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk ../${CND_CONF}/io-relay-board
 
-../${CND_CONF}/io-relay-board: ../yami4/yami4-cpp/../../Release/libyami4-cpp.a
-
-../${CND_CONF}/io-relay-board: ../yami4/yami4-core/../../Release/libyami4-core.a
-
-../${CND_CONF}/io-relay-board: ../common/../Release/libcommon.a
+../${CND_CONF}/io-relay-board: ../common/common/../Release/libcommon.a
 
 ../${CND_CONF}/io-relay-board: ${OBJECTFILES}
 	${MKDIR} -p ../${CND_CONF}
-	${LINK.cc} -o ../${CND_CONF}/io-relay-board -s ${OBJECTFILES} ${LDLIBSOPTIONS} 
-
-${OBJECTDIR}/src/rbport.o: src/rbport.cpp 
-	${MKDIR} -p ${OBJECTDIR}/src
-	${RM} $@.d
-	$(COMPILE.cc) -O3 -Wall -s -I../common/src -I../yami4 -std=c++11 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/rbport.o src/rbport.cpp
-
-${OBJECTDIR}/src/iorb-service.o: src/iorb-service.cpp 
-	${MKDIR} -p ${OBJECTDIR}/src
-	${RM} $@.d
-	$(COMPILE.cc) -O3 -Wall -s -I../common/src -I../yami4 -std=c++11 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/iorb-service.o src/iorb-service.cpp
+	${LINK.cc} -o ../${CND_CONF}/io-relay-board ${OBJECTFILES} ${LDLIBSOPTIONS} -s
 
 ${OBJECTDIR}/src/io-relay-board.o: src/io-relay-board.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
-	${RM} $@.d
-	$(COMPILE.cc) -O3 -Wall -s -I../common/src -I../yami4 -std=c++11 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/io-relay-board.o src/io-relay-board.cpp
+	${RM} "$@.d"
+	$(COMPILE.cc) -O3 -Wall -s -I../common/common/src -I../common/yami4/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/io-relay-board.o src/io-relay-board.cpp
+
+${OBJECTDIR}/src/iorb-service.o: src/iorb-service.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src
+	${RM} "$@.d"
+	$(COMPILE.cc) -O3 -Wall -s -I../common/common/src -I../common/yami4/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/iorb-service.o src/iorb-service.cpp
+
+${OBJECTDIR}/src/rbport.o: src/rbport.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src
+	${RM} "$@.d"
+	$(COMPILE.cc) -O3 -Wall -s -I../common/common/src -I../common/yami4/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/rbport.o src/rbport.cpp
 
 # Subprojects
 .build-subprojects:
-	cd ../yami4/yami4-cpp && ${MAKE}  -f Makefile CONF=Release
-	cd ../yami4/yami4-core && ${MAKE}  -f Makefile CONF=Release
-	cd ../common && ${MAKE}  -f Makefile CONF=Release
+	cd ../common/common && ${MAKE}  -f Makefile CONF=Release
 
 # Clean Targets
 .clean-conf: ${CLEAN_SUBPROJECTS}
@@ -98,9 +92,7 @@ ${OBJECTDIR}/src/io-relay-board.o: src/io-relay-board.cpp
 
 # Subprojects
 .clean-subprojects:
-	cd ../yami4/yami4-cpp && ${MAKE}  -f Makefile CONF=Release clean
-	cd ../yami4/yami4-core && ${MAKE}  -f Makefile CONF=Release clean
-	cd ../common && ${MAKE}  -f Makefile CONF=Release clean
+	cd ../common/common && ${MAKE}  -f Makefile CONF=Release clean
 
 # Enable dependency checking
 .dep.inc: .depcheck-impl

@@ -3,8 +3,6 @@
 
 #include "rbport.h"
 #include "service.h"
-#include <boost/thread.hpp>
-#include <boost/shared_ptr.hpp>
 #include <map>
 
 namespace home_system
@@ -27,8 +25,7 @@ public:
   
   void on_output_state_change(int output, int state);
 private:
-  boost::thread port_thread_;
-  boost::mutex subscription_mutex_;
+  std::mutex subscription_mutex_;
   rb::port port_;
   
   // key = output id and yamie endpoint of remote services subscribing
