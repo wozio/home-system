@@ -54,13 +54,13 @@ FFLAGS=
 ASFLAGS=
 
 # Link Libraries and Options
-LDLIBSOPTIONS=-L../common/yami4/lib -lboost_program_options -lboost_thread -lboost_system -lPocoFoundation -lPocoNet ../common/common/../Release/libcommon.a -lyamicpp -lyamicore
+LDLIBSOPTIONS=-L../common/yami4/lib -lboost_program_options -lboost_thread -lboost_system -lPocoFoundation -lPocoNet ../common/common/../bin/Release/libcommon.a -lyamicpp -lyamicore
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
 	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk ../bin/${CND_CONF}/io-relay-board
 
-../bin/${CND_CONF}/io-relay-board: ../common/common/../Release/libcommon.a
+../bin/${CND_CONF}/io-relay-board: ../common/common/../bin/Release/libcommon.a
 
 ../bin/${CND_CONF}/io-relay-board: ${OBJECTFILES}
 	${MKDIR} -p ../bin/${CND_CONF}

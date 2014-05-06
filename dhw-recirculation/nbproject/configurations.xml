@@ -1,16 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configurationDescriptor version="94">
   <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
-    <logicalFolder name="HeaderFiles"
-                   displayName="Header Files"
-                   projectFiles="true">
-      <itemPath>src/dhwrec-service.h</itemPath>
-    </logicalFolder>
     <logicalFolder name="SourceFiles"
                    displayName="Source Files"
                    projectFiles="true">
       <itemPath>src/dhw-recirculation.cpp</itemPath>
       <itemPath>src/dhwrec-service.cpp</itemPath>
+      <itemPath>src/dhwrec-service.h</itemPath>
     </logicalFolder>
     <logicalFolder name="TestFiles"
                    displayName="Test Files"
@@ -48,7 +44,7 @@
           <warningLevel>2</warningLevel>
         </ccTool>
         <linkerTool>
-          <output>../${CND_CONF}/dhw-recirculation</output>
+          <output>../bin/${CND_CONF}/dhw-recirculation</output>
           <linkerAddLib>
             <pElem>../common/yami4/lib</pElem>
           </linkerAddLib>
@@ -68,7 +64,7 @@
                             WD="../common/common"
                             BC="${MAKE}  -f Makefile CONF=Debug"
                             CC="${MAKE}  -f Makefile CONF=Debug clean"
-                            OP="../${CND_CONF}/libcommon.a">
+                            OP="../bin/${CND_CONF}/libcommon.a">
               </makeArtifact>
             </linkerLibProjectItem>
             <linkerLibLibItem>yamicpp</linkerLibLibItem>
@@ -112,7 +108,7 @@
           <developmentMode>5</developmentMode>
         </asmTool>
         <linkerTool>
-          <output>../${CND_CONF}/dhw-recirculation</output>
+          <output>../bin/${CND_CONF}/dhw-recirculation</output>
           <linkerAddLib>
             <pElem>../common/yami4/lib</pElem>
           </linkerAddLib>
@@ -133,7 +129,7 @@
                             WD="../common/common"
                             BC="${MAKE}  -f Makefile CONF=Release"
                             CC="${MAKE}  -f Makefile CONF=Release clean"
-                            OP="../${CND_CONF}/libcommon.a">
+                            OP="../bin/${CND_CONF}/libcommon.a">
               </makeArtifact>
             </linkerLibProjectItem>
             <linkerLibLibItem>yamicpp</linkerLibLibItem>

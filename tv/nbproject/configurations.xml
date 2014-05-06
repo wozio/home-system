@@ -58,7 +58,7 @@
           <warningLevel>2</warningLevel>
         </ccTool>
         <linkerTool>
-          <output>../${CND_CONF}/tv</output>
+          <output>../bin/${CND_CONF}/tv</output>
           <linkerAddLib>
             <pElem>../common/yami4/lib</pElem>
           </linkerAddLib>
@@ -71,8 +71,6 @@
             <linkerLibLibItem>boost_system</linkerLibLibItem>
             <linkerLibLibItem>boost_thread</linkerLibLibItem>
             <linkerLibLibItem>pthread</linkerLibLibItem>
-            <linkerLibLibItem>yamicpp</linkerLibLibItem>
-            <linkerLibLibItem>yamicore</linkerLibLibItem>
             <linkerLibProjectItem>
               <makeArtifact PL="../common/common"
                             CT="3"
@@ -82,9 +80,11 @@
                             WD="../common/common"
                             BC="${MAKE}  -f Makefile CONF=Debug"
                             CC="${MAKE}  -f Makefile CONF=Debug clean"
-                            OP="../${CND_CONF}/libcommon.a">
+                            OP="../bin/${CND_CONF}/libcommon.a">
               </makeArtifact>
             </linkerLibProjectItem>
+            <linkerLibLibItem>yamicpp</linkerLibLibItem>
+            <linkerLibLibItem>yamicore</linkerLibLibItem>
           </linkerLibItems>
         </linkerTool>
       </compileType>
@@ -156,7 +156,7 @@
           <developmentMode>5</developmentMode>
         </asmTool>
         <linkerTool>
-          <output>../${CND_CONF}/tv</output>
+          <output>../bin/${CND_CONF}/tv</output>
           <linkerAddLib>
             <pElem>../common/yami4/lib</pElem>
           </linkerAddLib>
@@ -169,8 +169,6 @@
             <linkerLibLibItem>boost_system</linkerLibLibItem>
             <linkerLibLibItem>boost_thread</linkerLibLibItem>
             <linkerLibLibItem>pthread</linkerLibLibItem>
-            <linkerLibLibItem>yamicpp</linkerLibLibItem>
-            <linkerLibLibItem>yamicore</linkerLibLibItem>
             <linkerLibProjectItem>
               <makeArtifact PL="../common/common"
                             CT="3"
@@ -180,9 +178,11 @@
                             WD="../common/common"
                             BC="${MAKE}  -f Makefile CONF=Release"
                             CC="${MAKE}  -f Makefile CONF=Release clean"
-                            OP="../${CND_CONF}/libcommon.a">
+                            OP="../bin/${CND_CONF}/libcommon.a">
               </makeArtifact>
             </linkerLibProjectItem>
+            <linkerLibLibItem>yamicpp</linkerLibLibItem>
+            <linkerLibLibItem>yamicore</linkerLibLibItem>
           </linkerLibItems>
         </linkerTool>
       </compileType>
@@ -246,7 +246,7 @@
           <warningLevel>2</warningLevel>
         </ccTool>
         <linkerTool>
-          <output>../${CND_CONF}/tv</output>
+          <output>../bin/${CND_CONF}/tv</output>
           <linkerAddLib>
             <pElem>../common/yami4/lib</pElem>
           </linkerAddLib>
@@ -259,8 +259,6 @@
             <linkerLibLibItem>boost_system</linkerLibLibItem>
             <linkerLibLibItem>boost_thread</linkerLibLibItem>
             <linkerLibLibItem>pthread</linkerLibLibItem>
-            <linkerLibLibItem>yamicpp</linkerLibLibItem>
-            <linkerLibLibItem>yamicore</linkerLibLibItem>
             <linkerLibProjectItem>
               <makeArtifact PL="../common/common"
                             CT="3"
@@ -270,9 +268,11 @@
                             WD="../common/common"
                             BC="${MAKE}  -f Makefile CONF=Debug_laptop"
                             CC="${MAKE}  -f Makefile CONF=Debug_laptop clean"
-                            OP="../${CND_CONF}/libcommon.a">
+                            OP="../bin/${CND_CONF}/libcommon.a">
               </makeArtifact>
             </linkerLibProjectItem>
+            <linkerLibLibItem>yamicpp</linkerLibLibItem>
+            <linkerLibLibItem>yamicore</linkerLibLibItem>
           </linkerLibItems>
         </linkerTool>
       </compileType>
@@ -336,7 +336,7 @@
           <warningLevel>2</warningLevel>
         </ccTool>
         <linkerTool>
-          <output>../${CND_CONF}/tv</output>
+          <output>../bin/${CND_CONF}/tv</output>
           <linkerAddLib>
             <pElem>../common/yami4/lib</pElem>
           </linkerAddLib>
@@ -349,8 +349,6 @@
             <linkerLibLibItem>boost_system</linkerLibLibItem>
             <linkerLibLibItem>boost_thread</linkerLibLibItem>
             <linkerLibLibItem>pthread</linkerLibLibItem>
-            <linkerLibLibItem>yamicpp</linkerLibLibItem>
-            <linkerLibLibItem>yamicore</linkerLibLibItem>
             <linkerLibProjectItem>
               <makeArtifact PL="../common/common"
                             CT="3"
@@ -360,9 +358,11 @@
                             WD="../common/common"
                             BC="${MAKE}  -f Makefile CONF=Debug_praca"
                             CC="${MAKE}  -f Makefile CONF=Debug_praca clean"
-                            OP="../${CND_CONF}/libcommon.a">
+                            OP="../bin/${CND_CONF}/libcommon.a">
               </makeArtifact>
             </linkerLibProjectItem>
+            <linkerLibLibItem>yamicpp</linkerLibLibItem>
+            <linkerLibLibItem>yamicore</linkerLibLibItem>
           </linkerLibItems>
         </linkerTool>
       </compileType>

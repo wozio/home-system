@@ -53,17 +53,17 @@ FFLAGS=
 ASFLAGS=
 
 # Link Libraries and Options
-LDLIBSOPTIONS=-L../common/yami4/lib -lPocoFoundation -lPocoNet -lboost_date_time -lboost_program_options -lboost_system -lboost_thread ../common/common/../Release/libcommon.a -lyamicpp -lyamicore
+LDLIBSOPTIONS=-L../common/yami4/lib -lPocoFoundation -lPocoNet -lboost_date_time -lboost_program_options -lboost_system -lboost_thread ../common/common/../bin/Release/libcommon.a -lyamicpp -lyamicore
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
-	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk ../${CND_CONF}/dhw-recirculation
+	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk ../bin/${CND_CONF}/dhw-recirculation
 
-../${CND_CONF}/dhw-recirculation: ../common/common/../Release/libcommon.a
+../bin/${CND_CONF}/dhw-recirculation: ../common/common/../bin/Release/libcommon.a
 
-../${CND_CONF}/dhw-recirculation: ${OBJECTFILES}
-	${MKDIR} -p ../${CND_CONF}
-	${LINK.cc} -o ../${CND_CONF}/dhw-recirculation ${OBJECTFILES} ${LDLIBSOPTIONS} -s
+../bin/${CND_CONF}/dhw-recirculation: ${OBJECTFILES}
+	${MKDIR} -p ../bin/${CND_CONF}
+	${LINK.cc} -o ../bin/${CND_CONF}/dhw-recirculation ${OBJECTFILES} ${LDLIBSOPTIONS} -s
 
 ${OBJECTDIR}/src/dhw-recirculation.o: src/dhw-recirculation.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
@@ -82,7 +82,7 @@ ${OBJECTDIR}/src/dhwrec-service.o: src/dhwrec-service.cpp
 # Clean Targets
 .clean-conf: ${CLEAN_SUBPROJECTS}
 	${RM} -r ${CND_BUILDDIR}/${CND_CONF}
-	${RM} ../${CND_CONF}/dhw-recirculation
+	${RM} ../bin/${CND_CONF}/dhw-recirculation
 
 # Subprojects
 .clean-subprojects:

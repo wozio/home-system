@@ -62,7 +62,7 @@
                             WD="../common/common"
                             BC="${MAKE}  -f Makefile CONF=Debug"
                             CC="${MAKE}  -f Makefile CONF=Debug clean"
-                            OP="../${CND_CONF}/libcommon.a">
+                            OP="../bin/${CND_CONF}/libcommon.a">
               </makeArtifact>
             </linkerLibProjectItem>
             <linkerLibLibItem>yamicpp</linkerLibLibItem>
@@ -130,7 +130,7 @@
                             WD="../common/common"
                             BC="${MAKE}  -f Makefile CONF=Release"
                             CC="${MAKE}  -f Makefile CONF=Release clean"
-                            OP="../${CND_CONF}/libcommon.a">
+                            OP="../bin/${CND_CONF}/libcommon.a">
               </makeArtifact>
             </linkerLibProjectItem>
             <linkerLibLibItem>yamicpp</linkerLibLibItem>

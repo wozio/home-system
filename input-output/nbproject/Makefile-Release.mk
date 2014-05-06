@@ -66,114 +66,106 @@ FFLAGS=
 ASFLAGS=
 
 # Link Libraries and Options
-LDLIBSOPTIONS=-lusb -lboost_filesystem -lboost_system -lboost_thread ../yami4/yami4-core/../../Release/libyami4-core.a ../yami4/yami4-cpp/../../Release/libyami4-cpp.a ../common/../Release/libcommon.a
+LDLIBSOPTIONS=-lusb -lPocoFoundation -lPocoNet -lboost_filesystem -lboost_program_options -lboost_system -lboost_thread -lpthread ../common/common/../bin/Release/libcommon.a -lyamicpp -lyamicore
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
-	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk ../${CND_CONF}/input-output
+	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk ../bin/${CND_CONF}/input-output
 
-../${CND_CONF}/input-output: ../yami4/yami4-core/../../Release/libyami4-core.a
+../bin/${CND_CONF}/input-output: ../common/common/../bin/Release/libcommon.a
 
-../${CND_CONF}/input-output: ../yami4/yami4-cpp/../../Release/libyami4-cpp.a
-
-../${CND_CONF}/input-output: ../common/../Release/libcommon.a
-
-../${CND_CONF}/input-output: ${OBJECTFILES}
-	${MKDIR} -p ../${CND_CONF}
-	${LINK.cc} -o ../${CND_CONF}/input-output ${OBJECTFILES} ${LDLIBSOPTIONS} -s
+../bin/${CND_CONF}/input-output: ${OBJECTFILES}
+	${MKDIR} -p ../bin/${CND_CONF}
+	${LINK.cc} -o ../bin/${CND_CONF}/input-output ${OBJECTFILES} ${LDLIBSOPTIONS} -s
 
 ${OBJECTDIR}/src/1wire/common/crcutil.o: src/1wire/common/crcutil.c 
 	${MKDIR} -p ${OBJECTDIR}/src/1wire/common
-	${RM} $@.d
-	$(COMPILE.c) -O3 -Wall -s -Isrc/1wire/common -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/1wire/common/crcutil.o src/1wire/common/crcutil.c
+	${RM} "$@.d"
+	$(COMPILE.c) -O3 -Wall -s -Isrc/1wire/common -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/1wire/common/crcutil.o src/1wire/common/crcutil.c
 
 ${OBJECTDIR}/src/1wire/common/findtype.o: src/1wire/common/findtype.c 
 	${MKDIR} -p ${OBJECTDIR}/src/1wire/common
-	${RM} $@.d
-	$(COMPILE.c) -O3 -Wall -s -Isrc/1wire/common -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/1wire/common/findtype.o src/1wire/common/findtype.c
+	${RM} "$@.d"
+	$(COMPILE.c) -O3 -Wall -s -Isrc/1wire/common -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/1wire/common/findtype.o src/1wire/common/findtype.c
 
 ${OBJECTDIR}/src/1wire/common/ioutil.o: src/1wire/common/ioutil.c 
 	${MKDIR} -p ${OBJECTDIR}/src/1wire/common
-	${RM} $@.d
-	$(COMPILE.c) -O3 -Wall -s -Isrc/1wire/common -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/1wire/common/ioutil.o src/1wire/common/ioutil.c
+	${RM} "$@.d"
+	$(COMPILE.c) -O3 -Wall -s -Isrc/1wire/common -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/1wire/common/ioutil.o src/1wire/common/ioutil.c
 
 ${OBJECTDIR}/src/1wire/common/owerr.o: src/1wire/common/owerr.c 
 	${MKDIR} -p ${OBJECTDIR}/src/1wire/common
-	${RM} $@.d
-	$(COMPILE.c) -O3 -Wall -s -Isrc/1wire/common -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/1wire/common/owerr.o src/1wire/common/owerr.c
+	${RM} "$@.d"
+	$(COMPILE.c) -O3 -Wall -s -Isrc/1wire/common -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/1wire/common/owerr.o src/1wire/common/owerr.c
 
 ${OBJECTDIR}/src/1wire/common/temp10.o: src/1wire/common/temp10.c 
 	${MKDIR} -p ${OBJECTDIR}/src/1wire/common
-	${RM} $@.d
-	$(COMPILE.c) -O3 -Wall -s -Isrc/1wire/common -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/1wire/common/temp10.o src/1wire/common/temp10.c
+	${RM} "$@.d"
+	$(COMPILE.c) -O3 -Wall -s -Isrc/1wire/common -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/1wire/common/temp10.o src/1wire/common/temp10.c
 
 ${OBJECTDIR}/src/1wire/lib/other/libUSB/libusbds2490.o: src/1wire/lib/other/libUSB/libusbds2490.c 
 	${MKDIR} -p ${OBJECTDIR}/src/1wire/lib/other/libUSB
-	${RM} $@.d
-	$(COMPILE.c) -O3 -Wall -s -Isrc/1wire/common -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/1wire/lib/other/libUSB/libusbds2490.o src/1wire/lib/other/libUSB/libusbds2490.c
+	${RM} "$@.d"
+	$(COMPILE.c) -O3 -Wall -s -Isrc/1wire/common -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/1wire/lib/other/libUSB/libusbds2490.o src/1wire/lib/other/libUSB/libusbds2490.c
 
 ${OBJECTDIR}/src/1wire/lib/other/libUSB/libusblnk.o: src/1wire/lib/other/libUSB/libusblnk.c 
 	${MKDIR} -p ${OBJECTDIR}/src/1wire/lib/other/libUSB
-	${RM} $@.d
-	$(COMPILE.c) -O3 -Wall -s -Isrc/1wire/common -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/1wire/lib/other/libUSB/libusblnk.o src/1wire/lib/other/libUSB/libusblnk.c
+	${RM} "$@.d"
+	$(COMPILE.c) -O3 -Wall -s -Isrc/1wire/common -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/1wire/lib/other/libUSB/libusblnk.o src/1wire/lib/other/libUSB/libusblnk.c
 
 ${OBJECTDIR}/src/1wire/lib/other/libUSB/libusbnet.o: src/1wire/lib/other/libUSB/libusbnet.c 
 	${MKDIR} -p ${OBJECTDIR}/src/1wire/lib/other/libUSB
-	${RM} $@.d
-	$(COMPILE.c) -O3 -Wall -s -Isrc/1wire/common -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/1wire/lib/other/libUSB/libusbnet.o src/1wire/lib/other/libUSB/libusbnet.c
+	${RM} "$@.d"
+	$(COMPILE.c) -O3 -Wall -s -Isrc/1wire/common -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/1wire/lib/other/libUSB/libusbnet.o src/1wire/lib/other/libUSB/libusbnet.c
 
 ${OBJECTDIR}/src/1wire/lib/other/libUSB/libusbses.o: src/1wire/lib/other/libUSB/libusbses.c 
 	${MKDIR} -p ${OBJECTDIR}/src/1wire/lib/other/libUSB
-	${RM} $@.d
-	$(COMPILE.c) -O3 -Wall -s -Isrc/1wire/common -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/1wire/lib/other/libUSB/libusbses.o src/1wire/lib/other/libUSB/libusbses.c
+	${RM} "$@.d"
+	$(COMPILE.c) -O3 -Wall -s -Isrc/1wire/common -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/1wire/lib/other/libUSB/libusbses.o src/1wire/lib/other/libUSB/libusbses.c
 
 ${OBJECTDIR}/src/1wire/lib/other/libUSB/libusbtran.o: src/1wire/lib/other/libUSB/libusbtran.c 
 	${MKDIR} -p ${OBJECTDIR}/src/1wire/lib/other/libUSB
-	${RM} $@.d
-	$(COMPILE.c) -O3 -Wall -s -Isrc/1wire/common -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/1wire/lib/other/libUSB/libusbtran.o src/1wire/lib/other/libUSB/libusbtran.c
+	${RM} "$@.d"
+	$(COMPILE.c) -O3 -Wall -s -Isrc/1wire/common -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/1wire/lib/other/libUSB/libusbtran.o src/1wire/lib/other/libUSB/libusbtran.c
 
 ${OBJECTDIR}/src/input-output.o: src/input-output.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
-	${RM} $@.d
-	$(COMPILE.cc) -O3 -Wall -s -Isrc/1wire/common -I../common/src -I../yami4 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/input-output.o src/input-output.cpp
+	${RM} "$@.d"
+	$(COMPILE.cc) -O3 -Wall -s -Isrc/1wire/common -I../common/src -I../yami4 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/input-output.o src/input-output.cpp
 
 ${OBJECTDIR}/src/io-service.o: src/io-service.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
-	${RM} $@.d
-	$(COMPILE.cc) -O3 -Wall -s -Isrc/1wire/common -I../common/src -I../yami4 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/io-service.o src/io-service.cpp
+	${RM} "$@.d"
+	$(COMPILE.cc) -O3 -Wall -s -Isrc/1wire/common -I../common/src -I../yami4 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/io-service.o src/io-service.cpp
 
 ${OBJECTDIR}/src/ownetwork.o: src/ownetwork.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
-	${RM} $@.d
-	$(COMPILE.cc) -O3 -Wall -s -Isrc/1wire/common -I../common/src -I../yami4 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/ownetwork.o src/ownetwork.cpp
+	${RM} "$@.d"
+	$(COMPILE.cc) -O3 -Wall -s -Isrc/1wire/common -I../common/src -I../yami4 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/ownetwork.o src/ownetwork.cpp
 
 ${OBJECTDIR}/src/owtemp.o: src/owtemp.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
-	${RM} $@.d
-	$(COMPILE.cc) -O3 -Wall -s -Isrc/1wire/common -I../common/src -I../yami4 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/owtemp.o src/owtemp.cpp
+	${RM} "$@.d"
+	$(COMPILE.cc) -O3 -Wall -s -Isrc/1wire/common -I../common/src -I../yami4 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/owtemp.o src/owtemp.cpp
 
 ${OBJECTDIR}/src/utils.o: src/utils.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
-	${RM} $@.d
-	$(COMPILE.cc) -O3 -Wall -s -Isrc/1wire/common -I../common/src -I../yami4 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/utils.o src/utils.cpp
+	${RM} "$@.d"
+	$(COMPILE.cc) -O3 -Wall -s -Isrc/1wire/common -I../common/src -I../yami4 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/utils.o src/utils.cpp
 
 # Subprojects
 .build-subprojects:
-	cd ../yami4/yami4-core && ${MAKE}  -f Makefile CONF=Release
-	cd ../yami4/yami4-cpp && ${MAKE}  -f Makefile CONF=Release
-	cd ../common && ${MAKE}  -f Makefile CONF=Release
+	cd ../common/common && ${MAKE}  -f Makefile CONF=Release
 	cd ../common && ${MAKE}  -f Makefile CONF=Release
 
 # Clean Targets
 .clean-conf: ${CLEAN_SUBPROJECTS}
 	${RM} -r ${CND_BUILDDIR}/${CND_CONF}
-	${RM} ../${CND_CONF}/input-output
+	${RM} ../bin/${CND_CONF}/input-output
 
 # Subprojects
 .clean-subprojects:
-	cd ../yami4/yami4-core && ${MAKE}  -f Makefile CONF=Release clean
-	cd ../yami4/yami4-cpp && ${MAKE}  -f Makefile CONF=Release clean
-	cd ../common && ${MAKE}  -f Makefile CONF=Release clean
+	cd ../common/common && ${MAKE}  -f Makefile CONF=Release clean
 	cd ../common && ${MAKE}  -f Makefile CONF=Release clean
 
 # Enable dependency checking

@@ -21,7 +21,7 @@ FC=gfortran
 AS=as
 
 # Macros
-CND_PLATFORM=GNU-Linux-x86
+CND_PLATFORM=GNU_4.7.3-Linux-x86
 CND_DLIB_EXT=so
 CND_CONF=Debug
 CND_DISTDIR=dist
@@ -52,43 +52,35 @@ FFLAGS=
 ASFLAGS=
 
 # Link Libraries and Options
-LDLIBSOPTIONS=-lboost_system -lboost_thread ../common/../Debug/libcommon.a ../yami4/yami4-cpp/../../Debug/libyami4-cpp.a ../yami4/yami4-core/../../Debug/libyami4-core.a -lPocoNet -lPocoFoundation -lpthread
+LDLIBSOPTIONS=-L../common/yami4/lib -lboost_system -lboost_thread -lPocoNet -lPocoFoundation -lpthread ../common/common/../bin/Debug/libcommon.a -lyamicpp -lyamicore
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
-	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk ../${CND_CONF}/test
+	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk ../bin/${CND_CONF}/test
 
-../${CND_CONF}/test: ../common/../Debug/libcommon.a
+../bin/${CND_CONF}/test: ../common/common/../bin/Debug/libcommon.a
 
-../${CND_CONF}/test: ../yami4/yami4-cpp/../../Debug/libyami4-cpp.a
-
-../${CND_CONF}/test: ../yami4/yami4-core/../../Debug/libyami4-core.a
-
-../${CND_CONF}/test: ${OBJECTFILES}
-	${MKDIR} -p ../${CND_CONF}
-	${LINK.cc} -o ../${CND_CONF}/test ${OBJECTFILES} ${LDLIBSOPTIONS}
+../bin/${CND_CONF}/test: ${OBJECTFILES}
+	${MKDIR} -p ../bin/${CND_CONF}
+	${LINK.cc} -o ../bin/${CND_CONF}/test ${OBJECTFILES} ${LDLIBSOPTIONS}
 
 ${OBJECTDIR}/test.o: test.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -D_DEBUG -I../common/src -I../yami4 -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/test.o test.cpp
+	$(COMPILE.cc) -g -D_DEBUG -I../common/common/src -I../common/yami4/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/test.o test.cpp
 
 # Subprojects
 .build-subprojects:
-	cd ../common && ${MAKE}  -f Makefile CONF=Debug
-	cd ../yami4/yami4-cpp && ${MAKE}  -f Makefile CONF=Debug
-	cd ../yami4/yami4-core && ${MAKE}  -f Makefile CONF=Debug
+	cd ../common/common && ${MAKE}  -f Makefile CONF=Debug
 
 # Clean Targets
 .clean-conf: ${CLEAN_SUBPROJECTS}
 	${RM} -r ${CND_BUILDDIR}/${CND_CONF}
-	${RM} ../${CND_CONF}/test
+	${RM} ../bin/${CND_CONF}/test
 
 # Subprojects
 .clean-subprojects:
-	cd ../common && ${MAKE}  -f Makefile CONF=Debug clean
-	cd ../yami4/yami4-cpp && ${MAKE}  -f Makefile CONF=Debug clean
-	cd ../yami4/yami4-core && ${MAKE}  -f Makefile CONF=Debug clean
+	cd ../common/common && ${MAKE}  -f Makefile CONF=Debug clean
 
 # Enable dependency checking
 .dep.inc: .depcheck-impl

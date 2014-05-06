@@ -13,7 +13,7 @@ CND_BUILDDIR=build
 CND_DLIB_EXT=so
 NBTMPDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}/tmp-packaging
 TMPDIRNAME=tmp-packaging
-OUTPUT_PATH=../${CND_CONF}/dhw-recirculation
+OUTPUT_PATH=../bin/${CND_CONF}/dhw-recirculation
 OUTPUT_BASENAME=dhw-recirculation
 PACKAGE_TOP_DIR=dhw-recirculation/
 

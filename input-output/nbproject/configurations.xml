@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configurationDescriptor version="89">
+<configurationDescriptor version="94">
   <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
     <logicalFolder name="SourceFiles"
                    displayName="Source Files"
@@ -54,7 +54,6 @@
   <confs>
     <conf name="Debug" type="1">
       <toolsSet>
-        <remote-sources-mode>LOCAL_SOURCES</remote-sources-mode>
         <compilerSet>GNU|GNU</compilerSet>
         <dependencyChecking>true</dependencyChecking>
         <rebuildPropChanged>false</rebuildPropChanged>
@@ -82,7 +81,7 @@
           <warningLevel>2</warningLevel>
         </ccTool>
         <linkerTool>
-          <output>../${CND_CONF}/input-output</output>
+          <output>../bin/${CND_CONF}/input-output</output>
           <linkerLibItems>
             <linkerLibLibItem>usb</linkerLibLibItem>
             <linkerLibLibItem>PocoFoundation</linkerLibLibItem>
@@ -93,41 +92,19 @@
             <linkerLibLibItem>boost_thread</linkerLibLibItem>
             <linkerLibLibItem>pthread</linkerLibLibItem>
             <linkerLibProjectItem>
-              <makeArtifact PL="../common"
+              <makeArtifact PL="../common/common"
                             CT="3"
                             CN="Debug"
                             AC="false"
                             BL="true"
-                            WD="../common"
+                            WD="../common/common"
                             BC="${MAKE}  -f Makefile CONF=Debug"
                             CC="${MAKE}  -f Makefile CONF=Debug clean"
-                            OP="../${CND_CONF}/libcommon.a">
+                            OP="../bin/${CND_CONF}/libcommon.a">
               </makeArtifact>
             </linkerLibProjectItem>
-            <linkerLibProjectItem>
-              <makeArtifact PL="../yami4/yami4-cpp"
-                            CT="3"
-                            CN="Debug"
-                            AC="false"
-                            BL="true"
-                            WD="../yami4/yami4-cpp"
-                            BC="${MAKE}  -f Makefile CONF=Debug"
-                            CC="${MAKE}  -f Makefile CONF=Debug clean"
-                            OP="../../${CND_CONF}/libyami4-cpp.a">
-              </makeArtifact>
-            </linkerLibProjectItem>
-            <linkerLibProjectItem>
-              <makeArtifact PL="../yami4/yami4-core"
-                            CT="3"
-                            CN="Debug"
-                            AC="false"
-                            BL="true"
-                            WD="../yami4/yami4-core"
-                            BC="${MAKE}  -f Makefile CONF=Debug"
-                            CC="${MAKE}  -f Makefile CONF=Debug clean"
-                            OP="../../${CND_CONF}/libyami4-core.a">
-              </makeArtifact>
-            </linkerLibProjectItem>
+            <linkerLibLibItem>yamicpp</linkerLibLibItem>
+            <linkerLibLibItem>yamicore</linkerLibLibItem>
           </linkerLibItems>
         </linkerTool>
         <requiredProjects>
@@ -215,7 +192,6 @@
     </conf>
     <conf name="Release" type="1">
       <toolsSet>
-        <remote-sources-mode>LOCAL_SOURCES</remote-sources-mode>
         <compilerSet>GNU|GNU</compilerSet>
         <dependencyChecking>true</dependencyChecking>
         <rebuildPropChanged>false</rebuildPropChanged>
@@ -243,49 +219,31 @@
           <developmentMode>5</developmentMode>
         </fortranCompilerTool>
         <linkerTool>
-          <output>../${CND_CONF}/input-output</output>
+          <output>../bin/${CND_CONF}/input-output</output>
           <stripSymbols>true</stripSymbols>
           <linkerLibItems>
             <linkerLibLibItem>usb</linkerLibLibItem>
+            <linkerLibLibItem>PocoFoundation</linkerLibLibItem>
+            <linkerLibLibItem>PocoNet</linkerLibLibItem>
             <linkerLibLibItem>boost_filesystem</linkerLibLibItem>
+            <linkerLibLibItem>boost_program_options</linkerLibLibItem>
             <linkerLibLibItem>boost_system</linkerLibLibItem>
             <linkerLibLibItem>boost_thread</linkerLibLibItem>
+            <linkerLibLibItem>pthread</linkerLibLibItem>
             <linkerLibProjectItem>
-              <makeArtifact PL="../yami4/yami4-core"
+              <makeArtifact PL="../common/common"
                             CT="3"
                             CN="Release"
                             AC="false"
                             BL="true"
-                            WD="../yami4/yami4-core"
+                            WD="../common/common"
                             BC="${MAKE}  -f Makefile CONF=Release"
                             CC="${MAKE}  -f Makefile CONF=Release clean"
-                            OP="../../${CND_CONF}/libyami4-core.a">
+                            OP="../bin/${CND_CONF}/libcommon.a">
               </makeArtifact>
             </linkerLibProjectItem>
-            <linkerLibProjectItem>
-              <makeArtifact PL="../yami4/yami4-cpp"
-                            CT="3"
-                            CN="Release"
-                            AC="false"
-                            BL="true"
-                            WD="../yami4/yami4-cpp"
-                            BC="${MAKE}  -f Makefile CONF=Release"
-                            CC="${MAKE}  -f Makefile CONF=Release clean"
-                            OP="../../${CND_CONF}/libyami4-cpp.a">
-              </makeArtifact>
-            </linkerLibProjectItem>
-            <linkerLibProjectItem>
-              <makeArtifact PL="../common"
-                            CT="3"
-                            CN="Release"
-                            AC="false"
-                            BL="true"
-                            WD="../common"
-                            BC="${MAKE}  -f Makefile CONF=Release"
-                            CC="${MAKE}  -f Makefile CONF=Release clean"
-                            OP="../${CND_CONF}/libcommon.a">
-              </makeArtifact>
-            </linkerLibProjectItem>
+            <linkerLibLibItem>yamicpp</linkerLibLibItem>
+            <linkerLibLibItem>yamicore</linkerLibLibItem>
           </linkerLibItems>
         </linkerTool>
         <requiredProjects>
@@ -373,7 +331,6 @@
     </conf>
     <conf name="Debug_laptop" type="1">
       <toolsSet>
-        <remote-sources-mode>LOCAL_SOURCES</remote-sources-mode>
         <compilerSet>GNU|GNU</compilerSet>
         <dependencyChecking>true</dependencyChecking>
         <rebuildPropChanged>false</rebuildPropChanged>
@@ -401,52 +358,30 @@
           <warningLevel>2</warningLevel>
         </ccTool>
         <linkerTool>
-          <output>../${CND_CONF}/input-output</output>
+          <output>../bin/${CND_CONF}/input-output</output>
           <linkerLibItems>
             <linkerLibLibItem>usb</linkerLibLibItem>
             <linkerLibLibItem>PocoFoundation</linkerLibLibItem>
             <linkerLibLibItem>PocoNet</linkerLibLibItem>
             <linkerLibLibItem>boost_filesystem</linkerLibLibItem>
+            <linkerLibLibItem>boost_program_options</linkerLibLibItem>
             <linkerLibLibItem>boost_system</linkerLibLibItem>
             <linkerLibLibItem>boost_thread</linkerLibLibItem>
-            <linkerLibLibItem>boost_program_options</linkerLibLibItem>
             <linkerLibLibItem>pthread</linkerLibLibItem>
             <linkerLibProjectItem>
-              <makeArtifact PL="../common"
+              <makeArtifact PL="../common/common"
                             CT="3"
                             CN="Debug_laptop"
-                            AC="true"
+                            AC="false"
                             BL="true"
-                            WD="../common"
+                            WD="../common/common"
                             BC="${MAKE}  -f Makefile CONF=Debug_laptop"
                             CC="${MAKE}  -f Makefile CONF=Debug_laptop clean"
-                            OP="../${CND_CONF}/libcommon.a">
+                            OP="../bin/${CND_CONF}/libcommon.a">
               </makeArtifact>
             </linkerLibProjectItem>
-            <linkerLibProjectItem>
-              <makeArtifact PL="../yami4/yami4-cpp"
-                            CT="3"
-                            CN="Debug_laptop"
-                            AC="true"
-                            BL="true"
-                            WD="../yami4/yami4-cpp"
-                            BC="${MAKE}  -f Makefile CONF=Debug_laptop"
-                            CC="${MAKE}  -f Makefile CONF=Debug_laptop clean"
-                            OP="../../${CND_CONF}/libyami4-cpp.a">
-              </makeArtifact>
-            </linkerLibProjectItem>
-            <linkerLibProjectItem>
-              <makeArtifact PL="../yami4/yami4-core"
-                            CT="3"
-                            CN="Debug_laptop"
-                            AC="true"
-                            BL="true"
-                            WD="../yami4/yami4-core"
-                            BC="${MAKE}  -f Makefile CONF=Debug_laptop"
-                            CC="${MAKE}  -f Makefile CONF=Debug_laptop clean"
-                            OP="../../${CND_CONF}/libyami4-core.a">
-              </makeArtifact>
-            </linkerLibProjectItem>
+            <linkerLibLibItem>yamicpp</linkerLibLibItem>
+            <linkerLibLibItem>yamicore</linkerLibLibItem>
           </linkerLibItems>
         </linkerTool>
         <requiredProjects>
@@ -534,7 +469,6 @@
     </conf>
     <conf name="Debug_praca" type="1">
       <toolsSet>
-        <remote-sources-mode>LOCAL_SOURCES</remote-sources-mode>
         <compilerSet>GNU_4.7.3|GNU</compilerSet>
         <dependencyChecking>true</dependencyChecking>
         <rebuildPropChanged>false</rebuildPropChanged>
@@ -562,52 +496,30 @@
           <warningLevel>2</warningLevel>
         </ccTool>
         <linkerTool>
-          <output>../${CND_CONF}/input-output</output>
+          <output>../bin/${CND_CONF}/input-output</output>
           <linkerLibItems>
             <linkerLibLibItem>usb</linkerLibLibItem>
             <linkerLibLibItem>PocoFoundation</linkerLibLibItem>
             <linkerLibLibItem>PocoNet</linkerLibLibItem>
-            <linkerLibLibItem>boost_program_options</linkerLibLibItem>
             <linkerLibLibItem>boost_filesystem</linkerLibLibItem>
+            <linkerLibLibItem>boost_program_options</linkerLibLibItem>
             <linkerLibLibItem>boost_system</linkerLibLibItem>
             <linkerLibLibItem>boost_thread</linkerLibLibItem>
             <linkerLibLibItem>pthread</linkerLibLibItem>
             <linkerLibProjectItem>
-              <makeArtifact PL="../common"
+              <makeArtifact PL="../common/common"
                             CT="3"
                             CN="Debug_praca"
                             AC="true"
                             BL="true"
-                            WD="../common"
+                            WD="../common/common"
                             BC="${MAKE}  -f Makefile CONF=Debug_praca"
                             CC="${MAKE}  -f Makefile CONF=Debug_praca clean"
-                            OP="../${CND_CONF}/libcommon.a">
+                            OP="../bin/${CND_CONF}/libcommon.a">
               </makeArtifact>
             </linkerLibProjectItem>
-            <linkerLibProjectItem>
-              <makeArtifact PL="../yami4/yami4-cpp"
-                            CT="3"
-                            CN="Debug_praca"
-                            AC="false"
-                            BL="true"
-                            WD="../yami4/yami4-cpp"
-                            BC="${MAKE}  -f Makefile CONF=Debug_praca"
-                            CC="${MAKE}  -f Makefile CONF=Debug_praca clean"
-                            OP="../../${CND_CONF}/libyami4-cpp.a">
-              </makeArtifact>
-            </linkerLibProjectItem>
-            <linkerLibProjectItem>
-              <makeArtifact PL="../yami4/yami4-core"
-                            CT="3"
-                            CN="Debug_praca"
-                            AC="false"
-                            BL="true"
-                            WD="../yami4/yami4-core"
-                            BC="${MAKE}  -f Makefile CONF=Debug_praca"
-                            CC="${MAKE}  -f Makefile CONF=Debug_praca clean"
-                            OP="../../${CND_CONF}/libyami4-core.a">
-              </makeArtifact>
-            </linkerLibProjectItem>
+            <linkerLibLibItem>yamicpp</linkerLibLibItem>
+            <linkerLibLibItem>yamicore</linkerLibLibItem>
           </linkerLibItems>
         </linkerTool>
         <requiredProjects>

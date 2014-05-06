@@ -66,17 +66,17 @@ FFLAGS=
 ASFLAGS=
 
 # Link Libraries and Options
-LDLIBSOPTIONS=-L../common/yami4/lib -ldvbapi -ldvbcfg -ldvbsec -lucsi -lPocoFoundation -lboost_date_time -lboost_program_options -lboost_system -lboost_thread -lPocoNet ../common/common/../Debug_tv/libcommon.a -lyamicpp -lyamicore
+LDLIBSOPTIONS=-L../common/yami4/lib -ldvbapi -ldvbcfg -ldvbsec -lucsi -lPocoFoundation -lboost_date_time -lboost_program_options -lboost_system -lboost_thread -lPocoNet ../common/common/../bin/Debug_tv/libcommon.a -lyamicpp -lyamicore
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
-	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk ../${CND_CONF}/dvb-source
+	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk ../bin/${CND_CONF}/dvb-source
 
-../${CND_CONF}/dvb-source: ../common/common/../Debug_tv/libcommon.a
+../bin/${CND_CONF}/dvb-source: ../common/common/../bin/Debug_tv/libcommon.a
 
-../${CND_CONF}/dvb-source: ${OBJECTFILES}
-	${MKDIR} -p ../${CND_CONF}
-	${LINK.cc} -o ../${CND_CONF}/dvb-source ${OBJECTFILES} ${LDLIBSOPTIONS}
+../bin/${CND_CONF}/dvb-source: ${OBJECTFILES}
+	${MKDIR} -p ../bin/${CND_CONF}
+	${LINK.cc} -o ../bin/${CND_CONF}/dvb-source ${OBJECTFILES} ${LDLIBSOPTIONS}
 
 ${OBJECTDIR}/src/channel.o: src/channel.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
@@ -160,7 +160,7 @@ ${OBJECTDIR}/src/transponders.o: src/transponders.cpp
 # Clean Targets
 .clean-conf: ${CLEAN_SUBPROJECTS}
 	${RM} -r ${CND_BUILDDIR}/${CND_CONF}
-	${RM} ../${CND_CONF}/dvb-source
+	${RM} ../bin/${CND_CONF}/dvb-source
 
 # Subprojects
 .clean-subprojects:

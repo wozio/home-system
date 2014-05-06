@@ -2,3 +2,10 @@ private
 *.user
 *.suo
 *.log
+/tv/build/
+/dvb-source/build/
+/tv/tv.db
+/control-server/build/
+/dhw-recirculation/build/
+/io-relay-board/build/
+/test/build/

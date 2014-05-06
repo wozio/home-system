@@ -3,10 +3,15 @@
 #include "logger.h"
 #include "service.h"
 #include "app.h"
+#include "discovery.h"
+#include "yamicontainer.h"
 #include <boost/lexical_cast.hpp>
 #include <fstream>
 #include <iostream>
 #include <memory>
+
+home_system::yami_container _yc;
+home_system::discovery _discovery;
 
 using namespace std;
 

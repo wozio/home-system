@@ -52,43 +52,35 @@ FFLAGS=
 ASFLAGS=
 
 # Link Libraries and Options
-LDLIBSOPTIONS=-lboost_system -lboost_thread ../common/../Debug_laptop/libcommon.a ../yami4/yami4-cpp/../../Debug_laptop/libyami4-cpp.a ../yami4/yami4-core/../../Debug_laptop/libyami4-core.a -lPocoNet -lPocoFoundation -lpthread
+LDLIBSOPTIONS=-L../common/yami4/lib -lboost_system -lboost_thread -lPocoNet -lPocoFoundation -lpthread ../common/common/../bin/Debug_laptop/libcommon.a -lyamicpp -lyamicore
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
-	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk ../${CND_CONF}/test
+	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk ../bin/${CND_CONF}/test
 
-../${CND_CONF}/test: ../common/../Debug_laptop/libcommon.a
+../bin/${CND_CONF}/test: ../common/common/../bin/Debug_laptop/libcommon.a
 
-../${CND_CONF}/test: ../yami4/yami4-cpp/../../Debug_laptop/libyami4-cpp.a
-
-../${CND_CONF}/test: ../yami4/yami4-core/../../Debug_laptop/libyami4-core.a
-
-../${CND_CONF}/test: ${OBJECTFILES}
-	${MKDIR} -p ../${CND_CONF}
-	${LINK.cc} -o ../${CND_CONF}/test ${OBJECTFILES} ${LDLIBSOPTIONS}
+../bin/${CND_CONF}/test: ${OBJECTFILES}
+	${MKDIR} -p ../bin/${CND_CONF}
+	${LINK.cc} -o ../bin/${CND_CONF}/test ${OBJECTFILES} ${LDLIBSOPTIONS}
 
 ${OBJECTDIR}/test.o: test.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -D_DEBUG -I../common/src -I../yami4 -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/test.o test.cpp
+	$(COMPILE.cc) -g -D_DEBUG -I../common/common/src -I../common/yami4/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/test.o test.cpp
 
 # Subprojects
 .build-subprojects:
-	cd ../common && ${MAKE}  -f Makefile CONF=Debug_laptop
-	cd ../yami4/yami4-cpp && ${MAKE}  -f Makefile CONF=Debug_laptop
-	cd ../yami4/yami4-core && ${MAKE}  -f Makefile CONF=Debug_laptop
+	cd ../common/common && ${MAKE}  -f Makefile CONF=Debug_laptop
 
 # Clean Targets
 .clean-conf: ${CLEAN_SUBPROJECTS}
 	${RM} -r ${CND_BUILDDIR}/${CND_CONF}
-	${RM} ../${CND_CONF}/test
+	${RM} ../bin/${CND_CONF}/test
 
 # Subprojects
 .clean-subprojects:
-	cd ../common && ${MAKE}  -f Makefile CONF=Debug_laptop clean
-	cd ../yami4/yami4-cpp && ${MAKE}  -f Makefile CONF=Debug_laptop clean
-	cd ../yami4/yami4-core && ${MAKE}  -f Makefile CONF=Debug_laptop clean
+	cd ../common/common && ${MAKE}  -f Makefile CONF=Debug_laptop clean
 
 # Enable dependency checking
 .dep.inc: .depcheck-impl

@@ -9,9 +9,7 @@
             <header-extensions/>
             <sourceEncoding>UTF-8</sourceEncoding>
             <make-dep-projects>
-                <make-dep-project>../yami4/yami4-core</make-dep-project>
-                <make-dep-project>../common</make-dep-project>
-                <make-dep-project>../yami4/yami4-cpp</make-dep-project>
+                <make-dep-project>../common/common</make-dep-project>
             </make-dep-projects>
             <sourceRootList/>
             <confList>

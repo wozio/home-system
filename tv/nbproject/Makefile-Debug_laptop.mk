@@ -61,17 +61,17 @@ FFLAGS=
 ASFLAGS=
 
 # Link Libraries and Options
-LDLIBSOPTIONS=-L../common/yami4/lib -lPocoData -lPocoFoundation -lPocoSQLite -lPocoNet -lboost_program_options -lboost_system -lboost_thread -lpthread -lyamicpp -lyamicore ../common/common/../Debug_laptop/libcommon.a
+LDLIBSOPTIONS=-L../common/yami4/lib -lPocoData -lPocoFoundation -lPocoSQLite -lPocoNet -lboost_program_options -lboost_system -lboost_thread -lpthread ../common/common/../bin/Debug_laptop/libcommon.a -lyamicpp -lyamicore
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
-	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk ../${CND_CONF}/tv
+	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk ../bin/${CND_CONF}/tv
 
-../${CND_CONF}/tv: ../common/common/../Debug_laptop/libcommon.a
+../bin/${CND_CONF}/tv: ../common/common/../bin/Debug_laptop/libcommon.a
 
-../${CND_CONF}/tv: ${OBJECTFILES}
-	${MKDIR} -p ../${CND_CONF}
-	${LINK.cc} -o ../${CND_CONF}/tv ${OBJECTFILES} ${LDLIBSOPTIONS}
+../bin/${CND_CONF}/tv: ${OBJECTFILES}
+	${MKDIR} -p ../bin/${CND_CONF}
+	${LINK.cc} -o ../bin/${CND_CONF}/tv ${OBJECTFILES} ${LDLIBSOPTIONS}
 
 ${OBJECTDIR}/src/clients.o: src/clients.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
@@ -130,7 +130,7 @@ ${OBJECTDIR}/src/tv.o: src/tv.cpp
 # Clean Targets
 .clean-conf: ${CLEAN_SUBPROJECTS}
 	${RM} -r ${CND_BUILDDIR}/${CND_CONF}
-	${RM} ../${CND_CONF}/tv
+	${RM} ../bin/${CND_CONF}/tv
 
 # Subprojects
 .clean-subprojects:
