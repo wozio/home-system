@@ -43,7 +43,7 @@
           <warningLevel>2</warningLevel>
         </ccTool>
         <linkerTool>
-          <output>../${CND_CONF}/io-relay-board</output>
+          <output>../bin/${CND_CONF}/io-relay-board</output>
           <linkerAddLib>
             <pElem>../common/yami4/lib</pElem>
           </linkerAddLib>
@@ -110,7 +110,7 @@
           <developmentMode>5</developmentMode>
         </asmTool>
         <linkerTool>
-          <output>../${CND_CONF}/io-relay-board</output>
+          <output>../bin/${CND_CONF}/io-relay-board</output>
           <linkerAddLib>
             <pElem>../common/yami4/lib</pElem>
           </linkerAddLib>

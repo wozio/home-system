@@ -58,13 +58,13 @@ LDLIBSOPTIONS=-L../common/yami4/lib -lboost_program_options -lboost_thread -lboo
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
-	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk ../${CND_CONF}/io-relay-board
+	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk ../bin/${CND_CONF}/io-relay-board
 
-../${CND_CONF}/io-relay-board: ../common/common/../Release/libcommon.a
+../bin/${CND_CONF}/io-relay-board: ../common/common/../Release/libcommon.a
 
-../${CND_CONF}/io-relay-board: ${OBJECTFILES}
-	${MKDIR} -p ../${CND_CONF}
-	${LINK.cc} -o ../${CND_CONF}/io-relay-board ${OBJECTFILES} ${LDLIBSOPTIONS} -s
+../bin/${CND_CONF}/io-relay-board: ${OBJECTFILES}
+	${MKDIR} -p ../bin/${CND_CONF}
+	${LINK.cc} -o ../bin/${CND_CONF}/io-relay-board ${OBJECTFILES} ${LDLIBSOPTIONS} -s
 
 ${OBJECTDIR}/src/io-relay-board.o: src/io-relay-board.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
@@ -88,7 +88,7 @@ ${OBJECTDIR}/src/rbport.o: src/rbport.cpp
 # Clean Targets
 .clean-conf: ${CLEAN_SUBPROJECTS}
 	${RM} -r ${CND_BUILDDIR}/${CND_CONF}
-	${RM} ../${CND_CONF}/io-relay-board
+	${RM} ../bin/${CND_CONF}/io-relay-board
 
 # Subprojects
 .clean-subprojects:

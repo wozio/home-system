@@ -19,9 +19,9 @@ namespace rb
 
 port::port(const std::string& port, iorb_service* service)
 : port_(port),
-  opened_(false),
-  write_timer_running_(false),
-  service_(service)
+  service_(service),
+  serial_port_(ios_.io_service()),
+  timer_(ios_)
 {
   for (size_t i = 0; i < 8; ++i)
   {
@@ -29,7 +29,7 @@ port::port(const std::string& port, iorb_service* service)
     wanted_state_[i] = 0;
   }
   
-  thread t([this]() { thread_exec(); });
+  open_port();
 }
 
 class port_error
@@ -37,82 +37,45 @@ class port_error
 {
 };
 
-void port::thread_exec()
+void port::open_port()
 {
+  static bool logged = false;
+  if (!logged)
+  {
+    LOGINFO("Opening COM port " << port_);
+  }
+
   try
   {
-    while (true)
-    {
-      for (size_t i = 0; i < 8; ++i)
-      {
-        state_[i] = -1;
-      }
-      
-      LOGINFO("Opening COM port " << port_);
-      
-      io_service ios;
-      serial_port port(ios);
-      serial_port_ = &port;
-      deadline_timer write_timer(ios);
-      write_timer_ = &write_timer;
-      deadline_timer read_timer(ios);
-      read_timer_ = &read_timer;
-      
-      try
-      {
-        port.open(port_);
-        port.set_option(serial_port::baud_rate(2400));
-        opened_ = true;
-      }
-      catch (const boost::system::system_error& e)
-      {
-        LOGWARN("Unable to open COM port " << port_ << ": " << e.what() <<
-          ", keep trying...");
-        this_thread::sleep_for(std::chrono::seconds(1));
-      }
-      
-      while (!opened_)
-      {
-        try
-        {
-          port.open(port_);
-          port.set_option(serial_port::baud_rate(2400));
-          opened_ = true;
-        }
-        catch (const boost::system::system_error&)
-        {
-          this_thread::sleep_for(std::chrono::seconds(1));
-        }
-      }
-      
-      LOGINFO("Opened COM port " << port_);
-      
-      try
-      {
-        setup_read();
-        
-        ios.run();
-      }
-      catch (const std::exception& e)
-      {
-        LOGWARN("EXCEPTION: " << e.what());
-        
-      }
-    }
+    serial_port_.open(port_);
+    serial_port_.set_option(serial_port::baud_rate(2400));
+    LOGINFO("Opened COM port " << port_);
+    logged = false;
+    setup_read();
   }
-  catch (...)
+  catch (const boost::system::system_error& e)
   {
+    if (!logged)
+    {
+      LOGWARN("Unable to open COM port " << port_ << ": " << e.what() <<
+        ", keep trying...");
+      logged = true;
+    }
+    timer_.set_from_now(1000, [this] () { open_port(); });
   }
 }
 
 void port::setup_read()
 {
-  serial_port_->async_read_some(buffer(buf_, 10),
+  serial_port_.async_read_some(buffer(buf_, 10),
     [&] (const boost::system::error_code& error, std::size_t bytes_transferred) { read_handler(error, bytes_transferred); } );
-
-  read_timer_->cancel();
-  read_timer_->expires_from_now(seconds(2));
-  read_timer_->async_wait([&] (const boost::system::error_code& error) { read_timeout_handler(error); } );
+    
+  timer_.cancel();
+  timer_.set_from_now(2000, [this] () {
+    LOGWARN("Timeout on port read");
+    close_port();
+    open_port();
+  });
 }
 
 void port::read_handler(const boost::system::error_code& error,
@@ -151,15 +114,7 @@ void port::read_handler(const boost::system::error_code& error,
   {
     LOGWARN("Error on port read");
     close_port();
-  }
-}
-
-void port::read_timeout_handler(const boost::system::error_code& error)
-{
-  if (!error)
-  {
-    LOGWARN("Timeout on port read");
-    close_port();
+    open_port();
   }
 }
 
@@ -174,19 +129,9 @@ void port::write_handler(const boost::system::error_code& error,
   {
     LOGWARN("Error on port write");
     close_port();
+    open_port();
   }
 }
-
-void port::write_timeout_handler(const boost::system::error_code& error)
-{
-  if (!error)
-  {
-    write_timer_running_ = false;
-    exec_state_change();
-  }
-}
-
-
 
 void port::check_state(int bitmap)
 {
@@ -206,53 +151,45 @@ void port::check_state(int bitmap)
 
 void port::exec_state_change()
 {
-  if (!write_timer_running_ && opened_)
+  try
   {
-    try
+    for (size_t j = 0; j < 8; ++j)
     {
-      for (size_t j = 0; j < 8; ++j)
+      if (state_[j] != -1 && state_[j] != wanted_state_[j])
       {
-        if (state_[j] != -1 && state_[j] != wanted_state_[j])
-        {
-          unsigned char buf;
-          if (wanted_state_[j])
-            // enable relay number is encoded from 'a' ASCII code
-            buf = 97;
-          else
-            // disable relay number is encoded from 'i' ASCII code
-            buf = 105;
-          buf += j;
-          LOG("executing relay " << j << " state change: " <<
-            state_[j] << "->" << wanted_state_[j]);
-          serial_port_->async_write_some(buffer(&buf, 1),
-            [&] (const boost::system::error_code& error, std::size_t bytes_transferred) { write_handler(error, bytes_transferred); } );
-
-          write_timer_running_ = true;
-          
-          write_timer_->cancel();
-          write_timer_->expires_from_now(seconds(2));
-          write_timer_->async_wait([&] (const boost::system::error_code& error) { write_timeout_handler(error); } );
-          break;
-        }
+        unsigned char buf;
+        if (wanted_state_[j])
+          // enable relay number is encoded from 'a' ASCII code
+          buf = 97;
+        else
+          // disable relay number is encoded from 'i' ASCII code
+          buf = 105;
+        buf += j;
+        LOG("executing relay " << j << " state change: " <<
+          state_[j] << "->" << wanted_state_[j]);
+        serial_port_.async_write_some(buffer(&buf, 1),
+          [&] (const boost::system::error_code& error, std::size_t bytes_transferred) { write_handler(error, bytes_transferred); } );
+        break;
       }
     }
-    catch (const boost::system::system_error& e)
-    {
-      LOGWARN("Unable to write to COM port " << port_ << ": " << e.what());
-      throw port_error();
-    }
+  }
+  catch (const boost::system::system_error& e)
+  {
+    LOGWARN("Unable to write to COM port " << port_ << ": " << e.what());
+    close_port();
+    open_port();
   }
 }
 
 void port::close_port()
 {
-  LOGINFO("Closing COM port: " << port_);
-  opened_ = false;
-  serial_port_->cancel();
-  serial_port_->close();
-  write_timer_running_ = false;
-  write_timer_->cancel();
-  read_timer_->cancel();
+  if (serial_port_.is_open())
+  {
+    LOGINFO("Closing COM port: " << port_);
+    serial_port_.cancel();
+    serial_port_.close();
+  }
+  timer_.cancel();
   for (size_t i = 0; i < 8; ++i)
   {
     if (state_[i] != -1)
@@ -263,6 +200,7 @@ void port::close_port()
 
 port::~port()
 {
+  close_port();
 }
 
 void port::enable_relay(unsigned int relay)

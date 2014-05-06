@@ -1,7 +1,7 @@
 #ifndef RBPORT_H
 #define	RBPORT_H
 
-#include "ios_wrapper.h"
+#include "timer.h"
 #include <string>
 
 namespace home_system
@@ -34,23 +34,19 @@ private:
   std::string port_;
   int state_[8];
   int wanted_state_[8];
-  bool opened_, write_timer_running_;
   iorb_service* service_;
   
-  void thread_exec();
-  
-  boost::asio::serial_port* serial_port_;
-  boost::asio::deadline_timer* write_timer_;
-  boost::asio::deadline_timer* read_timer_;
+  ios_wrapper ios_;
+  boost::asio::serial_port serial_port_;
+  home_system::timer timer_;
   
   char buf_[10];
   void read_handler(const boost::system::error_code& error,
     std::size_t bytes_transferred);
-  void read_timeout_handler(const boost::system::error_code& error);
   void write_handler(const boost::system::error_code& error,
     std::size_t bytes_transferred);
-  void write_timeout_handler(const boost::system::error_code& error);
   
+  void open_port();
   void setup_read();
   void check_state(int bitmap);
   void exec_state_change();
