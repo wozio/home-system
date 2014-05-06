@@ -9,3 +9,5 @@ private
 /dhw-recirculation/build/
 /io-relay-board/build/
 /test/build/
+*.inc
+bin
