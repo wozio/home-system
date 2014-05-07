@@ -38,8 +38,18 @@ int main(int argc, char** argv)
   home_system::logger::configure("tv.log", vm["log_level"].as<string>(), !vm.count("daemonize"));
 
   LOGINFO("TV started");
+  
+  if (vm.count("daemonize"))
+  {
+    _discovery.notify_fork(boost::asio::io_service::fork_prepare);
+  }
 
   home_system::app app(vm.count("daemonize"));
+  
+  if (vm.count("daemonize"))
+  {
+    _discovery.notify_fork(boost::asio::io_service::fork_child);
+  }
 
   try
   {

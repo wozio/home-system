@@ -68,7 +68,7 @@ int main(int argc, char** argv)
     {
       exit(EXIT_SUCCESS);
     }
-
+    
     umask(0);
 
     pid_t sid = setsid();

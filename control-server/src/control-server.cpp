@@ -55,6 +55,8 @@ int main(int argc, char** argv)
   {
     cout << "Running as daemon" << endl;
     
+    _discovery.notify_fork(boost::asio::io_service::fork_prepare);
+    
     pid_t pid = fork();
     if (pid < 0)
     {
@@ -65,6 +67,8 @@ int main(int argc, char** argv)
     {
       exit(EXIT_SUCCESS);
     }
+    
+    _discovery.notify_fork(boost::asio::io_service::fork_child);
 
     umask(0);
 

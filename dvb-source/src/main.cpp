@@ -46,6 +46,11 @@ int main(int argc, char** argv)
   LOGINFO("DVB Source started");
   
   home_system::media::dvb_service* service_p = nullptr;
+  
+  if (vm.count("daemonize"))
+  {
+    _discovery.notify_fork(boost::asio::io_service::fork_prepare);
+  }
 
   home_system::app app(vm.count("daemonize"), [&] (const std::vector<std::string>& cmd)
   {
@@ -71,6 +76,11 @@ int main(int argc, char** argv)
       }
     }
   });
+  
+  if (vm.count("daemonize"))
+  {
+    _discovery.notify_fork(boost::asio::io_service::fork_child);
+  }
 
   bool exit_init_loop = false;
   int init_try = 0;
