@@ -21,7 +21,8 @@ port::port(const std::string& port, iorb_service* service)
 : port_(port),
   service_(service),
   serial_port_(ios_.io_service()),
-  timer_(ios_)
+  timer_(ios_),
+  write_timer_(ios_)
 {
   for (size_t i = 0; i < 8; ++i)
   {
@@ -123,7 +124,7 @@ void port::write_handler(const boost::system::error_code& error,
 {
   if (!error)
   {
-    exec_state_change();
+    write_timer_.set_from_now(1000, [this] (){ exec_state_change(); });
   }
   else if (error != error::operation_aborted)
   {
@@ -151,6 +152,7 @@ void port::check_state(int bitmap)
 
 void port::exec_state_change()
 {
+  write_timer_.cancel();
   try
   {
     for (size_t j = 0; j < 8; ++j)

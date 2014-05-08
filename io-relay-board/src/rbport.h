@@ -38,7 +38,7 @@ private:
   
   ios_wrapper ios_;
   boost::asio::serial_port serial_port_;
-  home_system::timer timer_;
+  home_system::timer timer_, write_timer_;
   
   char buf_[10];
   void read_handler(const boost::system::error_code& error,
