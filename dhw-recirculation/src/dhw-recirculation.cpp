@@ -11,8 +11,8 @@
 using namespace std;
 namespace po = boost::program_options;
 
-home_system::yami_container _yc;
-home_system::discovery _discovery;
+home_system::yc_t _yc;
+home_system::discovery_t _discovery;
 
 int main(int argc, char** argv)
 {
@@ -51,8 +51,6 @@ int main(int argc, char** argv)
   {
     cout << "Running as daemon" << endl;
     
-    _discovery.notify_fork(boost::asio::io_service::fork_prepare);
-    
     pid_t pid = fork();
     if (pid < 0)
     {
@@ -64,8 +62,6 @@ int main(int argc, char** argv)
       exit(EXIT_SUCCESS);
     }
     
-    _discovery.notify_fork(boost::asio::io_service::fork_child);
-
     umask(0);
 
     pid_t sid = setsid();
@@ -91,6 +87,9 @@ int main(int argc, char** argv)
   
   try
   {
+    _yc = home_system::yami_container::create();
+    _discovery = home_system::discovery::create();
+
     home_system::comfort::dhwrec_service service(vm["service"].as<string>(),
       vm["output"].as<int>());
 #ifdef __linux__

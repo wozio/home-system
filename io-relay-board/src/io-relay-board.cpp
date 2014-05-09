@@ -10,7 +10,7 @@
 #include <signal.h>
 #endif
 
-home_system::yami_container _yc;
+home_system::yc_t _yc;
 
 using namespace std;
 
@@ -86,6 +86,8 @@ int main(int argc, char** argv)
   
   try
   {
+    _yc = home_system::yami_container::create();
+    
     home_system::input_output::iorb_service service(vm["name"].as<string>(),
       vm["port"].as<string>());
 #ifdef __linux__
