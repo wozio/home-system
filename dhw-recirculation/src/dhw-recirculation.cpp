@@ -116,6 +116,8 @@ int main(int argc, char** argv)
         }
       }
     }
+    _discovery.reset();
+    _yc.reset();
   }
   catch (const std::exception & e)
   {

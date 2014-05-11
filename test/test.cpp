@@ -10,8 +10,8 @@
 #include <iostream>
 #include <memory>
 
-home_system::yami_container _yc;
-home_system::discovery _discovery;
+home_system::yc_t _yc;
+home_system::discovery_t _discovery;
 
 using namespace std;
 
@@ -378,7 +378,8 @@ int main(int argc, char** argv)
 
   LOGINFO("Started");
 
-  DISCOVERY;
+  _yc = home_system::yami_container::create();
+  _discovery = home_system::discovery::create();
 
   s = new test_service;
 
