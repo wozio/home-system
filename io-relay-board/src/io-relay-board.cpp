@@ -114,7 +114,6 @@ int main(int argc, char** argv)
         }
       }
     }
-    _yc.reset();
   }
   catch (const std::exception & e)
   {
@@ -124,6 +123,8 @@ int main(int argc, char** argv)
   {
     LOGERROR("Unknown Exception");
   }
+
+  _yc.reset();
 
   LOGINFO("Relay Board quitting");
   return 0;

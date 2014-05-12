@@ -11,9 +11,10 @@ namespace input_output
 {
 
 iorb_service::iorb_service(const std::string& name, const std::string& port)
-: service(name),
+: service(name, false),
   port_(port, this)
 {
+  service::init();
 }
 
 iorb_service::~iorb_service()

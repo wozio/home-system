@@ -116,8 +116,6 @@ int main(int argc, char** argv)
         }
       }
     }
-    _discovery.reset();
-    _yc.reset();
   }
   catch (const std::exception & e)
   {
@@ -127,6 +125,9 @@ int main(int argc, char** argv)
   {
     LOGERROR("Unknown Exception");
   }
+
+  _discovery.reset();
+  _yc.reset();
   
   LOGINFO("Home System DHW Recirculation quitting");
 
