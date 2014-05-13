@@ -11,8 +11,8 @@
 using namespace std;
 namespace po = boost::program_options;
 
-home_system::yami_container _yc;
-home_system::discovery _discovery;
+home_system::yc_t _yc;
+home_system::discovery_t _discovery;
 
 int main(int argc, char** argv)
 {
@@ -47,11 +47,6 @@ int main(int argc, char** argv)
   
   home_system::media::dvb_service* service_p = nullptr;
   
-  if (vm.count("daemonize"))
-  {
-    _discovery.notify_fork(boost::asio::io_service::fork_prepare);
-  }
-
   home_system::app app(vm.count("daemonize"), [&] (const std::vector<std::string>& cmd)
   {
     if (cmd[0] == "lc") // list local channels
@@ -77,17 +72,15 @@ int main(int argc, char** argv)
     }
   });
   
-  if (vm.count("daemonize"))
-  {
-    _discovery.notify_fork(boost::asio::io_service::fork_child);
-  }
-
   bool exit_init_loop = false;
   int init_try = 0;
   do
   {
     try
     {
+      _yc = home_system::yami_container::create();
+      _discovery = home_system::discovery::create();
+      
       home_system::media::dvb_service service(vm["name"].as<string>(),
         vm["adapter"].as<int>(),
         vm["frontend"].as<int>(),
@@ -99,6 +92,7 @@ int main(int argc, char** argv)
       service_p = &service;
 
       app.run();
+      
     }
     catch (const std::exception & e)
     {
@@ -122,6 +116,9 @@ int main(int argc, char** argv)
     }
   }
   while (!exit_init_loop);
+  
+  _discovery.reset();
+  _yc.reset();
 
   LOGINFO("DVB Source quitting");
   return 0;

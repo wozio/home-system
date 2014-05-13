@@ -10,8 +10,8 @@
 using namespace std;
 namespace po = boost::program_options;
 
-home_system::yami_container _yc;
-home_system::discovery _discovery;
+home_system::yc_t _yc;
+home_system::discovery_t _discovery;
 
 int main(int argc, char** argv)
 {
@@ -39,20 +39,13 @@ int main(int argc, char** argv)
 
   LOGINFO("TV started");
   
-  if (vm.count("daemonize"))
-  {
-    _discovery.notify_fork(boost::asio::io_service::fork_prepare);
-  }
-
   home_system::app app(vm.count("daemonize"));
   
-  if (vm.count("daemonize"))
-  {
-    _discovery.notify_fork(boost::asio::io_service::fork_child);
-  }
-
   try
   {
+    _yc = home_system::yami_container::create();
+    _discovery = home_system::discovery::create();
+    
     home_system::media::db db_;
     home_system::media::tv_service service_(db_);
     app.run();
@@ -65,6 +58,9 @@ int main(int argc, char** argv)
   {
     LOGERROR("Unknown Exception");
   }
+  
+  _discovery.reset();
+  _yc.reset();
 
   LOGINFO("TV quitting");
   return 0;
