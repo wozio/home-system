@@ -14,11 +14,12 @@ iorb_service::iorb_service(const std::string& name, const std::string& port)
 : service(name, false),
   port_(port, this)
 {
-  service::init();
+  init();
 }
 
 iorb_service::~iorb_service()
 {
+  deinit();
 }
 
 void iorb_service::on_msg(yami::incoming_message & im)
