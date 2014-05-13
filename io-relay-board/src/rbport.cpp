@@ -202,7 +202,13 @@ void port::close_port()
 
 port::~port()
 {
-  close_port();
+  if (serial_port_.is_open())
+  {
+    LOGINFO("Closing COM port: " << port_);
+    serial_port_.cancel();
+    serial_port_.close();
+  }
+  timer_.cancel();
 }
 
 void port::enable_relay(unsigned int relay)
