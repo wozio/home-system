@@ -64,8 +64,11 @@ void db::check_and_add_local_channel(const std::string& source, long long local,
   lock_guard<mutex> lock(db_mutex_);
   //LOG("Check and add local channel: source=" << source << ", local=" << local << ", name=" << name);
   // TODO make try catch for out_of_range
-  int global = get_channel_from_source_local(source, local);
-  if (global == -1)
+  try
+  {
+    get_channel_from_source_local(source, local);
+  }
+  catch (const std::out_of_range&)
   {
     LOG("New channel from " << source << ": [" << local << "] " << name);
     add_channel(source, local, name);

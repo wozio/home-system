@@ -16,6 +16,7 @@ struct event_info
   int duration_;
   std::string title_;
   std::string description_;
+  std::string plot_;
   bool operator<(const event_info& right) const
   {
     return start_time_ < right.start_time_;

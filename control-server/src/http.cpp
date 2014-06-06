@@ -533,6 +533,18 @@ public:
       response.setStatus(HTTPServerResponse::HTTP_BAD_REQUEST);
       response.send();
     }
+    catch (const Poco::Exception& e)
+    {
+      LOGWARN("EXCEPTION: " << e.displayText());
+      response.setStatus(HTTPServerResponse::HTTP_INTERNAL_SERVER_ERROR);
+      response.send();
+    }
+    catch (const std::exception& e)
+    {
+      LOGWARN("EXCEPTION: " << e.what());
+      response.setStatus(HTTPServerResponse::HTTP_INTERNAL_SERVER_ERROR);
+      response.send();
+    }
   }
 
 private:

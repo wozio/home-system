@@ -54,7 +54,7 @@ FFLAGS=
 ASFLAGS=
 
 # Link Libraries and Options
-LDLIBSOPTIONS=-L../common/yami4/lib -lboost_program_options -lboost_thread -lboost_system -lPocoFoundation -lPocoNet ../common/common/../bin/Release/libcommon.a -lyamicpp -lyamicore
+LDLIBSOPTIONS=-L../common/yami4/lib -lboost_program_options -lboost_thread -lboost_system -lPocoFoundation -lPocoNet ../common/common/../bin/Release/libcommon.a -lyamicpp -lyamicore -lpthread
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}

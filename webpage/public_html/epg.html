@@ -38,10 +38,12 @@
             .appendTo($channel_list);
         }
         var time_max = time_min;
-        var channel_to_proc = 100;
-        for (var i = 0; i < 100; ++i){
+        var channel_to_proc = channels.length - 1;
+        for (var i = 0; i < channels.length; ++i){
           var datatosend = "<hsd><p n=\"channel\" t=\"i\">" + channels[i] + "</p></hsd>";
+          console.log("Sending: " + datatosend);
           jQuery.post("/HSA/execute?name=tv&msg=get_epg_data", datatosend, function(data){
+            console.log("Got response");
             var channel;
             var event_num;
             $(data).find("p").each(function(){
@@ -51,10 +53,12 @@
                 event_num = parseInt($(this).text());
               }
             });
+            console.log("channel: " + channel + "Event_num: " +  event_num);
             if (event_num > 0){
               var event_names = new Array();
               var start_times = new Array();
               var durations = new Array();
+              var plots = new Array();
               $(data).find("a").each(function(){
                 if ($(this).attr("n") == "name"){
                   $(this).find("e").each(function(){
@@ -68,11 +72,16 @@
                   $(this).find("e").each(function(){
                     durations.push(parseInt($(this).text()));
                   });
+                } else if ($(this).attr("n") == "plot"){
+                  $(this).find("e").each(function(){
+                    plots.push(($(this).text()));
+                  });
                 }
               });
             
               $event_list = $("#event_list");
               for (var j = 0; j < event_names.length; ++j){
+                //console.log("Title: " + event_names[j] + " Plot: " + plots[j]);
                 var event_end = start_times[j] + durations[j];
                 if ( event_end > time_max){
                   time_max = event_end;
@@ -87,6 +96,7 @@
                   $('<div />')
                     .text(event_names[j])
                     .attr('class', 'event')
+                    .attr('title', plots[j])
                     .css({
                       top:  ((channel - 1) * 30 + 30) + 'px',
                       left: left + 'px',
