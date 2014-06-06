@@ -47,6 +47,7 @@ public:
     int duration_;
     std::string title_;
     std::string description_;
+    std::string plot_;
   };
   
   typedef std::function<void (const event_info&)> ei_callback_t;

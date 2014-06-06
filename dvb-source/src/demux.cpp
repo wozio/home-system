@@ -385,6 +385,29 @@ void demux::check_sdt(section* s)
 //  map<uint64_t, myservice> services;
 //};
 
+const std::string convert(uint8_t* texta, size_t len)
+{
+  char* text = reinterpret_cast<char*>(texta);
+  string ret;
+  int offset;
+  const char* charset = dvb_charset(text, len, &offset);
+  iconv_t cd = iconv_open("UTF-8", charset);
+  if (cd != (iconv_t)(-1))
+  {
+    size_t outbytesleft = 1024;
+    size_t inbytesleft =  len - offset;
+    char outbuf[1024];
+    char* inbufp = text + offset;
+    char* outbufp = outbuf;
+    if (iconv(cd, &inbufp, &inbytesleft, &outbufp, &outbytesleft) != (size_t)(-1))
+    {
+      ret.assign(outbuf, outbufp - outbuf);
+    }
+    iconv_close(cd);
+  }
+  return ret;
+}
+
 void demux::check_eit(section* s)
 {
   if (ei_callback_ == nullptr)
@@ -459,7 +482,10 @@ void demux::check_eit(section* s)
   dvb_eit_event* cur_event;
   dvb_eit_section_events_for_each(eit, cur_event)
   {
+    ei.plot_ = "";
+
     ei.event_ = cur_event->event_id;
+    //LOG("Event: " << (int) ei.event_);
 //    ei.start_time_ = dvbdate_to_unixtime(cur_event->start_time);
     {
       /* check for the undefined value */
@@ -510,57 +536,52 @@ void demux::check_eit(section* s)
       {
       case dtag_dvb_short_event:
         {
+          //LOG("short");
           dvb_short_event_descriptor* sed = dvb_short_event_descriptor_codec(desc);
           if (sed != NULL)
           {
-            int offset;
-            const char* charset = dvb_charset((char*)dvb_short_event_descriptor_event_name(sed), sed->event_name_length, &offset);
-            iconv_t cd = iconv_open("UTF-8", charset);
-            if (cd != (iconv_t)(-1))
-            {
-              size_t outbytesleft = 1024;
-              size_t inbytesleft =  sed->event_name_length - offset;
-              char outbuf[1024];
-              char* inbufp = (char*)dvb_short_event_descriptor_event_name(sed) + offset;
-              char* outbufp = outbuf;
-              if (iconv(cd, &inbufp, &inbytesleft, &outbufp, &outbytesleft) != (size_t)(-1))
-              {
-                ei.title_.assign(outbuf, outbufp - outbuf);
-//                if (ser == 1)
-                  //LOG(string(outbuf, outbufp - outbuf));
-              }
-            }
-            iconv_close(cd);
+            ei.title_.assign(convert(dvb_short_event_descriptor_event_name(sed), sed->event_name_length));
+            //LOG(ei.title_);
             
             struct dvb_short_event_descriptor_part2* sedp2 = dvb_short_event_descriptor_part2(sed);
             
             if (sedp2 != NULL)
             {
-              int offset;
-              const char* charset = dvb_charset((char*)dvb_short_event_descriptor_text(sedp2), sedp2->text_length, &offset);
-              iconv_t cd = iconv_open("UTF-8", charset);
-              if (cd != (iconv_t)(-1))
-              {
-                size_t outbytesleft = 1024;
-                size_t inbytesleft =  sedp2->text_length - offset;
-                char outbuf[1024];
-                char* inbufp = (char*)dvb_short_event_descriptor_text(sedp2) + offset;
-                char* outbufp = outbuf;
-                if (iconv(cd, &inbufp, &inbytesleft, &outbufp, &outbytesleft) != (size_t)(-1))
-                {
-                  ei.description_.assign(outbuf, outbufp - outbuf);
-                  //LOG(string(outbuf, outbufp - outbuf));
-                }
-              }
-              iconv_close(cd);
+              ei.description_.assign(convert(dvb_short_event_descriptor_text(sedp2), sedp2->text_length));
+              //LOG(ei.description_);
             }
           }
         }
         break;
       case dtag_dvb_extended_event:
+        {
+          //LOG("extended");
+          dvb_extended_event_descriptor* eed = dvb_extended_event_descriptor_codec(desc);
+          if (eed != NULL)
+          {
+            //LOG("descriptor: " << (int)eed->descriptor_number << " of " << (int)eed->last_descriptor_number);
+            //LOG("Length of items: " << (int)eed->length_of_items);
+
+            dvb_extended_event_item* item;
+            dvb_extended_event_descriptor_items_for_each(eed, item)
+            {
+              //LOG(convert(dvb_extended_event_item_description(item), item->item_description_length));
+              struct dvb_extended_event_item_part2* itemp2 = dvb_extended_event_item_part2(item);
+              //LOG(convert(dvb_extended_event_item_part2_item(itemp2), itemp2->item_length));
+            }
+
+            struct dvb_extended_event_descriptor_part2* eedp2 = dvb_extended_event_descriptor_part2(eed);
+            
+            if (eedp2 != NULL)
+            {
+              ei.plot_.append(convert(dvb_extended_event_descriptor_part2_text(eedp2), eedp2->text_length));
+            }
+          }
+        }
         break;
       }
     }
+    //LOG(ei.plot_);
     //channels_[ser].events_[ei.event_id_] = ei;
     
     if (ei_callback_ != nullptr)
@@ -569,6 +590,7 @@ void demux::check_eit(section* s)
     }
   }
 }
+
 
 void demux::check_pat(section* s)
 {

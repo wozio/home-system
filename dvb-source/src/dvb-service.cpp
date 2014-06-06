@@ -72,8 +72,10 @@ void dvb_service::on_bundle_timer()
       // events
       std::vector<int> eid;
       eid.reserve(bs);
-      // titles
+      // titles and descriptions
       params.create_string_array("title", bs);
+      params.create_string_array("description", bs);
+      params.create_string_array("plot", bs);
       // start times
       std::vector<long long> st;
       st.reserve(bs);
@@ -86,6 +88,8 @@ void dvb_service::on_bundle_timer()
         c.push_back(bundle_[i].channel_);
         eid.push_back(bundle_[i].event_);
         params.set_string_in_array("title", i, bundle_[i].title_);
+        params.set_string_in_array("description", i, bundle_[i].description_);
+        params.set_string_in_array("plot", i, bundle_[i].plot_);
         st.push_back(bundle_[i].start_time_);
         dur.push_back(bundle_[i].duration_);
       }

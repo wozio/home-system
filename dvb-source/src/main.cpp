@@ -78,8 +78,12 @@ int main(int argc, char** argv)
   {
     try
     {
-      _yc = home_system::yami_container::create();
-      _discovery = home_system::discovery::create();
+      _yc = home_system::yami_container::create([] (const std::string& msg) {
+        LOG("YC: " << msg);
+      });
+      _discovery = home_system::discovery::create([] (const std::string& msg) {
+        LOG("Discovery: " << msg);
+      });
       
       home_system::media::dvb_service service(vm["name"].as<string>(),
         vm["adapter"].as<int>(),
