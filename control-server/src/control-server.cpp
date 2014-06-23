@@ -131,9 +131,6 @@ int main(int argc, char** argv)
     }
 
     srv.stop();
-
-    _discovery.reset();
-    _yc.reset();
   }
   catch (const exception& e)
   {
@@ -143,6 +140,9 @@ int main(int argc, char** argv)
   {
     LOGERROR("Unknown Exception");
   }
+
+  _discovery.reset();
+  _yc.reset();
   
   LOGINFO("Home System Control Server quitting");
   

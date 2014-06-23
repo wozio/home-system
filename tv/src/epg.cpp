@@ -49,6 +49,8 @@ void epg::handle_epg_data(const yami::parameters& params)
         ei.title_ = params.get_string_in_array("title", i);
         ei.duration_ = durations[i];
         ei.start_time_ = start_times[i];
+        ei.description_ = params.get_string_in_array("description", i);
+        ei.plot_ = params.get_string_in_array("plot", i);
 
         channels_[gc].events_[ei.event_id_] = ei;
       }
@@ -84,8 +86,6 @@ void epg::handle_get_epg_data(yami::incoming_message& im)
   size_t s = channels_[gc].events_.size();
   vector<int> ids;
   ids.reserve(s);
-  vector<string> names;
-  names.reserve(s);
   vector<long long> start_times;
   start_times.reserve(s);
   vector<int> durations;
@@ -98,7 +98,6 @@ void epg::handle_get_epg_data(yami::incoming_message& im)
     ids.push_back(it->second.event_id_);
     durations.push_back(it->second.duration_);
     start_times.push_back(it->second.start_time_);
-    names.push_back(it->second.title_);
     ++it;
   }
 
@@ -112,10 +111,16 @@ void epg::handle_get_epg_data(yami::incoming_message& im)
     params.set_integer_array_shallow("duration", &durations[0], durations.size());
     params.set_long_long_array_shallow("start_time", &start_times[0], start_times.size());
 
-    params.create_string_array("name", names.size());
-    for (size_t i = 0; i < names.size(); ++i)
+    params.create_string_array("name", ids.size());
+    params.create_string_array("description", ids.size());
+    params.create_string_array("plot", ids.size());
+    it = channels_[gc].events_.begin();
+    for (size_t i = 0; i < ids.size(); ++i)
     {
-      params.set_string_in_array("name", i, names[i]);
+      params.set_string_in_array("name", i, it->second.title_);
+      params.set_string_in_array("description", i, it->second.description_);
+      params.set_string_in_array("plot", i, it->second.plot_);
+      ++it;
     }
   }
   
