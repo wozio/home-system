@@ -5,7 +5,7 @@ namespace dvb
 {
 
 class session;
-typedef std::shared_ptr<session> session_t;
+typedef std::unique_ptr<session> session_t;
 
 }
 

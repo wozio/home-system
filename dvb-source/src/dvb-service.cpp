@@ -167,6 +167,29 @@ void dvb_service::on_remote_service_availability(const std::string& name, bool a
   }
 }
 
+void dvb_service::on_create_streaming_session(long long channel)
+{
+  exception_handled_ = false;
+    
+  session_ = dvb_.create_session(dvb_.channels().get(channel),
+    [this] (dvb::session_event_t event)
+    {
+      if (event == dvb::session_event_t::ended)
+      {
+        session_deleted();
+      }
+    },
+    [this] (size_t size, char* buffer)
+    {
+      on_stream_part(size, buffer);
+    });
+}
+
+void dvb_service::on_delete_streaming_session(int session)
+{
+  dvb_.delete_session(session_);
+}
+
 void dvb_service::on_msg(yami::incoming_message & im)
 {
   if (im.get_message_name() == "get_state")
@@ -220,14 +243,11 @@ void dvb_service::on_msg(yami::incoming_message & im)
   }
   else if (im.get_message_name() == "create_streaming_session")
   {
-    long long channel_id = im.get_parameters().get_long_long("channel");
+    long long channel = im.get_parameters().get_long_long("channel");
     destination_ = im.get_parameters().get_string("destination");
     endpoint_ = im.get_parameters().get_string("endpoint");
     
-    exception_handled_ = false;
-    
-    session_ = dvb_.create_session(dvb_.channels().get(channel_id),
-      [this] (size_t size, char* buffer) {on_stream_part(size, buffer);});
+    on_create_streaming_session(channel);
       
     yami::parameters reply;
     reply.set_integer("session", 0);
@@ -235,7 +255,7 @@ void dvb_service::on_msg(yami::incoming_message & im)
   }
   else if (im.get_message_name() == "delete_streaming_session")
   {
-    delete_session();
+    on_delete_streaming_session(0);
   }
   else
   {
@@ -261,16 +281,15 @@ void dvb_service::on_stream_part(size_t size, char* buffer)
       
       exception_handled_ = true;
       
-      delete_session();
+      throw dvb::session_error();
     }
   }
 }
 
-void dvb_service::delete_session()
+void dvb_service::session_deleted()
 {
-  LOG("Deleting session");
-  dvb_.delete_session(session_);
-  session_.reset();
+  LOG("Session deleted");
+  
   try
   {
     yami::parameters params;

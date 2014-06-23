@@ -7,19 +7,21 @@ namespace dvb
 {
 
 session::session(home_system::media::channel_t c, dvb::session_callback_t callback,
-  home_system::media::frontend& frontend, home_system::media::demux& demux,
+    dvb::session_stream_part_callback_t stream_part_callback,
+    home_system::media::frontend& frontend, home_system::media::demux& demux,
     home_system::media::transponders& transponders)
 : frontend_(frontend),
   demux_(demux),
   transponders_(transponders),
   channel_(c),
-  callback_(callback)
+  callback_(callback),
+  stream_part_callback_(stream_part_callback)
 {
   demux_.reset_mux();
   if (channel_->get_transponder() == frontend_.get_transponder() && frontend_.get_state() == frontend_state::tuned)
   {
     LOG("Tuned to: " << *(frontend_.get_transponder()));
-    demux_.set_channel(channel_, callback_);
+    demux_.set_channel(channel_, stream_part_callback_);
   }
   else
   {
@@ -33,13 +35,17 @@ session::session(home_system::media::channel_t c, dvb::session_callback_t callba
 session::~session()
 {
   demux_.reset_mux();
+  if (callback_)
+  {
+    callback_(session_event_t::ended);
+  }
 }
 
 void session::on_frontent_state_change(home_system::media::frontend_state newstate)
 {
   if (newstate == frontend_state::tuned)
   {
-    demux_.set_channel(channel_, callback_);
+    demux_.set_channel(channel_, stream_part_callback_);
   }
 }
 

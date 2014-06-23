@@ -46,12 +46,14 @@ private:
   timer bundle_timer_;
   void on_bundle_timer();
   
-  dvb::session_t session_;
+  size_t session_;
   std::string endpoint_, destination_;
   bool exception_handled_;
+  void on_create_streaming_session(long long channel);
   void on_stream_part(size_t size, char* buffer);
+  void on_delete_streaming_session(int session);
   
-  void delete_session();
+  void session_deleted();
 };
 
 }

@@ -54,7 +54,7 @@ public:
   void set_ei_callback(ei_callback_t callback = nullptr);
   
   
-  int set_channel(channel_t c, dvb::session_callback_t callback);
+  int set_channel(channel_t c, dvb::session_stream_part_callback_t callback);
   
 private:
   demux(const demux& o)
@@ -84,7 +84,7 @@ private:
   state_callback_t state_callback_;
   ei_callback_t ei_callback_;
   
-  dvb::session_callback_t session_callback_;
+  dvb::session_stream_part_callback_t session_callback_;
   channel_t channel_;
 
   std::deque<int> pid_fds_;
@@ -95,7 +95,8 @@ private:
   timer timer_;
   void set_timer(int duration);
   
-  int create_section_filter(uint16_t pid, uint8_t table, uint8_t bitmask, section_callback_t section_callback);
+  int create_section_filter(uint16_t pid, uint8_t table, uint8_t bitmask,
+    section_callback_t section_callback);
   void remove_section_filter(int fd);
   int create_pid_filter(uint16_t pid);
   

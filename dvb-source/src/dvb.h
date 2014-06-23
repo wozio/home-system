@@ -29,8 +29,10 @@ public:
   home_system::media::channels& channels();
   home_system::media::transponders& transponders();
   
-  session_t create_session(home_system::media::channel_t c, session_callback_t callback);
-  void delete_session(session_t s);
+  size_t create_session(home_system::media::channel_t c,
+    session_callback_t session_callback,
+    session_stream_part_callback_t stream_part_callback);
+  void delete_session(size_t s);
   
 private:
   
@@ -48,7 +50,7 @@ private:
   
   std::mutex state_mutex_;
   
-  std::set<session_t> sessions_;
+  std::map<size_t, session_t> sessions_;
   
   home_system::timer timer_;
   void start_idle_scan();

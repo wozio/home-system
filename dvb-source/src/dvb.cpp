@@ -30,11 +30,11 @@ dvb::~dvb()
   stop_idle_scan();
   
   {
-    lock_guard<mutex> lock(ei_callback_mutex_);
+    //lock_guard<mutex> lock(ei_callback_mutex_);
     ei_callback_ = nullptr;
   }
   
-  lock_guard<mutex> lock(state_mutex_);
+  //lock_guard<mutex> lock(state_mutex_);
   
   state_ = state::idle;
   sessions_.clear();
@@ -57,27 +57,34 @@ home_system::media::transponders& dvb::transponders()
   return transponders_;
 }
 
-session_t dvb::create_session(home_system::media::channel_t c, session_callback_t callback)
+size_t dvb::create_session(home_system::media::channel_t c,
+    session_callback_t session_callback,
+    session_stream_part_callback_t stream_part_callback)
 {
   LOG("Creating session");
   
   stop_idle_scan();
   
+  //lock_guard<mutex> lock(state_mutex_);
+
+  state_ = state::busy;
+  session_t s(new session(c, session_callback, stream_part_callback,
+    frontend_, demux_, transponders_));
+  // find free id
+  size_t sid = 0;
+  while (sessions_.find(sid) != sessions_.end())
   {
-    lock_guard<mutex> lock(state_mutex_);
-
-    state_ = state::busy;
-
-    session_t s = make_shared<session>(c, callback, frontend_, demux_, transponders_);
-    sessions_.insert(s);
-    return s;
+    sid++;
   }
+  sessions_.emplace(sid, std::move(s));
+  return sid;
 }
 
-void dvb::delete_session(session_t s)
+void dvb::delete_session(size_t s)
 {
+  LOG("Deleting session");
   {
-    lock_guard<mutex> lock(state_mutex_);
+    //lock_guard<mutex> lock(state_mutex_);
 
     sessions_.erase(s);
   }
@@ -90,7 +97,7 @@ void dvb::delete_session(session_t s)
 
 void dvb::start_idle_scan()
 {
-  lock_guard<mutex> lock(state_mutex_);
+  //lock_guard<mutex> lock(state_mutex_);
   
   if (state_ == state::idle)
   {
@@ -108,7 +115,7 @@ void dvb::start_idle_scan()
 
 void dvb::idle_scan_timeout()
 {
-  lock_guard<mutex> lock(state_mutex_);
+  //lock_guard<mutex> lock(state_mutex_);
   
   if (state_ == state::scan)
   {
@@ -121,7 +128,7 @@ void dvb::idle_scan_timeout()
 
 void dvb::stop_idle_scan()
 {
-  lock_guard<mutex> lock(state_mutex_);
+  //lock_guard<mutex> lock(state_mutex_);
   
   if (state_ == state::scan)
   {
@@ -144,9 +151,9 @@ void dvb::on_frontend_state_change(frontend_state newstate)
     }
     break;
   case state::busy:
-    for (auto s : sessions_)
+    for (auto i = sessions_.begin(); i != sessions_.end(); ++i)
     {
-      s->on_frontent_state_change(newstate);
+      i->second->on_frontent_state_change(newstate);
     }
     break;
   default:
@@ -158,13 +165,19 @@ void dvb::on_demux_state_change(demux_state newstate)
 {
   switch (state_)
   {
-  case state::busy:
-    for (auto s : sessions_)
-    {
-      s->on_demux_state_change(newstate);
-    }
+  case state::idle:
+  {
+    //lock_guard<mutex> lock(state_mutex_);
+    sessions_.clear();
+    state_ = state::idle;
+    start_idle_scan();
     break;
+  }
   default:
+    for (auto i = sessions_.begin(); i != sessions_.end(); ++i)
+    {
+      i->second->on_demux_state_change(newstate);
+    }
     break;
   }
 }
