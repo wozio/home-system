@@ -44,7 +44,7 @@ void demux::set_ei_callback(ei_callback_t callback)
   ei_callback_ = callback;
 }
 
-int demux::set_channel(channel_t c, dvb::session_callback_t callback)
+int demux::set_channel(channel_t c, dvb::session_stream_part_callback_t callback)
 {
   session_callback_ = callback;
   channel_ = c;
@@ -57,7 +57,7 @@ void demux::set_mux()
 {
   LOG("Setting demux");
   
-  lock_guard<mutex> lock(state_mutex_);
+  //lock_guard<mutex> lock(state_mutex_);
   
   LOG("Setting PAT filter");
   pat_version_number_ = 0xFF;
@@ -114,7 +114,7 @@ void demux::set_mux()
 
 void demux::reset_mux()
 {
-  lock_guard<mutex> lock(state_mutex_);
+  //lock_guard<mutex> lock(state_mutex_);
   
   if (state_ != demux_state::idle)
   {
@@ -141,10 +141,34 @@ void demux::reset_mux()
   }
 }
 
+std::ostream& operator<<(std::ostream& out, demux_state s)
+{
+  switch (s)
+  {
+    case demux_state::idle:
+      out << "idle";
+      break;
+    case demux_state::mux_set:
+      out << "mux_set";
+      break;
+    case demux_state::sdt:
+      out << "sdt";
+      break;
+    case demux_state::pat:
+      out << "pat";
+      break;
+    case demux_state::pmts:
+      out << "pmts";
+      break;
+  }
+  return out;
+}
+
 void demux::change_state(demux_state new_state)
 {
   if (new_state != state_)
   {
+    LOG("Change state: " << state_ << "->" << new_state);
     state_ = new_state;
     if (state_callback_ != nullptr)
     {
@@ -226,7 +250,7 @@ int demux::create_pid_filter(uint16_t pid)
 
 void demux::check()
 {
-  lock_guard<mutex> lock(state_mutex_);
+  //lock_guard<mutex> lock(state_mutex_);
   
   switch (state_)
   {
@@ -235,8 +259,17 @@ void demux::check()
   case demux_state::mux_set:
   case demux_state::sdt:
   case demux_state::pat:
+    poll_filters();
+    break;
   case demux_state::pmts:
     poll_filters();
+    if (file_reader_)
+    {
+      if (!file_reader_->is_running())
+      {
+        reset_mux();
+      }
+    }
     break;
   }
 }
