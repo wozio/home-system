@@ -13,6 +13,7 @@ class Discovery(threading.Thread):
 
     self.known_services = {}
     self.notify_received = {}
+    self.callbacks = []
     
     self.on_timeout()
 
@@ -57,6 +58,9 @@ class Discovery(threading.Thread):
   def store_service(self, service, endpoint):
     logging.debug("Storing service: " + service + " (" + endpoint + ")")
     self.known_services[service] = endpoint
+    for c in self.callbacks:
+      c(service, True)
+
     
   def erase_service(self, service):
     logging.debug("Erasing service: " + service)
@@ -89,14 +93,23 @@ class Discovery(threading.Thread):
     self.timer.cancel()
     logging.debug("Discovery exit")
 
+  def register(self, callback):
+    self.callbacks.append(callback)
+
+  def get(self, service):
+    if service in self.known_services:
+      return self.known_services[service]
+    else:
+      raise Exception("Service not found " + service)
+
 logging.basicConfig(level=logging.DEBUG)
     
 discovery = Discovery()
 
-with daemon.DaemonContext():
-  while 1:
-    threading.sleep(1)
- # if raw_input() == "q":
-  #  break
+#with daemon.DaemonContext():
+while 1:
+  #  threading.sleep(1)
+  if raw_input() == "q":
+    break
 
 discovery.exit()
