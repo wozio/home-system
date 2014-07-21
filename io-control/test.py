@@ -3,11 +3,13 @@
 import socket
 import struct
 import threading
+import logging
+import daemon
 
 class Discovery(threading.Thread):
 
   def __init__(self):
-    print "initiating discovery"
+    logging.debug("initiating discovery")
 
     self.known_services = {}
     self.notify_received = {}
@@ -29,8 +31,6 @@ class Discovery(threading.Thread):
       self.notify_received[s] = False
 
   def run(self):
-    print "thread started"
-    
     self.cont = True;
 
     MCAST_GRP = '239.255.255.255'
@@ -50,18 +50,16 @@ class Discovery(threading.Thread):
         if (msg[0] == "notify"): self.handle_notify(msg)
         elif (msg[0] == "hello"): self.handle_hello(msg)
         elif (msg[0] == "bye"): self.handle_bye(msg)
-        else: print "Unknown message: " + msg
+        else: logging.warning("Unknown message: " + msg)
       except socket.timeout:
         pass
 
-    print "thread exiting"
-    
   def store_service(self, service, endpoint):
-    print "Storing service: " + service + " (" + endpoint + ")"
+    logging.debug("Storing service: " + service + " (" + endpoint + ")")
     self.known_services[service] = endpoint
     
   def erase_service(self, service):
-    print "Erasing service: " + service
+    logging.debug("Erasing service: " + service)
     del self.known_services[service]
     del self.notify_received[service]
     
@@ -89,11 +87,16 @@ class Discovery(threading.Thread):
     self.cont = False
     self.join()
     self.timer.cancel()
-        
+    logging.debug("Discovery exit")
+
+logging.basicConfig(level=logging.DEBUG)
+    
 discovery = Discovery()
 
-while 1:
-  if raw_input() == "q":
-    break
+with daemon.DaemonContext():
+  while 1:
+    threading.sleep(1)
+ # if raw_input() == "q":
+  #  break
 
 discovery.exit()
