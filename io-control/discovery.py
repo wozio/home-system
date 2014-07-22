@@ -4,7 +4,6 @@ import socket
 import struct
 import threading
 import logging
-import daemon
 
 class Discovery(threading.Thread):
 
@@ -101,15 +100,3 @@ class Discovery(threading.Thread):
       return self.known_services[service]
     else:
       raise Exception("Service not found " + service)
-
-logging.basicConfig(level=logging.DEBUG)
-    
-discovery = Discovery()
-
-#with daemon.DaemonContext():
-while 1:
-  #  threading.sleep(1)
-  if raw_input() == "q":
-    break
-
-discovery.exit()
