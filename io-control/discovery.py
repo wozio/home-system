@@ -4,11 +4,6 @@ import socket
 import struct
 import threading
 import logging
-import os
-import sys, getopt
-
-if os.name == "posix":
-  import daemon
 
 class Discovery(threading.Thread):
 
@@ -105,53 +100,3 @@ class Discovery(threading.Thread):
       return self.known_services[service]
     else:
       raise Exception("Service not found " + service)
-
-discovery = None
-
-def init(daemonize):
-  logger = logging.getLogger()
-  logger.setLevel(logging.DEBUG)
-  formatter = logging.Formatter('%(asctime)s %(message)s')
-
-  fh = logging.FileHandler('io-control.log')
-  fh.setFormatter(formatter)
-  logger.addHandler(fh)
-
-  if not daemonize:
-    ch = logging.StreamHandler()
-    ch.setFormatter(formatter)
-    logger.addHandler(ch)
-
-  logging.info("Starting Home System IO Control")
-
-  global discovery
-  discovery = Discovery()
-
-daemonize = False
-try:
-  opts, args = getopt.getopt(sys.argv[1:], "hd")
-except getopt.GetoptError:
-  print 'io-control.py [-h][-d]'
-  sys.exit(2)
-for opt, arg in opts:
-  if opt == '-h':
-    print 'io-control.py [-h][-d]'
-    sys.exit()
-  elif opt in ("-d"):
-    daemonize = True
-
-if daemonize:
-  with daemon.DaemonContext():
-    init(True)
-    while 1:
-      threading.sleep(1)
-else:
-  init(False)
-  print "Enter q to quit..."
-  while 1:
-    if raw_input() == "q":
-      break
-
-discovery.exit()
-
-logging.info("Home System IO Control quitting")
