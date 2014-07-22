@@ -1,6 +1,3 @@
-#include "discovery.h"
-#include "yamicontainer.h"
-#include "logger.h"
 #include "service.h"
 #include "app.h"
 #include "discovery.h"
@@ -14,6 +11,8 @@ home_system::yc_t _yc;
 home_system::discovery_t _discovery;
 
 using namespace std;
+
+#define LOG(x) std::cout << x << std::endl;
 
 class test_service
   : public home_system::service
@@ -161,7 +160,7 @@ void cmd_handler(const std::vector<string>& fields)
         }
         catch (const std::exception& e)
         {
-          LOGWARN("EXCEPTION: " << e.what());
+          LOG("EXCEPTION: " << e.what());
         }
       }
     }
@@ -176,7 +175,7 @@ void cmd_handler(const std::vector<string>& fields)
         }
         catch (const std::exception& e)
         {
-          LOGWARN("EXCEPTION: " << e.what());
+          LOG("EXCEPTION: " << e.what());
         }
       }
     }
@@ -192,7 +191,7 @@ void cmd_handler(const std::vector<string>& fields)
         }
         catch (const std::exception& e)
         {
-          LOGWARN("EXCEPTION: " << e.what());
+          LOG("EXCEPTION: " << e.what());
         }
       }
     }
@@ -222,7 +221,7 @@ void cmd_handler(const std::vector<string>& fields)
               LOG("Message not replied");
             }
           }
-          catch (const home_system::service_not_found& e)
+          catch (const home_system::service_not_found&)
           {
             LOG("TV service not found");
           }
@@ -250,7 +249,7 @@ void cmd_handler(const std::vector<string>& fields)
               LOG("Message not replied");
             }
           }
-          catch (const home_system::service_not_found& e)
+          catch (const home_system::service_not_found&)
           {
             LOG("TV service not found");
           }
@@ -288,7 +287,7 @@ void cmd_handler(const std::vector<string>& fields)
                 LOG("Message not replied");
               }
             }
-            catch (const home_system::service_not_found& e)
+            catch (const home_system::service_not_found&)
             {
               LOG("TV service not found");
             }
@@ -374,9 +373,7 @@ void cmd_handler(const std::vector<string>& fields)
 
 int main(int argc, char** argv)
 {
-  home_system::logger::configure("test.log", "debug", true);
-
-  LOGINFO("Started");
+  LOG("Started");
 
   _yc = home_system::yami_container::create();
   _discovery = home_system::discovery::create();
@@ -387,7 +384,10 @@ int main(int argc, char** argv)
 
   app.run();
 
-  LOGINFO("Quitting");
+  LOG("Quitting");
+
+  _discovery.reset();
+  _yc.reset();
 
   return 0;
 }
