@@ -11,3 +11,5 @@ private
 /test/build/
 *.inc
 bin
+Debug
+*.sdf
