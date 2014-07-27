@@ -5,6 +5,7 @@ import logging
 import os
 import sys, getopt
 import discovery
+import service
 
 if os.name == "posix":
   import daemon
@@ -32,15 +33,21 @@ def init(daemonize):
 
 daemonize = False
 try:
-  opts, args = getopt.getopt(sys.argv[1:], "hd")
+  if os.name == "posix":
+    opt = "hd"
+    helpmsg = "io-control.py [-h][-d]"
+  else:
+    opt = "h"
+    helpmsg = "io-control.py [-h]"
+  opts, args = getopt.getopt(sys.argv[1:], opt)
 except getopt.GetoptError:
-  print 'io-control.py [-h][-d]'
+  print helpmsg
   sys.exit(2)
 for opt, arg in opts:
   if opt == '-h':
-    print 'io-control.py [-h][-d]'
+    print helpmsg
     sys.exit()
-  elif opt in ("-d"):
+  elif opt == "-d":
     daemonize = True
 
 if daemonize:
@@ -50,6 +57,7 @@ if daemonize:
       threading.sleep(1)
 else:
   init(False)
+  service = service.service("jakas usluga")
   print "Enter q to quit..."
   while 1:
     if raw_input() == "q":
