@@ -7,8 +7,6 @@ import logging
 
 class service:
   def __init__(self, name):
-    logging.info("Created service with name=%s", name)
-    
     self.name = name
     
     self.timer = threading.Timer(10, self.on_timeout)
@@ -18,10 +16,14 @@ class service:
     
     self.send_hello()
     
-  def __del__(self):
+    logging.info("Created service with name=%s", name)
+    
+  def exit(self):
     self.timer.cancel()
     
     self.send_bye()
+    
+    logging.info("Deleted service with name=%s", self.name)
     
   def send_hello(self):
     self.send("hello\n" + self.name + "\n" + "dupa")
