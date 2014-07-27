@@ -62,6 +62,8 @@ else:
   while 1:
     if raw_input() == "q":
       break
+    
+  service.exit()
 
 discovery_.exit()
 
