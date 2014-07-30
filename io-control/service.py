@@ -4,10 +4,18 @@ import socket
 import struct
 import threading
 import logging
+import yami
 
 class service:
   def __init__(self, name):
     self.name = name
+
+    # get ip address
+    ip = [(s.connect(('8.8.8.8', 80)), s.getsockname()[0], s.close()) for s in [socket.socket(socket.AF_INET, socket.SOCK_DGRAM)]][0][1]
+
+    self.agent = yami.Agent()
+    self.ye = self.agent.add_listener("tcp://" + ip + ":*")
+    self.agent.register_object(self.name, self.on_msg)
     
     self.timer = threading.Timer(10, self.on_timeout)
     self.timer.start()
@@ -16,7 +24,7 @@ class service:
     
     self.send_hello()
     
-    logging.info("Created service with name=%s", name)
+    logging.info("Created service: %s (%s)", self.name, self.ye)
     
   def exit(self):
     self.timer.cancel()
@@ -24,12 +32,16 @@ class service:
     self.send_bye()
     
     logging.info("Deleted service with name=%s", self.name)
+
+  def on_msg(self, message):
+    logging.warning("Unknown message: " + message.get_message_name())
+    message.reject("Unknown message: " + message.get_message_name())
     
   def send_hello(self):
-    self.send("hello\n" + self.name + "\n" + "dupa")
+    self.send("hello\n" + self.name + "\n" + self.ye)
     
   def send_notify(self):
-    self.send("notify\n" + self.name + "\n" + "dupa")
+    self.send("notify\n" + self.name + "\n" + self.ye)
     
   def send_bye(self):
     self.send("bye\n" + self.name)

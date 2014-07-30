@@ -57,7 +57,7 @@ if daemonize:
       threading.sleep(1)
 else:
   init(False)
-  service = service.service("jakas usluga")
+  service = service.service("dupa")
   print "Enter q to quit..."
   while 1:
     if raw_input() == "q":

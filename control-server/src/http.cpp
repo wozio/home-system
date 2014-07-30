@@ -439,6 +439,8 @@ public:
 
       // getting service from service discovery
       string ye = DISCOVERY.get(name);
+
+      LOG("Service: " << name << " (" << ye << ")");
       
       yami::parameters params;
 
@@ -505,45 +507,45 @@ public:
     }
     catch (const service_not_found& e)
     {
-      LOGWARN("EXCEPTION: service_not_found " << e.what());
+      LOGWARN("EXCEPTION: service_not_found: " << e.what());
       response.setStatus(HTTPServerResponse::HTTP_SERVICE_UNAVAILABLE);
-      response.send();
+      response.send() << "service_not_found: " << e.what();
     }
     catch (const service_unavailable& e)
     {
-      LOGWARN("EXCEPTION: service_unavailable " << e.what());
+      LOGWARN("EXCEPTION: service_unavailable: " << e.what());
       response.setStatus(HTTPServerResponse::HTTP_SERVICE_UNAVAILABLE);
-      response.send();
+      response.send() << "service_unavailable: " << e.what();
     }
     catch (const yami::yami_runtime_error& e)
     {
-      LOGWARN("EXCEPTION: yami_runtime_error " << e.what());
+      LOGWARN("EXCEPTION: yami_runtime_error: " << e.what());
       response.setStatus(HTTPServerResponse::HTTP_SERVICE_UNAVAILABLE);
-      response.send();
+      response.send() << "yami_runtime_error: " << e.what();
     }
     catch (const runtime_error& e)
     {
-      LOGWARN("EXCEPTION: runtime_error " << e.what());
+      LOGWARN("EXCEPTION: runtime_error: " << e.what());
       response.setStatus(HTTPServerResponse::HTTP_BAD_REQUEST);
-      response.send();
+      response.send() << "runtime_error: " << e.what();
     }
     catch (const bad_request& e)
     {
-      LOGWARN("EXCEPTION: bad_request " << e.what());
+      LOGWARN("EXCEPTION: bad_request: " << e.what());
       response.setStatus(HTTPServerResponse::HTTP_BAD_REQUEST);
-      response.send();
+      response.send() << "bad_request: " << e.what();
     }
     catch (const Poco::Exception& e)
     {
       LOGWARN("EXCEPTION: " << e.displayText());
       response.setStatus(HTTPServerResponse::HTTP_INTERNAL_SERVER_ERROR);
-      response.send();
+      response.send() << e.displayText();
     }
     catch (const std::exception& e)
     {
       LOGWARN("EXCEPTION: " << e.what());
       response.setStatus(HTTPServerResponse::HTTP_INTERNAL_SERVER_ERROR);
-      response.send();
+      response.send() << e.what();
     }
   }
 

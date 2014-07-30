@@ -13,3 +13,5 @@ private
 bin
 Debug
 *.sdf
+*.so
+*.pyc
