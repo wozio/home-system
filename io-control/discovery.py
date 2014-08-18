@@ -5,98 +5,111 @@ import struct
 import threading
 import logging
 
-class Discovery(threading.Thread):
-
-  def __init__(self):
-    logging.debug("initiating discovery")
-
-    self.known_services = {}
-    self.notify_received = {}
-    self.callbacks = []
-    
-    self.on_timeout()
-
-    threading.Thread.__init__(self)
-    self.start();
-
-  def on_timeout(self):
-    self.timer = threading.Timer(10, self.on_timeout)
-    self.timer.start()
-    
-    for s, r in self.notify_received.copy().iteritems():
-      if r == False:
-        self.erase_service(s)
+def on_timeout():
+  global timer, notify_received
+  
+  timer = threading.Timer(10, on_timeout)
+  timer.start()
+  
+  global notify_received  
+  for s, r in notify_received.copy().iteritems():
+    if r == False:
+      erase_service(s)
         
-    for s in self.notify_received.iterkeys():
-      self.notify_received[s] = False
+  for s in notify_received.iterkeys():
+    notify_received[s] = False
 
-  def run(self):
-    self.cont = True;
+def run():
+  global cont
+  cont = True;
 
-    MCAST_GRP = '239.255.255.255'
-    MCAST_PORT = 10001
+  MCAST_GRP = '239.255.255.255'
+  MCAST_PORT = 10001
 
-    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
-    sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-    sock.bind(('', MCAST_PORT))
-    mreq = struct.pack("4sl", socket.inet_aton(MCAST_GRP), socket.INADDR_ANY)
+  sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
+  sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+  sock.bind(('', MCAST_PORT))
+  mreq = struct.pack("4sl", socket.inet_aton(MCAST_GRP), socket.INADDR_ANY)
 
-    sock.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, mreq)
-    sock.settimeout(0.1)
+  sock.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, mreq)
+  sock.settimeout(0.1)
 
-    while self.cont:
-      try:
-        msg = sock.recv(10240).split('\n')
-        if (msg[0] == "notify"): self.handle_notify(msg)
-        elif (msg[0] == "hello"): self.handle_hello(msg)
-        elif (msg[0] == "bye"): self.handle_bye(msg)
-        else: logging.warning("Unknown message: " + msg)
-      except socket.timeout:
-        pass
+  while cont:
+    try:
+      msg = sock.recv(10240).split('\n')
+      if (msg[0] == "notify"): handle_notify(msg)
+      elif (msg[0] == "hello"): handle_hello(msg)
+      elif (msg[0] == "bye"): handle_bye(msg)
+      else: logging.warning("Unknown message: " + msg)
+    except socket.timeout:
+      pass
 
-  def store_service(self, service, endpoint):
-    logging.debug("Storing service: " + service + " (" + endpoint + ")")
-    self.known_services[service] = endpoint
-    for c in self.callbacks:
-      c(service, True)
+def store_service(service, endpoint):
+  logging.debug("Storing service: " + service + " (" + endpoint + ")")
+  global known_services, callbacks
+  known_services[service] = endpoint
+  for c in callbacks:
+    c(service, True)
 
     
-  def erase_service(self, service):
-    logging.debug("Erasing service: " + service)
-    del self.known_services[service]
-    del self.notify_received[service]
-    
-  def check_service(self, service, endpoint):
-    if service not in self.known_services:
-      self.store_service(service, endpoint)    
-    elif self.known_services[service] != endpoint:
-      self.erase_service(service)
-      self.store_service(service, endpoint)
-    self.notify_received[service] = True
+def erase_service( service):
+  logging.debug("Erasing service: " + service)
+  global known_services, callbacks, notify_received
+  del known_services[service]
+  del notify_received[service]
+  for c in callbacks:
+    c(service, False)
+  
+def check_service(service, endpoint):
+  global known_services, notify_received
+  if service not in known_services:
+    store_service(service, endpoint)    
+  elif known_services[service] != endpoint:
+    erase_service(service)
+    store_service(service, endpoint)
+  notify_received[service] = True
 
-  def handle_notify(self, msg):
-    if (len(msg) >= 3):
-      self.check_service(msg[1], msg[2])
-    
-  def handle_bye(self, msg):
-    if msg[1] in self.known_services:
-      self.erase_service(msg[1])
-    
-  def handle_hello(self, msg):
-    if (len(msg) >= 3):
-      self.check_service(msg[1], msg[2])
-    
-  def exit(self):
-    self.cont = False
-    self.join()
-    self.timer.cancel()
-    logging.debug("Discovery exit")
+def handle_notify(msg):
+  if (len(msg) >= 3):
+    check_service(msg[1], msg[2])
+  
+def handle_bye(msg):
+  if msg[1] in known_services:
+    erase_service(msg[1])
+  
+def handle_hello(msg):
+  if (len(msg) >= 3):
+    check_service(msg[1], msg[2])
+  
+def exit():
+  global cont, timer, thread
+  cont = False
+  thread.join()
+  timer.cancel()
+  logging.debug("Discovery exit")
 
-  def register(self, callback):
-    self.callbacks.append(callback)
+def register(callback):
+  callbacks.append(callback)
+  for s in known_services.copy():
+    callback(s, True)
 
-  def get(self, service):
-    if service in self.known_services:
-      return self.known_services[service]
-    else:
-      raise Exception("Service not found " + service)
+def get(service):
+  if service in known_services:
+    return known_services[service]
+  else:
+    raise Exception("Service not found " + service)
+  
+known_services = {}
+notify_received = {}
+
+callbacks = []
+
+timer = None
+
+logging.debug("initiating discovery")
+
+on_timeout()
+
+cont = True
+thread = threading.Thread(target=run)
+thread.start();

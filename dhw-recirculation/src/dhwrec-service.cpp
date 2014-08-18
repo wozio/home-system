@@ -112,6 +112,7 @@ void dhwrec_service::on_remote_service_availability(const std::string& name,
         yami::parameters params;
         params.set_integer("output", output_);
         params.set_string("name", name_);
+        params.set_string("endpoint", YC.endpoint());
         AGENT.send(ye, name, "subscribe_output_state_change", params);
       }
       catch (...)

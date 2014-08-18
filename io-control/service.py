@@ -6,7 +6,7 @@ import threading
 import logging
 import yami
 
-class service:
+class service(object):
   def __init__(self, name):
     self.name = name
 
@@ -27,6 +27,8 @@ class service:
     logging.info("Created service: %s (%s)", self.name, self.ye)
     
   def exit(self):
+    logging.info("Deleting service with name=%s", self.name)
+    
     self.timer.cancel()
     
     self.send_bye()

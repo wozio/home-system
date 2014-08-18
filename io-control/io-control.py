@@ -4,33 +4,8 @@ import threading
 import logging
 import os
 import sys, getopt
-import discovery
-import service
 
-if os.name == "posix":
-  import daemon
-
-discovery_ = None
-
-def init(daemonize):
-  logger = logging.getLogger()
-  logger.setLevel(logging.DEBUG)
-  formatter = logging.Formatter('%(asctime)s %(message)s')
-
-  fh = logging.FileHandler('io-control.log')
-  fh.setFormatter(formatter)
-  logger.addHandler(fh)
-
-  if not daemonize:
-    ch = logging.StreamHandler()
-    ch.setFormatter(formatter)
-    logger.addHandler(ch)
-
-  logging.info("Starting Home System IO Control")
-
-  global discovery_
-  discovery_ = discovery.Discovery()
-
+# fetch command line arguments
 daemonize = False
 try:
   if os.name == "posix":
@@ -49,22 +24,40 @@ for opt, arg in opts:
     sys.exit()
   elif opt == "-d":
     daemonize = True
+    
+logger = logging.getLogger()
+logger.setLevel(logging.DEBUG)
+formatter = logging.Formatter('[%(levelname)s] %(asctime)s %(filename)s: %(lineno)d: %(message)s')
 
+fh = logging.FileHandler('io-control.log')
+fh.setFormatter(formatter)
+logger.addHandler(fh)
+
+if not daemonize:
+  ch = logging.StreamHandler()
+  ch.setFormatter(formatter)
+  logger.addHandler(ch)
+
+logging.info("Starting Home System IO Control")
+
+import discovery
+import services
+    
 if daemonize:
+  import daemon
   with daemon.DaemonContext():
-    init(True)
     while 1:
       threading.sleep(1)
 else:
-  init(False)
-  service = service.service("dupa")
   print "Enter q to quit..."
-  while 1:
-    if raw_input() == "q":
-      break
+  try:
+    while 1:
+      if raw_input() == "q":
+        break
+  except KeyboardInterrupt:
+    pass
     
-  service.exit()
-
-discovery_.exit()
-
 logging.info("Home System IO Control quitting")
+
+services.exit()
+discovery.exit()

@@ -57,13 +57,15 @@ void iorb_service::on_msg(yami::incoming_message & im)
     
     // adding subscription to port
     rs nrs;
-    nrs.ye_ = im.get_source();
     nrs.name_ = im.get_parameters().get_string("name");
+    nrs.ye_ = im.get_parameters().get_string("endpoint");
 
     {
       lock_guard<mutex> lock(subscription_mutex_);
       output_state_subscriptions[output] = nrs;
     }
+
+    LOG(nrs.name_ << " (" << nrs.ye_ << ") subscribed for changes of output " << output);
     
     // sending current state
     on_output_state_change(output, port_.get_relay_state(output));
@@ -86,6 +88,9 @@ void iorb_service::on_output_state_change(int output, int state)
       params.set_string("name", name_);
       params.set_integer("output", output);
       params.set_integer("state", state);
+      
+      LOG("Sending output state change to subscription " << output_state_subscriptions[output].ye_ << " for output: " << output);
+      
       AGENT.send(output_state_subscriptions[output].ye_,
         output_state_subscriptions[output].name_, "output_state_change",
         params);
