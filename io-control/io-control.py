@@ -1,9 +1,11 @@
 #!/usr/bin/python
 
-import threading
-import logging
 import os
-import sys, getopt
+import sys
+import getopt
+import time
+import logging
+import app
 
 # fetch command line arguments
 daemonize = False
@@ -24,32 +26,29 @@ for opt, arg in opts:
     sys.exit()
   elif opt == "-d":
     daemonize = True
-    
-logger = logging.getLogger()
-logger.setLevel(logging.DEBUG)
-formatter = logging.Formatter('[%(levelname)s] %(asctime)s %(filename)s: %(lineno)d: %(message)s')
 
-fh = logging.FileHandler('io-control.log')
-fh.setFormatter(formatter)
-logger.addHandler(fh)
+def app_exit(arg1, arg2):
+  app.exit()
+  sys.exit(0)
 
-if not daemonize:
-  ch = logging.StreamHandler()
-  ch.setFormatter(formatter)
-  logger.addHandler(ch)
-
-logging.info("Starting Home System IO Control")
-
-import discovery
-import services
-    
 if daemonize:
+  print "Running as a daemon"
   import daemon
-  with daemon.DaemonContext():
+  import signal
+
+  context = daemon.DaemonContext(working_directory=os.getcwd())
+
+  context.signal_map = {
+    signal.SIGTERM: app_exit,
+  }
+
+  with context:
+    app.init(daemonize)
     while 1:
-      threading.sleep(1)
+      time.sleep(1)
 else:
   print "Enter q to quit..."
+  app.init(daemonize)
   try:
     while 1:
       if raw_input() == "q":
@@ -57,7 +56,5 @@ else:
   except KeyboardInterrupt:
     pass
     
-logging.info("Home System IO Control quitting")
+app_exit(None, None)
 
-services.exit()
-discovery.exit()

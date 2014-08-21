@@ -44,8 +44,12 @@ void iorb_service::on_msg(yami::incoming_message & im)
   }
   else if (im.get_message_name() == "set_output_state")
   {
+
     int output = im.get_parameters().get_integer("output");
     int state = im.get_parameters().get_integer("state");
+
+    LOG("Set output state: " << output << " to " << state);
+
     if (output < 8)
     {
       state ? port_.enable_relay(output) : port_.disable_relay(output);

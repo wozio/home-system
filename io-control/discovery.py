@@ -5,6 +5,21 @@ import struct
 import threading
 import logging
 
+known_services = {}
+notify_received = {}
+callbacks = []
+timer = None
+
+def init():
+  logging.debug("initiating discovery")
+
+  on_timeout()
+
+  global cont, thread
+  cont = True
+  thread = threading.Thread(target=run)
+  thread.start();
+
 def on_timeout():
   global timer, notify_received
   
@@ -98,18 +113,4 @@ def get(service):
     return known_services[service]
   else:
     raise Exception("Service not found " + service)
-  
-known_services = {}
-notify_received = {}
 
-callbacks = []
-
-timer = None
-
-logging.debug("initiating discovery")
-
-on_timeout()
-
-cont = True
-thread = threading.Thread(target=run)
-thread.start();
