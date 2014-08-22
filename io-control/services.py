@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 
 import logging
-import threading
 import service
 import output
+import wtimer
 
 class dhwrec(service.service):
   def __init__(self):
@@ -11,24 +11,18 @@ class dhwrec(service.service):
 
     self.output = output.output("relay-board", 1)
     
-    self.timer2 = threading.Timer(20, self.on_timeout2)
-    self.timer2.start()
+    self.wtimer = wtimer.wtimer()
+    self.wtimer.add(4, "23:16", 1)
+    self.wtimer.add(4, "23:17", 0)
+    
+    self.wtimer.set_callback(self.on_timeout2)
 
   def exit(self):
-    self.timer2.cancel()
+    self.wtimer.exit()
     super(dhwrec, self).exit()
   
-  def on_timeout2(self):
-    state = self.output.get_state()
-    if state != -1:
-      if state == 0:
-        state = 1
-      else:
-        state = 0
-      self.output.set_state(state)
-    
-      self.timer2 = threading.Timer(20, self.on_timeout2)
-      self.timer2.start()
+  def on_timeout2(self, state):
+    self.output.set_state(state)
 
 def init():
   global dhwrec_
