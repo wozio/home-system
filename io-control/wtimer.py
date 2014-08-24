@@ -46,7 +46,6 @@ class wtimer():
       
     new_state = self.timeouts.get(self.timeouts.iloc[ind])
     if new_state != self.last_state:
-      print now.weekday(), now, "state: ", self.last_state, new_state
       self.last_state = new_state
       self.callback(new_state)
     
@@ -56,7 +55,5 @@ class wtimer():
     if len(l) > 2:
       todsec += int(l[2])
     timeout = day_of_week*86400 + todsec
-    print day_of_week, time_of_day, state
     self.timeouts[timeout] = state
     
-    print self.timeouts

@@ -12,9 +12,15 @@ class dhwrec(service.service):
     self.output = output.output("relay-board", 1)
     
     self.wtimer = wtimer.wtimer()
-    self.wtimer.add(4, "23:16", 1)
-    self.wtimer.add(4, "23:17", 0)
     
+    for i in range(7):
+      self.wtimer.add(i, "06:00", 1)
+      self.wtimer.add(i, "23:00", 0)
+      
+    for i in range(6):
+      self.wtimer.add(i, "07:15", 0)
+      self.wtimer.add(i, "16:00", 1)
+      
     self.wtimer.set_callback(self.on_timeout2)
 
   def exit(self):
@@ -22,6 +28,7 @@ class dhwrec(service.service):
     super(dhwrec, self).exit()
   
   def on_timeout2(self, state):
+    logging.debug("Timer trigger to state %d", state)
     self.output.set_state(state)
 
 def init():
