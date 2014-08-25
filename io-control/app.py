@@ -2,6 +2,7 @@
 
 import logging
 import discovery
+import outputs
 import services
 
 def init(daemonize):
@@ -21,10 +22,12 @@ def init(daemonize):
   logging.info("Starting Home System IO Control")
 
   discovery.init()
+  outputs.init()
   services.init()
 
 def exit():
   logging.info("Home System IO Control quitting")
   
   services.exit()
+  outputs.exit()
   discovery.exit()

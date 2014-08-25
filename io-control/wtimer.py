@@ -37,11 +37,12 @@ class wtimer():
 
     ind = self.timeouts.bisect(nowsec)
     tlen = len(self.timeouts)
-    # if provide time is bigger than last in timeouts () or
-    # lower than first one
+    # if current time is bigger than last in timeouts () or
+    # lower than first one then take value from last timeout
     if ind == tlen or ind == 0:
       ind = tlen - 1
     else:
+      # else take most recent timeout
       ind -= 1
       
     new_state = self.timeouts.get(self.timeouts.iloc[ind])

@@ -2,15 +2,13 @@
 
 import logging
 import service
-import output
+import outputs
 import wtimer
 
 class dhwrec(service.service):
   def __init__(self):
     super(dhwrec, self).__init__("dhwrec22")
 
-    self.output = output.output("relay-board", 1)
-    
     self.wtimer = wtimer.wtimer()
     
     for i in range(7):
@@ -29,7 +27,7 @@ class dhwrec(service.service):
   
   def on_timeout2(self, state):
     logging.debug("Timer trigger to state %d", state)
-    self.output.set_state(state)
+    outputs.outputs["rb1"].set_state(state)
 
 def init():
   global dhwrec_
