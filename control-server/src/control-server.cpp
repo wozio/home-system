@@ -47,7 +47,7 @@ int main(int argc, char** argv)
     return 1;
   }
   
-  home_system::logger::configure("control-server.log", vm["log_level"].as<string>(), !vm.count("daemonize"));
+  home_system::logger::_log_file_path = "control-server.log";
   
   LOGINFO("Home System Control Server started");
 #ifdef __linux__  
@@ -58,7 +58,7 @@ int main(int argc, char** argv)
     pid_t pid = fork();
     if (pid < 0)
     {
-      LOGERROR("Cannot fork");
+      cout << "Cannot fork" << endl;
       exit(EXIT_FAILURE);
     }
     else if (pid > 0)
@@ -71,14 +71,14 @@ int main(int argc, char** argv)
     pid_t sid = setsid();
     if (sid < 0)
     {
-      LOGERROR("Cannot setsid");
+      cout << "Cannot setsid" << endl;
       exit(EXIT_FAILURE);
     }
     
-#ifndef _DEBUG    
+#ifndef _DEBUG
     if ((chdir("/")) < 0)
     {
-      LOGERROR("Cannot chdir");
+      cout << "Cannot chdir" << endl;
       exit(EXIT_FAILURE);
     }
 #endif

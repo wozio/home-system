@@ -7,7 +7,7 @@ import wtimer
 
 class dhwrec(service.service):
   def __init__(self):
-    super(dhwrec, self).__init__("dhwrec22")
+    super(dhwrec, self).__init__("io-control")
 
     self.wtimer = wtimer.wtimer()
     
@@ -15,7 +15,7 @@ class dhwrec(service.service):
       self.wtimer.add(i, "06:00", 1)
       self.wtimer.add(i, "23:00", 0)
       
-    for i in range(6):
+    for i in range(5):
       self.wtimer.add(i, "07:15", 0)
       self.wtimer.add(i, "16:00", 1)
       

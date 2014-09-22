@@ -543,7 +543,7 @@ public:
     }
     catch (const std::exception& e)
     {
-      LOGWARN("EXCEPTION: " << e.what());
+      LOGWARN("EXCEPTION: " << e.what() << " request: " << request.getURI());
       response.setStatus(HTTPServerResponse::HTTP_INTERNAL_SERVER_ERROR);
       response.send() << e.what();
     }

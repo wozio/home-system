@@ -49,7 +49,7 @@ int main(int argc, char** argv)
     return 1;
   }
   
-  home_system::logger::configure("io-relay-board.log", vm["log_level"].as<string>(), !vm.count("daemonize"));
+  home_system::logger::_log_file_path = "io-relay-board.log";
 
 #ifdef __linux__
   LOGINFO("Relay Board started");

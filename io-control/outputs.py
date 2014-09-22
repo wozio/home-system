@@ -2,13 +2,15 @@
 
 import logging
 import output
+import configuration
 
 outputs = {}
 
 def init():
   logging.debug("Outputs init")
   global outputs
-  outputs["rb1"] = output.output("relay-board", 1)
+  for o in configuration.outputs:
+    outputs[o["name"]] = output.output(o["service"], o["number"])
 
 def exit():
   global outputs

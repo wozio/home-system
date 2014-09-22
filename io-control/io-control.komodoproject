@@ -2,9 +2,10 @@
 <!-- Komodo Project File - DO NOT EDIT -->
 <project id="949f2817-468a-488a-82a8-3c2eb3f1708a" kpf_version="5" name="io-control.komodoproject">
 <preference-set idref="949f2817-468a-488a-82a8-3c2eb3f1708a" id="project" preftype="project">
-  <long id="indentWidth">2</long>
+  <long id="indentWidth">4</long>
   <string id="jshint_linter_chooser">default</string>
   <string id="jslint_linter_chooser">default</string>
-  <long id="tabWidth">2</long>
+  <long id="tabWidth">4</long>
+  <boolean id="useSmartTabs">0</boolean>
 </preference-set>
 </project>

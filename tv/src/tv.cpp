@@ -35,8 +35,8 @@ int main(int argc, char** argv)
     return 1;
   }
   
-  home_system::logger::configure("tv.log", vm["log_level"].as<string>(), !vm.count("daemonize"));
-
+  home_system::logger::_log_file_path = "tv.log";
+  
   LOGINFO("TV started");
   
   home_system::app app(vm.count("daemonize"));
