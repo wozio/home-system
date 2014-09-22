@@ -21,7 +21,7 @@ FC=gfortran
 AS=as
 
 # Macros
-CND_PLATFORM=GNU-Linux-x86
+CND_PLATFORM=GNU_4.7.3-Linux-x86
 CND_DLIB_EXT=so
 CND_CONF=Debug
 CND_DISTDIR=dist
@@ -66,7 +66,7 @@ FFLAGS=
 ASFLAGS=
 
 # Link Libraries and Options
-LDLIBSOPTIONS=-lusb -lPocoFoundation -lPocoNet -lboost_filesystem -lboost_program_options -lboost_system -lboost_thread -lpthread ../common/common/../bin/Debug/libcommon.a -lyamicpp -lyamicore
+LDLIBSOPTIONS=-L../common/yami4/lib -lusb -lboost_filesystem -lboost_program_options -lboost_system -lboost_thread -lpthread ../common/common/../bin/Debug/libcommon.a -lyamicpp -lyamicore
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
@@ -131,32 +131,31 @@ ${OBJECTDIR}/src/1wire/lib/other/libUSB/libusbtran.o: src/1wire/lib/other/libUSB
 ${OBJECTDIR}/src/input-output.o: src/input-output.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -Wall -D_DEBUG -Isrc/1wire/common -I../common/src -I../yami4 -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/input-output.o src/input-output.cpp
+	$(COMPILE.cc) -g -Wall -D_DEBUG -Isrc/1wire/common -I../common/common/src -I../common/yami4/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/input-output.o src/input-output.cpp
 
 ${OBJECTDIR}/src/io-service.o: src/io-service.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -Wall -D_DEBUG -Isrc/1wire/common -I../common/src -I../yami4 -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/io-service.o src/io-service.cpp
+	$(COMPILE.cc) -g -Wall -D_DEBUG -Isrc/1wire/common -I../common/common/src -I../common/yami4/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/io-service.o src/io-service.cpp
 
 ${OBJECTDIR}/src/ownetwork.o: src/ownetwork.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -Wall -D_DEBUG -Isrc/1wire/common -I../common/src -I../yami4 -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/ownetwork.o src/ownetwork.cpp
+	$(COMPILE.cc) -g -Wall -D_DEBUG -Isrc/1wire/common -I../common/common/src -I../common/yami4/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/ownetwork.o src/ownetwork.cpp
 
 ${OBJECTDIR}/src/owtemp.o: src/owtemp.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -Wall -D_DEBUG -Isrc/1wire/common -I../common/src -I../yami4 -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/owtemp.o src/owtemp.cpp
+	$(COMPILE.cc) -g -Wall -D_DEBUG -Isrc/1wire/common -I../common/common/src -I../common/yami4/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/owtemp.o src/owtemp.cpp
 
 ${OBJECTDIR}/src/utils.o: src/utils.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -Wall -D_DEBUG -Isrc/1wire/common -I../common/src -I../yami4 -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/utils.o src/utils.cpp
+	$(COMPILE.cc) -g -Wall -D_DEBUG -Isrc/1wire/common -I../common/common/src -I../common/yami4/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/utils.o src/utils.cpp
 
 # Subprojects
 .build-subprojects:
 	cd ../common/common && ${MAKE}  -f Makefile CONF=Debug
-	cd ../common && ${MAKE}  -f Makefile CONF=Debug
 
 # Clean Targets
 .clean-conf: ${CLEAN_SUBPROJECTS}
@@ -166,7 +165,6 @@ ${OBJECTDIR}/src/utils.o: src/utils.cpp
 # Subprojects
 .clean-subprojects:
 	cd ../common/common && ${MAKE}  -f Makefile CONF=Debug clean
-	cd ../common && ${MAKE}  -f Makefile CONF=Debug clean
 
 # Enable dependency checking
 .dep.inc: .depcheck-impl

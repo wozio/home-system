@@ -46,7 +46,6 @@
           </linkerAddLib>
           <linkerLibItems>
             <linkerLibLibItem>PocoFoundation</linkerLibLibItem>
-            <linkerLibLibItem>PocoNet</linkerLibLibItem>
             <linkerLibLibItem>PocoXML</linkerLibLibItem>
             <linkerLibLibItem>boost_filesystem</linkerLibLibItem>
             <linkerLibLibItem>boost_program_options</linkerLibLibItem>

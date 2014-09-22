@@ -36,13 +36,13 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 # Object Files
 OBJECTFILES= \
 	${OBJECTDIR}/src/db.o \
-	${OBJECTDIR}/src/media/root.o \
-	${OBJECTDIR}/src/media/file.o \
-	${OBJECTDIR}/src/media/media.o \
-	${OBJECTDIR}/src/media/directory.o \
-	${OBJECTDIR}/src/media/files.o \
 	${OBJECTDIR}/src/media-server.o \
-	${OBJECTDIR}/src/media-service.o
+	${OBJECTDIR}/src/media-service.o \
+	${OBJECTDIR}/src/media/directory.o \
+	${OBJECTDIR}/src/media/file.o \
+	${OBJECTDIR}/src/media/files.o \
+	${OBJECTDIR}/src/media/media.o \
+	${OBJECTDIR}/src/media/root.o
 
 
 # C Compiler Flags
@@ -73,47 +73,47 @@ LDLIBSOPTIONS=-lboost_system -lboost_filesystem -lboost_thread -lPocoFoundation 
 
 ../${CND_CONF}/media-server: ${OBJECTFILES}
 	${MKDIR} -p ../${CND_CONF}
-	${LINK.cc} -o ../${CND_CONF}/media-server -s ${OBJECTFILES} ${LDLIBSOPTIONS} 
+	${LINK.cc} -o ../${CND_CONF}/media-server ${OBJECTFILES} ${LDLIBSOPTIONS} -s
 
 ${OBJECTDIR}/src/db.o: src/db.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
-	${RM} $@.d
-	$(COMPILE.cc) -O3 -Wall -s -I../common/src -I../yami4 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/db.o src/db.cpp
-
-${OBJECTDIR}/src/media/root.o: src/media/root.cpp 
-	${MKDIR} -p ${OBJECTDIR}/src/media
-	${RM} $@.d
-	$(COMPILE.cc) -O3 -Wall -s -I../common/src -I../yami4 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/media/root.o src/media/root.cpp
-
-${OBJECTDIR}/src/media/file.o: src/media/file.cpp 
-	${MKDIR} -p ${OBJECTDIR}/src/media
-	${RM} $@.d
-	$(COMPILE.cc) -O3 -Wall -s -I../common/src -I../yami4 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/media/file.o src/media/file.cpp
-
-${OBJECTDIR}/src/media/media.o: src/media/media.cpp 
-	${MKDIR} -p ${OBJECTDIR}/src/media
-	${RM} $@.d
-	$(COMPILE.cc) -O3 -Wall -s -I../common/src -I../yami4 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/media/media.o src/media/media.cpp
-
-${OBJECTDIR}/src/media/directory.o: src/media/directory.cpp 
-	${MKDIR} -p ${OBJECTDIR}/src/media
-	${RM} $@.d
-	$(COMPILE.cc) -O3 -Wall -s -I../common/src -I../yami4 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/media/directory.o src/media/directory.cpp
-
-${OBJECTDIR}/src/media/files.o: src/media/files.cpp 
-	${MKDIR} -p ${OBJECTDIR}/src/media
-	${RM} $@.d
-	$(COMPILE.cc) -O3 -Wall -s -I../common/src -I../yami4 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/media/files.o src/media/files.cpp
+	${RM} "$@.d"
+	$(COMPILE.cc) -O3 -Wall -s -I../common/src -I../yami4 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/db.o src/db.cpp
 
 ${OBJECTDIR}/src/media-server.o: src/media-server.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
-	${RM} $@.d
-	$(COMPILE.cc) -O3 -Wall -s -I../common/src -I../yami4 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/media-server.o src/media-server.cpp
+	${RM} "$@.d"
+	$(COMPILE.cc) -O3 -Wall -s -I../common/src -I../yami4 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/media-server.o src/media-server.cpp
 
 ${OBJECTDIR}/src/media-service.o: src/media-service.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
-	${RM} $@.d
-	$(COMPILE.cc) -O3 -Wall -s -I../common/src -I../yami4 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/media-service.o src/media-service.cpp
+	${RM} "$@.d"
+	$(COMPILE.cc) -O3 -Wall -s -I../common/src -I../yami4 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/media-service.o src/media-service.cpp
+
+${OBJECTDIR}/src/media/directory.o: src/media/directory.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src/media
+	${RM} "$@.d"
+	$(COMPILE.cc) -O3 -Wall -s -I../common/src -I../yami4 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/media/directory.o src/media/directory.cpp
+
+${OBJECTDIR}/src/media/file.o: src/media/file.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src/media
+	${RM} "$@.d"
+	$(COMPILE.cc) -O3 -Wall -s -I../common/src -I../yami4 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/media/file.o src/media/file.cpp
+
+${OBJECTDIR}/src/media/files.o: src/media/files.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src/media
+	${RM} "$@.d"
+	$(COMPILE.cc) -O3 -Wall -s -I../common/src -I../yami4 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/media/files.o src/media/files.cpp
+
+${OBJECTDIR}/src/media/media.o: src/media/media.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src/media
+	${RM} "$@.d"
+	$(COMPILE.cc) -O3 -Wall -s -I../common/src -I../yami4 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/media/media.o src/media/media.cpp
+
+${OBJECTDIR}/src/media/root.o: src/media/root.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src/media
+	${RM} "$@.d"
+	$(COMPILE.cc) -O3 -Wall -s -I../common/src -I../yami4 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/media/root.o src/media/root.cpp
 
 # Subprojects
 .build-subprojects:

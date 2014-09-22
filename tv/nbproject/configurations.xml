@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configurationDescriptor version="94">
+<configurationDescriptor version="95">
   <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
     <logicalFolder name="SourceFiles"
                    displayName="Source Files"
@@ -41,7 +41,7 @@
   <confs>
     <conf name="Debug" type="1">
       <toolsSet>
-        <compilerSet>default</compilerSet>
+        <compilerSet>GNU_4.7.3|GNU</compilerSet>
         <dependencyChecking>true</dependencyChecking>
         <rebuildPropChanged>false</rebuildPropChanged>
       </toolsSet>
@@ -178,186 +178,6 @@
                             WD="../common/common"
                             BC="${MAKE}  -f Makefile CONF=Release"
                             CC="${MAKE}  -f Makefile CONF=Release clean"
-                            OP="../bin/${CND_CONF}/libcommon.a">
-              </makeArtifact>
-            </linkerLibProjectItem>
-            <linkerLibLibItem>yamicpp</linkerLibLibItem>
-            <linkerLibLibItem>yamicore</linkerLibLibItem>
-          </linkerLibItems>
-        </linkerTool>
-      </compileType>
-      <item path="src/clients.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="src/clients.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="src/db.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="src/db.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="src/epg.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="src/epg.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="src/event_info.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="src/recordings.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="src/recordings.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="src/session.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="src/session.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="src/sessions.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="src/sessions.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="src/source.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="src/source.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="src/sources.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="src/sources.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="src/tv-service.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="src/tv-service.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="src/tv.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-    </conf>
-    <conf name="Debug_laptop" type="1">
-      <toolsSet>
-        <compilerSet>default</compilerSet>
-        <dependencyChecking>true</dependencyChecking>
-        <rebuildPropChanged>false</rebuildPropChanged>
-      </toolsSet>
-      <compileType>
-        <ccTool>
-          <standard>8</standard>
-          <incDir>
-            <pElem>../common/common/src</pElem>
-            <pElem>../common/yami4/include</pElem>
-          </incDir>
-          <preprocessorList>
-            <Elem>_DEBUG</Elem>
-          </preprocessorList>
-          <warningLevel>2</warningLevel>
-        </ccTool>
-        <linkerTool>
-          <output>../bin/${CND_CONF}/tv</output>
-          <linkerAddLib>
-            <pElem>../common/yami4/lib</pElem>
-          </linkerAddLib>
-          <linkerLibItems>
-            <linkerLibLibItem>PocoData</linkerLibLibItem>
-            <linkerLibLibItem>PocoFoundation</linkerLibLibItem>
-            <linkerLibLibItem>PocoSQLite</linkerLibLibItem>
-            <linkerLibLibItem>PocoNet</linkerLibLibItem>
-            <linkerLibLibItem>boost_program_options</linkerLibLibItem>
-            <linkerLibLibItem>boost_system</linkerLibLibItem>
-            <linkerLibLibItem>boost_thread</linkerLibLibItem>
-            <linkerLibLibItem>pthread</linkerLibLibItem>
-            <linkerLibProjectItem>
-              <makeArtifact PL="../common/common"
-                            CT="3"
-                            CN="Debug_laptop"
-                            AC="false"
-                            BL="true"
-                            WD="../common/common"
-                            BC="${MAKE}  -f Makefile CONF=Debug_laptop"
-                            CC="${MAKE}  -f Makefile CONF=Debug_laptop clean"
-                            OP="../bin/${CND_CONF}/libcommon.a">
-              </makeArtifact>
-            </linkerLibProjectItem>
-            <linkerLibLibItem>yamicpp</linkerLibLibItem>
-            <linkerLibLibItem>yamicore</linkerLibLibItem>
-          </linkerLibItems>
-        </linkerTool>
-      </compileType>
-      <item path="src/clients.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="src/clients.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="src/db.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="src/db.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="src/epg.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="src/epg.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="src/event_info.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="src/recordings.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="src/recordings.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="src/session.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="src/session.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="src/sessions.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="src/sessions.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="src/source.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="src/source.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="src/sources.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="src/sources.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="src/tv-service.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="src/tv-service.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="src/tv.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-    </conf>
-    <conf name="Debug_praca" type="1">
-      <toolsSet>
-        <compilerSet>GNU_4.7.3|GNU</compilerSet>
-        <dependencyChecking>true</dependencyChecking>
-        <rebuildPropChanged>false</rebuildPropChanged>
-      </toolsSet>
-      <compileType>
-        <ccTool>
-          <standard>8</standard>
-          <incDir>
-            <pElem>../common/common/src</pElem>
-            <pElem>../common/yami4/include</pElem>
-          </incDir>
-          <preprocessorList>
-            <Elem>_DEBUG</Elem>
-          </preprocessorList>
-          <warningLevel>2</warningLevel>
-        </ccTool>
-        <linkerTool>
-          <output>../bin/${CND_CONF}/tv</output>
-          <linkerAddLib>
-            <pElem>../common/yami4/lib</pElem>
-          </linkerAddLib>
-          <linkerLibItems>
-            <linkerLibLibItem>PocoData</linkerLibLibItem>
-            <linkerLibLibItem>PocoFoundation</linkerLibLibItem>
-            <linkerLibLibItem>PocoSQLite</linkerLibLibItem>
-            <linkerLibLibItem>PocoNet</linkerLibLibItem>
-            <linkerLibLibItem>boost_program_options</linkerLibLibItem>
-            <linkerLibLibItem>boost_system</linkerLibLibItem>
-            <linkerLibLibItem>boost_thread</linkerLibLibItem>
-            <linkerLibLibItem>pthread</linkerLibLibItem>
-            <linkerLibProjectItem>
-              <makeArtifact PL="../common/common"
-                            CT="3"
-                            CN="Debug_praca"
-                            AC="true"
-                            BL="true"
-                            WD="../common/common"
-                            BC="${MAKE}  -f Makefile CONF=Debug_praca"
-                            CC="${MAKE}  -f Makefile CONF=Debug_praca clean"
                             OP="../bin/${CND_CONF}/libcommon.a">
               </makeArtifact>
             </linkerLibProjectItem>

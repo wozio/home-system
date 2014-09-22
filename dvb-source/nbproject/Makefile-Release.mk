@@ -21,8 +21,8 @@ FC=gfortran
 AS=as
 
 # Macros
-CND_PLATFORM=MinGW-Windows
-CND_DLIB_EXT=dll
+CND_PLATFORM=GNU-Linux-x86
+CND_DLIB_EXT=so
 CND_CONF=Release
 CND_DISTDIR=dist
 CND_BUILDDIR=build
@@ -70,11 +70,11 @@ LDLIBSOPTIONS=-L../common/yami4/lib -ldvbapi -ldvbcfg -ldvbsec -lucsi -lPocoFoun
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
-	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk ../bin/${CND_CONF}/dvb-source.exe
+	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk ../bin/${CND_CONF}/dvb-source
 
-../bin/${CND_CONF}/dvb-source.exe: ../common/common/../bin/Release/libcommon.a
+../bin/${CND_CONF}/dvb-source: ../common/common/../bin/Release/libcommon.a
 
-../bin/${CND_CONF}/dvb-source.exe: ${OBJECTFILES}
+../bin/${CND_CONF}/dvb-source: ${OBJECTFILES}
 	${MKDIR} -p ../bin/${CND_CONF}
 	${LINK.cc} -o ../bin/${CND_CONF}/dvb-source ${OBJECTFILES} ${LDLIBSOPTIONS} -s
 
@@ -160,7 +160,7 @@ ${OBJECTDIR}/src/transponders.o: src/transponders.cpp
 # Clean Targets
 .clean-conf: ${CLEAN_SUBPROJECTS}
 	${RM} -r ${CND_BUILDDIR}/${CND_CONF}
-	${RM} ../bin/${CND_CONF}/dvb-source.exe
+	${RM} ../bin/${CND_CONF}/dvb-source
 
 # Subprojects
 .clean-subprojects:

@@ -28,7 +28,6 @@ int main(int argc, char** argv)
     ("frontend,f", po::value<int>()->default_value(0), "Frontend to use")
     ("transponders,t", po::value<string>()->default_value("transponders.conf"), "Transponders definition file in (dvb)scan format")
     ("channels,c", po::value<string>()->default_value("channels.conf"), "Channel definition file in (dvb)scan format")
-    ("log_level,l", po::value<string>()->default_value("debug"), "Logging level, valid values are:\nerror\nwarning\ninformation\ndebug")
     ;
 
   po::variables_map vm;
@@ -41,7 +40,7 @@ int main(int argc, char** argv)
     return 1;
   }
 
-  home_system::logger::configure("dvb-source.log", vm["log_level"].as<string>(), !vm.count("daemonize"));
+  home_system::logger::_log_file_path = "dvb-source.log";
 
   LOGINFO("DVB Source started");
   

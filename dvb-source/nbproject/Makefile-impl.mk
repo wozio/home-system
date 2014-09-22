@@ -31,7 +31,7 @@ DEFAULTCONF=Debug
 CONF=${DEFAULTCONF}
 
 # All Configurations
-ALLCONFS=Debug Release Debug_praca Debug_tv Debug_laptop 
+ALLCONFS=Debug Release 
 
 
 # build

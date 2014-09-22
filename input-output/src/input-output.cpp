@@ -1,12 +1,15 @@
 #include "io-service.h"
 #include "app.h"
 #include "logger.h"
+#include "yamicontainer.h"
 #include <boost/program_options.hpp>
 #include <chrono>
 #include <thread>
 
 using namespace std;
 namespace po = boost::program_options;
+
+home_system::yc_t _yc;
 
 int main(int argc, char** argv)
 {
@@ -30,7 +33,7 @@ int main(int argc, char** argv)
     return 1;
   }
 
-  home_system::logger::configure("input-output.log", vm["log_level"].as<string>(), !vm.count("daemonize"));
+  home_system::logger::_log_file_path = "input-output.log";
 
   LOGINFO("1 wire input output started");
 
@@ -42,6 +45,8 @@ int main(int argc, char** argv)
   {
     try
     {
+      _yc = home_system::yami_container::create();
+      
       home_system::input_output::io_service service;
 
       exit_init_loop = true;
@@ -70,6 +75,8 @@ int main(int argc, char** argv)
     }
   }
   while (!exit_init_loop);
+  
+  _yc.reset();
 
   LOGINFO("1 wire input output quitting");
 
