@@ -24,16 +24,18 @@ namespace media
 {
 
 tv_service::tv_service(db& db)
-: service("tv"),
+: service("tv", false),
   db_(db),
   sources_(db_),
   sessions_(sources_),
   epg_(db_)
 {
+  init();
 }
 
 tv_service::~tv_service()
 {
+  deinit();
 }
 
 void tv_service::handle_source_available(yami::incoming_message& im)
