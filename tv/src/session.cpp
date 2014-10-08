@@ -1,6 +1,7 @@
 #include "session.h"
 #include "logger.h"
 #include "yamicontainer.h"
+#include <memory>
 
 namespace home_system
 {
@@ -47,7 +48,13 @@ void session::handle_stream_part(const void* buf, size_t length)
     yami::parameters params;
     params.set_binary("payload", buf, length);
     params.set_integer("session", id_);
-    YC.agent().send(endpoint_, destination_, "stream_part", params);
+    std::unique_ptr<yami::outgoing_message> msg(YC.agent().send(endpoint_, destination_, "stream_part", params));
+    
+    if (!msg->wait_for_transmission(1000))
+    {
+      LOGERROR("ERROR: Stream part not transmitted");
+      throw session_error("Stream part not transmitted", id_);
+    }
   }
   catch (const std::exception& e)
   {
