@@ -85,6 +85,7 @@ public:
           m = 0;
           LOG("Received " << received_ << " bytes");
         }
+        im.reply();
       }
       catch (const std::exception& e)
       {

@@ -22,6 +22,18 @@
         });
       });
       
+      $("#heating-switch").bind("change", function(){
+        showRefreshNotification();
+        var datatosend = "<hsd><p n=\"state\" t=\"b\">" + ($(this).val() == "on" ? "true" : "false") + "</p></hsd>";
+        jQuery.post("/HSA/execute?name=heating&msg=set_state", datatosend)
+        .done(function(){
+          refresh();
+        })
+        .fail(function(jqXHR){
+          showFailedNotification(jqXHR.status);
+        });
+      });
+      
       window.setInterval(refresh, 60000);
       
       refresh();
@@ -37,11 +49,23 @@
         } else {
           $("#dhwrec-switch").val('off').slider('refresh');
         }
-        hideRefreshNotification();
       })
       .fail(function(jqXHR){
         showFailedNotification(jqXHR.status);
       });
+      jQuery.get("/HSA/execute?name=heating&msg=get_state")
+      .done(function(data){
+        $p = $(data).find("p");
+        if ($p.text() == "true"){
+          $("#heating-switch").val('on').slider('refresh');
+        } else {
+          $("#heating-switch").val('off').slider('refresh');
+        }
+      })
+      .fail(function(jqXHR){
+        showFailedNotification(jqXHR.status);
+      });
+      hideRefreshNotification();
     }
     
     var popupShown = false;
@@ -92,6 +116,13 @@
     <div data-role="fieldcontain">
       <label class="switch-label" for="dhwrec-switch">Cyrkulacja CWU</label>
       <select id="dhwrec-switch" name="dhwrec-switch" data-role="slider">
+        <option value="off">Wył</option>
+        <option value="on">Wł</option>
+      </select>
+    </div>
+    <div data-role="fieldcontain">
+      <label class="switch-label" for="heating-switch">Ogrzewanie</label>
+      <select id="heating-switch" name="heating-switch" data-role="slider">
         <option value="off">Wył</option>
         <option value="on">Wł</option>
       </select>

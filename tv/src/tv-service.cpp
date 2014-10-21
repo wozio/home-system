@@ -150,10 +150,6 @@ void tv_service::on_msg(yami::incoming_message& im)
     {
       int session = im.get_parameters().get_integer("session");
       sessions_.handle_delete_client_session(session);
-    }
-    else if (im.get_message_name() == "session_deleted")
-    {
-      int session = im.get_parameters().get_integer("session");
       sources_.handle_session_deleted(im.get_source(), session);
     }
     else if (im.get_message_name() == "get_epg_info")
