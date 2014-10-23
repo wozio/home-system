@@ -31,10 +31,10 @@ class output:
                     "set_output_state", params)
   
   def set_state(self, state):
+    logging.debug("Set output %d state %d->%d", self.output_num, self.state, state)
+    self.state = state
     if self.ext_state != -1:
-      logging.debug("Set output %d state %d->%d", self.output_num, self.state, state)
       if state != self.ext_state:
-        self.state = state
         self.send_state()
     
   def on_service(self, service, available):
