@@ -34,6 +34,8 @@ public:
   void get_recordings_to_start(std::vector<int>& recordings);
   void get_recordings_to_stop(std::vector<int>& recordings);
   int create_recording(int channel, time_t start_time, int duration);
+  
+  std::string get_channel_name(int channel);
 
 private:
   Poco::Data::Session& session();

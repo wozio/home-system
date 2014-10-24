@@ -8,26 +8,17 @@ namespace home_system
 namespace media
 {
 
-session::session(sources& sources, int id, int channel, std::string endpoint, std::string destination)
-: sources_(sources),
-  id_(id),
-  channel_(channel),
+session::session(int id, std::string endpoint, std::string destination)
+: id_(id),
   endpoint_(endpoint),
   destination_(destination)
 {
-  LOG("Create session id=" << id << " channel=" << channel_ << " endpoint=" << endpoint << " destination=" << destination);
-  
-  // fetch source for channel and create session
-  source_ = sources_.get_source_for_channel(channel);
-  source_->connect_session(channel,
-    [this] (const void* buf, size_t length) { handle_stream_part(buf, length); });
+  LOG("Create session id=" << id << " endpoint=" << endpoint << " destination=" << destination);
 }
 
 session::~session()
 {
-  LOG("Delete session id=" << id_);
-  
-  source_->disconnect_session();
+  LOG("Delete client session id=" << id_);
   
   try
   {
@@ -41,7 +32,7 @@ session::~session()
   }
 }
 
-void session::handle_stream_part(const void* buf, size_t length)
+void session::stream_part(const void* buf, size_t length)
 {
   try
   {

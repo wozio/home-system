@@ -2,27 +2,48 @@
 #define	SOURCE_H
 
 #include "db.h"
+#include "session.h"
 #include <string>
-#include <functional>
+#include <map>
+#include <memory>
 
 namespace home_system
 {
 namespace media
 {
 
+class failed_to_create_session
+: public std::runtime_error
+{
+public:
+  failed_to_create_session()
+    : std::runtime_error("Failed to create session on source")
+    {
+    }
+};
+
+class source;
+
+typedef std::shared_ptr<source> source_t;
+
 class source
+: public std::enable_shared_from_this<source>
 {
 public:
   source(db& db, const std::string& name, const std::string& ye);
   source(const source& orig) = delete;
   ~source();
   
-  typedef std::function<void (const void*, size_t)> stream_part_callback_t;
-  void connect_session(int channel, stream_part_callback_t stream_part_callback);
-  void disconnect_session();
+  void not_available();
   
-  void handle_stream_part(int server_session, const void* buf, size_t length);
-  void handle_session_deleted(int server_session);
+  int create_session(int channel, const std::string& client_endpoint, const std::string& client);
+  void delete_session(int client_session);
+
+  void stream_part(int source_session, const void* buf, size_t len);
+  
+  void session_deleted(int source_session);
+  
+  static source_t source_for_session(int client_session);
   
   std::string endpoint();
   
@@ -30,8 +51,12 @@ private:
   db& db_;
   std::string name_, ye_;
   int source_session_id_;
+  int client_session_id_;
+  std::unique_ptr<session> client_session_;
   
-  stream_part_callback_t stream_part_callback_;
+  static std::map<int, std::shared_ptr<source>> _client_session_ids;
+  
+  void delete_source_session();
 };
 
 }

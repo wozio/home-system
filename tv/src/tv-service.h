@@ -6,7 +6,6 @@
 #include "db.h"
 #include "epg.h"
 #include "sources.h"
-#include "sessions.h"
 #include <boost/shared_ptr.hpp>
 #include <vector>
 #include <set>
@@ -38,7 +37,6 @@ private:
   
   db& db_;
   sources sources_;
-  sessions sessions_;
   recordings recordings_;
   epg epg_;
 

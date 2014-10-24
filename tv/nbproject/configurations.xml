@@ -15,8 +15,6 @@
       <itemPath>src/recordings.h</itemPath>
       <itemPath>src/session.cpp</itemPath>
       <itemPath>src/session.h</itemPath>
-      <itemPath>src/sessions.cpp</itemPath>
-      <itemPath>src/sessions.h</itemPath>
       <itemPath>src/source.cpp</itemPath>
       <itemPath>src/source.h</itemPath>
       <itemPath>src/sources.cpp</itemPath>
@@ -41,7 +39,7 @@
   <confs>
     <conf name="Debug" type="1">
       <toolsSet>
-        <compilerSet>default</compilerSet>
+        <compilerSet>GNU_4.7.3|GNU</compilerSet>
         <dependencyChecking>true</dependencyChecking>
         <rebuildPropChanged>false</rebuildPropChanged>
       </toolsSet>
@@ -109,10 +107,6 @@
       <item path="src/session.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="src/session.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="src/sessions.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="src/sessions.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="src/source.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -207,10 +201,6 @@
       <item path="src/session.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="src/session.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="src/sessions.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="src/sessions.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="src/source.cpp" ex="false" tool="1" flavor2="0">
       </item>

@@ -2,7 +2,7 @@
 #include "logger.h"
 #include "yamicontainer.h"
 #include "epg.h"
-
+#include "discovery.h"
 #include <sstream>
 
 using namespace std;
@@ -27,10 +27,21 @@ tv_service::tv_service(db& db)
 : service("tv", false),
   db_(db),
   sources_(db_),
-  sessions_(sources_),
   epg_(db_)
 {
   init();
+  
+  DISCOVERY.subscribe([&] (const std::string& service, bool available)
+  {
+    if (!available)
+    {
+      if (sources_.check_source(service))
+      {
+        LOG("Source not available: " << service);
+        sources_.source_not_available(service);
+      }
+    }
+  });
 }
 
 tv_service::~tv_service()
@@ -117,40 +128,44 @@ void tv_service::on_msg(yami::incoming_message& im)
   {
     if (im.get_message_name() == "stream_part")
     {
-      try
-      {
-        int source_session = im.get_parameters().get_integer("session");
-        size_t length;
-        const void* buf = im.get_parameters().get_binary("payload", length);
-        sources_.handle_stream_part(im.get_source(), source_session, buf, length);
-      }
-      catch (const session_error& e)
-      {
-        LOGERROR("EXCEPTION: " << e.what() << ". Deleting client session: " << e.session());
-        sessions_.handle_delete_client_session(e.session());
-      }
+      int source_session = im.get_parameters().get_integer("session");
+      string source = im.get_parameters().get_string("source");
+      size_t length;
+      const void* buf = im.get_parameters().get_binary("payload", length);
+      sources_[source]->stream_part(source_session, buf, length);
     }
     else if (im.get_message_name() == "epg_data")
     {
       epg_.handle_epg_data(im.get_parameters());
     }
-    else if (im.get_message_name() == "create_client_session")
+    else if (im.get_message_name() == "create_session")
     {
-      int channel = im.get_parameters().get_integer("channel");
-      string endpoint = im.get_parameters().get_string("endpoint");
-      string destination = im.get_parameters().get_string("destination");
-      
-      int session = sessions_.handle_create_client_session(channel, endpoint, destination);
-      
-      yami::parameters reply;
-      reply.set_integer("session", session);
-      im.reply(reply);
+      try
+      {
+        int channel = im.get_parameters().get_integer("channel");
+        string endpoint = im.get_parameters().get_string("endpoint");
+        string destination = im.get_parameters().get_string("destination");
+        
+        LOG("Creating session for channel " << channel << "(" << db_.get_channel_name(channel) << ") to " << destination << "(" << endpoint << ")");
+
+        int session = sources_.create_session(channel, endpoint, destination);
+
+        yami::parameters reply;
+        reply.set_integer("session", session);
+        im.reply(reply);
+      }
+      catch (const source_not_found& e)
+      {
+        LOGWARN("Source not found");
+        yami::parameters reply;
+        reply.set_integer("session", -1);
+        im.reply(reply);
+      }
     }
-    else if (im.get_message_name() == "delete_client_session")
+    else if (im.get_message_name() == "delete_session")
     {
       int session = im.get_parameters().get_integer("session");
-      sessions_.handle_delete_client_session(session);
-      sources_.handle_session_deleted(im.get_source(), session);
+      sources_.delete_session(session);
     }
     else if (im.get_message_name() == "get_epg_info")
     {

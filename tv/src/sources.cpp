@@ -1,5 +1,4 @@
 #include "sources.h"
-#include "discovery.h"
 #include "logger.h"
 
 using namespace std;
@@ -12,28 +11,21 @@ namespace media
 sources::sources(db& db)
 : db_(db)
 {
-  DISCOVERY.subscribe([&] (const std::string& service, bool available)
-  {
-    if (!available)
-    {
-      auto old_source = sources_.find(service);
-      if (old_source != sources_.end())
-      {
-        LOG("Source not available: " << service);
-        sources_.erase(old_source->second->endpoint());
-        sources_names_.erase(service);
-      }
-    }
-  });
+  
 }
 
 sources::~sources()
 {
 }
 
+bool sources::check_source(const std::string& service)
+{
+  return sources_names_.find(service) != sources_names_.end();
+}
+
 void sources::source_available(const std::string& service, const std::string& ye)
 {
-  if (sources_.find(ye) == sources_.end())
+  if (sources_names_.find(service) == sources_names_.end())
   {
     source_t new_s = make_shared<source>(db_, service, ye);
     sources_[ye] = new_s;
@@ -41,7 +33,27 @@ void sources::source_available(const std::string& service, const std::string& ye
   }
 }
 
-source_t sources::get_source_for_channel(int channel)
+void sources::source_not_available(const std::string& service)
+{
+  sources_names_[service]->not_available();
+  sources_.erase(sources_names_[service]->endpoint());
+  sources_names_.erase(service);
+}
+
+source_t sources::operator[](const std::string& source)
+{
+  auto s = sources_names_.find(source);
+  if (s != sources_names_.end())
+  {
+    return s->second;
+  }
+  else
+  {
+    throw std::runtime_error(string("Source not found: ") + source);
+  }
+}
+
+int sources::create_session(int channel, const std::string& client_endpoint, const std::string& client)
 {
   std::vector<std::string> dbsources;
   db_.get_sources_for_channel(channel, dbsources);
@@ -54,29 +66,16 @@ source_t sources::get_source_for_channel(int channel)
     if (sit != sources_names_.end())
     {
       LOG("Available source for channel: " << sit->first << "(" << sit->second->endpoint() << ")");
-      return (*sit).second;
+      return sit->second->create_session(channel, client_endpoint, client);
     }
   }
   
-  throw runtime_error("source not found or not available");
+  throw source_not_found();
 }
 
-void sources::handle_stream_part(const std::string& source_endpoint, int source_session, const void* buf, size_t length)
+void sources::delete_session(int client_session)
 {
-  auto s = sources_.find(source_endpoint);
-  if (s != sources_.end())
-  {
-    (*s).second->handle_stream_part(source_session, buf, length);
-  }
-}
-
-void sources::handle_session_deleted(const std::string& source_endpoint, int source_session)
-{
-  auto s = sources_.find(source_endpoint);
-  if (s != sources_.end())
-  {
-    (*s).second->handle_session_deleted(source_session);
-  }
+  source::source_for_session(client_session)->delete_session(client_session);
 }
 
 }

@@ -40,7 +40,6 @@ OBJECTFILES= \
 	${OBJECTDIR}/src/epg.o \
 	${OBJECTDIR}/src/recordings.o \
 	${OBJECTDIR}/src/session.o \
-	${OBJECTDIR}/src/sessions.o \
 	${OBJECTDIR}/src/source.o \
 	${OBJECTDIR}/src/sources.o \
 	${OBJECTDIR}/src/tv-service.o \
@@ -97,11 +96,6 @@ ${OBJECTDIR}/src/session.o: src/session.cpp
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} "$@.d"
 	$(COMPILE.cc) -O2 -Wall -s -I../common/common/src -I../common/yami4/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/session.o src/session.cpp
-
-${OBJECTDIR}/src/sessions.o: src/sessions.cpp 
-	${MKDIR} -p ${OBJECTDIR}/src
-	${RM} "$@.d"
-	$(COMPILE.cc) -O2 -Wall -s -I../common/common/src -I../common/yami4/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/sessions.o src/sessions.cpp
 
 ${OBJECTDIR}/src/source.o: src/source.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
