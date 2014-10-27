@@ -65,11 +65,6 @@ void tv_service::handle_source_available(yami::incoming_message& im)
   }
   
   LOG("Source available: " << source << "("<< ye << ")");
-  for (size_t i = 0; i < s; ++i)
-  {
-    LOG("Channel: (" << std::hex << ids[i] << ") " << names[i]);
-  }
-
   sources_.source_available(source, ye);
   db_.check_and_add_local_channels(source, s, ids, names);
   //RECORDINGS.check();
