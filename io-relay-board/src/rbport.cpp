@@ -99,6 +99,8 @@ void port::read_handler(const boost::system::error_code& error,
             crfound = false;
             value.push_back(0);
             int bitmap = atoi(&value[0]);
+            bitmap &= 0xFF;
+            //LOG("BITMAP: " << bitmap);
             value.clear();
             check_state(bitmap);
             exec_state_change();
