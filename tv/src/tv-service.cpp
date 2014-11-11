@@ -129,6 +129,38 @@ void tv_service::on_msg(yami::incoming_message& im)
       const void* buf = im.get_parameters().get_binary("payload", length);
       sources_[source]->stream_part(source_session, buf, length);
     }
+    else if (im.get_message_name() == "hello")
+    {
+      LOG("Some client said hello, waking up sources");
+      // sending Wake On Lan message
+      // TODO make it on separate function, maybe move to control-server
+      string strmac("000C7620C5E0");
+      unsigned int mac[6];
+      for (size_t j = 0; j < 6; j++)
+      {
+        std::stringstream s;
+        s << hex << strmac.substr(j * 2, 2);
+        s >> mac[j];
+      }
+
+      uint8_t mp[108];
+      size_t j = 0;
+      for (; j < 6; j++)
+        mp[j] = 0xFF;
+      while (j < 102)
+      {
+        for (size_t i = 0; i < 6; ++i)
+        {
+          mp[j++] = mac[i];
+        }
+      }
+      
+      io_service io_service;
+      ip::udp::endpoint endpoint(ip::address::from_string("255.255.255.255"), 8);
+      ip::udp::socket socket(io_service, endpoint.protocol());
+      socket.set_option(ip::udp::socket::broadcast(true));
+      socket.send_to(buffer(mp), endpoint);
+    }
     else if (im.get_message_name() == "epg_data")
     {
       epg_.handle_epg_data(im.get_parameters());
