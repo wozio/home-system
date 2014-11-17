@@ -44,7 +44,6 @@ class service(object):
     self.send("hello\n" + self.name + "\n" + self.ye)
     
   def send_notify(self):
-    logging.debug("NOTIFY!")
     self.send("notify\n" + self.name + "\n" + self.ye)
     
   def send_bye(self):
