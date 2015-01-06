@@ -39,27 +39,30 @@ void session::stream_part(const void* buf, size_t length)
     yami::parameters params;
     params.set_binary("payload", buf, length);
     params.set_integer("session", id_);
-    std::unique_ptr<yami::outgoing_message> msg(YC.agent().send(endpoint_, destination_, "stream_part", params));
     
-    if (!msg->wait_for_completion(1000))
-    {
-      LOGERROR("ERROR: Timeout on stream part sending");
-      throw session_error("Timeout on stream part sending", id_);
-    }
+    YC.agent().send(endpoint_, destination_, "stream_part", params);
     
-    switch (msg->get_state())
-    {
-    case yami::replied:
-      break;
-    case yami::rejected:
-      LOGERROR("ERROR: Stream part message rejected: " << msg->get_exception_msg());
-      throw session_error("Stream part message rejected: " + msg->get_exception_msg(), id_);
-      break;
-    default:
-      LOGERROR("ERROR: Stream part message not replied");
-      throw session_error("Stream part message not replied", id_);
-      break;
-    }
+//    std::unique_ptr<yami::outgoing_message> msg(YC.agent().send(endpoint_, destination_, "stream_part", params));
+//    
+//    if (!msg->wait_for_completion(1000))
+//    {
+//      LOGERROR("ERROR: Timeout on stream part sending");
+//      throw session_error("Timeout on stream part sending", id_);
+//    }
+//    
+//    switch (msg->get_state())
+//    {
+//    case yami::replied:
+//      break;
+//    case yami::rejected:
+//      LOGERROR("ERROR: Stream part message rejected: " << msg->get_exception_msg());
+//      throw session_error("Stream part message rejected: " + msg->get_exception_msg(), id_);
+//      break;
+//    default:
+//      LOGERROR("ERROR: Stream part message not replied");
+//      throw session_error("Stream part message not replied", id_);
+//      break;
+//    }
   }
   catch (const std::exception& e)
   {

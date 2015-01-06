@@ -457,7 +457,7 @@ int main(int argc, char** argv)
   LOG("Started");
 
   _yc = home_system::yami_container::create();
-  _discovery = home_system::discovery::create();
+  _discovery = home_system::discovery::create([] (const std::string& msg) { LOG("discovery: " << msg); });
 
   unique_ptr<test_service> s(new test_service());
   unique_ptr<source_service> ss(new source_service());
