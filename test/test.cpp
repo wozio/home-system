@@ -27,6 +27,15 @@ public:
     service("test"),
     received_(0)
   {
+    DISCOVERY.subscribe([&] (const string& service, bool available)
+    {
+      if (available && service == "tv")
+      {
+        LOG("TV service available, registering as client");
+        
+        AGENT.send(DISCOVERY.get("tv"), "tv", "hello");
+      }
+    });
   }
   ~test_service(){};
 
@@ -40,16 +49,9 @@ public:
     
     LOG("[CLIENT] Create session for channel: " << channel);
     
-    LOG("AAA");
-    
     unique_ptr<yami::outgoing_message> message(AGENT.send(DISCOVERY.get("tv"), "tv", "create_session", params));
     
-    LOG("BBB");
-
     message->wait_for_completion(1000);
-    LOG("CCC");
-    
-
     if (message->get_state() == yami::replied)
     {
       LOG("[CLIENT] Session created: " << message->get_reply().get_integer("session"));
@@ -67,6 +69,28 @@ public:
     params.set_integer("session", session);
 
     AGENT.send(DISCOVERY.get("tv"), "tv", "delete_session", params);
+  }
+  
+  void pause(int session)
+  {
+    LOG("[CLIENT] Pause session: " << session);
+    
+    yami::parameters params;
+
+    params.set_integer("session", session);
+
+    AGENT.send(DISCOVERY.get("tv"), "tv", "pause_session", params);
+  }
+  
+  void play(int session)
+  {
+    LOG("[CLIENT] Play session: " << session);
+    
+    yami::parameters params;
+
+    params.set_integer("session", session);
+
+    AGENT.send(DISCOVERY.get("tv"), "tv", "play_session", params);
   }
   
   void change(int session, int channel)
@@ -88,13 +112,7 @@ public:
 
         received_ += len;
         
-        static int m = 0;
-        if (++m == 10)
-        {
-          m = 0;
-          LOG("Received " << received_ << " bytes");
-        }
-        im.reply();
+        LOG("Received " << len << " bytes, total: " << received_);
       }
       catch (const std::exception& e)
       {
@@ -253,6 +271,36 @@ void cmd_handler(const std::vector<string>& fields)
         {
           int session = boost::lexical_cast<int>(fields[1]);
           s->stop(session);
+        }
+        catch (const std::exception& e)
+        {
+          LOG("EXCEPTION: " << e.what());
+        }
+      }
+    }
+    else if (fields[0] == "pause")
+    {
+      if (fields.size() > 1)
+      {
+        try
+        {
+          int session = boost::lexical_cast<int>(fields[1]);
+          s->pause(session);
+        }
+        catch (const std::exception& e)
+        {
+          LOG("EXCEPTION: " << e.what());
+        }
+      }
+    }
+    else if (fields[0] == "play")
+    {
+      if (fields.size() > 1)
+      {
+        try
+        {
+          int session = boost::lexical_cast<int>(fields[1]);
+          s->play(session);
         }
         catch (const std::exception& e)
         {

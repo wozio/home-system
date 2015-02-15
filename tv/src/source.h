@@ -25,6 +25,7 @@ public:
 class source;
 
 typedef std::shared_ptr<source> source_t;
+typedef std::shared_ptr<session> session_t;
 
 class source
 : public std::enable_shared_from_this<source>
@@ -45,6 +46,8 @@ public:
   
   static source_t source_for_session(int client_session);
   
+  session_t get_session(int s);
+  
   std::string endpoint();
   
 private:
@@ -52,9 +55,9 @@ private:
   std::string name_, ye_;
   int source_session_id_;
   int client_session_id_;
-  std::unique_ptr<session> client_session_;
+  session_t client_session_;
   
-  static std::map<int, std::shared_ptr<source>> _client_session_ids;
+  static std::map<int, source_t> _client_session_ids;
   
   void delete_source_session();
 };

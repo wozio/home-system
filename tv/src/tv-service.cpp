@@ -129,6 +129,16 @@ void tv_service::on_msg(yami::incoming_message& im)
       const void* buf = im.get_parameters().get_binary("payload", length);
       sources_[source]->stream_part(source_session, buf, length);
     }
+    else if (im.get_message_name() == "pause_session")
+    {
+      int s = im.get_parameters().get_integer("session");
+      source::source_for_session(s)->get_session(s)->pause();
+    }
+    else if (im.get_message_name() == "play_session")
+    {
+      int s = im.get_parameters().get_integer("session");
+      source::source_for_session(s)->get_session(s)->play();
+    }
     else if (im.get_message_name() == "hello")
     {
       LOG("Some client said hello, waking up sources");

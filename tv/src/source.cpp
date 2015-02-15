@@ -9,7 +9,7 @@ namespace home_system
 namespace media
 {
 
-std::map<int, std::shared_ptr<source>> source::_client_session_ids;
+std::map<int, source_t> source::_client_session_ids;
 
 source_t source::source_for_session(int client_session)
 {
@@ -129,6 +129,14 @@ void source::stream_part(int source_session, const void* buf, size_t len)
     LOGERROR("Session error: " << e.what());
     
     delete_session(client_session_id_);
+  }
+}
+
+session_t source::get_session(int s)
+{
+  if (client_session_)
+  {
+    return client_session_;
   }
 }
 
