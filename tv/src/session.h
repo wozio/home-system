@@ -40,6 +40,7 @@ public:
   void stream_part(const void* buf, size_t length);
   void play();
   void pause();
+  void seek(long long pos);
   
 private:
   int id_;

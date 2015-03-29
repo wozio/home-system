@@ -139,6 +139,12 @@ void tv_service::on_msg(yami::incoming_message& im)
       int s = im.get_parameters().get_integer("session");
       source::source_for_session(s)->get_session(s)->play();
     }
+    else if (im.get_message_name() == "seek_session")
+    {
+      int s = im.get_parameters().get_integer("session");
+      long long position = im.get_parameters().get_long_long("position");
+      source::source_for_session(s)->get_session(s)->seek(position);
+    }
     else if (im.get_message_name() == "hello")
     {
       LOG("Some client said hello, waking up sources");

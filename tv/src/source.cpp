@@ -138,6 +138,7 @@ session_t source::get_session(int s)
   {
     return client_session_;
   }
+  throw runtime_error("Unknown session");
 }
 
 }

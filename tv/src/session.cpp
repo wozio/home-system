@@ -13,8 +13,8 @@ namespace home_system
 namespace media
 {
 
-//#define MAX_BUFFER_SIZE 2147483648 // 2GB
-#define MAX_BUFFER_SIZE 20971520 // 20MB
+#define MAX_BUFFER_SIZE 1142278 // around 2000MB
+//#define MAX_BUFFER_SIZE 20971520 // 20MB
 
 session::session(int id, std::string endpoint, std::string destination)
 : id_(id),
@@ -53,7 +53,7 @@ void session::stream_part(const void* buf, size_t length)
   
   streampos len = length;
   
-  LOG("RECEIVED: " << len << " writepos=" << writepos_ << " readpos=" << dec << readpos_);
+  //LOG("RECEIVED: " << len << " writepos=" << writepos_ << " readpos=" << dec << readpos_);
   
   if (readpos_ > writepos_)
   {
@@ -85,20 +85,35 @@ void session::stream_part(const void* buf, size_t length)
     writepos_ += len;
   }
 
-  LOG("RECV: writepos=" << dec << writepos_ << " readpos=" << dec << readpos_);
+  //LOG("RECV: writepos=" << dec << writepos_ << " readpos=" << dec << readpos_);
 
   trigger_send_some();
 }
 
 void session::play()
 {
+  LOG("Play for session " << id_);
   playing_ = true;
   trigger_send_some();
 }
 
 void session::pause()
 {
+  LOG("Pause for session " << id_);
   playing_ = false;
+}
+
+void session::seek(long long pos)
+{
+  LOG("Seek for session " << id_ << " to position " << pos);
+  
+  
+  
+  lock_guard<mutex> lock(m_mutex);
+  
+  yami::parameters params;
+  params.set_integer("session", id_);
+  YC.agent().send(endpoint_, destination_, "clear_stream", params);
 }
 
 void session::trigger_send_some()
@@ -113,10 +128,9 @@ void session::trigger_send_some()
 
 void session::send_some()
 {
+  lock_guard<mutex> lock(m_mutex);
   if (playing_)
   {
-    lock_guard<mutex> lock(m_mutex);
-    
     send();
     
     streamsize end;
@@ -141,7 +155,7 @@ void session::send()
 {
   try
   {
-    LOG("SENDING: writepos=" << dec << writepos_ << " readpos=" << dec << readpos_);
+    //LOG("SENDING: writepos=" << dec << writepos_ << " readpos=" << dec << readpos_);
     
     if (readpos_ == writepos_)
     {
@@ -178,6 +192,9 @@ void session::send()
       yami::parameters params;
       params.set_binary("payload", buf, len);
       params.set_integer("session", id_);
+      streampos size;
+      full_ ? size = MAX_BUFFER_SIZE : size = writepos_;
+      params.set_integer("buffer_size", size);
 
       YC.agent().send(endpoint_, destination_, "stream_part", params);
 
@@ -188,7 +205,7 @@ void session::send()
         readpos_ = 0;
       }
     }
-    LOG("SEND: writepos=" << dec << writepos_ << " readpos=" << dec << readpos_);
+    //LOG("SEND: writepos=" << dec << writepos_ << " readpos=" << dec << readpos_);
   }
   catch (const std::exception& e)
   {
