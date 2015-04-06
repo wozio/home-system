@@ -51,25 +51,19 @@ void session::stream_part(const void* buf, size_t length)
 {
   lock_guard<mutex> lock(m_mutex);
   
-  streampos len = length;
+  streampos to_write = length;
   
   //LOG("RECEIVED: " << len << " writepos=" << writepos_ << " readpos=" << dec << readpos_);
   
-  if (readpos_ > writepos_)
-  {
-    while (writepos_ + len > readpos_)
-    {
-      send();
-    }
-  }
-  
   buffer_.seekp(writepos_);
 
-  if (writepos_ + len > MAX_BUFFER_SIZE)
+  if (writepos_ + to_write > MAX_BUFFER_SIZE)
   {
-    streampos to_write = MAX_BUFFER_SIZE - writepos_;
-    buffer_.write((const char*) buf, to_write);
-    buffer_.seekp(0);
+    if (writepos_ < readpos_)
+    {
+      
+    }
+    buffer_.write((const char*) buf, MAX_BUFFER_SIZE - writepos_);
     writepos_ = 0;
     while (writepos_ + len - to_write > readpos_)
     {
