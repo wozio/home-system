@@ -13,8 +13,8 @@ namespace home_system
 namespace media
 {
 
-#define MAX_BUFFER_SIZE 1142278 // around 2000MB
-//#define MAX_BUFFER_SIZE 20971520 // 20MB
+//#define MAX_BUFFER_SIZE 2147483648 // 2GB
+#define MAX_BUFFER_SIZE 20971520 // 20MB
 
 session::session(int id, std::string endpoint, std::string destination)
 : id_(id),
@@ -51,35 +51,61 @@ void session::stream_part(const void* buf, size_t length)
 {
   lock_guard<mutex> lock(m_mutex);
   
+  char* mybuf = (char*)buf;
+  
   streampos to_write = length;
   
-  //LOG("RECEIVED: " << len << " writepos=" << writepos_ << " readpos=" << dec << readpos_);
+  LOG("RECEIVED: " << length << " writepos=" << writepos_ << " readpos=" << dec << readpos_);
   
   buffer_.seekp(writepos_);
 
   if (writepos_ + to_write > MAX_BUFFER_SIZE)
   {
-    if (writepos_ < readpos_)
+    // when buffer is full write position must never pass read position
+    // so enough bytes is sent to free space
+    if (full_)
     {
-      
+      if (writepos_ < readpos_)
+      {
+        // it must not be equal since in such case there is no way to distinguish
+        // if read pos should be behind or in front of write pos
+        while (writepos_ + to_write >= readpos_)
+        {
+          send();
+        }
+      }
     }
-    buffer_.write((const char*) buf, MAX_BUFFER_SIZE - writepos_);
+    // from current write pos to end of the buffer
+    streampos to_write_here = MAX_BUFFER_SIZE - writepos_;
+    buffer_.write(mybuf, to_write_here);
+    // decrement number of bytes to write by already written amount
+    to_write -= to_write_here;
+    // move pointer in the buffer
+    mybuf += to_write_here;
+    // set write pointer to beggining of the file
+    buffer_.seekp(writepos_);
     writepos_ = 0;
-    while (writepos_ + len - to_write > readpos_)
-    {
-      send();
-    }
-    buffer_.write(((const char*) buf + to_write), len - to_write);
-    writepos_ = len - to_write;
     full_ = true;
   }
-  else
+  // when buffer is full write position must never pass read position
+  // so enough bytes is sent to free space
+  if (full_)
   {
-    buffer_.write((const char*) buf, len);
-    writepos_ += len;
+    if (writepos_ < readpos_)
+    {
+      // it must not be equal since in such case there is no way to distinguish
+      // if read pos should be behind or in front of write pos
+      while (writepos_ + to_write >= readpos_)
+      {
+        send();
+      }
+    }
   }
+  
+  buffer_.write(mybuf, to_write);
+  writepos_ += to_write;
 
-  //LOG("RECV: writepos=" << dec << writepos_ << " readpos=" << dec << readpos_);
+  LOG("RECV: writepos=" << dec << writepos_ << " readpos=" << dec << readpos_);
 
   trigger_send_some();
 }
@@ -100,8 +126,6 @@ void session::pause()
 void session::seek(long long pos)
 {
   LOG("Seek for session " << id_ << " to position " << pos);
-  
-  
   
   lock_guard<mutex> lock(m_mutex);
   
@@ -149,7 +173,7 @@ void session::send()
 {
   try
   {
-    //LOG("SENDING: writepos=" << dec << writepos_ << " readpos=" << dec << readpos_);
+    LOG("SENDING: writepos=" << dec << writepos_ << " readpos=" << dec << readpos_);
     
     if (readpos_ == writepos_)
     {
@@ -199,7 +223,7 @@ void session::send()
         readpos_ = 0;
       }
     }
-    //LOG("SEND: writepos=" << dec << writepos_ << " readpos=" << dec << readpos_);
+    LOG("SEND: writepos=" << dec << writepos_ << " readpos=" << dec << readpos_);
   }
   catch (const std::exception& e)
   {
