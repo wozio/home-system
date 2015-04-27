@@ -15,7 +15,8 @@ namespace media
 
 channels::channels(const std::string& channels_file, transponders& to)
 : transponders_(to),
-  current_(channels_.begin())
+  current_(channels_.begin()),
+  channels_file_(channels_file)
 {
   // parsing channels file for creating channel for each entry
   LOG("Channel definition file: " << channels_file);
@@ -80,6 +81,13 @@ channels::channels(const std::string& channels_file, transponders& to)
 
 channels::~channels()
 {
+  LOG("Saving channels list");
+  
+  ofstream f(channels_file_, ios_base::trunc);
+  for (auto c : channels_)
+  {
+    c.second->save(f);
+  }
 }
 
 void channels::set_channel_callback(channel_callback_t callback)

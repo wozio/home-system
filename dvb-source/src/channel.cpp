@@ -51,6 +51,13 @@ void channel::print()
   cout << hex << id_ << " " << name_ << " transponder: " << transponder_ << endl;
 }
 
+void channel::save(std::ostream& str)
+{
+  transponder_->save(str);
+  str << name_ << endl;
+  str << id_ << endl;
+}
+
 }
 }
 

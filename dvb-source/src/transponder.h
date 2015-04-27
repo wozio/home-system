@@ -23,6 +23,7 @@ public:
   
   virtual void tune(int fd) = 0;
   virtual void print(std::ostream& str) const = 0;
+  virtual void save(std::ostream& str) const = 0;
   virtual bool isless(const transponder* right) = 0;
   
   void add_channel(channel_t c);  

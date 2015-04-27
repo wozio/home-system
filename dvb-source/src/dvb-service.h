@@ -45,6 +45,7 @@ private:
   std::deque<demux::event_info> bundle_;
   timer bundle_timer_;
   void on_bundle_timer();
+  std::mutex ei_mutex_;
   
   size_t session_;
   std::string endpoint_, destination_;

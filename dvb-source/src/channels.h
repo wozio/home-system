@@ -50,6 +50,7 @@ private:
   channels_t channels_;
   
   channels_t::iterator current_;
+  std::string channels_file_;
 };
 
 }

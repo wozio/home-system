@@ -347,7 +347,7 @@ void demux::check_sdt(section* s)
               switch (sd->service_type)
               {
               case DVB_SERVICE_TYPE_DIGITAL_TV:
-              case DVB_SERVICE_TYPE_DIGITAL_RADIO:
+              //case DVB_SERVICE_TYPE_DIGITAL_RADIO:
               case DVB_SERVICE_TYPE_MPEG2_HD_DIGITAL_TV:
               case DVB_SERVICE_TYPE_ADVANCED_CODEC_SD_DIGITAL_TV:
               case DVB_SERVICE_TYPE_ADVANCED_CODEC_HD_DIGITAL_TV:
@@ -370,7 +370,7 @@ void demux::check_sdt(section* s)
                       
                       string name(outbuf, outbufp - outbuf);
 
-                      LOG(hex << "Local channel ID: " << nid << ", name: " << name);
+                      //LOG(hex << "Local channel ID: " << nid << ", name: " << name);
                       channels_.add(nid, name, curser->service_id);
                       //if (channels_.count(nid))
                       //{

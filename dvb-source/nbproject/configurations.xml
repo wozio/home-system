@@ -56,7 +56,7 @@
   <confs>
     <conf name="Debug" type="1">
       <toolsSet>
-        <compilerSet>GNU_4.7.3|GNU</compilerSet>
+        <compilerSet>default</compilerSet>
         <dependencyChecking>true</dependencyChecking>
         <rebuildPropChanged>false</rebuildPropChanged>
       </toolsSet>
@@ -103,6 +103,7 @@
             <linkerLibLibItem>yamicpp</linkerLibLibItem>
             <linkerLibLibItem>yamicore</linkerLibLibItem>
             <linkerLibLibItem>pthread</linkerLibLibItem>
+            <linkerLibLibItem>PocoNet</linkerLibLibItem>
           </linkerLibItems>
         </linkerTool>
       </compileType>

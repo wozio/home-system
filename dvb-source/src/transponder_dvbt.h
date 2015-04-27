@@ -20,6 +20,7 @@ public:
   void tune(int fd);
   void print(std::ostream& str) const;
   bool isless(const transponder* right);
+  void save(std::ostream& str) const;
 private:
   
   void parse(const std::vector<std::string>& fields);

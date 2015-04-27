@@ -18,6 +18,7 @@ public:
   
   void tune(int fd);
   void print(std::ostream& str) const;
+  void save(std::ostream& str) const;
 private:
   fe_rolloff rolloff_;
   fe_modulation mod_;

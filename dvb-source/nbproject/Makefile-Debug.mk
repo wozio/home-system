@@ -21,7 +21,7 @@ FC=gfortran
 AS=as
 
 # Macros
-CND_PLATFORM=GNU_4.7.3-Linux-x86
+CND_PLATFORM=GNU-Linux-x86
 CND_DLIB_EXT=so
 CND_CONF=Debug
 CND_DISTDIR=dist
@@ -66,7 +66,7 @@ FFLAGS=
 ASFLAGS=
 
 # Link Libraries and Options
-LDLIBSOPTIONS=-L../common/yami4/lib -ldvbapi -ldvbcfg -ldvbsec -lucsi -lboost_date_time -lboost_program_options -lboost_system ../common/common/../bin/Debug/libcommon.a -lyamicpp -lyamicore -lpthread
+LDLIBSOPTIONS=-L../common/yami4/lib -ldvbapi -ldvbcfg -ldvbsec -lucsi -lboost_date_time -lboost_program_options -lboost_system ../common/common/../bin/Debug/libcommon.a -lyamicpp -lyamicore -lpthread -lPocoNet
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}

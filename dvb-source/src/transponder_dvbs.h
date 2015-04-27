@@ -20,6 +20,7 @@ public:
   void tune(int fd);
   void print(std::ostream& str) const;
   bool isless(const transponder* right);
+  void save(std::ostream& str) const;
 protected:
   unsigned long frequency_;
   polarization polarization_;

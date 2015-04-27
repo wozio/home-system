@@ -44,6 +44,7 @@ fe_code_rate to_fec(const std::string& str)
   fec_map["8/9"]  = FEC_8_9;
   fec_map["AUTO"] = FEC_AUTO;
   fec_map["3/5"]  = FEC_3_5;
+  fec_map["2/5"]  = FEC_2_5;
   fec_map["9/10"] = FEC_9_10;
   auto i = fec_map.find(str);
   if (i != fec_map.end())
