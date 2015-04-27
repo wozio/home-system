@@ -52,11 +52,13 @@ def run():
   while cont:
     try:
       msg = sock.recv(10240).split('\n')
-      if (msg[0] == "notify"): handle_notify(msg)
-      elif (msg[0] == "hello"): handle_hello(msg)
-      elif (msg[0] == "bye"): handle_bye(msg)
-      else: logging.warning("Unknown message: " + msg)
-    except socket.timeout:
+#      logging.debug("Message: " + '||'.join(msg))
+      if (len(msg) > 0):
+        if (msg[0] == "notify"): handle_notify(msg)
+        elif (msg[0] == "hello"): handle_hello(msg)
+        elif (msg[0] == "bye"): handle_bye(msg)
+        else: logging.warning("Unknown message: " + '||'.join(msg))
+    except:
       pass
 
 def store_service(service, endpoint):

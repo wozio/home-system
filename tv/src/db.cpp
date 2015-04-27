@@ -179,5 +179,13 @@ int db::create_recording(int channel, time_t start_time, int duration)
   return id;
 }
 
+std::string db::get_channel_name(int channel)
+{
+  string name;
+  session() << "SELECT name FROM names WHERE channel = :channel",
+    into(name), use(channel), now;
+  return name;
+}
+
 }
 }

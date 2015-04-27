@@ -1,8 +1,10 @@
 #ifndef SESSION_H
 #define	SESSION_H
 
-#include "sources.h"
+#include "ios_wrapper.h"
 #include <string>
+#include <stdexcept>
+#include <fstream>
 
 namespace home_system
 {
@@ -31,23 +33,40 @@ private:
 class session
 {
 public:
-  session(sources& sources, int id, int channel, std::string endpoint, std::string destination);
+  session(int id, std::string endpoint, std::string destination);
   session(const session& orig) = delete;
   ~session();
   
+  void stream_part(const void* buf, size_t length);
+  void play();
+  void pause();
+  void seek(long long pos);
+  
 private:
-  sources& sources_;
   int id_;
   int channel_;
   std::string endpoint_;
   std::string destination_;
-  source_t source_;
   
-  void handle_stream_part(const void* buf, size_t length);
+  bool playing_;
+  std::streampos readpos_, writepos_;
+  bool full_;
+  std::fstream buffer_;
+  
+  ios_wrapper ios_;
+  
+  void trigger_send_some();
+  void send_some();
+  void send();
+  
+  std::streampos size();
+  std::streampos read_pos();
+  std::streampos write_pos();
+  
+  std::mutex m_mutex;
 };
 
 }
 }
 
 #endif	/* SESSION_H */
-

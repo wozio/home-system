@@ -3,17 +3,22 @@
 
 #include "source.h"
 #include "db.h"
-#include <memory>
-#include <map>
 
-#define SOURCES home_system::media::sources::instance()
 
 namespace home_system
 {
 namespace media
 {
 
-typedef std::shared_ptr<source> source_t;
+class source_not_found
+: public std::runtime_error
+{
+public:
+  source_not_found()
+    : std::runtime_error("Source not found or not available")
+    {
+    }
+};
 
 class sources
 {
@@ -21,10 +26,15 @@ public:
   sources(db& db);
   ~sources();
 
+  bool check_source(const std::string& service);
+  
   void source_available(const std::string& service, const std::string& ye);
-  source_t get_source_for_channel(int channel);
-  void handle_stream_part(const std::string& source_endpoint, int source_session, const void* buf, size_t length);
-  void handle_session_deleted(const std::string& source_endpoint, int source_session);
+  void source_not_available(const std::string& service);
+  
+  int create_session(int channel, const std::string& client_endpoint, const std::string& client);
+  void delete_session(int client_session);
+  
+  source_t operator[](const std::string& source);
   
 private:
   db& db_;

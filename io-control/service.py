@@ -5,6 +5,7 @@ import struct
 import threading
 import logging
 import yami
+from random import randint
 
 class service(object):
   def __init__(self, name):
@@ -17,7 +18,7 @@ class service(object):
     self.ye = self.agent.add_listener("tcp://" + ip + ":*")
     self.agent.register_object(self.name, self.on_msg)
     
-    self.timer = threading.Timer(10, self.on_timeout)
+    self.timer = threading.Timer(randint(1, 5), self.on_timeout)
     self.timer.start()
     
     self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
@@ -49,7 +50,7 @@ class service(object):
     self.send("bye\n" + self.name)
 
   def on_timeout(self):
-    self.timer = threading.Timer(5, self.on_timeout)
+    self.timer = threading.Timer(randint(1, 5), self.on_timeout)
     self.timer.start()
     
     self.send_notify()

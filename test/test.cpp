@@ -27,6 +27,15 @@ public:
     service("test"),
     received_(0)
   {
+    DISCOVERY.subscribe([&] (const string& service, bool available)
+    {
+      if (available && service == "tv")
+      {
+        LOG("TV service available, registering as client");
+        
+        AGENT.send(DISCOVERY.get("tv"), "tv", "hello");
+      }
+    });
   }
   ~test_service(){};
 
@@ -37,13 +46,15 @@ public:
     params.set_integer("channel", channel);
     params.set_string("destination", "test");
     params.set_string("endpoint", YC.endpoint());
-
-    unique_ptr<yami::outgoing_message> message(AGENT.send(DISCOVERY.get("tv"), "tv", "create_client_session", params));
-
+    
+    LOG("[CLIENT] Create session for channel: " << channel);
+    
+    unique_ptr<yami::outgoing_message> message(AGENT.send(DISCOVERY.get("tv"), "tv", "create_session", params));
+    
     message->wait_for_completion(1000);
-
     if (message->get_state() == yami::replied)
     {
+      LOG("[CLIENT] Session created: " << message->get_reply().get_integer("session"));
       return message->get_reply().get_integer("session");
     }
     return -1;
@@ -51,13 +62,35 @@ public:
   
   void stop(int session)
   {
+    LOG("[CLIENT] Delete session: " << session);
+    
     yami::parameters params;
 
     params.set_integer("session", session);
 
-    unique_ptr<yami::outgoing_message> message(AGENT.send(DISCOVERY.get("tv"), "tv", "delete_client_session", params));
+    AGENT.send(DISCOVERY.get("tv"), "tv", "delete_session", params);
+  }
+  
+  void pause(int session)
+  {
+    LOG("[CLIENT] Pause session: " << session);
     
-    message->wait_for_completion(1000);
+    yami::parameters params;
+
+    params.set_integer("session", session);
+
+    AGENT.send(DISCOVERY.get("tv"), "tv", "pause_session", params);
+  }
+  
+  void play(int session)
+  {
+    LOG("[CLIENT] Play session: " << session);
+    
+    yami::parameters params;
+
+    params.set_integer("session", session);
+
+    AGENT.send(DISCOVERY.get("tv"), "tv", "play_session", params);
   }
   
   void change(int session, int channel)
@@ -79,17 +112,16 @@ public:
 
         received_ += len;
         
-        static int m = 0;
-        if (++m == 10)
-        {
-          m = 0;
-          LOG("Received " << received_ << " bytes");
-        }
+        LOG("Received " << len << " bytes, total: " << received_);
       }
       catch (const std::exception& e)
       {
         LOG("Exception: " << e.what());
       }
+    }
+    else if (im.get_message_name() == "session_deleted")
+    {
+      LOG("[CLIENT] session deleted");
     }
     else
     {
@@ -99,6 +131,73 @@ public:
 };
 
 test_service* s;
+
+class source_service
+  : public home_system::service
+{
+private:
+  string destination;
+  string endpoint;
+  
+public:
+  source_service()
+  : service("test-source")
+  {
+    DISCOVERY.subscribe([&] (const string& service, bool available)
+    {
+      if (available && service == "tv")
+      {
+        LOG("TV service available, registering as source");
+        
+        yami::parameters params;
+
+        params.set_string("name", service::name());
+
+        params.create_string_array("channel_names", 1);
+        params.set_string_in_array("channel_names", 0, "test channel");
+
+        vector<long long> ids;
+        ids.push_back(12345);
+        params.set_long_long_array("channel_ids", &ids[0], ids.size());
+        
+        AGENT.send(DISCOVERY.get("tv"), "tv", "source_available", params);
+      }
+    });
+  }
+  ~source_service(){};
+
+  void on_msg(yami::incoming_message & im)
+  {
+    if (im.get_message_name() == "create_session")
+    {
+      long long channel = im.get_parameters().get_long_long("channel");
+      destination = im.get_parameters().get_string("destination");
+      endpoint = im.get_parameters().get_string("endpoint");
+      
+      LOG("[SOURCE] Create source session: " << channel << " " << destination << " " << endpoint);
+      
+      yami::parameters params;
+      params.set_integer("session", 4321);
+      im.reply(params);
+    }
+    else if (im.get_message_name() == "delete_session")
+    {
+      int session = im.get_parameters().get_integer("session");
+      
+      LOG("[SOURCE] Delete source session: " << session);
+      
+      yami::parameters params;
+
+      params.set_integer("session", session);
+
+      AGENT.send(endpoint, destination, "session_deleted", params);
+    }
+    else
+    {
+      home_system::service::on_msg(im);
+    }
+  }
+};
 
 void cmd_handler(const std::vector<string>& fields)
 {
@@ -172,6 +271,36 @@ void cmd_handler(const std::vector<string>& fields)
         {
           int session = boost::lexical_cast<int>(fields[1]);
           s->stop(session);
+        }
+        catch (const std::exception& e)
+        {
+          LOG("EXCEPTION: " << e.what());
+        }
+      }
+    }
+    else if (fields[0] == "pause")
+    {
+      if (fields.size() > 1)
+      {
+        try
+        {
+          int session = boost::lexical_cast<int>(fields[1]);
+          s->pause(session);
+        }
+        catch (const std::exception& e)
+        {
+          LOG("EXCEPTION: " << e.what());
+        }
+      }
+    }
+    else if (fields[0] == "play")
+    {
+      if (fields.size() > 1)
+      {
+        try
+        {
+          int session = boost::lexical_cast<int>(fields[1]);
+          s->play(session);
         }
         catch (const std::exception& e)
         {
@@ -376,15 +505,19 @@ int main(int argc, char** argv)
   LOG("Started");
 
   _yc = home_system::yami_container::create();
-  _discovery = home_system::discovery::create();
+  _discovery = home_system::discovery::create([] (const std::string& msg) { LOG("discovery: " << msg); });
 
-  s = new test_service;
+  unique_ptr<test_service> s(new test_service());
+  unique_ptr<source_service> ss(new source_service());
 
   home_system::app app(false, cmd_handler);
 
   app.run();
 
   LOG("Quitting");
+  
+  s.reset();
+  ss.reset();
 
   _discovery.reset();
   _yc.reset();
