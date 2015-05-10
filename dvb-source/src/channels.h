@@ -3,9 +3,8 @@
 
 #include "channel.h"
 #include "transponders.h"
-#include <map>
-#include <vector>
 #include <functional>
+#include <map>
 
 namespace home_system
 {
@@ -38,6 +37,18 @@ public:
   
   typedef std::function<void (channel_event, channel_t)> channel_callback_t;
   void set_channel_callback(channel_callback_t callback = nullptr);
+  
+  struct channel_data_t
+  {
+    uint64_t id;
+    std::string name;
+    uint16_t service_id;
+  };
+  
+  typedef std::map<uint64_t, channel_data_t> channel_data_list_t;
+  
+  // sets list of channels for current transponder
+  void set_channels(channel_data_list_t& channel_data_list);
   
 private:
   channels(const channels& o)

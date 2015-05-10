@@ -5,6 +5,7 @@
 #include "channel_t.h"
 #include <memory>
 #include <string>
+#include <vector>
 
 namespace home_system
 {
