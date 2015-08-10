@@ -43,6 +43,7 @@ void temp::send_convert()
 
 void temp::read_temp()
 {
+owSerialNum(portnum_, &serial_num_[0], FALSE);
   // access the device
   if (owAccess(portnum_))
   {

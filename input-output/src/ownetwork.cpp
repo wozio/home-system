@@ -116,7 +116,7 @@ void net::send_request()
     devices_[i].send_convert();
   }
   
-  timer_.set_from_now(1000, [this](){ read_temp(); });
+  timer_.set_from_now(2000, [this](){ read_temp(); });
 }
 
 void net::read_temp()
@@ -127,7 +127,7 @@ void net::read_temp()
   {
     devices_[i].read_temp();
   }
-  timer_.set_from_now(9000, [this](){ send_request(); });
+  timer_.set_from_now(13000, [this](){ send_request(); });
 }
 
 void net::get_input_history(int input, std::vector<double>& history)
