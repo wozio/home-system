@@ -47,6 +47,8 @@ private:
   timer timer_;
   void set_timer(int duration);
   
+  timer check_signal_timer_;
+  
   void check();
   void open_adapter();
   void check_tunning();

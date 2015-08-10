@@ -326,7 +326,7 @@ void demux::check_sdt(section* s)
   dvb_sdt_section* sdtsec = dvb_sdt_section_codec(section_ext);
   if (sdtsec != NULL)
   {
-    
+    channels::channel_data_list_t transponder_channels;
     uint64_t onid = sdtsec->original_network_id;
     uint64_t tsid = dvb_sdt_section_transport_stream_id(sdtsec);
     dvb_sdt_service* curser;
@@ -347,7 +347,7 @@ void demux::check_sdt(section* s)
               switch (sd->service_type)
               {
               case DVB_SERVICE_TYPE_DIGITAL_TV:
-              case DVB_SERVICE_TYPE_DIGITAL_RADIO:
+              //case DVB_SERVICE_TYPE_DIGITAL_RADIO:
               case DVB_SERVICE_TYPE_MPEG2_HD_DIGITAL_TV:
               case DVB_SERVICE_TYPE_ADVANCED_CODEC_SD_DIGITAL_TV:
               case DVB_SERVICE_TYPE_ADVANCED_CODEC_HD_DIGITAL_TV:
@@ -371,23 +371,12 @@ void demux::check_sdt(section* s)
                       string name(outbuf, outbufp - outbuf);
 
                       LOG(hex << "Local channel ID: " << nid << ", name: " << name);
-                      channels_.add(nid, name, curser->service_id);
-                      //if (channels_.count(nid))
-                      //{
-                        //channels_[nid].frequency_ = current_transponder_;
-                        //channels_[nid].name_ = string(outbuf, outbufp - outbuf);
-                        //channels_[nid].service_id_ = curser->service_id;
-                      //}
-                      //else
-                      //{
-                        //channel new_ch;
-                        //new_ch.frequency_ = current_transponder_;
-                        //new_ch.name_ = string(outbuf, outbufp - outbuf);
-                        //new_ch.service_id_ = curser->service_id;
-                        //new_ch.id_ = (onid << 32) + (tsid << 16) + curser->service_id;
-                        //channels_[new_ch.id_] = new_ch;
-                        //send_new_channel(new_ch.id_);
-                      //}
+                      channels::channel_data_t transponder_channel;
+                      transponder_channel.id = nid;
+                      transponder_channel.name = name;
+                      transponder_channel.service_id = curser->service_id;
+                      transponder_channels[nid] = transponder_channel;
+                      //channels_.add(nid, name, curser->service_id);
                     }
                   }
                   iconv_close(cd);
@@ -399,6 +388,7 @@ void demux::check_sdt(section* s)
         }
       }
     }
+    channels_.set_channels(transponder_channels);
   }
   change_state(demux_state::sdt);
 }

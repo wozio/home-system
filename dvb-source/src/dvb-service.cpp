@@ -47,6 +47,7 @@ void dvb_service::on_ei(const demux::event_info& ei)
 {
   if (tv_service_)
   {
+    lock_guard<mutex> lock(ei_mutex_);
     if (!bundle_timer_.is_set())
     {
       bundle_timer_.set_from_now(1000, [this](){ on_bundle_timer(); });
@@ -59,6 +60,8 @@ void dvb_service::on_bundle_timer()
 {
   try
   {
+    lock_guard<mutex> lock(ei_mutex_);
+    
     yami::parameters params;
     params.set_string("source", name());
       
@@ -241,7 +244,7 @@ void dvb_service::on_msg(yami::incoming_message & im)
 //      im.reject("Unknown channel id");
 //    }
   }
-  else if (im.get_message_name() == "create_streaming_session")
+  else if (im.get_message_name() == "create_session")
   {
     long long channel = im.get_parameters().get_long_long("channel");
     destination_ = im.get_parameters().get_string("destination");
@@ -253,7 +256,7 @@ void dvb_service::on_msg(yami::incoming_message & im)
     reply.set_integer("session", 0);
     im.reply(reply);
   }
-  else if (im.get_message_name() == "delete_streaming_session")
+  else if (im.get_message_name() == "delete_session")
   {
     on_delete_streaming_session(0);
   }
@@ -270,6 +273,7 @@ void dvb_service::on_stream_part(size_t size, char* buffer)
     yami::parameters params;
     params.set_binary("payload", static_cast<const void*>(buffer), size);
     params.set_integer("session", 0);
+    params.set_string("source", name_);
     
     YC.agent().send(endpoint_, destination_, "stream_part", params);
   }

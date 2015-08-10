@@ -86,5 +86,10 @@ bool transponder_dvbt::isless(const transponder* right)
   return false;
 }
 
+void transponder_dvbt::save(std::ostream& str) const
+{
+  
+}
+
 }
 }

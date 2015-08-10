@@ -5,6 +5,7 @@
 #include "channel_t.h"
 #include <memory>
 #include <string>
+#include <vector>
 
 namespace home_system
 {
@@ -29,6 +30,7 @@ public:
   uint16_t service_id();
   
   void print();
+  void save(std::ostream& str);
 private:
   uint64_t id_;
   std::string name_;

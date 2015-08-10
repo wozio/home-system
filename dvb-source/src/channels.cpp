@@ -15,7 +15,8 @@ namespace media
 
 channels::channels(const std::string& channels_file, transponders& to)
 : transponders_(to),
-  current_(channels_.begin())
+  current_(channels_.begin()),
+  channels_file_(channels_file)
 {
   // parsing channels file for creating channel for each entry
   LOG("Channel definition file: " << channels_file);
@@ -32,7 +33,6 @@ channels::channels(const std::string& channels_file, transponders& to)
   shared_ptr<transponder> t;
   string cname;
   uint64_t cid;
-  shared_ptr<channel> c;
   while (f.good())
   {
     getline(f, line);
@@ -63,7 +63,9 @@ channels::channels(const std::string& channels_file, transponders& to)
         try
         {
           cid = boost::lexical_cast<uint64_t>(line);
-          channels_[cid] = make_shared<channel>(cid, cname, t);
+          channel_t new_channel = make_shared<channel>(cid, cname, t);
+          channels_[cid] = new_channel;
+          t->add_channel(new_channel);
         }
         catch (const boost::bad_lexical_cast& e)
         {
@@ -80,6 +82,13 @@ channels::channels(const std::string& channels_file, transponders& to)
 
 channels::~channels()
 {
+  LOG("Saving channels list");
+  
+  ofstream f(channels_file_, ios_base::trunc);
+  for (auto c : channels_)
+  {
+    c.second->save(f);
+  }
 }
 
 void channels::set_channel_callback(channel_callback_t callback)
@@ -97,12 +106,49 @@ channel_t channels::get(uint64_t id)
 
 void channels::add(uint64_t id, const std::string& name, uint16_t service_id)
 {
-  channel_t nc = make_shared<channel>(id, name, transponders_.current(), service_id);
-  channels_[id] = nc;
-  transponders_.current()->add_channel(nc);
-  if (channel_callback_ != nullptr)
+  if (channels_.find(id) == channels_.end())
   {
-    channel_callback_(channel_event::added, nc);
+    LOG("Channel added: " << id << " " << name);
+    channel_t nc = make_shared<channel>(id, name, transponders_.current(), service_id);
+    channels_[id] = nc;
+    transponders_.current()->add_channel(nc);
+    if (channel_callback_ != nullptr)
+    {
+      channel_callback_(channel_event::added, nc);
+    }
+  }
+}
+
+void channels::set_channels(channel_data_list_t& channel_data_list)
+{
+  auto transponder = transponders_.current();
+  std::vector<channel_t> transponder_channels;
+  transponder->get_channels(transponder_channels);
+  // channel_data_list is actual list of channels present on transponder
+  for (auto c : transponder_channels)
+  {
+    auto cid = c->get_id();
+    if (channel_data_list.find(cid) == channel_data_list.end())
+    {
+      LOG("Channel to erase: " << c->get_name());
+      // it is on list from transponder but not on actual list
+      // remove it from transponder
+      transponder->remove_channel(cid);
+      // and from channel list
+      channels_.erase(cid);
+    }
+    else
+    {
+      LOG("Channel known: " << c->get_name());
+    }
+    // remove from actual list as it is checked
+    channel_data_list.erase(cid);
+  }
+  // remaining channels are to add
+  for (auto c : channel_data_list)
+  {
+    LOG("Channel to add: " << c.second.name);
+    add(c.second.id, c.second.name, c.second.service_id);
   }
 }
 

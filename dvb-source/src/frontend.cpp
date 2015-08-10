@@ -106,6 +106,7 @@ void frontend::set_transponder(std::shared_ptr<transponder> transponder)
   {
     LOG("Setting to transponder: " << transponder);
     transponder_ = transponder;
+    check_signal_timer_.cancel();
     change_state(frontend_state::tunning);
     transponder->tune(fe_);
     set_timer(100);
@@ -131,7 +132,8 @@ void frontend::check_tunning()
     {
       LOG("We have lock");
       change_state(frontend_state::tuned);
-//      set_timer(5000);
+      
+      check_signal_timer_.set_from_now(1000, [&] (){check_signal();});
     }
     else
     {
@@ -142,6 +144,7 @@ void frontend::check_tunning()
 
 void frontend::check_signal()
 {
+  bool dolog = false;
   ostringstream str;
   fe_status_t status;
 
@@ -149,6 +152,9 @@ void frontend::check_signal()
   {
     LOGWARN("FE_READ_STATUS failed");
   }
+  
+  if (!(status & FE_HAS_LOCK))
+    dolog = true;
 
   str << "status: " <<
     (status & FE_HAS_SIGNAL ? "S" : "_") <<
@@ -188,13 +194,17 @@ void frontend::check_signal()
     {
       LOGWARN("FE_READ_UNCORRECTED_BLOCKS failed");
     }
+    
+    if (ber || ublocks)
+      dolog = true;
 
     str << " ber: " << hex << showbase << setw(4) << setfill('0') << ber <<
       " unc: " << hex << showbase << setw(4) << setfill('0') << ublocks;
   }
-  LOG(str.str());
+  if (dolog)
+    LOG(str.str());
   
-//  set_timer(5000);
+  check_signal_timer_.set_from_now(1000, [&] (){check_signal();});
 }
 
 }
