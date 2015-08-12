@@ -44,7 +44,13 @@ void temp::send_convert()
   {
     // send the convert command
     if (!owWriteByte(portnum_, 0x44))
-      LOGWARN("Problem writing convert command");
+    {
+      throw std::runtime_error("Problem writing convert command");
+    }
+  }
+  else
+  {
+    throw std::runtime_error("Problem accessing device");
   }
 }
 
@@ -95,7 +101,6 @@ bool temp::read_temp()
         }
         if (cpc == 0)
         {
-          LOGERROR("CPC == 0");
           throw std::runtime_error("CPC == 0");
         }
         else
@@ -103,13 +108,17 @@ bool temp::read_temp()
         
         LOG(serial_num_to_string(serial_num_) << ": " << tmp);
         value_ = tmp;
+        
+        return true;
       }
       else
       {
-        LOGWARN("Wrong CRC");
+        throw std::runtime_error("Wrong CRC");
       }
     }
+    throw std::runtime_error("Sending block failed");
   }
+  throw std::runtime_error("Accessing device failed");
 }
 
 }

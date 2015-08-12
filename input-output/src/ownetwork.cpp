@@ -124,7 +124,9 @@ void net::close()
 {
   if (portnum_ > -1)
   {
+    LOGINFO("Closing One Wire port " << port_);
     owRelease(portnum_);
+    open_fault_logged_ = false;
   }
 }
 
@@ -132,24 +134,53 @@ void net::send_request()
 {
   LOG("Sending requests");
   
-  for (auto device : devices_)
+  try
   {
-    device.second.send_convert();
+    for (auto device : devices_)
+    {
+      device.second.send_convert();
+    }
+
+    timer_.set_from_now(2000, [this](){ read_temp(); });
   }
-  
-  timer_.set_from_now(2000, [this](){ read_temp(); });
+  catch (const std::runtime_error& e)
+  {
+    LOGERROR("Error while sending requests: " << e.what());
+    close();
+    open();
+  }
 }
 
 void net::read_temp()
 {
   LOG("Reading temperature");
   
-  for (auto device : devices_)
+  try
   {
-    device.second.read_temp();
+    bool repeat = false;
+    for (auto device : devices_)
+    {
+      if (!device.second.read_temp())
+      {
+        repeat = true;
+      }
+    }
+    
+    if (repeat)
+    {
+      timer_.set_from_now(500, [this](){ read_temp(); });
+    }
+    else
+    {
+      timer_.set_from_now(13000, [this](){ send_request(); });
+    }
   }
-  
-  timer_.set_from_now(13000, [this](){ send_request(); });
+  catch (const std::runtime_error& e)
+  {
+    LOGERROR("Error while reading temperature: " << e.what());
+    close();
+    open();
+  }
 }
 
 }
