@@ -3,8 +3,9 @@
 
 #include "timer.h"
 #include "owtemp.h"
+#include <map>
 #include <string>
-typedef unsigned char uchar;
+#include <memory>
 
 namespace home_system
 {
@@ -21,7 +22,8 @@ public:
   net(const net&) = delete;
   ~net();
   
-  void get_input_history(int input, std::vector<double>& history);
+  void get_inputs(std::vector<long long> ids);
+  void get_input_value(uint64_t id, double& value);
   
 private:
   std::string port_;
@@ -37,7 +39,7 @@ private:
   void close();
   
   // TODO: other devices than temperature
-  std::vector<temp> devices_;
+  std::map<uint64_t, temp> devices_;
 };
 
 }

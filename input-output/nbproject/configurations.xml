@@ -106,6 +106,7 @@
             </linkerLibProjectItem>
             <linkerLibLibItem>yamicpp</linkerLibLibItem>
             <linkerLibLibItem>yamicore</linkerLibLibItem>
+            <linkerLibLibItem>PocoNet</linkerLibLibItem>
           </linkerLibItems>
         </linkerTool>
         <requiredProjects>

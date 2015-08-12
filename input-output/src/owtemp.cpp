@@ -8,8 +8,6 @@ extern "C"
 #include "ownet.h"
 }
 
-#include <time.h>
-
 using namespace std;
 
 namespace home_system
@@ -19,18 +17,27 @@ namespace input_output
 namespace ow
 {
 
-temp::temp(int portnum, uchar* serial_num)
+temp::temp(int portnum, uint64_t serial_num)
 : portnum_(portnum),
-  serial_num_(serial_num, serial_num + 8),
-  history_(8640) // for 24h more or less
+  serial_num_(serial_num)
 {
   LOG("Created temperature device (DS1920): " << serial_num_to_string(serial_num_));
+}
+
+uint64_t temp::id()
+{
+  return serial_num_;
+}
+
+void temp::get_value(double& value)
+{
+  value = value_;
 }
 
 void temp::send_convert()
 {
   // set the device serial number to the counter device
-  owSerialNum(portnum_, &serial_num_[0], FALSE);
+  owSerialNum(portnum_, (uchar*)&serial_num_, FALSE);
   
   // access the device
   if (owAccess(portnum_))
@@ -41,9 +48,10 @@ void temp::send_convert()
   }
 }
 
-void temp::read_temp()
+bool temp::read_temp()
 {
-owSerialNum(portnum_, &serial_num_[0], FALSE);
+  owSerialNum(portnum_, (uchar*)&serial_num_, FALSE);
+  
   // access the device
   if (owAccess(portnum_))
   {
@@ -82,39 +90,25 @@ owSerialNum(portnum_, &serial_num_[0], FALSE);
         cpc = send_block[8];
         if ((cpc - cr) == 1)
         {
-          LOGWARN("Conversion not ready yet"); // ???
-          return;
+          LOGWARN("Conversion not ready yet");
+          return false;
         }
         if (cpc == 0)
         {
-          LOGWARN("CPC == 0");
-          return;
+          LOGERROR("CPC == 0");
+          throw std::runtime_error("CPC == 0");
         }
         else
           tmp = tmp - (float)0.25 + (cpc - cr)/cpc;
         
-        history_entry nhe;
-        nhe.time_ = time(NULL);
-        nhe.value_ = tmp;
-        history_.push_back(nhe);
         LOG(serial_num_to_string(serial_num_) << ": " << tmp);
+        value_ = tmp;
       }
       else
       {
         LOGWARN("Wrong CRC");
       }
     }
-  }
-}
-
-void temp::get_history(std::vector<double>& history)
-{
-  history.clear();
-  history.reserve(history_.size());
-  
-  for (auto he : history_)
-  {
-    history.push_back(he.value_);
   }
 }
 

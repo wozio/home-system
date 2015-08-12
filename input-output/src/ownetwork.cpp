@@ -30,6 +30,27 @@ net::~net()
 {
 }
 
+void net::get_inputs(std::vector<long long> ids)
+{
+  for (auto device : devices_)
+  {
+    ids.push_back(device.first);
+  }
+}
+
+void net::get_input_value(uint64_t id, double& value)
+{
+  auto device = devices_.find(id);
+  if (device != devices_.end())
+  {
+    device->second.get_value(value);
+  }
+  else
+  {
+    throw std::runtime_error("Device id not found: " + serial_num_to_string(id));
+  }
+}
+
 void net::open()
 {
   if (!open_fault_logged_)
@@ -65,16 +86,16 @@ void net::search()
     // perform the search
     if (!owNext(portnum_, TRUE, FALSE))
       break;
-    uchar serial_num[8];
-    owSerialNum(portnum_, serial_num, TRUE);
+    uint64_t serial_num;
+    owSerialNum(portnum_, (uchar*)&serial_num, TRUE);
     LOG("Found device: " << serial_num_to_string(serial_num));
     // TODO: add other types of devices when needed
-    switch (serial_num[0])
+    switch (serial_num & 0xFF) // family type is on first octet
     {
     case 0x10: // DS1920
       {
         temp dev(portnum_, serial_num);
-        devices_.push_back(dev);
+        devices_.emplace(serial_num, dev);
       }
       break;
     default:
@@ -111,9 +132,9 @@ void net::send_request()
 {
   LOG("Sending requests");
   
-  for (size_t i = 0; i < devices_.size(); i++)
+  for (auto device : devices_)
   {
-    devices_[i].send_convert();
+    device.second.send_convert();
   }
   
   timer_.set_from_now(2000, [this](){ read_temp(); });
@@ -123,16 +144,12 @@ void net::read_temp()
 {
   LOG("Reading temperature");
   
-  for (size_t i = 0; i < devices_.size(); i++)
+  for (auto device : devices_)
   {
-    devices_[i].read_temp();
+    device.second.read_temp();
   }
+  
   timer_.set_from_now(13000, [this](){ send_request(); });
-}
-
-void net::get_input_history(int input, std::vector<double>& history)
-{
-  devices_[0].get_history(history);
 }
 
 }
