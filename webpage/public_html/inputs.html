@@ -1,13 +1,87 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <meta charset="UTF-8" />
     <title>Inputs</title>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="jquery/jquery-1.11.3.min.js"></script>
-    <script src="inputs.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.13.3/react.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.13.3/JSXTransformer.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
   </head>
-  <body onload="onLoad()">
-    <div id="container"></div>
+  <body>
+    <div id="content"></div>
+    <script type="text/jsx">
+      var Input = React.createClass({
+        getInitialState: function() {
+          return {data: []};
+        },
+        componentDidMount: function() {
+          this.loadFromServer();
+          setInterval(this.loadFromServer, 2000);
+        },
+        loadFromServer: function() {
+          $.ajax({
+            url: "/HSA/execute?name=input-output&msg=get_input_value",
+            data: '<hsd><p n="input" t="l">' + this.props.inputId + '</p></hsd>', 
+            type: 'POST',
+            contentType: "text/xml",
+            dataType: "text",
+            success : function(data){
+              var val = $(data).find("p").text();
+              this.setState({data: val});
+            }.bind(this),
+            error : function (xhr, ajaxOptions, thrownError){  
+              console.log(xhr.status);
+              console.log(thrownError);
+            }
+          });
+        },
+        render: function() {
+          return (
+            <div className="input">
+              {this.props.inputId}
+              <h2 className="inputId">
+                {this.state.data}
+              </h2>
+            </div>
+          );
+        }
+      });
+      var InputsBox = React.createClass({
+        getInitialState: function() {
+          return {data: []};
+        },
+        componentDidMount: function() {
+          this.loadFromServer();
+          setInterval(this.loadFromServer, 10000);
+        },
+        loadFromServer: function() {
+          jQuery.get("/HSA/execute?name=input-output&msg=get_inputs")
+          .done(function(xmlData){
+            var data = $(xmlData).find("e").toArray().map(function(elem){
+              return $(elem).text();
+            });
+            data.sort();
+            this.setState({data: data});
+          }.bind(this));
+        },
+        render: function() {
+          var inputNodes = this.state.data.map(function(input) {
+            return (
+              <Input inputId={input}>
+              </Input>
+            );
+          });
+          return (
+            <div className="inputsBox">
+              {inputNodes}
+            </div>
+          );
+        }
+      });
+      React.render(
+        <InputsBox />,
+        document.getElementById('content')
+      );
+    </script>
   </body>
 </html>
