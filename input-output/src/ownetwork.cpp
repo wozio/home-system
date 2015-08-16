@@ -30,25 +30,17 @@ net::~net()
 {
 }
 
-void net::get_inputs(std::vector<long long> ids)
+void net::get_inputs(std::vector<long long>& ids)
 {
-  for (auto device : devices_)
+  for (auto const & device : devices_)
   {
     ids.push_back(device.first);
   }
 }
 
-void net::get_input_value(uint64_t id, double& value)
+float net::get_input_value(uint64_t id)
 {
-  auto device = devices_.find(id);
-  if (device != devices_.end())
-  {
-    device->second.get_value(value);
-  }
-  else
-  {
-    throw std::runtime_error("Device id not found: " + serial_num_to_string(id));
-  }
+  return devices_.at(id).get_value();
 }
 
 void net::open()
@@ -94,8 +86,7 @@ void net::search()
     {
     case 0x10: // DS1920
       {
-        temp dev(portnum_, serial_num);
-        devices_.emplace(serial_num, dev);
+        devices_.emplace(serial_num, temp(portnum_, serial_num));
       }
       break;
     default:
@@ -136,7 +127,7 @@ void net::send_request()
   
   try
   {
-    for (auto device : devices_)
+    for (auto& device : devices_)
     {
       device.second.send_convert();
     }
@@ -157,23 +148,12 @@ void net::read_temp()
   
   try
   {
-    bool repeat = false;
-    for (auto device : devices_)
+    for (auto& device : devices_)
     {
-      if (!device.second.read_temp())
-      {
-        repeat = true;
-      }
+      device.second.read_temp();
     }
     
-    if (repeat)
-    {
-      timer_.set_from_now(500, [this](){ read_temp(); });
-    }
-    else
-    {
-      timer_.set_from_now(13000, [this](){ send_request(); });
-    }
+    timer_.set_from_now(13000, [this](){ send_request(); });
   }
   catch (const std::runtime_error& e)
   {

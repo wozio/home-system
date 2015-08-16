@@ -22,8 +22,8 @@ public:
   net(const net&) = delete;
   ~net();
   
-  void get_inputs(std::vector<long long> ids);
-  void get_input_value(uint64_t id, double& value);
+  void get_inputs(std::vector<long long>& ids);
+  float get_input_value(uint64_t id);
   
 private:
   std::string port_;

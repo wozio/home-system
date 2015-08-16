@@ -29,9 +29,10 @@ uint64_t temp::id()
   return serial_num_;
 }
 
-void temp::get_value(double& value)
+float temp::get_value()
 {
-  value = value_;
+  LOG(serial_num_to_string(serial_num_) << " " << value_);
+  return value_;
 }
 
 void temp::send_convert()

@@ -21,7 +21,7 @@ FC=gfortran
 AS=as
 
 # Macros
-CND_PLATFORM=GNU_4.7.3-Linux-x86
+CND_PLATFORM=GNU-Linux-x86
 CND_DLIB_EXT=so
 CND_CONF=Debug
 CND_DISTDIR=dist
@@ -48,8 +48,7 @@ OBJECTFILES= \
 	${OBJECTDIR}/src/input-output.o \
 	${OBJECTDIR}/src/io-service.o \
 	${OBJECTDIR}/src/ownetwork.o \
-	${OBJECTDIR}/src/owtemp.o \
-	${OBJECTDIR}/src/utils.o
+	${OBJECTDIR}/src/owtemp.o
 
 
 # C Compiler Flags
@@ -147,11 +146,6 @@ ${OBJECTDIR}/src/owtemp.o: src/owtemp.cpp
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} "$@.d"
 	$(COMPILE.cc) -g -Wall -D_DEBUG -Isrc/1wire/common -I../common/common/src -I../common/yami4/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/owtemp.o src/owtemp.cpp
-
-${OBJECTDIR}/src/utils.o: src/utils.cpp 
-	${MKDIR} -p ${OBJECTDIR}/src
-	${RM} "$@.d"
-	$(COMPILE.cc) -g -Wall -D_DEBUG -Isrc/1wire/common -I../common/common/src -I../common/yami4/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/utils.o src/utils.cpp
 
 # Subprojects
 .build-subprojects:

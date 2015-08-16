@@ -14,17 +14,16 @@ class temp
 {
 public:
   temp(int portnum, uint64_t serial_num);
-  
   void send_convert();
   bool read_temp();
   
   uint64_t id();
-  void get_value(double& value);
+  float get_value();
 
 private:
   int portnum_;
-  uint64_t serial_num_;
   float value_;
+  uint64_t serial_num_;
 };
 
 }

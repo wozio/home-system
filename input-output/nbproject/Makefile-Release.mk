@@ -48,8 +48,7 @@ OBJECTFILES= \
 	${OBJECTDIR}/src/input-output.o \
 	${OBJECTDIR}/src/io-service.o \
 	${OBJECTDIR}/src/ownetwork.o \
-	${OBJECTDIR}/src/owtemp.o \
-	${OBJECTDIR}/src/utils.o
+	${OBJECTDIR}/src/owtemp.o
 
 
 # C Compiler Flags
@@ -147,11 +146,6 @@ ${OBJECTDIR}/src/owtemp.o: src/owtemp.cpp
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} "$@.d"
 	$(COMPILE.cc) -O3 -Wall -s -Isrc/1wire/common -I../common/src -I../yami4 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/owtemp.o src/owtemp.cpp
-
-${OBJECTDIR}/src/utils.o: src/utils.cpp 
-	${MKDIR} -p ${OBJECTDIR}/src
-	${RM} "$@.d"
-	$(COMPILE.cc) -O3 -Wall -s -Isrc/1wire/common -I../common/src -I../yami4 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/utils.o src/utils.cpp
 
 # Subprojects
 .build-subprojects:

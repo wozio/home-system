@@ -38,7 +38,6 @@
       <itemPath>src/ownetwork.h</itemPath>
       <itemPath>src/owtemp.cpp</itemPath>
       <itemPath>src/owtemp.h</itemPath>
-      <itemPath>src/utils.cpp</itemPath>
       <itemPath>src/utils.h</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
@@ -54,7 +53,7 @@
   <confs>
     <conf name="Debug" type="1">
       <toolsSet>
-        <compilerSet>GNU_4.7.3|GNU</compilerSet>
+        <compilerSet>GNU|GNU</compilerSet>
         <dependencyChecking>true</dependencyChecking>
         <rebuildPropChanged>false</rebuildPropChanged>
       </toolsSet>
@@ -186,8 +185,6 @@
       <item path="src/owtemp.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="src/owtemp.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="src/utils.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="src/utils.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -325,8 +322,6 @@
       <item path="src/owtemp.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="src/owtemp.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="src/utils.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="src/utils.h" ex="false" tool="3" flavor2="0">
       </item>

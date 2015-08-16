@@ -33,15 +33,12 @@ void io_service::on_msg(incoming_message & im)
   {
     uint64_t id = im.get_parameters().get_long_long("input");
     parameters params;
-    double value;
-    net_.get_input_value(id, value);
-    params.set_double_float("value", value);
+    params.set_double_float("value", net_.get_input_value(id));
     im.reply(params);
   }
   else
   {
-    LOGWARN("unknown message" << im.get_message_name());
-    im.reject("unknown message");
+    service::on_msg(im);
   }
 }
 
