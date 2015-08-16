@@ -145,7 +145,7 @@ public:
           params_.set_boolean(name_, data_ == "true" ? true : false);
           break;
         case yami::long_long:
-          params_.set_long_long(name_, boost::lexical_cast<long>(data_));
+          params_.set_long_long(name_, boost::lexical_cast<long long>(data_));
           break;
         case yami::double_float:
           params_.set_double_float(name_, boost::lexical_cast<double>(data_));
@@ -283,13 +283,13 @@ public:
         break;
       case yami::long_long:
         attrs.addAttribute("", "", "t", "", "l");
-        xw.startElement("", "", "parameter", attrs);
+        xw.startElement("", "", "p", attrs);
         xw.characters(boost::lexical_cast<string>((*it).get_long_long()));
-        xw.endElement("", "", "parameter");
+        xw.endElement("", "", "p");
         break;
       case yami::double_float:
         attrs.addAttribute("", "", "t", "", "d");
-        xw.startElement("", "", "parameter", attrs);
+        xw.startElement("", "", "p", attrs);
         xw.characters(boost::lexical_cast<string>((*it).get_double_float()));
         xw.endElement("", "", "p");
         break;
@@ -470,6 +470,7 @@ public:
       {
       case yami::replied:
       {
+        LOG("Replied");
         response.setChunkedTransferEncoding(true);
         response.setContentType("text/xml");
         response.add("Expires", "-1");
@@ -493,14 +494,17 @@ public:
       
       case yami::posted:
       case yami::transmitted:
+        LOG("Posted/transmitted");
         response.send();
         break;
         
       case yami::abandoned:
+        LOG("Abandoned");
         throw service_unavailable("Message was abandoned");
         break;
         
       case yami::rejected:
+        LOG("Rejected: " + message->get_exception_msg());
         throw service_unavailable("Message was rejected: " + message->get_exception_msg());
         break;
       }
