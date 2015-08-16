@@ -31,7 +31,6 @@ uint64_t temp::id()
 
 float temp::get_value()
 {
-  LOG(serial_num_to_string(serial_num_) << " " << value_);
   return value_;
 }
 
