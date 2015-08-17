@@ -23,7 +23,8 @@ public:
   ~net();
   
   void get_inputs(std::vector<long long>& ids);
-  float get_input_value(uint64_t id);
+  // TODO: other devices than temperature
+  temp& get_input(uint64_t id);
   
 private:
   std::string port_;

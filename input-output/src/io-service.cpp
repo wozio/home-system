@@ -33,7 +33,9 @@ void io_service::on_msg(incoming_message & im)
   {
     uint64_t id = im.get_parameters().get_long_long("input");
     parameters params;
-    params.set_double_float("value", net_.get_input_value(id));
+    ow::temp& input = net_.get_input(id);
+    params.set_double_float("value", input.get_value());
+    params.set_long_long("time", input.get_time());
     im.reply(params);
   }
   else

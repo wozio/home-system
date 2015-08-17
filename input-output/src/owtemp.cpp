@@ -19,6 +19,7 @@ namespace ow
 
 temp::temp(int portnum, uint64_t serial_num)
 : portnum_(portnum),
+  time_(0),
   serial_num_(serial_num)
 {
   LOG("Created temperature device (DS1920): " << serial_num_to_string(serial_num_));
@@ -32,6 +33,11 @@ uint64_t temp::id()
 float temp::get_value()
 {
   return value_;
+}
+
+long long temp::get_time()
+{
+  return time_;
 }
 
 void temp::send_convert()
@@ -108,6 +114,7 @@ bool temp::read_temp()
         
         LOG(serial_num_to_string(serial_num_) << ": " << tmp);
         value_ = tmp;
+        time_ = time(NULL);
         
         return true;
       }

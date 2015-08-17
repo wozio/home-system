@@ -19,10 +19,12 @@ public:
   
   uint64_t id();
   float get_value();
+  long long get_time();
 
 private:
   int portnum_;
   float value_;
+  long long time_;
   uint64_t serial_num_;
 };
 

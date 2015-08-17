@@ -38,9 +38,9 @@ void net::get_inputs(std::vector<long long>& ids)
   }
 }
 
-float net::get_input_value(uint64_t id)
+temp& net::get_input(uint64_t id)
 {
-  return devices_.at(id).get_value();
+  return devices_.at(id);
 }
 
 void net::open()
