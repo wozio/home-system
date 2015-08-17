@@ -9,7 +9,14 @@ outputs = [
     }
 ]
 
-# inputs list: name, type
+# inputs list
+inputs = [
+    {
+        "name": "temp_zewn",
+        "service": "input-output",
+        "number": 1234
+    }
+]
 
 # events list: name, type, what to run (action or condition), data
 

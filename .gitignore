@@ -16,3 +16,4 @@ Debug
 *.so
 *.pyc
 /input-output/build/
+*~

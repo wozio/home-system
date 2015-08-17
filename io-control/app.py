@@ -3,6 +3,7 @@
 import logging
 import discovery
 import outputs
+import inputs
 import services
 
 def init(daemonize):
@@ -23,11 +24,13 @@ def init(daemonize):
 
   discovery.init()
   outputs.init()
+  inputs.init()
   services.init()
 
 def exit():
   logging.info("Home System IO Control quitting")
   
   services.exit()
+  inputs.exit()
   outputs.exit()
   discovery.exit()
