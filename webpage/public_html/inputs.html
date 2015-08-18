@@ -3,45 +3,48 @@
   <head>
     <meta charset="UTF-8" />
     <title>Inputs</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.13.3/react.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.13.3/JSXTransformer.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script src="libs/react.js"></script>
+    <script src="libs/JSXTransformer.js"></script>
+    <script src="libs/jquery.min.js"></script>
   </head>
   <body>
     <div id="content"></div>
     <script type="text/jsx">
       var Input = React.createClass({
         getInitialState: function() {
-          return {data: []};
+          return {data: {}};
         },
         componentDidMount: function() {
           this.loadFromServer();
           setInterval(this.loadFromServer, 2000);
         },
         loadFromServer: function() {
-          $.ajax({
-            url: "/HSA/execute?name=input-output&msg=get_input_value",
-            data: '<hsd><p n="input" t="l">' + this.props.inputId + '</p></hsd>', 
-            type: 'POST',
-            contentType: "text/xml",
-            dataType: "text",
-            success : function(data){
-              var val = $(data).find("p").text();
-              this.setState({data: val});
-            }.bind(this),
-            error : function (xhr, ajaxOptions, thrownError){  
-              console.log(xhr.status);
-              console.log(thrownError);
-            }
-          });
+          $.post("/HSA/execute?name=input-output&msg=get_input_value",
+            '<hsd><p n="input" t="l">' + this.props.inputId + '</p></hsd>') 
+          .done(function(xmlData){
+            var parsedData = {};
+            $(xmlData).find("p").each(function(){
+              if ($(this).attr("n") == "time"){
+                parsedData["time"] = new Date($(this).text() * 1000).toLocaleString();
+              } else {
+                parsedData[$(this).attr("n")] = $(this).text();
+              }
+            });
+            this.setState({data: parsedData});
+          }.bind(this));
         },
         render: function() {
           return (
             <div className="input">
-              {this.props.inputId}
-              <h2 className="inputId">
-                {this.state.data}
-              </h2>
+              <div className="inputId">
+                {this.props.inputId}
+              </div>
+              <h3 className="inputValue">
+                {this.state.data.value}
+              </h3>
+              <div className="inputTime">
+                {this.state.data.time}
+              </div>
             </div>
           );
         }
