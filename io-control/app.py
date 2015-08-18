@@ -5,6 +5,7 @@ import discovery
 import outputs
 import inputs
 import services
+import io-control-service
 
 def init(daemonize):
   logger = logging.getLogger()
@@ -25,12 +26,14 @@ def init(daemonize):
   discovery.init()
   outputs.init()
   inputs.init()
-  services.init()
+  self.iocs = io-control-service()
+  #services.init()
 
 def exit():
   logging.info("Home System IO Control quitting")
   
-  services.exit()
+  #services.exit()
   inputs.exit()
   outputs.exit()
   discovery.exit()
+  self.iocs.exit()
