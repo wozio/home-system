@@ -5,16 +5,16 @@ import service
 import yami
 import discovery
 
-class io-control-service(service.service):
+class iocontrolservice(service.service):
   def __init__(self):
     self.name = "io-control-dev"
-    super(io-control-service, self).__init__(self.name)
+    super(iocontrolservice, self).__init__(self.name)
     logging.debug("IO Control Service started")
 
     discovery.register(self.on_service)
 
   def exit(self):
-    super(io-control-service, self).exit()
+    super(iocontrolservice, self).exit()
     logging.debug("IO Control Service exited")
 
   def on_service(self, service, available):

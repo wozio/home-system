@@ -16,7 +16,7 @@ class service(object):
   def __init__(self, name):
     self.name = name
 
-    global agent
+    global agent, ye
     agent.register_object(self.name, self.on_msg)
     
     self.timer = threading.Timer(randint(1, 5), self.on_timeout)
@@ -26,7 +26,7 @@ class service(object):
     
     self.send_hello()
     
-    logging.info("Created service: %s (%s)", self.name, self.ye)
+    logging.info("Created service: %s (%s)", self.name, ye)
     
   def exit(self):
     logging.info("Deleting service with name=%s", self.name)
