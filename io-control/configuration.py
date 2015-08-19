@@ -3,7 +3,7 @@
 # outputs list: name, service, number
 outputs = [
     {
-        "name": "rb1",
+        "name": "pompa_recyrkulacji",
         "service": "relay-board",
         "number": 1
     }

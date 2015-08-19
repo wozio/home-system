@@ -13,11 +13,12 @@ agent = yami.Agent()
 ye = agent.add_listener("tcp://" + ip + ":*")
 
 class service(object):
-  def __init__(self, name):
+  def __init__(self, name, on_msg_callback):
     self.name = name
+    self.on_msg_callback = on_msg_callback
 
     global agent, ye
-    agent.register_object(self.name, self.on_msg)
+    agent.register_object(self.name, self.on_msg_callback)
     
     self.timer = threading.Timer(randint(1, 5), self.on_timeout)
     self.timer.start()
