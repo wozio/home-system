@@ -29,7 +29,7 @@ for opt, arg in opts:
 
 def app_exit(arg1, arg2):
   app.exit()
-  sys.exit(0)
+  os._exit(1)
 
 if daemonize:
   print "Running as a daemon"
