@@ -5,6 +5,11 @@ import service
 import yami
 import discovery
 
+# these are inputs and outputs found in the system
+# configured to be used and monitored are copied from here to configuration arrays
+outputs = []
+inputs = {}
+
 def init():
   
   global serv
@@ -21,7 +26,26 @@ def exit():
     
 def on_msg(message):
   global serv
-  serv.on_msg(message)
+  if message.get_message_name() == "get_inputs":
+    #preparing lists for sending
+    names = []
+    values = []
+    times = []
+    
+    global inputs
+    for name, input in inputs:
+      names += name
+      values += input["value"]
+      times += input["time"]
+    
+    params = yami.Parameters()
+    params["names"] = names
+    params["values"] = values
+    params["times"] = times
+    
+    message.reply(params)
+  else  
+    serv.on_msg(message)
 
 def on_service(new_service, available):
   if available:
@@ -52,6 +76,14 @@ def on_service(new_service, available):
           if state == message.REPLIED:
             reply_content2 = message.get_reply()
             logging.debug("Input %d value = %f", id, reply_content2["value"])
+            
+            global inputs
+            inputs[new_service + "_" + id] += [{
+              "id": id,
+              "value": reply_content2["value"],
+              "time": reply_content2["time"]
+            }]
+              
             
       # getting all outputs from service
       message = service.agent.send(discovery.get(new_service), new_service, "get_all_outputs")

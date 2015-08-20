@@ -5,7 +5,7 @@ outputs = [
     {
         "name": "pompa_recyrkulacji",
         "service": "relay-board",
-        "number": 1
+        "id": 1 # id on the providing service
     }
 ]
 
@@ -14,7 +14,7 @@ inputs = [
     {
         "name": "temp_zewn",
         "service": "input-output",
-        "number": 1234
+        "id": 1234  # id on the providing service
     }
 ]
 
