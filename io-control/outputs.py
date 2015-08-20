@@ -10,7 +10,7 @@ def init():
   logging.debug("Outputs init")
   global outputs
   for o in configuration.outputs:
-    outputs[o["name"]] = output.output(o["service"], o["number"])
+    outputs[o["name"]] = output.output(o["service"], o["id"])
 
 def exit():
   global outputs

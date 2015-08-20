@@ -22,15 +22,15 @@ def init():
 
 def on_timeout():
   global timer, notify_received
-  
+
   timer = threading.Timer(10, on_timeout)
   timer.start()
-  
-  global notify_received  
+
+  global notify_received
   for s, r in notify_received.copy().iteritems():
     if r == False:
       erase_service(s)
-        
+
   for s in notify_received.iterkeys():
     notify_received[s] = False
 
@@ -68,7 +68,7 @@ def store_service(service, endpoint):
   for c in callbacks:
     c(service, True)
 
-    
+
 def erase_service( service):
   logging.debug("Erasing service: " + service)
   global known_services, callbacks, notify_received
@@ -76,11 +76,11 @@ def erase_service( service):
   del notify_received[service]
   for c in callbacks:
     c(service, False)
-  
+
 def check_service(service, endpoint):
   global known_services, notify_received
   if service not in known_services:
-    store_service(service, endpoint)    
+    store_service(service, endpoint)
   elif known_services[service] != endpoint:
     erase_service(service)
     store_service(service, endpoint)
@@ -89,15 +89,15 @@ def check_service(service, endpoint):
 def handle_notify(msg):
   if (len(msg) >= 3):
     check_service(msg[1], msg[2])
-  
+
 def handle_bye(msg):
   if msg[1] in known_services:
     erase_service(msg[1])
-  
+
 def handle_hello(msg):
   if (len(msg) >= 3):
     check_service(msg[1], msg[2])
-  
+
 def exit():
   global cont, timer, thread
   cont = False
@@ -115,4 +115,3 @@ def get(service):
     return known_services[service]
   else:
     raise Exception("Service not found " + service)
-

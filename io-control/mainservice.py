@@ -3,15 +3,15 @@
 import logging
 import service
 import yami
+import yagent
 import discovery
-
-# these are inputs and outputs found in the system
-# configured to be used and monitored are copied from here to configuration arrays
-outputs = []
-inputs = {}
+import outputs
+import output
+import input
+import inputs
 
 def init():
-  
+
   global serv
   serv = service.service("io-control-dev", on_msg)
 
@@ -23,7 +23,7 @@ def exit():
   global serv
   serv.exit()
   logging.debug("IO Control Service exited")
-    
+
 def on_msg(message):
   global serv
   if message.get_message_name() == "get_inputs":
@@ -31,20 +31,21 @@ def on_msg(message):
     names = []
     values = []
     times = []
-    
-    global inputs
-    for name, input in inputs:
-      names += name
-      values += input["value"]
-      times += input["time"]
-    
+
+    for n, i in inputs.inputs.iteritems():
+      names.append(n)
+      inputState = i.get_state()
+      values.append(inputState[0])
+      times.append(inputState[1])
+
+    # putting lists into parameters
     params = yami.Parameters()
     params["names"] = names
     params["values"] = values
     params["times"] = times
-    
+
     message.reply(params)
-  else  
+  else:
     serv.on_msg(message)
 
 def on_service(new_service, available):
@@ -54,7 +55,7 @@ def on_service(new_service, available):
       logging.debug("IO service %s is available", new_service)
 
       # getting all inputs from service
-      message = service.agent.send(discovery.get(new_service), new_service, "get_inputs")
+      message = yagent.agent.send(discovery.get(new_service), new_service, "get_inputs")
 
       message.wait_for_completion(1000)
 
@@ -64,27 +65,10 @@ def on_service(new_service, available):
 
         for id in reply_content["inputs"]:
           logging.debug("Input %d found", id)
-      
-          params = yami.Parameters()
-          params["input"] = id
 
-          message = service.agent.send(discovery.get(new_service), new_service,
-                          "get_input_value", params);
-          message.wait_for_completion(1000)
+          i = input.input(new_service + "_" + str(id), new_service, id)
+          inputs.add(i)
 
-          state = message.get_state()[0]
-          if state == message.REPLIED:
-            reply_content2 = message.get_reply()
-            logging.debug("Input %d value = %f", id, reply_content2["value"])
-            
-            global inputs
-            inputs[new_service + "_" + id] += [{
-              "id": id,
-              "value": reply_content2["value"],
-              "time": reply_content2["time"]
-            }]
-              
-            
       # getting all outputs from service
       message = service.agent.send(discovery.get(new_service), new_service, "get_all_outputs")
       message.wait_for_completion(1000)
@@ -95,15 +79,4 @@ def on_service(new_service, available):
 
         for id in reply_content["outputs"]:
           logging.debug("Output %d found", id)
-      
-          params = yami.Parameters()
-          params["output"] = id
-
-          message = service.agent.send(discovery.get(new_service), new_service,
-                          "get_output_state", params);
-          message.wait_for_completion(1000)
-
-          state = message.get_state()[0]
-          if state == message.REPLIED:
-            reply_content2 = message.get_reply()
-            logging.debug("Output %d state = %d", id, reply_content2["state"])
+          

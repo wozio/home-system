@@ -11,11 +11,6 @@ outputs = [
 
 # inputs list
 inputs = [
-    {
-        "name": "temp_zewn",
-        "service": "input-output",
-        "id": 1234  # id on the providing service
-    }
 ]
 
 # events list: name, type, what to run (action or condition), data
@@ -91,4 +86,3 @@ actions = [
 ]
 
 # services: name, friendly name, list of settings: name, friendly name, type
-
