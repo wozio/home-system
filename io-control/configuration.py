@@ -1,12 +1,7 @@
 #!/usr/bin/env python
 
-# outputs list: name, service, number
+# outputs list: name, service, id
 outputs = [
-    {
-        "name": "pompa_recyrkulacji",
-        "service": "relay-board",
-        "id": 1 # id on the providing service
-    }
 ]
 
 # inputs list

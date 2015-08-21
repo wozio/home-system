@@ -80,3 +80,5 @@ def on_service(new_service, available):
         for id in reply_content["outputs"]:
           logging.debug("Output %d found", id)
           
+          o = output.output(new_service + "_" + str(id), new_service, id)
+          outputs.add(i)
