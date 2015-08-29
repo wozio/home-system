@@ -6,6 +6,7 @@
 #include <map>
 #include <string>
 #include <memory>
+#include <functional>
 
 namespace home_system
 {
@@ -18,7 +19,7 @@ namespace ow
 class net
 {
 public:
-  net(const std::string &port);
+  net(const std::string &port, std::function<void(uint64_t)> state_change_callback);
   net(const net&) = delete;
   ~net();
   
@@ -28,6 +29,8 @@ public:
   
 private:
   std::string port_;
+  
+  std::function<void(uint64_t)> state_change_callback_;
   
   timer timer_;
   

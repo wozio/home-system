@@ -18,7 +18,9 @@ class input:
 
     logging.info("Created input %s with service=%s and id=%d", input_name, input_service, input_id)
 
-    self.read_value()
+    yagent.agent.register_object(self.name, self.on_msg)
+
+    discovery.register(self.on_service)
 
   def get_name(self):
     return self.name
@@ -26,6 +28,20 @@ class input:
   def get_state(self):
     self.read_value()
     return self.value, self.time
+
+  def on_service(self, service, available):
+    if service == self.service:
+      if available:
+        logging.debug("Input service %s is available", service)
+
+        # subscribe for output state change notifications
+        params = yami.Parameters()
+        params["id"] = self.id
+        params["name"] = self.name
+        params["endpoint"] = yagent.endpoint
+
+        yagent.agent.send(discovery.get(self.service), self.service,
+                        "subscribe_state_change", params);
 
   def read_value(self):
     params = yami.Parameters()
@@ -45,3 +61,10 @@ class input:
 
       logging.debug("Input %s value %f on time %d", self.name, self.value, self.time)
 
+  def on_msg(self, message):
+    if message.get_message_name() == "output_state_change":
+      self.state = message.get_parameters()["state"]
+      logging.debug("Input %d state changed to %f", self.id, self.state)
+    else:
+      logging.debug("Unknown message %s from %s", message.get_message_name(), message.get_source())
+      message.reject("Unknown message")

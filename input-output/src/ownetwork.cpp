@@ -17,8 +17,9 @@ namespace input_output
 namespace ow
 {
 
-net::net(const std::string &port)
+net::net(const std::string &port, std::function<void(uint64_t)> state_change_callback)
 : port_(port),
+  state_change_callback_(state_change_callback),
   opened_(false),
   open_fault_logged_(false),
   search_fault_logged_(false)
@@ -86,7 +87,7 @@ void net::search()
     {
     case 0x10: // DS1920
       {
-        devices_.emplace(serial_num, temp(portnum_, serial_num));
+        devices_.emplace(serial_num, temp(portnum_, serial_num, state_change_callback_));
       }
       break;
     default:

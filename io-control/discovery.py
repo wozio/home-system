@@ -62,7 +62,7 @@ def run():
       pass
 
 def store_service(service, endpoint):
-  logging.debug("Storing service: " + service + " (" + endpoint + ")")
+  #logging.debug("Storing service: " + service + " (" + endpoint + ")")
   global known_services, callbacks
   known_services[service] = endpoint
   for c in callbacks:
@@ -70,7 +70,7 @@ def store_service(service, endpoint):
 
 
 def erase_service( service):
-  logging.debug("Erasing service: " + service)
+  #logging.debug("Erasing service: " + service)
   global known_services, callbacks, notify_received
   del known_services[service]
   del notify_received[service]

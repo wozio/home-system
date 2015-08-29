@@ -13,7 +13,7 @@ namespace ow
 class temp
 {
 public:
-  temp(int portnum, uint64_t serial_num);
+  temp(int portnum, uint64_t serial_num, std::function<void(uint64_t)> state_change_callback);
   void send_convert();
   bool read_temp();
   
@@ -26,6 +26,7 @@ private:
   float value_;
   long long time_;
   uint64_t serial_num_;
+  std::function<void(uint64_t)> state_change_callback_;
 };
 
 }

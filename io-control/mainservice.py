@@ -88,6 +88,8 @@ def on_service(new_service, available):
           i = input.input(new_service + "_" + str(id), new_service, id)
           inputs.add(i)
 
+      return
+
       # getting all outputs from service
       message = yagent.agent.send(discovery.get(new_service), new_service, "get_all_outputs")
       message.wait_for_completion(1000)

@@ -17,10 +17,12 @@ namespace input_output
 namespace ow
 {
 
-temp::temp(int portnum, uint64_t serial_num)
+temp::temp(int portnum, uint64_t serial_num,
+  std::function<void(uint64_t)> state_change_callback)
 : portnum_(portnum),
   time_(0),
-  serial_num_(serial_num)
+  serial_num_(serial_num),
+  state_change_callback_(state_change_callback)
 {
   LOG("Created temperature device (DS1920): " << serial_num_to_string(serial_num_));
 }
@@ -113,9 +115,13 @@ bool temp::read_temp()
           tmp = tmp - (float)0.25 + (cpc - cr)/cpc;
         
         LOG(serial_num_to_string(serial_num_) << ": " << tmp);
+        float old_value = value_;
         value_ = tmp;
         time_ = time(NULL);
-        
+        if (tmp != old_value)
+        {
+          state_change_callback_(serial_num_);
+        }
         return true;
       }
       else
