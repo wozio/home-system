@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <map>
 
 #include "io-service.h"
 #include "logger.h"
@@ -83,8 +84,7 @@ void io_service::on_state_change(uint64_t id)
 
   if (state_subscriptions_.find(id) != state_subscriptions_.end())
   {
-    try
-    {
+    
       yami::parameters params;
       params.set_string("name", service::name());
       params.set_long_long("id", id);
@@ -93,21 +93,23 @@ void io_service::on_state_change(uint64_t id)
       params.set_long_long("time", input.get_time());
       
       auto subs = state_subscriptions_.equal_range(id);
-      for (auto it = subs.first; it != subs.second; ++it)
+      for (auto it = subs.first; it != subs.second; )
       {
         LOG("Sending state change to subscription " << it->second.name_ << " (" << it->second.ye_ << ") for output: " << id);
-      
-        AGENT.send(it->second.ye_, it->second.name_,
-          "output_state_change", params);
+        try
+        {
+          AGENT.send(it->second.ye_, it->second.name_,
+            "output_state_change", params);
+          ++it;
+        }
+        catch (const yami::yami_runtime_error& e)
+        {
+          LOGWARN("EXCEPTION: yami_runtime_error: " << e.what() << ". Removing subscription for output: " << id);
+          state_subscriptions_.erase(it++);
+        }
       }
-    }
-    catch (const yami::yami_runtime_error& e)
-    {
-      LOGWARN("EXCEPTION: yami_runtime_error: " << e.what());
-      LOG("Removing subscription for output: " << id);
     }
   }
 }
 
-}
 }
