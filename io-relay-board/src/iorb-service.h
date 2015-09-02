@@ -34,7 +34,7 @@ private:
     std::string ye_;
     std::string name_;
   };
-  std::map<int, rs> output_state_subscriptions;
+  std::multimap<int, rs> state_subscriptions_;
 };
 
 }

@@ -65,6 +65,8 @@
             </linkerLibProjectItem>
             <linkerLibLibItem>yamicpp</linkerLibLibItem>
             <linkerLibLibItem>yamicore</linkerLibLibItem>
+            <linkerLibLibItem>pthread</linkerLibLibItem>
+            <linkerLibLibItem>PocoNet</linkerLibLibItem>
           </linkerLibItems>
         </linkerTool>
       </compileType>

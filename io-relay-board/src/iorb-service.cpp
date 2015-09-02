@@ -66,7 +66,7 @@ void iorb_service::on_msg(yami::incoming_message & im)
 
     {
       lock_guard<mutex> lock(subscription_mutex_);
-      output_state_subscriptions[output] = nrs;
+      state_subscriptions_.insert(std::pair<int, rs>(output, nrs));
     }
 
     LOG(nrs.name_ << " (" << nrs.ye_ << ") subscribed for changes of output " << output);
@@ -84,26 +84,28 @@ void iorb_service::on_output_state_change(int output, int state)
 {
   lock_guard<mutex> lock(subscription_mutex_);
 
-  if (output_state_subscriptions.find(output) != output_state_subscriptions.end())
+  if (state_subscriptions_.find(output) != state_subscriptions_.end())
   {
-    try
+    yami::parameters params;
+    params.set_string("name", name_);
+    params.set_integer("output", output);
+    params.set_integer("state", state);
+    
+    auto subs = state_subscriptions_.equal_range(output);
+    for (auto it = subs.first; it != subs.second; )
     {
-      yami::parameters params;
-      params.set_string("name", name_);
-      params.set_integer("output", output);
-      params.set_integer("state", state);
-      
-      LOG("Sending output state change to subscription " << output_state_subscriptions[output].ye_ << " for output: " << output);
-      
-      AGENT.send(output_state_subscriptions[output].ye_,
-        output_state_subscriptions[output].name_, "output_state_change",
-        params);
-    }
-    catch (const yami::yami_runtime_error& e)
-    {
-      LOGWARN("EXCEPTION: yami_runtime_error: " << e.what());
-      LOG("Removing subscription for output: " << output);
-      output_state_subscriptions.erase(output_state_subscriptions.find(output));
+      LOG("Sending state change to subscription " << it->second.name_ << " (" << it->second.ye_ << ") for output: " << output);
+      try
+      {
+        AGENT.send(it->second.ye_, it->second.name_,
+          "output_state_change", params);
+        ++it;
+      }
+      catch (const yami::yami_runtime_error& e)
+      {
+        LOGWARN("EXCEPTION: yami_runtime_error: " << e.what() << ". Removing subscription for output: " << output);
+        state_subscriptions_.erase(it++);
+      }
     }
   }
 }

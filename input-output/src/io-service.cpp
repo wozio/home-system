@@ -64,11 +64,6 @@ void io_service::on_msg(incoming_message & im)
 
     LOG(nrs.name_ << " (" << nrs.ye_ << ") subscribed for changes of " << id);
     
-    for (auto crs : state_subscriptions_)
-    {
-      LOG(crs.second.name_ << " (" << crs.second.ye_ << ") subscribed for changes of " << id);
-    }
-    
     // sending current state
     on_state_change(id);
   }
@@ -85,31 +80,31 @@ void io_service::on_state_change(uint64_t id)
   if (state_subscriptions_.find(id) != state_subscriptions_.end())
   {
     
-      yami::parameters params;
-      params.set_string("name", service::name());
-      params.set_long_long("id", id);
-      ow::temp& input = net_.get_input(id);
-      params.set_double_float("state", input.get_value());
-      params.set_long_long("time", input.get_time());
-      
-      auto subs = state_subscriptions_.equal_range(id);
-      for (auto it = subs.first; it != subs.second; )
+    yami::parameters params;
+    params.set_string("name", service::name());
+    params.set_long_long("id", id);
+    ow::temp& input = net_.get_input(id);
+    params.set_double_float("state", input.get_value());
+    params.set_long_long("time", input.get_time());
+
+    auto subs = state_subscriptions_.equal_range(id);
+    for (auto it = subs.first; it != subs.second; )
+    {
+      LOG("Sending state change to subscription " << it->second.name_ << " (" << it->second.ye_ << ") for output: " << id);
+      try
       {
-        LOG("Sending state change to subscription " << it->second.name_ << " (" << it->second.ye_ << ") for output: " << id);
-        try
-        {
-          AGENT.send(it->second.ye_, it->second.name_,
-            "output_state_change", params);
-          ++it;
-        }
-        catch (const yami::yami_runtime_error& e)
-        {
-          LOGWARN("EXCEPTION: yami_runtime_error: " << e.what() << ". Removing subscription for output: " << id);
-          state_subscriptions_.erase(it++);
-        }
+        AGENT.send(it->second.ye_, it->second.name_,
+          "output_state_change", params);
+        ++it;
+      }
+      catch (const yami::yami_runtime_error& e)
+      {
+        LOGWARN("EXCEPTION: yami_runtime_error: " << e.what() << ". Removing subscription for output: " << id);
+        state_subscriptions_.erase(it++);
       }
     }
   }
 }
 
+}
 }
