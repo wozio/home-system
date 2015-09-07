@@ -88,7 +88,7 @@ int main(int argc, char** argv)
   {
     _yc = home_system::yami_container::create();
     
-    home_system::input_output::iorb_service service(vm["name"].as<string>(),
+    home_system::input_output::iorb_service service("io." + vm["name"].as<string>(),
       vm["port"].as<string>());
 #ifdef __linux__
     if (vm.count("daemonize"))

@@ -69,8 +69,7 @@ def on_msg(message):
 
 def on_service(new_service, available):
   if available:
-    #TODO: generic input/output service, part of the name?
-    if new_service == "input-output" or new_service == "relay-board":
+    if new_service.find("io.", 0, 3) == 0:
       logging.debug("IO service %s is available", new_service)
 
       # getting all inputs from service

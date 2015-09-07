@@ -14,7 +14,7 @@ namespace input_output
 {
 
 io_service::io_service()
-: service("input-output"),
+: service("io.1wire"),
   net_("DS2490-1",
     [this](uint64_t id)
     {
