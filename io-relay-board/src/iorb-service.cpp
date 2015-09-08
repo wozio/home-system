@@ -55,9 +55,9 @@ void iorb_service::on_msg(yami::incoming_message & im)
       state ? port_.enable_relay(output) : port_.disable_relay(output);
     }
   }
-  else if (im.get_message_name() == "subscribe_output_state_change")
+  else if (im.get_message_name() == "subscribe")
   {
-    int output = im.get_parameters().get_integer("output");
+    int id = im.get_parameters().get_long_long("id");
     
     // adding subscription to port
     rs nrs;
@@ -66,13 +66,13 @@ void iorb_service::on_msg(yami::incoming_message & im)
 
     {
       lock_guard<mutex> lock(subscription_mutex_);
-      state_subscriptions_.insert(std::pair<int, rs>(output, nrs));
+      state_subscriptions_.insert(std::pair<int, rs>(id, nrs));
     }
 
-    LOG(nrs.name_ << " (" << nrs.ye_ << ") subscribed for changes of output " << output);
+    LOG(nrs.name_ << " (" << nrs.ye_ << ") subscribed for changes of " << id);
     
     // sending current state
-    on_output_state_change(output, port_.get_relay_state(output));
+    on_output_state_change(id, port_.get_relay_state(id));
   }
   else
   {
@@ -88,22 +88,22 @@ void iorb_service::on_output_state_change(int output, int state)
   {
     yami::parameters params;
     params.set_string("name", name_);
-    params.set_integer("output", output);
+    params.set_integer("id", output);
     params.set_integer("state", state);
     
     auto subs = state_subscriptions_.equal_range(output);
     for (auto it = subs.first; it != subs.second; )
     {
-      LOG("Sending state change to subscription " << it->second.name_ << " (" << it->second.ye_ << ") for output: " << output);
+      LOG("Sending state change to subscription " << it->second.name_ << " (" << it->second.ye_ << ") for: " << output);
       try
       {
         AGENT.send(it->second.ye_, it->second.name_,
-          "output_state_change", params);
+          "state_change", params);
         ++it;
       }
       catch (const yami::yami_runtime_error& e)
       {
-        LOGWARN("EXCEPTION: yami_runtime_error: " << e.what() << ". Removing subscription for output: " << output);
+        LOGWARN("EXCEPTION: " << e.what() << ". Removing subscription for output: " << output);
         state_subscriptions_.erase(it++);
       }
     }

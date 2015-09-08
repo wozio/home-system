@@ -48,7 +48,7 @@ void io_service::on_msg(incoming_message & im)
     params.set_long_long("time", input.get_time());
     im.reply(params);
   }
-  else if (im.get_message_name() == "subscribe_state_change")
+  else if (im.get_message_name() == "subscribe")
   {
     uint64_t id = im.get_parameters().get_long_long("id");
     
@@ -90,16 +90,16 @@ void io_service::on_state_change(uint64_t id)
     auto subs = state_subscriptions_.equal_range(id);
     for (auto it = subs.first; it != subs.second; )
     {
-      LOG("Sending state change to subscription " << it->second.name_ << " (" << it->second.ye_ << ") for output: " << id);
+      LOG("Sending state change to subscription " << it->second.name_ << " (" << it->second.ye_ << ") for: " << id);
       try
       {
         AGENT.send(it->second.ye_, it->second.name_,
-          "output_state_change", params);
+          "state_change", params);
         ++it;
       }
       catch (const yami::yami_runtime_error& e)
       {
-        LOGWARN("EXCEPTION: yami_runtime_error: " << e.what() << ". Removing subscription for output: " << id);
+        LOGWARN("EXCEPTION: " << e.what() << ". Removing subscription for: " << id);
         state_subscriptions_.erase(it++);
       }
     }

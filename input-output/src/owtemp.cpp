@@ -117,9 +117,9 @@ bool temp::read_temp()
         LOG(serial_num_to_string(serial_num_) << ": " << tmp);
         float old_value = value_;
         value_ = tmp;
-        time_ = time(NULL);
         if (tmp != old_value)
         {
+          time_ = time(NULL);
           state_change_callback_(serial_num_);
         }
         return true;
