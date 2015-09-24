@@ -80,4 +80,31 @@ actions = [
     }
 ]
 
-# services: name, friendly name, list of settings: name, friendly name, type
+# services: name, list of settings: name, friendly name, type
+
+services = [
+    {
+        "name": "heating",
+        "settings": [
+            {
+                "type": "switch",
+                "data": {
+                    "values":[
+                        {
+                            "value": "off",
+                            "action": "on_heating_off"
+                        },
+                        {
+                            "value": "auto",
+                            "action": "on_heating_auto"
+                        },
+                        {
+                            "value": "on",
+                            "action": "on_heating_on"
+                        }
+                    ]
+                }
+            }
+        ]
+    }
+]

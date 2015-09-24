@@ -19,7 +19,7 @@
           setInterval(this.loadFromServer, 2000);
         },
         loadFromServer: function() {
-          $.post("/HSA/execute?name=input-output&msg=get_input_value",
+          $.post("/HSA/execute?name=io.1wire&msg=get_input_value",
             '<hsd><p n="input" t="l">' + this.props.inputId + '</p></hsd>') 
           .done(function(xmlData){
             var parsedData = {};
@@ -58,7 +58,7 @@
           setInterval(this.loadFromServer, 10000);
         },
         loadFromServer: function() {
-          jQuery.get("/HSA/execute?name=input-output&msg=get_inputs")
+          jQuery.get("/HSA/execute?name=io.1wire&msg=get_inputs")
           .done(function(xmlData){
             var data = $(xmlData).find("e").toArray().map(function(elem){
               return $(elem).text();

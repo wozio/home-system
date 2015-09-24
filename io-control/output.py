@@ -35,16 +35,17 @@ class output:
 
         # subscribe for output state change notifications
         params = yami.Parameters()
-        params["output"] = self.id
+        params["id"] = self.id
         params["name"] = self.name
         params["endpoint"] = yagent.endpoint
 
         yagent.agent.send(discovery.get(self.service), self.service,
-                        "subscribe_output_state_change", params);
+                        "subscribe", params);
 
   def on_msg(self, message):
-    if message.get_message_name() == "output_state_change":
+    if message.get_message_name() == "state_change":
       self.state = message.get_parameters()["state"]
+      self.time = message.get_parameters()["time"]
       logging.debug("Output %d state changed to %d", self.id, self.state)
     else:
       logging.debug("Unknown message %s from %s", message.get_message_name(), message.get_source())
