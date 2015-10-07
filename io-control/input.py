@@ -15,6 +15,7 @@ class input:
     self.name = input_name
     self.time = 0
     self.state = 0
+    self.callbacks = []
 
     logging.info("Created input %s with service=%s and id=%d", input_name, input_service, input_id)
 
@@ -47,6 +48,12 @@ class input:
       self.state = message.get_parameters()["state"]
       self.time = message.get_parameters()["time"]
       logging.debug("Input %d state changed to %f", self.id, self.state)
+      for c in self.callbacks:
+        c()
     else:
       logging.debug("Unknown message %s from %s", message.get_message_name(), message.get_source())
       message.reject("Unknown message")
+
+  def subscribe(self, callback):
+    self.callbacks.append(callback)
+    callback()

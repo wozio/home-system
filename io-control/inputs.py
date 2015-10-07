@@ -7,9 +7,8 @@ import configuration
 inputs = {}
 
 def init():
+  #TODO add discovering the inputs from system
   logging.debug("Inputs init")
-  for i in configuration.inputs:
-    inputs[i["name"]] = input.input(i["service"], i["id"])
 
 def add(i):
     inputs[i.get_name()] = i;
