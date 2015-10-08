@@ -11,7 +11,10 @@ class rule:
 
         # subscribe for input changes, for each input change rule_callback will be called
         for i in input_list:
-            inputs.inputs[i].subscribe(self.on_input_change)
+            try:
+                inputs.inputs[i].subscribe(self.on_input_change)
+            except KeyError:
+                logging.warn("Rule: " + human_name + " unable to subscribe for input " + i + " Rule won't be trigerred by this input")
 
     def on_input_change(self):
         self.rule_callback
