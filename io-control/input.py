@@ -9,7 +9,7 @@ import discovery
 
 class input:
 
-  def __init__(self, input_name, input_service, input_id, ):
+  def __init__(self, input_name, input_service, input_id):
     self.id = input_id
     self.service = input_service
     self.name = input_name

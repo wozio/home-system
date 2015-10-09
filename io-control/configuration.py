@@ -2,6 +2,15 @@
 
 import logging
 
+# inputs definitions
+inputs = [
+    {
+        'name': "temperatura_salon",
+        'service': "io.1wire",
+        'id': -6052829097502393072
+    }
+]
+
 # rules definitions
 def heating_auto():
     logging.debug("heating_auto rule executed")
@@ -13,7 +22,7 @@ rules = [
         "human_readable_name": "Ogrzewanie automatyczne",
         "rule": heating_auto,
         "inputs": [
-            "io.1wire_-6052829097502393072"
+            "temperatura_salon"
         ]
     }
 ]
