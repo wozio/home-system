@@ -17,4 +17,4 @@ class rule:
                 logging.warn("Rule: " + human_name + " unable to subscribe for input " + i + " Rule won't be trigerred by this input")
 
     def on_input_change(self):
-        self.rule_callback
+        self.rule_callback()

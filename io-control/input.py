@@ -47,7 +47,7 @@ class input:
     if message.get_message_name() == "state_change":
       self.state = message.get_parameters()["state"]
       self.time = message.get_parameters()["time"]
-      logging.debug("Input %d state changed to %f", self.id, self.state)
+      logging.debug("Input %s state changed to %f", self.name, self.state)
       for c in self.callbacks:
         c()
     else:
