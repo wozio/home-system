@@ -22,18 +22,6 @@
         });
       });
       
-      $("#heating-switch").bind("change", function(){
-        showRefreshNotification();
-        var datatosend = "<hsd><p n=\"state\" t=\"b\">" + ($(this).val() == "on" ? "true" : "false") + "</p></hsd>";
-        jQuery.post("/HSA/execute?name=heating&msg=set_state", datatosend)
-        .done(function(){
-          refresh();
-        })
-        .fail(function(jqXHR){
-          showFailedNotification(jqXHR.status);
-        });
-      });
-      
       window.setInterval(refresh, 60000);
       
       refresh();
@@ -48,18 +36,6 @@
           $("#dhwrec-switch").val('on').slider('refresh');
         } else {
           $("#dhwrec-switch").val('off').slider('refresh');
-        }
-      })
-      .fail(function(jqXHR){
-        showFailedNotification(jqXHR.status);
-      });
-      jQuery.get("/HSA/execute?name=heating&msg=get_state")
-      .done(function(data){
-        $p = $(data).find("p");
-        if ($p.text() == "true"){
-          $("#heating-switch").val('on').slider('refresh');
-        } else {
-          $("#heating-switch").val('off').slider('refresh');
         }
       })
       .fail(function(jqXHR){
@@ -120,14 +96,7 @@
         <option value="on">Wł</option>
       </select>
     </div>
-    <div data-role="fieldcontain">
-      <label class="switch-label" for="heating-switch">Ogrzewanie</label>
-      <select id="heating-switch" name="heating-switch" data-role="slider">
-        <option value="off">Wył</option>
-        <option value="on">Wł</option>
-      </select>
-    </div>
-    
+   
 	</div>
   <div data-role="popup" id="refresh-popup" class="ui-content" data-history="false" data-theme="e" style="padding: 5px"></div>
 </div>

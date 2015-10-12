@@ -29,9 +29,9 @@ def on_msg(message):
     values = []
     times = []
 
-    for n, i in sorted(inputs.inputs.iteritems()):
+    for n, i in sorted(inputs.inputs.items()):
       names.append(n)
-      inputState = i.get_state()
+      inputState = i.get()
       values.append(inputState[0])
       times.append(inputState[1])
 
@@ -48,9 +48,9 @@ def on_msg(message):
     values = []
     times = []
 
-    for n, o in sorted(outputs.outputs.iteritems()):
+    for n, o in sorted(outputs.outputs.items()):
       names.append(n)
-      outputState = o.get_state()
+      outputState = o.get()
       values.append(outputState[0])
       times.append(outputState[1])
 
@@ -63,4 +63,4 @@ def on_msg(message):
     message.reply(params)
   else:
     serv.on_msg(message)
-    
+

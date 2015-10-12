@@ -12,17 +12,17 @@ inputs = {}
 
 def init():
     logging.debug("Inputs init")
-    
-    for i in configuration.inputs:
+
+    for i in configuration.defined_inputs:
         iobj = input.input(i['name'], i['service'], i['id'])
         inputs_per_id[(i['service'], i['id'])] = iobj
         inputs[i['name']] = iobj
-    
+
     discovery.register(on_service)
 
 def exit():
     pass
-  
+
 def on_service(new_service, available):
     if available:
         if new_service.find("io.", 0, 3) == 0:
@@ -39,9 +39,11 @@ def on_service(new_service, available):
 
                 for id in reply_content["inputs"]:
                     logging.debug("Input %d found", id)
-              
+
                     if (new_service, id) not in inputs_per_id:
                         i = input.input(new_service + "_" + str(id), new_service, id)
                         inputs_per_id[(new_service, id)] = i
-                        inputs[i.get_name] = i
+                        inputs[i.name()] = i
+                    else:
+                      logging.debug("Input known")
 

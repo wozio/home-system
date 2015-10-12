@@ -13,21 +13,20 @@ class input:
     self.id = input_id
     self.service = input_service
     self.name = input_name
-    self.time = 0
     self.state = 0
     self.callbacks = []
+    self.ready = False
 
-    logging.info("Created input %s with service=%s and id=%d", input_name, input_service, input_id)
+    logging.info("Created input '%s' with service=%s and id=%d", input_name, input_service, input_id)
 
     yagent.agent.register_object(self.name, self.on_msg)
 
     discovery.register(self.on_service)
 
-  def get_name(self):
-    return self.name
-
-  def get_state(self):
-    return self.state, self.time
+  def get(self):
+    if not self.ready:
+      raise RuntimeError("Input not ready")
+    return self.state
 
   def on_service(self, service, available):
     if service == self.service:
@@ -36,7 +35,7 @@ class input:
 
         # subscribe for output state change notifications
         params = yami.Parameters()
-        params["id"] = self.id
+        params["id"] = long(self.id)
         params["name"] = self.name
         params["endpoint"] = yagent.endpoint
 
@@ -45,15 +44,16 @@ class input:
 
   def on_msg(self, message):
     if message.get_message_name() == "state_change":
-      self.state = message.get_parameters()["state"]
-      self.time = message.get_parameters()["time"]
-      logging.debug("Input %s state changed to %f", self.name, self.state)
-      for c in self.callbacks:
-        c()
+      new_state = message.get_parameters()["state"]
+      if not self.ready or new_state != self.state:
+        self.ready = True
+        self.state = message.get_parameters()["state"]
+        logging.debug("'%s' state changed to %f", self.name, self.state)
+        for c in self.callbacks:
+          c()
     else:
       logging.debug("Unknown message %s from %s", message.get_message_name(), message.get_source())
       message.reject("Unknown message")
 
   def subscribe(self, callback):
     self.callbacks.append(callback)
-    callback()

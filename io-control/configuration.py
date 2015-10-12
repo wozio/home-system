@@ -1,28 +1,52 @@
 #!/usr/bin/env python
 
 import logging
+import inputs
+import outputs
 
 # inputs definitions
-inputs = [
+defined_inputs = [
     {
-        'name': "temperatura_salon",
+        'name': "Temperatura salon",
         'service': "io.1wire",
         'id': -6052829097502393072
+    },
+    {
+        'name': "Temperatura pole",
+        'service': "io.1wire",
+        'id': 8358689710083321104
+    }
+]
+
+# outputs definitions
+defined_outputs = [
+    {
+        'name': "Kociol grzanie",
+        'service': 'io.relay-board',
+        'id': 0
     }
 ]
 
 # rules definitions
 def heating_auto():
-    logging.debug("heating_auto rule executed")
+    try:
+        if inputs.inputs["Temperatura salon"].get() > 21.5 or inputs.inputs["Temperatura pole"].get() > inputs.inputs["Temperatura salon"].get():
+            outputs.outputs["Kociol grzanie"].set(0)
+        elif inputs.inputs["Temperatura salon"].get() < 21 and inputs.inputs["Temperatura pole"].get() < 21:
+            outputs.outputs["Kociol grzanie"].set(1)
+    except KeyError:
+        logging.warn("Input or output has not been found, something is wrong with configuration...")
+    except RuntimeError:
+        logging.warn("Something is not ready yet")
 
 # rules list
 rules = [
     {
-        "name": "heating_auto",
-        "human_readable_name": "Ogrzewanie automatyczne",
+        "name": "Ogrzewanie auto",
         "rule": heating_auto,
         "inputs": [
-            "temperatura_salon"
+            "Temperatura salon",
+            "Temperatura pole"
         ]
     }
 ]

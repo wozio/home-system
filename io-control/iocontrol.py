@@ -12,27 +12,27 @@ daemonize = False
 try:
   if os.name == "posix":
     opt = "hd"
-    helpmsg = "io-control.py [-h][-d]"
+    helpmsg = "iocontrol.py [-h][-d]"
   else:
     opt = "h"
-    helpmsg = "io-control.py [-h]"
+    helpmsg = "iocontrol.py [-h]"
   opts, args = getopt.getopt(sys.argv[1:], opt)
 except getopt.GetoptError:
-  print helpmsg
+  print(helpmsg)
   sys.exit(2)
 for opt, arg in opts:
   if opt == '-h':
-    print helpmsg
+    print(helpmsg)
     sys.exit()
   elif opt == "-d":
     daemonize = True
 
 def app_exit(arg1, arg2):
   app.exit()
-  os._exit(1)
+  sys.exit(0)
 
 if daemonize:
-  print "Running as a daemon"
+  print("Running as a daemon")
   import daemon
   import signal
 
@@ -47,7 +47,7 @@ if daemonize:
     while 1:
       time.sleep(1)
 else:
-  print "Enter q to quit..."
+  print("Enter q to quit...")
   app.init(daemonize)
   try:
     while 1:
@@ -55,6 +55,5 @@ else:
         break
   except KeyboardInterrupt:
     pass
-    
-app_exit(None, None)
 
+app_exit(None, None)

@@ -34,6 +34,16 @@ void iorb_service::on_msg(yami::incoming_message & im)
     params.set_integer_array_shallow("outputs", &outputs[0], outputs.size());
     im.reply(params);
   }
+  else if (im.get_message_name() == "get_outputs")
+  {
+    vector<long long> outputs;
+    for (size_t j = 0; j < 8; ++j)
+      outputs.push_back(j);
+    
+    yami::parameters params;
+    params.set_long_long_array_shallow("outputs", &outputs[0], outputs.size());
+    im.reply(params);
+  }
   else if (im.get_message_name() == "get_output_state")
   {
     int output = im.get_parameters().get_integer("output");
