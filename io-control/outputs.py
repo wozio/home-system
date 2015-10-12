@@ -20,9 +20,6 @@ def init():
 
     discovery.register(on_service)
 
-def exit():
-  pass
-
 def on_service(new_service, available):
     if available:
         if new_service.find("io.", 0, 3) == 0:
@@ -46,4 +43,3 @@ def on_service(new_service, available):
                         outputs[o.name] = o
                     else:
                       logging.debug("Output known")
-                      

@@ -5,7 +5,10 @@ import sys
 import getopt
 import time
 import logging
-import app
+
+def app_exit(arg1, arg2):
+  app.exit()
+  sys.exit(0)
 
 # fetch command line arguments
 daemonize = False
@@ -27,10 +30,6 @@ for opt, arg in opts:
   elif opt == "-d":
     daemonize = True
 
-def app_exit(arg1, arg2):
-  app.exit()
-  sys.exit(0)
-
 if daemonize:
   print("Running as a daemon")
   import daemon
@@ -43,11 +42,13 @@ if daemonize:
   }
 
   with context:
+    import app
     app.init(daemonize)
     while 1:
       time.sleep(1)
 else:
   print("Enter q to quit...")
+  import app
   app.init(daemonize)
   try:
     while 1:

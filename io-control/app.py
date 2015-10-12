@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import logging
+import yagent
 import discovery
 import outputs
 import inputs
@@ -13,7 +14,7 @@ def init(daemonize):
   logger.setLevel(logging.DEBUG)
   formatter = logging.Formatter('[%(levelname)s] %(asctime)s %(filename)s: %(lineno)d: %(message)s')
 
-  fh = logging.FileHandler('io-control.log')
+  fh = logging.FileHandler('iocontrol.log')
   fh.setFormatter(formatter)
   logger.addHandler(fh)
 
@@ -34,9 +35,7 @@ def init(daemonize):
 def exit():
   logging.info("Home System IO Control quitting")
 
+  yagent.agent = None
   mainservice.exit()
-  ioservices.exit()
-  rules.exit()
-  inputs.exit()
-  outputs.exit()
   discovery.exit()
+

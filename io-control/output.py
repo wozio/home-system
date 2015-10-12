@@ -34,7 +34,7 @@ class output:
 
     if self.wanted_state != self.state:
       logging.debug("'%s' state set to %f", self.name, state)
-      set_state()
+      self.set_state()
 
   def set_state(self):
     params = yami.Parameters()
@@ -69,7 +69,7 @@ class output:
           c()
       if self.wanted_state != self.state:
         logging.debug("Wanted state of '%s' different from actual, setting to %f", self.name, state)
-        set_state()
+        self.set_state()
     else:
       logging.debug("Unknown message %s from %s", message.get_message_name(), message.get_source())
       message.reject("Unknown message")
