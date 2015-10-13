@@ -14,7 +14,7 @@ class output:
     self.service = output_service
     self.name = output_name
     self.state = 0
-    self.time = 0
+    self.callbacks = []
     self.ready = False
     self.wanted_state = 0
 
@@ -26,7 +26,7 @@ class output:
 
   def get(self):
     if not self.ready:
-      raise RuntimeError("Input not ready")
+      raise RuntimeError("Output not ready")
     return self.state
 
   def set(self, state):
@@ -76,3 +76,4 @@ class output:
 
   def subscribe(self, callback):
     self.callbacks.append(callback)
+    callback()

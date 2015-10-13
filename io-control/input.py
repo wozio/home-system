@@ -57,3 +57,4 @@ class input:
 
   def subscribe(self, callback):
     self.callbacks.append(callback)
+    callback()

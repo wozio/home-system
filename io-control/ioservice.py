@@ -7,6 +7,6 @@ class ioservice:
   def __init__(self, name, settings):
     self.name = name
 
-    logging.info("Created ioservice with name=%s", name)
+    logging.info("Created ioservice '%s'", name)
 
     

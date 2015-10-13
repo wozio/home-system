@@ -27,17 +27,18 @@ defined_outputs = [
     }
 ]
 
-# rules definitions
+# rules callbacks
 def heating_auto():
-    try:
-        if inputs.inputs["Temperatura salon"].get() > 21.5 or inputs.inputs["Temperatura pole"].get() > inputs.inputs["Temperatura salon"].get():
-            outputs.outputs["Kociol grzanie"].set(0)
-        elif inputs.inputs["Temperatura salon"].get() < 21 and inputs.inputs["Temperatura pole"].get() < 21:
-            outputs.outputs["Kociol grzanie"].set(1)
-    except KeyError:
-        logging.warn("Input or output has not been found, something is wrong with configuration...")
-    except RuntimeError:
-        logging.warn("Something is not ready yet")
+    if inputs.inputs["Temperatura salon"].get() > 21.5 or inputs.inputs["Temperatura pole"].get() > inputs.inputs["Temperatura salon"].get():
+        outputs.outputs["Kociol grzanie"].set(0)
+    elif inputs.inputs["Temperatura salon"].get() < 21 and inputs.inputs["Temperatura pole"].get() < 21:
+        outputs.outputs["Kociol grzanie"].set(1)
+        
+def heating_off():
+    outputs.outputs["Kociol grzanie"].set(0)
+    
+def heating_on():
+    outputs.outputs["Kociol grzanie"].set(1)
 
 # rules list
 rules = [
@@ -47,31 +48,51 @@ rules = [
         "inputs": [
             "Temperatura salon",
             "Temperatura pole"
+        ],
+        "outputs": [
+            "Kociol grzanie"
+        ]
+    },
+    {
+        "name": "Ogrzewanie wylaczone",
+        "rule": heating_off,
+        "inputs": [
+        ],
+        "outputs": [
+            "Kociol grzanie"
+        ]
+    },
+    {
+        "name": "Ogrzewanie wlaczone",
+        "rule": heating_on,
+        "inputs": [
+        ],
+        "outputs": [
+            "Kociol grzanie"
         ]
     }
 ]
 
-# services: name, list of settings: name, friendly name, type
-
+# services list
 services = [
     {
-        "name": "heating",
+        "name": "Ogrzewanie",
         "settings": [
             {
                 "type": "switch",
                 "data": {
                     "values":[
                         {
-                            "value": "off",
-                            "action": "on_heating_off"
+                            "value": "wyl",
+                            "rule": "Ogrzewanie wylaczone"
                         },
                         {
                             "value": "auto",
-                            "action": "on_heating_auto"
+                            "rule": "Ogrzewanie auto"
                         },
                         {
-                            "value": "on",
-                            "action": "on_heating_on"
+                            "value": "wl",
+                            "rule": "Ogrzewanie wlaczone"
                         }
                     ]
                 }
