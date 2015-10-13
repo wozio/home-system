@@ -10,8 +10,8 @@ class ioservice:
     self.settings = []
 
     logging.info("Created ioservice '%s'", name)
-    
-    for s in settings_:
-        self.settings.append = setting.Setting(s["name"], s["data"])
 
-    
+    for s in settings_:
+        self.settings.append(setting.Setting(s["name"], s["data"]))
+
+

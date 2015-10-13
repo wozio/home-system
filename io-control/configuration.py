@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# This Python file uses the following encoding: utf-8
 
 import logging
 import inputs
@@ -21,24 +22,29 @@ defined_inputs = [
 # outputs definitions
 defined_outputs = [
     {
-        'name': "Kociol grzanie",
+        'name': "Kocioł grzanie",
         'service': 'io.relay-board',
         'id': 0
+    },
+    {
+        'name': "Pompa cyrkulacji CWU",
+        'service': 'io.relay-board',
+        'id': 3
     }
 ]
 
 # rules callbacks
 def heating_auto():
     if inputs.inputs["Temperatura salon"].get() > 21.5 or inputs.inputs["Temperatura pole"].get() > inputs.inputs["Temperatura salon"].get():
-        outputs.outputs["Kociol grzanie"].set(0)
+        outputs.outputs["Kocioł grzanie"].set(0)
     elif inputs.inputs["Temperatura salon"].get() < 21 and inputs.inputs["Temperatura pole"].get() < 21:
-        outputs.outputs["Kociol grzanie"].set(1)
-        
+        outputs.outputs["Kocioł grzanie"].set(1)
+
 def heating_off():
-    outputs.outputs["Kociol grzanie"].set(0)
-    
+    outputs.outputs["Kocioł grzanie"].set(0)
+
 def heating_on():
-    outputs.outputs["Kociol grzanie"].set(1)
+    outputs.outputs["Kocioł grzanie"].set(1)
 
 # rules list
 rules = [
@@ -50,7 +56,7 @@ rules = [
             "Temperatura pole"
         ],
         "outputs": [
-            "Kociol grzanie"
+            "Kocioł grzanie"
         ]
     },
     {
@@ -59,7 +65,7 @@ rules = [
         "inputs": [
         ],
         "outputs": [
-            "Kociol grzanie"
+            "Kocioł grzanie"
         ]
     },
     {
@@ -68,7 +74,7 @@ rules = [
         "inputs": [
         ],
         "outputs": [
-            "Kociol grzanie"
+            "Kocioł grzanie"
         ]
     }
 ]
@@ -82,6 +88,7 @@ services = [
                 "name": "Tryb",
                 "type": "switch",
                 "data": {
+                    "default": 1,
                     "values":[
                         {
                             "value": "wyl",
@@ -93,7 +100,7 @@ services = [
                         },
                         {
                             "value": "wl",
-                            "rule": "Ogrzewanie wlaczone"
+                            "rule": "Ogrzewanie włączone"
                         }
                     ]
                 }

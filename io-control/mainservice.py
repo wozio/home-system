@@ -5,6 +5,7 @@ import service
 import yami
 import yagent
 import discovery
+import configuration
 import outputs
 import output
 import inputs
@@ -29,38 +30,42 @@ def on_msg(message):
     values = []
     times = []
 
-    for n, i in sorted(inputs.inputs.items()):
+    for n, i in sorted(inputs.inputs.iteritems()):
       names.append(n)
-      inputState = i.get()
-      values.append(inputState[0])
-      times.append(inputState[1])
+      values.append(i.get())
 
     # putting lists into parameters
     params = yami.Parameters()
     params["names"] = names
     params["values"] = values
-    params["times"] = times
 
     message.reply(params)
   elif message.get_message_name() == "get_outputs":
     #preparing lists for sending
     names = []
     values = []
-    times = []
 
-    for n, o in sorted(outputs.outputs.items()):
+    for n, o in sorted(outputs.outputs.iteritems()):
       names.append(n)
-      outputState = o.get()
-      values.append(outputState[0])
-      times.append(outputState[1])
+      values.append(o.get())
 
     # putting lists into parameters
     params = yami.Parameters()
     params["names"] = names
     params["values"] = values
-    params["times"] = times
+
+    message.reply(params)
+  elif message.get_message_name() == "get_services":
+    #preparing lists for sending
+    names = []
+
+    for n in sorted(configuration.services):
+      names.append(n["name"])
+
+    # putting lists into parameters
+    params = yami.Parameters()
+    params["names"] = names
 
     message.reply(params)
   else:
     serv.on_msg(message)
-

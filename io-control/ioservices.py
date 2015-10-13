@@ -4,11 +4,11 @@ import logging
 import ioservice
 import configuration
 
-ioservices = {}
+Ioservices = {}
 
 def init():
     for s in configuration.services:
-        ioservices[s["name"]] = ioservice.ioservice(s["name"], s["settings"])
+        Ioservices[s["name"]] = ioservice.ioservice(s["name"], s["settings"])
 
 def exit():
     pass
