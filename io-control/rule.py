@@ -36,10 +36,10 @@ class rule:
                 logging.warn("Rule '%s': Something is not ready yet", self.name)
             
     def enable(self):
-        logging.debug("Enabling rule '%s'", name)
+        logging.debug("Enabling rule '%s'", self.name)
         self.enabled = True
-        run_rule()
+        self.run_rule()
         
     def disable(self):
-        logging.debug("Disabling rule '%s'", name)
+        logging.debug("Disabling rule '%s'", self.name)
         self.enabled = False

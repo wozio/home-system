@@ -79,6 +79,7 @@ services = [
         "name": "Ogrzewanie",
         "settings": [
             {
+                "name": "Tryb",
                 "type": "switch",
                 "data": {
                     "values":[
