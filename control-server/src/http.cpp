@@ -380,12 +380,28 @@ public:
       }
       case yami::nested_parameters:
       {
-        xw.startElement("", "", "np", attrs);
+        xw.startElement("", "", "n", attrs);
         yami::parameters nested((*it).get_nested_parameters());
         process_parameters(&nested, xw);
-        xw.endElement("", "", "np");
+        xw.endElement("", "", "n");
         break;
-      }    
+      }
+      case yami::nested_parameters_array:
+      {
+        attrs.addAttribute("", "", "t", "", "n");
+        size_t ybs = params->get_nested_array_length((*it).name());
+        attrs.addAttribute("", "", "s", "", boost::lexical_cast<string>(ybs));
+        xw.startElement("", "", "a", attrs);
+        for (size_t i = 0; i < ybs; ++i)
+        {
+          xw.startElement("", "", "e");
+          yami::parameters nested(params->get_nested_in_array((*it).name(), i));
+          process_parameters(&nested, xw);
+          xw.endElement("", "", "e");
+        }
+        xw.endElement("", "", "a");
+        break;
+      }
       case yami::unused:
         break;
       default:
