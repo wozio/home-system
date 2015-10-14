@@ -49,7 +49,7 @@ def heating_on():
 # rules list
 rules = [
     {
-        "name": "Ogrzewanie auto",
+        "name": "Ogrzewanie automatyczne",
         "rule": heating_auto,
         "inputs": [
             "Temperatura salon",
@@ -96,7 +96,7 @@ services = [
                         },
                         {
                             "value": "auto",
-                            "rule": "Ogrzewanie auto"
+                            "rule": "Ogrzewanie automatyczne"
                         },
                         {
                             "value": "wl",
