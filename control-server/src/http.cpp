@@ -266,140 +266,70 @@ public:
     for (yami::parameters::iterator it = params->begin(); it != params->end(); ++it)
     {
       AttributesImpl attrs;
-      attrs.addAttribute("", "", "n", "", (*it).name());
       switch ((*it).type())
       {
       case yami::boolean:
-        attrs.addAttribute("", "", "t", "", "b");
-        xw.startElement("", "", "p", attrs);
-        xw.characters((*it).get_boolean() ? "true" : "false");
-        xw.endElement("", "", "p");
+        attrs.addAttribute("", "", "type", "", "bool");
         break;
       case yami::integer:
-        attrs.addAttribute("", "", "t", "", "i");
-        xw.startElement("", "", "p", attrs);
-        xw.characters(boost::lexical_cast<string>((*it).get_integer()));
-        xw.endElement("", "", "p");
+        attrs.addAttribute("", "", "type", "", "integer");
         break;
       case yami::long_long:
-        attrs.addAttribute("", "", "t", "", "l");
-        xw.startElement("", "", "p", attrs);
-        xw.characters(boost::lexical_cast<string>((*it).get_long_long()));
-        xw.endElement("", "", "p");
+        attrs.addAttribute("", "", "type", "", "long_long");
         break;
       case yami::double_float:
-        attrs.addAttribute("", "", "t", "", "d");
-        xw.startElement("", "", "p", attrs);
-        xw.characters(boost::lexical_cast<string>((*it).get_double_float()));
-        xw.endElement("", "", "p");
+        attrs.addAttribute("", "", "type", "", "double_float");
         break;
       case yami::string:
-        attrs.addAttribute("", "", "t", "", "s");
-        xw.startElement("", "", "p", attrs);
-        xw.characters((*it).get_string());
-        xw.endElement("", "", "p");
+        attrs.addAttribute("", "", "type", "", "string");
         break;
       case yami::integer_array:
       {
-        attrs.addAttribute("", "", "t", "", "i");
+        attrs.addAttribute("", "", "type", "", "integer_array");
         size_t ybs;
-        int* yb = (*it).get_integer_array(ybs);
-        attrs.addAttribute("", "", "s", "", boost::lexical_cast<string>(ybs));
-        xw.startElement("", "", "a", attrs);
-        for (size_t i = 0; i < ybs; ++i)
-        {
-          xw.startElement("", "", "e");
-          xw.characters(boost::lexical_cast<string>(yb[i]));
-          xw.endElement("", "", "e");
-        }
-        xw.endElement("", "", "a");
+        (*it).get_integer_array(ybs);
+        attrs.addAttribute("", "", "size", "", boost::lexical_cast<string>(ybs));
         break;
       }
       case yami::boolean_array:
       {
-        attrs.addAttribute("", "", "t", "", "b");
+        attrs.addAttribute("", "", "type", "", "boolean_array");
         size_t ybs;
-        bool* yb = (*it).get_boolean_array(ybs);
-        attrs.addAttribute("", "", "s", "", boost::lexical_cast<string>(ybs));
-        xw.startElement("", "", "a", attrs);
-        for (size_t i = 0; i < ybs; ++i)
-        {
-          xw.startElement("", "", "e");
-          xw.characters(yb[i] ? "true" : "false");
-          xw.endElement("", "", "e");
-        }
-        xw.endElement("", "", "a");
+        (*it).get_boolean_array(ybs);
+        attrs.addAttribute("", "", "size", "", boost::lexical_cast<string>(ybs));
         break;
       }
       case yami::long_long_array:
       {
-        attrs.addAttribute("", "", "t", "", "l");
+        attrs.addAttribute("", "", "type", "", "long_long_array");
         size_t ybs;
-        long long* yb = (*it).get_long_long_array(ybs);
-        attrs.addAttribute("", "", "s", "", boost::lexical_cast<string>(ybs));
-        xw.startElement("", "", "a", attrs);
-        for (size_t i = 0; i < ybs; ++i)
-        {
-          xw.startElement("", "", "e");
-          xw.characters(boost::lexical_cast<string>(yb[i]));
-          xw.endElement("", "", "e");
-        }
-        xw.endElement("", "", "a");
+        (*it).get_long_long_array(ybs);
+        attrs.addAttribute("", "", "size", "", boost::lexical_cast<string>(ybs));
         break;
       }
       case yami::double_float_array:
       {
-        attrs.addAttribute("", "", "t", "", "d");
+        attrs.addAttribute("", "", "type", "", "double_float_array");
         size_t ybs;
-        double* yb = (*it).get_double_float_array(ybs);
-        attrs.addAttribute("", "", "s", "", boost::lexical_cast<string>(ybs));
-        xw.startElement("", "", "a", attrs);
-        for (size_t i = 0; i < ybs; ++i)
-        {
-          xw.startElement("", "", "e");
-          xw.characters(boost::lexical_cast<string>(yb[i]));
-          xw.endElement("", "", "e");
-        }
-        xw.endElement("", "", "a");
+        (*it).get_double_float_array(ybs);
+        attrs.addAttribute("", "", "size", "", boost::lexical_cast<string>(ybs));
         break;
       }
       case yami::string_array:
       {
-        attrs.addAttribute("", "", "t", "", "s");
+        attrs.addAttribute("", "", "type", "", "string_array");
         size_t ybs = (*it).get_string_array_length();
-        attrs.addAttribute("", "", "s", "", boost::lexical_cast<string>(ybs));
-        xw.startElement("", "", "a", attrs);
-        for (size_t i = 0; i < ybs; ++i)
-        {
-          xw.startElement("", "", "e");
-          xw.characters((*it).get_string_in_array(i));
-          xw.endElement("", "", "e");
-        }
-        xw.endElement("", "", "a");
+        attrs.addAttribute("", "", "size", "", boost::lexical_cast<string>(ybs));
         break;
       }
       case yami::nested_parameters:
       {
-        xw.startElement("", "", "n", attrs);
-        yami::parameters nested((*it).get_nested_parameters());
-        process_parameters(&nested, xw);
-        xw.endElement("", "", "n");
+        attrs.addAttribute("", "", "type", "", "nested_parameters");
         break;
       }
       case yami::nested_parameters_array:
       {
-        attrs.addAttribute("", "", "t", "", "n");
-        size_t ybs = params->get_nested_array_length((*it).name());
-        attrs.addAttribute("", "", "s", "", boost::lexical_cast<string>(ybs));
-        xw.startElement("", "", "a", attrs);
-        for (size_t i = 0; i < ybs; ++i)
-        {
-          xw.startElement("", "", "e");
-          yami::parameters nested(params->get_nested_in_array((*it).name(), i));
-          process_parameters(&nested, xw);
-          xw.endElement("", "", "e");
-        }
-        xw.endElement("", "", "a");
+        attrs.addAttribute("", "", "type", "", "nested_parameters_array");
         break;
       }
       case yami::unused:
@@ -407,6 +337,108 @@ public:
       default:
         break;
       }
+      xw.startElement("", "", (*it).name(), attrs);
+      
+      switch ((*it).type())
+      {
+      case yami::boolean:
+        xw.characters((*it).get_boolean() ? "true" : "false");
+        break;
+      case yami::integer:
+        xw.characters(boost::lexical_cast<string>((*it).get_integer()));
+        break;
+      case yami::long_long:
+        xw.characters(boost::lexical_cast<string>((*it).get_long_long()));
+        break;
+      case yami::double_float:
+        xw.characters(boost::lexical_cast<string>((*it).get_double_float()));
+        break;
+      case yami::string:
+        xw.characters((*it).get_string());
+        break;
+      case yami::integer_array:
+      {
+        size_t ybs;
+        int* yb = (*it).get_integer_array(ybs);
+        for (size_t i = 0; i < ybs; ++i)
+        {
+          xw.startElement("", "", "element");
+          xw.characters(boost::lexical_cast<string>(yb[i]));
+          xw.endElement("", "", "element");
+        }
+        break;
+      }
+      case yami::boolean_array:
+      {
+        size_t ybs;
+        bool* yb = (*it).get_boolean_array(ybs);
+        for (size_t i = 0; i < ybs; ++i)
+        {
+          xw.startElement("", "", "element");
+          xw.characters(yb[i] ? "true" : "false");
+          xw.endElement("", "", "element");
+        }
+        break;
+      }
+      case yami::long_long_array:
+      {
+        size_t ybs;
+        long long* yb = (*it).get_long_long_array(ybs);
+        for (size_t i = 0; i < ybs; ++i)
+        {
+          xw.startElement("", "", "element");
+          xw.characters(boost::lexical_cast<string>(yb[i]));
+          xw.endElement("", "", "element");
+        }
+        break;
+      }
+      case yami::double_float_array:
+      {
+        size_t ybs;
+        double* yb = (*it).get_double_float_array(ybs);
+        for (size_t i = 0; i < ybs; ++i)
+        {
+          xw.startElement("", "", "element");
+          xw.characters(boost::lexical_cast<string>(yb[i]));
+          xw.endElement("", "", "element");
+        }
+        break;
+      }
+      case yami::string_array:
+      {
+        size_t ybs = (*it).get_string_array_length();
+        for (size_t i = 0; i < ybs; ++i)
+        {
+          xw.startElement("", "", "element");
+          xw.characters((*it).get_string_in_array(i));
+          xw.endElement("", "", "element");
+        }
+        break;
+      }
+      case yami::nested_parameters:
+      {
+        yami::parameters nested((*it).get_nested_parameters());
+        process_parameters(&nested, xw);
+        break;
+      }
+      case yami::nested_parameters_array:
+      {
+        size_t ybs = params->get_nested_array_length((*it).name());
+        for (size_t i = 0; i < ybs; ++i)
+        {
+          xw.startElement("", "", "element");
+          yami::parameters nested(params->get_nested_in_array((*it).name(), i));
+          process_parameters(&nested, xw);
+          xw.endElement("", "", "element");
+        }
+        break;
+      }
+      case yami::unused:
+        break;
+      default:
+        break;
+      }
+      xw.endElement("", "", (*it).name());
     }
   }
 
