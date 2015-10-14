@@ -46,6 +46,16 @@ def heating_off():
 def heating_on():
     outputs.outputs["Kocioł grzanie"].set(1)
 
+def circulation_auto():
+    pass
+    
+def circulation_off():
+    pass
+
+def circulation_on():
+    pass
+
+
 # rules list
 rules = [
     {
@@ -69,12 +79,39 @@ rules = [
         ]
     },
     {
-        "name": "Ogrzewanie wlaczone",
+        "name": "Ogrzewanie włączone",
         "rule": heating_on,
         "inputs": [
         ],
         "outputs": [
             "Kocioł grzanie"
+        ]
+    },
+    {
+        "name": "Cyrkulacja automatyczna",
+        "rule": circulation_auto,
+        "inputs": [
+        ],
+        "outputs": [
+            "Pompa cyrkulacji CWU"
+        ]
+    },
+    {
+        "name": "Cyrkulacja wylaczona",
+        "rule": circulation_off,
+        "inputs": [
+        ],
+        "outputs": [
+            "Pompa cyrkulacji CWU"
+        ]
+    },
+    {
+        "name": "Cyrkulacja włączona",
+        "rule": circulation_on,
+        "inputs": [
+        ],
+        "outputs": [
+            "Pompa cyrkulacji CWU"
         ]
     }
 ]
@@ -85,7 +122,7 @@ services = [
         "name": "Ogrzewanie",
         "settings": [
             {
-                "name": "Tryb",
+                "name": "Tryb ogrzewania",
                 "type": "switch",
                 "data": {
                     "default": 1,
@@ -101,6 +138,32 @@ services = [
                         {
                             "value": "wl",
                             "rule": "Ogrzewanie włączone"
+                        }
+                    ]
+                }
+            }
+        ]
+    },
+    {
+        "name": "Cyrkulacja CWU",
+        "settings": [
+            {
+                "name": "Tryb cyrkulacji",
+                "type": "switch",
+                "data": {
+                    "default": 1,
+                    "values":[
+                        {
+                            "value": "wyl",
+                            "rule": "Cyrkulacja wylaczona"
+                        },
+                        {
+                            "value": "auto",
+                            "rule": "Cyrkulacja automatyczna"
+                        },
+                        {
+                            "value": "wl",
+                            "rule": "Cyrkulacja włączona"
                         }
                     ]
                 }

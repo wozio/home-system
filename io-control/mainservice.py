@@ -57,14 +57,22 @@ def on_msg(message):
     message.reply(params)
   elif message.get_message_name() == "get_services":
     #preparing lists for sending
-    names = []
+    services = []
 
-    for n in sorted(configuration.services):
-      names.append(n["name"])
+    for s in sorted(configuration.services):
+        service_params = yami.Parameters()
+        service_params["name"] = s["name"]
+        settings = []
+        for st in s["settings"]:
+            setting_params = yami.Parameters()
+            setting_params["name"] = st["name"]
+            setting_params["type"] = st["type"]
+            settings.append(setting_params)
+        service_params["settings"] = setting_params
+        services.append(service_params)
 
-    # putting lists into parameters
     params = yami.Parameters()
-    params["names"] = names
+    params["services"] = services
 
     message.reply(params)
   else:
