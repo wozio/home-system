@@ -24,37 +24,34 @@ def exit():
 
 def on_msg(message):
   global serv
+
   if message.get_message_name() == "get_inputs":
-    #preparing lists for sending
-    names = []
-    values = []
-    times = []
+    inputs_list = []
 
     for n, i in sorted(inputs.inputs.iteritems()):
-      names.append(n)
-      values.append(i.get())
+      input_params = yami.Parameters()
+      input_params["name"] = n
+      input_params["value"] = i.get()
+      inputs_list.append(input_params)
 
-    # putting lists into parameters
     params = yami.Parameters()
-    params["names"] = names
-    params["values"] = values
-
+    params["inputs"] = inputs_list
     message.reply(params)
+
   elif message.get_message_name() == "get_outputs":
     #preparing lists for sending
-    names = []
-    values = []
+    outputs_list = []
 
     for n, o in sorted(outputs.outputs.iteritems()):
-      names.append(n)
-      values.append(o.get())
+      output_params = yami.Parameters()
+      output_params["name"] = n
+      output_params["value"] = o.get()
+      outputs_list.append(output_params)
 
-    # putting lists into parameters
     params = yami.Parameters()
-    params["names"] = names
-    params["values"] = values
-
+    params["outputs"] = outputs_list
     message.reply(params)
+
   elif message.get_message_name() == "get_services":
     #preparing lists for sending
     services = []
