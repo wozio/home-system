@@ -114,4 +114,4 @@ def get(service):
   if service in known_services:
     return known_services[service]
   else:
-    raise Exception("Service not found " + service)
+    raise RuntimeError("Service not found " + service)

@@ -37,12 +37,15 @@ class output:
       self.set_state()
 
   def set_state(self):
-    params = yami.Parameters()
-    params["output"] = int(self.id)
-    params["state"] = int(self.wanted_state)
+    try:
+      params = yami.Parameters()
+      params["output"] = int(self.id)
+      params["state"] = int(self.wanted_state)
 
-    yagent.agent.send(discovery.get(self.service), self.service,
-                    "set_output_state", params);
+      yagent.agent.send(discovery.get(self.service), self.service,
+                      "set_output_state", params);
+    except RuntimeError:
+      pass
 
   def on_service(self, service, available):
     if service == self.service:

@@ -8,20 +8,24 @@ class Setting:
     def __init__(self, name, data):
         logging.info("Created setting '%s'", name)
 
-        self.value = -1
         self.name = name
         self.values = data["values"]
-        self.set_value(data["default"])
+        self.value = self.values.iterkeys().next()
+        self.set(data["default"])
 
-    def set_value(self, value):
+    def set(self, value):
+        if value not in self.values:
+            logging.warn("Required value '%s' no in values list", value)
+            return;
+
+        logging.debug("Setting '%s' set to value '%s'", self.name, value)
         # disable previous rule
-        if self.value != -1:
-            rules.rules[self.values[self.value]["rule"]].disable()
+        rules.rules[self.values[self.value]["rule"]].disable()
         # enable new rule
-        if value != -1 and value < len(self.values):
-            rules.rules[self.values[value]["rule"]].enable()
+        rules.rules[self.values[value]["rule"]].enable()
 
-        if value < len(self.values):
-            self.value = value
-        else:
-            self.value = -1;
+        self.value = value
+
+    def get(self):
+        return self.value;
+

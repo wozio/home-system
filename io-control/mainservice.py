@@ -4,8 +4,8 @@ import logging
 import service
 import yami
 import yagent
-import discovery
 import configuration
+import ioservices
 import outputs
 import output
 import inputs
@@ -64,6 +64,11 @@ def on_msg(message):
             setting_params = yami.Parameters()
             setting_params["name"] = st["name"]
             setting_params["type"] = st["type"]
+            setting_params["value"] = ioservices.Ioservices[s["name"]].settings[st["name"]].get()
+            values = []
+            for val in st["data"]["values"]:
+              values.append(val)
+            setting_params["values"] = values
             settings.append(setting_params)
         service_params["settings"] = setting_params
         services.append(service_params)
@@ -72,5 +77,13 @@ def on_msg(message):
     params["services"] = services
 
     message.reply(params)
+
+  elif message.get_message_name() == "set_setting":
+      try:
+          params = message.get_parameters()
+          ioservices.Ioservices[params["service"]].settings[params["setting"]].set(params["value"])
+      except KeyError as e:
+          logging.warn("Something is not found, either in parameters or in system: %s", e.strerror)
+
   else:
     serv.on_msg(message)

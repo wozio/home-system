@@ -48,12 +48,12 @@ def heating_on():
 
 def circulation_auto():
     pass
-    
+
 def circulation_off():
-    pass
+    outputs.outputs["Pompa cyrkulacji CWU"].set(0)
 
 def circulation_on():
-    pass
+    outputs.outputs["Pompa cyrkulacji CWU"].set(1)
 
 
 # rules list
@@ -126,20 +126,17 @@ services = [
                 "type": "switch",
                 "data": {
                     "default": 1,
-                    "values":[
-                        {
-                            "value": "wyl",
+                    "values": {
+                        "wyl": {
                             "rule": "Ogrzewanie wylaczone"
                         },
-                        {
-                            "value": "auto",
+                        "auto": {
                             "rule": "Ogrzewanie automatyczne"
                         },
-                        {
-                            "value": "wl",
+                        "wl": {
                             "rule": "Ogrzewanie włączone"
                         }
-                    ]
+                    }
                 }
             }
         ]
@@ -151,21 +148,18 @@ services = [
                 "name": "Tryb cyrkulacji",
                 "type": "switch",
                 "data": {
-                    "default": 1,
-                    "values":[
-                        {
-                            "value": "wyl",
+                    "default": "wl",
+                    "values": {
+                        "wyl": {
                             "rule": "Cyrkulacja wylaczona"
                         },
-                        {
-                            "value": "auto",
+                        "auto": {
                             "rule": "Cyrkulacja automatyczna"
                         },
-                        {
-                            "value": "wl",
+                        "wl": {
                             "rule": "Cyrkulacja włączona"
                         }
-                    ]
+                    }
                 }
             }
         ]
