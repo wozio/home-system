@@ -1,0 +1,21 @@
+<!doctype html>
+<html ng-app="phonecatApp" ng-controller="PhoneListCtrl">
+<head>
+  <meta charset="utf-8">
+  <title>My HTML File</title>
+  <script src="libs/angular.min.js"></script>
+  <script src="services_ctrl.js"></script>
+</head>
+<body>
+
+<ul>
+  <li ng-repeat="service in services">
+    <p>{{service.name}}</p>
+    <span>{{service.settings.name}}</span>
+    <span ng-repeat="value in service.settings.values">{{value}}</span>
+  </li>
+</ul>
+
+</body>
+
+</html>
