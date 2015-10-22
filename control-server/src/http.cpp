@@ -264,8 +264,15 @@ public:
   void process_parameters(yami::parameters* params, std::ostream& out)
   {
     out << '{';
+    bool first = true;
     for (yami::parameters::iterator it = params->begin(); it != params->end(); ++it)
     {
+      if (!first)
+      {
+        out << ',';
+      }
+      first = false;
+      
       out << '"' << (*it).name() << '"' << ':';
       
       switch ((*it).type())
@@ -393,7 +400,6 @@ public:
       default:
         break;
       }
-      out << ',';
     }
     out << '}';
   }
