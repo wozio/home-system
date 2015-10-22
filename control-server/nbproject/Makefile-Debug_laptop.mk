@@ -21,8 +21,8 @@ FC=gfortran
 AS=as
 
 # Macros
-CND_PLATFORM=GNU-Linux-x86
-CND_DLIB_EXT=so
+CND_PLATFORM=MinGW-Windows
+CND_DLIB_EXT=dll
 CND_CONF=Debug_laptop
 CND_DISTDIR=dist
 CND_BUILDDIR=build
@@ -58,11 +58,11 @@ LDLIBSOPTIONS=-L../common/yami4/lib -lPocoFoundation -lPocoNet -lPocoXML -lboost
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
-	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk ../bin/${CND_CONF}/control-server
+	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk ../bin/${CND_CONF}/control-server.exe
 
-../bin/${CND_CONF}/control-server: ../common/common/../bin/Debug_laptop/libcommon.a
+../bin/${CND_CONF}/control-server.exe: ../common/common/../bin/Debug_laptop/libcommon.a
 
-../bin/${CND_CONF}/control-server: ${OBJECTFILES}
+../bin/${CND_CONF}/control-server.exe: ${OBJECTFILES}
 	${MKDIR} -p ../bin/${CND_CONF}
 	${LINK.cc} -o ../bin/${CND_CONF}/control-server ${OBJECTFILES} ${LDLIBSOPTIONS}
 
@@ -88,7 +88,7 @@ ${OBJECTDIR}/src/http.o: src/http.cpp
 # Clean Targets
 .clean-conf: ${CLEAN_SUBPROJECTS}
 	${RM} -r ${CND_BUILDDIR}/${CND_CONF}
-	${RM} ../bin/${CND_CONF}/control-server
+	${RM} ../bin/${CND_CONF}/control-server.exe
 
 # Subprojects
 .clean-subprojects:
