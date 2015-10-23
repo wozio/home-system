@@ -70,7 +70,7 @@ def on_msg(message):
               values.append(val)
             setting_params["values"] = values
             settings.append(setting_params)
-        service_params["settings"] = setting_params
+        service_params["settings"] = settings
         services.append(service_params)
 
     params = yami.Parameters()

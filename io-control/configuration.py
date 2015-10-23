@@ -125,7 +125,7 @@ services = [
                 "name": "Tryb ogrzewania",
                 "type": "switch",
                 "data": {
-                    "default": 1,
+                    "default": "auto",
                     "values": {
                         "wyl": {
                             "rule": "Ogrzewanie wylaczone"

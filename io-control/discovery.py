@@ -52,11 +52,12 @@ def run():
   while cont:
     try:
       msg = sock.recv(10240).split('\n')
-#      logging.debug("Message: " + '||'.join(msg))
+      #logging.debug("Message: " + '||'.join(msg))
       if (len(msg) > 0):
         if (msg[0] == "notify"): handle_notify(msg)
         elif (msg[0] == "hello"): handle_hello(msg)
         elif (msg[0] == "bye"): handle_bye(msg)
+        elif (msg[0] == "search"): handle_search()
         else: logging.warning("Unknown message: " + '||'.join(msg))
     except:
       pass
@@ -97,6 +98,16 @@ def handle_bye(msg):
 def handle_hello(msg):
   if (len(msg) >= 3):
     check_service(msg[1], msg[2])
+    
+def handle_search():
+  MCAST_GRP = '239.255.255.255'
+  MCAST_PORT = 10001
+
+  sock.sendto(msg, (MCAST_GRP, MCAST_PORT))
+  sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
+  for s, e in self.known_services.iteritems():
+    msg = "notify\n" + s + "\n" + e
+    sock.sendto(msg, (MCAST_GRP, MCAST_PORT))
 
 def exit():
   global cont, timer, thread
