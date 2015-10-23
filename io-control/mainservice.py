@@ -56,7 +56,7 @@ def on_msg(message):
     #preparing lists for sending
     services = []
 
-    for s in sorted(configuration.services):
+    for s in configuration.services:
         service_params = yami.Parameters()
         service_params["name"] = s["name"]
         settings = []
