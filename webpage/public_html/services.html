@@ -13,7 +13,10 @@
     <p>{{service.name}}</p>
     <div ng-repeat="setting in service.settings">
       <span>{{setting.name}}</span>
-      <select ng-model="settingValue" ng-options="value as value for value in setting.values" ng-init="settingValue=setting.value">
+      <select ng-model="settingValue"
+              ng-init="settingValue=setting.value"
+              ng-options="value as value for value in setting.values"
+              ng-change="updateSetting(service, setting, settingValue)">
       </select>
     </div>
   </li>
