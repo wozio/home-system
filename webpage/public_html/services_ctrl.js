@@ -7,8 +7,17 @@ servicesApp.controller('ServicesCtrl', function ($scope, $http) {
     $scope.updateSetting = function(service, setting, value) {
       $http.post('/HSA/execute?name=io-control-dev&msg=set_setting_value', {
           service: service.name,
-          settings: setting.name,
-          value: value
+          setting: setting.name,
+          value: value,
+          test_array: [
+            "asdf",
+            1234,
+            1.4,
+            true
+          ],
+          testObj: {
+            fafa: "fafunia"
+          }
         }).success(function(data) {
       });
     };
