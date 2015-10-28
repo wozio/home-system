@@ -26,11 +26,17 @@ namespace control_server
 using namespace rapidjson;
 using namespace std;
 
+/* Handler with callbacks for JSON parser.
+   Currently nested parameters or nested parameters arrays are not supported.
+   All integer numbers are treated as long long.
+   All float numbers are treated as double.
+   For ensuring that number is treated as float it shall be sent as string with
+   f suffix */
 struct Handler
 {
-  Handler()
+  Handler(yami::parameters& params)
+  : params_(params)
   {
-    params_.push(root_);
   }
   
   enum class state
@@ -40,51 +46,18 @@ struct Handler
     array
   } state_ = state::none;
 
-  yami::parameters root_;
-  std::stack<yami::parameters> params_;
+  yami::parameters& params_;
   std::string name_;
 
   bool StartObject()
   {
     cout << "StartObject()" << endl;
-    switch (state_)
-    {
-      case state::none:
-        // root object, do nothing
-        break;
-      case state::parameter:
-      {
-        // nested parameters
-        yami::parameters params;
-        params_.push(params);
-        state_ = state::none;
-        break;
-      }
-      case state::array:
-        // array of nested objects
-        break;
-    }
     return true;
   }
 
   bool EndObject(SizeType memberCount)
   {
     cout << "EndObject(" << memberCount << ")" << endl;
-    switch (state_)
-    {
-      case state::none:
-        params_.top().set_nested_parameters(name_, params);
-        params_.pop();
-        break;
-      case state::parameter:
-      {
-        // error
-        return false;
-      }
-      case state::array:
-        // array of nested objects
-        break;
-    }
     return true;
   }
 
@@ -110,7 +83,6 @@ struct Handler
 
   bool Null()
   {
-    state_ = state::none;
     return true;
   }
 
@@ -119,7 +91,7 @@ struct Handler
     cout << "Bool(" << boolalpha << b << ")" << endl;
     if (state_ == state::parameter)
     {
-      params_.top().set_boolean(name_, b);
+      params_.set_boolean(name_, b);
       state_ = state::none;
       return true;
     }
@@ -129,37 +101,19 @@ struct Handler
   bool Int(int i)
   {
     cout << "Int(" << i << ")" << endl;
-    if (state_ == state::parameter)
-    {
-      params_.top().set_long_long(name_, i);
-      state_ = state::none;
-      return true;
-    }
-    return false;
+    return Uint64(i);
   }
 
   bool Uint(unsigned u)
   {
     cout << "Uint(" << u << ")" << endl;
-    if (state_ == state::parameter)
-    {
-      params_.top().set_long_long(name_, u);
-      state_ = state::none;
-      return true;
-    }
-    return false;
+    return Uint64(u);
   }
 
   bool Int64(int64_t i)
   {
     cout << "Int64(" << i << ")" << endl;
-    if (state_ == state::parameter)
-    {
-      params_.top().set_long_long(name_, i);
-      state_ = state::none;
-      return true;
-    }
-    return false;
+    return Uint64(i);
   }
 
   bool Uint64(uint64_t u)
@@ -167,7 +121,7 @@ struct Handler
     cout << "Uint64(" << u << ")" << endl;
     if (state_ == state::parameter)
     {
-      params_.top().set_long_long(name_, u);
+      params_.set_long_long(name_, u);
       state_ = state::none;
       return true;
     }
@@ -179,7 +133,7 @@ struct Handler
     cout << "Double(" << d << ")" << endl;
     if (state_ == state::parameter)
     {
-      params_.top().set_double_float(name_, d);
+      params_.set_double_float(name_, d);
       state_ = state::none;
       return true;
     }
@@ -191,7 +145,7 @@ struct Handler
     cout << "String(" << str << ", " << length << ", " << boolalpha << copy << ")" << endl;
     if (state_ == state::parameter)
     {
-      params_.top().set_string(name_, str, length);
+      params_.set_string(name_, string(str, length));
       state_ = state::none;
       return true;
     }
