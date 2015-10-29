@@ -99,10 +99,7 @@ public:
 
 	Poco::Net::HTTPRequestHandler* createRequestHandler(const Poco::Net::HTTPServerRequest& request)
 	{
-		if (request.getURI() == "/ws")
-			return new TimeRequestHandler();
-		else
-			return 0;
+	  return new TimeRequestHandler();
 	}
 };
 
@@ -201,13 +198,8 @@ int main(int argc, char** argv)
       try {
         if (vm.count("cloud"))
         {
-          Poco::SharedPtr<Poco::Net::PrivateKeyPassphraseHandler> pConsoleHandler = new Poco::Net::KeyConsoleHandler(false);
-          Poco::SharedPtr<Poco::Net::InvalidCertificateHandler> pInvalidCertHandler = new Poco::Net::ConsoleCertificateHandler(false);
-          Poco::Net::Context::Ptr pContext = new Poco::Net::Context(Poco::Net::Context::SERVER_USE, "server.key", "server.crt", "", Poco::Net::Context::VERIFY_NONE, 9, false);
-          Poco::Net::SSLManager::instance().initializeServer(pConsoleHandler, pInvalidCertHandler, pContext);
-          
           // set-up a server socket
-          Poco::Net::SecureServerSocket svc(4430);
+          Poco::Net::ServerSocket svc(5000);
           // set-up a HTTPServer instance
           Poco::Net::HTTPServer ssrv(new TimeRequestHandlerFactory(), svc, new Poco::Net::HTTPServerParams);
           // start the HTTPServer
