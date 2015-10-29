@@ -67,6 +67,7 @@
             <linkerLibLibItem>yamicore</linkerLibLibItem>
             <linkerLibLibItem>pthread</linkerLibLibItem>
             <linkerLibLibItem>PocoNet</linkerLibLibItem>
+            <linkerLibLibItem>PocoNetSSL</linkerLibLibItem>
           </linkerLibItems>
         </linkerTool>
       </compileType>

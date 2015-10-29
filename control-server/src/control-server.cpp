@@ -13,11 +13,100 @@
 #include <signal.h>
 #include <iostream>
 
+
+#include "Poco/Net/HTTPRequest.h"
+#include "Poco/Net/HTTPResponse.h"
+#include "Poco/Net/HTTPMessage.h"
+#include "Poco/Net/WebSocket.h"
+#include "Poco/Net/HTTPSClientSession.h"
+#include "Poco/Net/NetException.h"
+#include "Poco/Net/SSLException.h"
+#include "Poco/Net/SSLManager.h"
+#include "Poco/Net/KeyConsoleHandler.h"
+#include "Poco/Net/PrivateKeyPassphraseHandler.h"
+#include "Poco/Net/ConsoleCertificateHandler.h"
+#include "Poco/Net/InvalidCertificateHandler.h"
+#include "Poco/Net/AcceptCertificateHandler.h"
+#include "Poco/Net/SecureStreamSocket.h"
+#include "Poco/Net/SecureServerSocket.h"
+#include "Poco/Net/HTTPServerRequestImpl.h"
+#include "Poco/Net/HTTPRequestHandler.h"
+#include "Poco/Net/HTTPRequestHandlerFactory.h"
+
 using namespace std;
 namespace po = boost::program_options;
 
+using Poco::Net::HTTPSClientSession;
+using Poco::Net::HTTPRequest;
+using Poco::Net::HTTPResponse;
+using Poco::Net::HTTPMessage;
+using Poco::Net::WebSocket;
+
 home_system::yc_t _yc;
 home_system::discovery_t _discovery;
+
+
+class TimeRequestHandler: public Poco::Net::HTTPRequestHandler
+{
+public:
+	TimeRequestHandler()
+	{
+	}
+	
+	void handleRequest(Poco::Net::HTTPServerRequest& request, Poco::Net::HTTPServerResponse& response)
+	{
+		std::cout << "Request from " << request.clientAddress().toString() << std::endl;
+
+		try
+			{
+				Poco::Net::WebSocket ws(request, response);
+				std::auto_ptr<char> pBuffer(new char[1234]);
+				int flags;
+				int n;
+				do
+				{
+					n = ws.receiveFrame(pBuffer.get(), 1234, flags);
+					ws.sendFrame(pBuffer.get(), n, flags);
+				}
+				while (n > 0 || (flags & Poco::Net::WebSocket::FRAME_OP_BITMASK) != Poco::Net::WebSocket::FRAME_OP_CLOSE);
+			}
+			catch (Poco::Net::WebSocketException& exc)
+			{
+				switch (exc.code())
+				{
+				case Poco::Net::WebSocket::WS_ERR_HANDSHAKE_UNSUPPORTED_VERSION:
+					response.set("Sec-WebSocket-Version", Poco::Net::WebSocket::WEBSOCKET_VERSION);
+					// fallthrough
+				case Poco::Net::WebSocket::WS_ERR_NO_HANDSHAKE:
+				case Poco::Net::WebSocket::WS_ERR_HANDSHAKE_NO_VERSION:
+				case Poco::Net::WebSocket::WS_ERR_HANDSHAKE_NO_KEY:
+					response.setStatusAndReason(HTTPResponse::HTTP_BAD_REQUEST);
+					response.setContentLength(0);
+					response.send();
+					break;
+				}
+			}
+	}
+};
+
+
+class TimeRequestHandlerFactory: public Poco::Net::HTTPRequestHandlerFactory
+{
+public:
+	TimeRequestHandlerFactory()
+	{
+	}
+
+	Poco::Net::HTTPRequestHandler* createRequestHandler(const Poco::Net::HTTPServerRequest& request)
+	{
+		if (request.getURI() == "/ws")
+			return new TimeRequestHandler();
+		else
+			return 0;
+	}
+};
+
+
 
 int main(int argc, char** argv)
 {
@@ -28,6 +117,7 @@ int main(int argc, char** argv)
   desc.add_options()
     ("help,h", "produce help message")
     ("daemonize,d", "run as daemon")
+    ("cloud,c", "run as cloud server")
 #ifdef _DEBUG
     ("port,p", po::value<int>()->default_value(5002),
 #else
@@ -103,6 +193,78 @@ int main(int argc, char** argv)
 
     LOGINFO("Listening for http access on " << boost::asio::ip::host_name() <<
       ":" << port);
+    
+    
+    {
+      Poco::Net::initializeSSL();
+      
+      try {
+        if (vm.count("cloud"))
+        {
+          Poco::SharedPtr<Poco::Net::PrivateKeyPassphraseHandler> pConsoleHandler = new Poco::Net::KeyConsoleHandler(false);
+          Poco::SharedPtr<Poco::Net::InvalidCertificateHandler> pInvalidCertHandler = new Poco::Net::ConsoleCertificateHandler(false);
+          Poco::Net::Context::Ptr pContext = new Poco::Net::Context(Poco::Net::Context::SERVER_USE, "server.key", "server.crt", "", Poco::Net::Context::VERIFY_NONE, 9, false);
+          Poco::Net::SSLManager::instance().initializeServer(pConsoleHandler, pInvalidCertHandler, pContext);
+          
+          // set-up a server socket
+          Poco::Net::SecureServerSocket svc(4430);
+          // set-up a HTTPServer instance
+          Poco::Net::HTTPServer ssrv(new TimeRequestHandlerFactory(), svc, new Poco::Net::HTTPServerParams);
+          // start the HTTPServer
+          ssrv.start();
+          
+          cout << "Enter q to quit..." << endl;
+          string input_line;
+          while (std::getline(std::cin, input_line))
+          {
+            if (input_line == "q" || input_line == "quit")
+            {
+              break;
+            }
+          }
+          ssrv.stop();
+        }
+        else
+        {
+          Poco::SharedPtr<Poco::Net::PrivateKeyPassphraseHandler> pConsoleHandler = new Poco::Net::KeyConsoleHandler(false);
+          Poco::SharedPtr<Poco::Net::InvalidCertificateHandler> pInvalidCertHandler = new Poco::Net::AcceptCertificateHandler(false);
+          Poco::Net::Context::Ptr pContext = new Poco::Net::Context(Poco::Net::Context::CLIENT_USE, "", Poco::Net::Context::VERIFY_NONE, 9, true);
+          Poco::Net::SSLManager::instance().initializeClient(pConsoleHandler, pInvalidCertHandler, pContext);
+
+          HTTPSClientSession cs("localhost",4430);    
+          HTTPRequest request(HTTPRequest::HTTP_GET, "/ws");
+          HTTPResponse response;
+
+          //cs.setProxy("172.23.0.100", 8080);
+
+          WebSocket ws(cs, request, response);
+          char *testStr="Hello echo websocket laaaaal!";
+          char receiveBuff[256];
+          
+          for (int i = 0; i < 10000; i++)
+          {
+            int len = ws.sendFrame(testStr, strlen(testStr) + 1, WebSocket::FRAME_TEXT);
+            std::cout << "Sent bytes " << len << std::endl;
+            int flags = 0;
+
+            int rlen = ws.receiveFrame(receiveBuff, 256, flags);
+            std::cout << "Received bytes " << rlen << std::endl;
+            std::cout << receiveBuff << std::endl;
+          }
+        }
+      } catch (Poco::Net::HTTPException &e) {
+          std::cout << "HTTP Exception " << e.displayText() << std::endl;
+      } catch (Poco::Net::SSLException &e) {
+        std::cout << "SSL Exception " << e.displayText() << std::endl;
+      } catch (Poco::Net::WebSocketException &e) {
+        std::cout << "WebSocket Exception " << e.displayText() << std::endl;
+      } catch (std::exception& e) {
+        std::cout << "Exception " << e.what() << std::endl;
+      }
+      
+      Poco::Net::uninitializeSSL();
+      
+    }
 
     home_system::control_server::control_service csrv;
 #ifdef __linux__
