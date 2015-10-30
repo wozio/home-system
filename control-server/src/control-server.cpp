@@ -32,6 +32,7 @@
 #include "Poco/Net/HTTPServerRequestImpl.h"
 #include "Poco/Net/HTTPRequestHandler.h"
 #include "Poco/Net/HTTPRequestHandlerFactory.h"
+#include "boost/date_time/posix_time/posix_time.hpp"
 
 using namespace std;
 namespace po = boost::program_options;
@@ -223,26 +224,39 @@ int main(int argc, char** argv)
           Poco::Net::Context::Ptr pContext = new Poco::Net::Context(Poco::Net::Context::CLIENT_USE, "", Poco::Net::Context::VERIFY_NONE, 9, true);
           Poco::Net::SSLManager::instance().initializeClient(pConsoleHandler, pInvalidCertHandler, pContext);
 
-          HTTPSClientSession cs("localhost",4430);    
-          HTTPRequest request(HTTPRequest::HTTP_GET, "/ws");
+          std::cout << "client session" << std::endl;
+
+          HTTPSClientSession cs("52.29.100.55",443);
+          cs.setProxy("172.23.0.100", 8080);
+
+          std::cout << "request" << std::endl;
+          HTTPRequest request(HTTPRequest::HTTP_GET, "/access/", HTTPMessage::HTTP_1_1);
+          request.set("origin", "http://some.origin");
           HTTPResponse response;
 
-          //cs.setProxy("172.23.0.100", 8080);
-
+          std::cout << "ws" << std::endl;
           WebSocket ws(cs, request, response);
-          char *testStr="Hello echo websocket laaaaal!";
-          char receiveBuff[256];
+          char *testStr="Hello echo websocket laaaaalhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhjjjjjjjjjjjjjjjjjjjjjjjjjjkkkkkkkkkkkkkkkkkkkkkkkkgggggggggggggggggggggggggyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyuuuuuuuuuuuuuuuuuuuuuudddddddddddddddddddddddddddddddddeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee!";
+          char receiveBuff[2560];
+
+          boost::posix_time::time_duration dur;
           
-          for (int i = 0; i < 10000; i++)
+          for (int i = 0; i < 100; i++)
           {
+	    boost::posix_time::ptime pt1 = boost::posix_time::microsec_clock::local_time();
             int len = ws.sendFrame(testStr, strlen(testStr) + 1, WebSocket::FRAME_TEXT);
-            std::cout << "Sent bytes " << len << std::endl;
+            //std::cout << "Sent bytes " << len << std::endl;
             int flags = 0;
 
-            int rlen = ws.receiveFrame(receiveBuff, 256, flags);
-            std::cout << "Received bytes " << rlen << std::endl;
-            std::cout << receiveBuff << std::endl;
+            int rlen = ws.receiveFrame(receiveBuff, 2560, flags);
+            //std::cout << "Received bytes " << rlen << std::endl;
+            //std::cout << receiveBuff << std::endl;
+	    boost::posix_time::ptime pt2 = boost::posix_time::microsec_clock::local_time();
+
+            dur += pt2 - pt1;
           }
+
+          std::cout << dur / 100 << std::endl;
         }
       } catch (Poco::Net::HTTPException &e) {
           std::cout << "HTTP Exception " << e.displayText() << std::endl;
