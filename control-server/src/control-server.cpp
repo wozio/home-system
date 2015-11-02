@@ -58,35 +58,7 @@ public:
 	{
 		std::cout << "Request from " << request.clientAddress().toString() << std::endl;
 
-		try
-			{
-				Poco::Net::WebSocket ws(request, response);
-				std::auto_ptr<char> pBuffer(new char[1024]);
-				int flags;
-				int n;
-				do
-				{
-					n = ws.receiveFrame(pBuffer.get(), 1024, flags);
-					ws.sendFrame(pBuffer.get(), n, flags);
-				}
-				while (n > 0 || (flags & Poco::Net::WebSocket::FRAME_OP_BITMASK) != Poco::Net::WebSocket::FRAME_OP_CLOSE);
-			}
-			catch (Poco::Net::WebSocketException& exc)
-			{
-				switch (exc.code())
-				{
-				case Poco::Net::WebSocket::WS_ERR_HANDSHAKE_UNSUPPORTED_VERSION:
-					response.set("Sec-WebSocket-Version", Poco::Net::WebSocket::WEBSOCKET_VERSION);
-					// fallthrough
-				case Poco::Net::WebSocket::WS_ERR_NO_HANDSHAKE:
-				case Poco::Net::WebSocket::WS_ERR_HANDSHAKE_NO_VERSION:
-				case Poco::Net::WebSocket::WS_ERR_HANDSHAKE_NO_KEY:
-					response.setStatusAndReason(HTTPResponse::HTTP_BAD_REQUEST);
-					response.setContentLength(0);
-					response.send();
-					break;
-				}
-			}
+		
 	}
 };
 
@@ -116,7 +88,7 @@ int main(int argc, char** argv)
     ("help,h", "produce help message")
     ("daemonize,d", "run as daemon")
     ("cloud,c", "integrate with cloud server")
-    ("root,r", po::value<std::string>()->default_value("/var/www/"), "path to web page root")
+    ("root,r", po::value<std::string>()->default_value("/var/www"), "path to web page root")
     ("port,p", po::value<int>()->default_value(80), "port number for web page access")
     ("log_level,l", po::value<string>()->default_value("debug"), "Logging level, valid values are:\nerror\nwarning\ninformation\ndebug")
   ;

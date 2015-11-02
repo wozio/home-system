@@ -8,26 +8,26 @@ namespace home_system
 using namespace rapidjson;
 using namespace std;
 
-Handler::Handler(yami::parameters& params)
+Handler::Handler(std::string& service, std::string& message, yami::parameters& params)
 : params_(params)
 {
 }
 
 bool Handler::StartObject()
 {
-  //cout << "StartObject()" << endl;
+  cout << "StartObject()" << endl;
   return true;
 }
 
 bool Handler::EndObject(SizeType memberCount)
 {
-  //cout << "EndObject(" << memberCount << ")" << endl;
+  cout << "EndObject(" << memberCount << ")" << endl;
   return true;
 }
 
 bool Handler::Key(const char* str, SizeType length, bool copy)
 {
-  //cout << "Key(" << str << ", " << length << ", " << boolalpha << copy << ")" << endl;
+  cout << "Key(" << str << ", " << length << ", " << boolalpha << copy << ")" << endl;
   name_.assign(str, length);
   state_ = state::parameter;
   return true;
@@ -35,13 +35,13 @@ bool Handler::Key(const char* str, SizeType length, bool copy)
 
 bool Handler::StartArray()
 {
-  //cout << "StartArray()" << endl;
+  cout << "StartArray()" << endl;
   return true;
 }
 
 bool Handler::EndArray(SizeType elementCount)
 {
-  //cout << "EndArray(" << elementCount << ")" << endl;
+  cout << "EndArray(" << elementCount << ")" << endl;
   return true;
 }
 
@@ -52,7 +52,7 @@ bool Handler::Null()
 
 bool Handler::Bool(bool b)
 {
-  //cout << "Bool(" << boolalpha << b << ")" << endl;
+  cout << "Bool(" << boolalpha << b << ")" << endl;
   if (state_ == state::parameter)
   {
     params_.set_boolean(name_, b);
@@ -64,25 +64,25 @@ bool Handler::Bool(bool b)
 
 bool Handler::Int(int i)
 {
-  //cout << "Int(" << i << ")" << endl;
+  cout << "Int(" << i << ")" << endl;
   return Uint64(i);
 }
 
 bool Handler::Uint(unsigned u)
 {
-  //cout << "Uint(" << u << ")" << endl;
+  cout << "Uint(" << u << ")" << endl;
   return Uint64(u);
 }
 
 bool Handler::Int64(int64_t i)
 {
-  //cout << "Int64(" << i << ")" << endl;
+  cout << "Int64(" << i << ")" << endl;
   return Uint64(i);
 }
 
 bool Handler::Uint64(uint64_t u)
 {
-  //cout << "Uint64(" << u << ")" << endl;
+  cout << "Uint64(" << u << ")" << endl;
   if (state_ == state::parameter)
   {
     params_.set_long_long(name_, u);
@@ -94,7 +94,7 @@ bool Handler::Uint64(uint64_t u)
 
 bool Handler::Double(double d)
 {
-  //cout << "Double(" << d << ")" << endl;
+  cout << "Double(" << d << ")" << endl;
   if (state_ == state::parameter)
   {
     params_.set_double_float(name_, d);
@@ -106,7 +106,7 @@ bool Handler::Double(double d)
 
 bool Handler::String(const char* str, SizeType length, bool copy)
 {
-  //cout << "String(" << str << ", " << length << ", " << boolalpha << copy << ")" << endl;
+  cout << "String(" << str << ", " << length << ", " << boolalpha << copy << ")" << endl;
   if (state_ == state::parameter)
   {
     params_.set_string(name_, string(str, length));

@@ -12,14 +12,15 @@ namespace home_system
 
 struct Handler
 {
-  Handler(yami::parameters& params);
+  Handler(std::string& service, std::string& message, yami::parameters& params);
   enum class state
   {
     none,
     parameter,
     array
   } state_ = state::none;
-
+  std::string& service_;
+  std::string& message_;
   yami::parameters& params_;
   std::string name_;
 
