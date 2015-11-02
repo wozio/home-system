@@ -21,8 +21,8 @@ FC=gfortran
 AS=as
 
 # Macros
-CND_PLATFORM=GNU-Linux-x86
-CND_DLIB_EXT=so
+CND_PLATFORM=MinGW-Windows
+CND_DLIB_EXT=dll
 CND_CONF=Debug_laptop
 CND_DISTDIR=dist
 CND_BUILDDIR=build
@@ -35,6 +35,7 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
 OBJECTFILES= \
+	${OBJECTDIR}/_ext/278941292/json_converter.o \
 	${OBJECTDIR}/src/control-server.o \
 	${OBJECTDIR}/src/control-service.o \
 	${OBJECTDIR}/src/http.o
@@ -58,13 +59,18 @@ LDLIBSOPTIONS=-L../common/yami4/lib -lPocoFoundation -lPocoNet -lPocoXML -lboost
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
-	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk ../bin/${CND_CONF}/control-server
+	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk ../bin/${CND_CONF}/control-server.exe
 
-../bin/${CND_CONF}/control-server: ../common/common/../bin/Debug_laptop/libcommon.a
+../bin/${CND_CONF}/control-server.exe: ../common/common/../bin/Debug_laptop/libcommon.a
 
-../bin/${CND_CONF}/control-server: ${OBJECTFILES}
+../bin/${CND_CONF}/control-server.exe: ${OBJECTFILES}
 	${MKDIR} -p ../bin/${CND_CONF}
 	${LINK.cc} -o ../bin/${CND_CONF}/control-server ${OBJECTFILES} ${LDLIBSOPTIONS}
+
+${OBJECTDIR}/_ext/278941292/json_converter.o: //SERVER/storage/develop/home-system/control-server/src/json_converter.cpp 
+	${MKDIR} -p ${OBJECTDIR}/_ext/278941292
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -Wall -D_DEBUG -I../common/common/src -I../common/yami4/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/278941292/json_converter.o //SERVER/storage/develop/home-system/control-server/src/json_converter.cpp
 
 ${OBJECTDIR}/src/control-server.o: src/control-server.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
@@ -88,7 +94,7 @@ ${OBJECTDIR}/src/http.o: src/http.cpp
 # Clean Targets
 .clean-conf: ${CLEAN_SUBPROJECTS}
 	${RM} -r ${CND_BUILDDIR}/${CND_CONF}
-	${RM} ../bin/${CND_CONF}/control-server
+	${RM} ../bin/${CND_CONF}/control-server.exe
 
 # Subprojects
 .clean-subprojects:

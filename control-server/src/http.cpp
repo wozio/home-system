@@ -2,12 +2,10 @@
 #include "yamicontainer.h"
 #include "logger.h"
 #include "discovery.h"
-#include "rapidjson/reader.h"
-#include <iostream>
+#include "json_converter.h"
 #include <Poco/Net/HTTPServerResponse.h>
 #include <Poco/URI.h>
 #include <boost/filesystem.hpp>
-#include <boost/lexical_cast.hpp>
 #include <stack>
 
 using Poco::Net::HTTPRequestHandler;
@@ -20,195 +18,6 @@ using namespace Poco;
 
 namespace home_system
 {
-namespace control_server
-{
-
-using namespace rapidjson;
-using namespace std;
-
-/* Handler with callbacks for JSON parser.
-   Currently nested parameters or nested parameters arrays are not supported.
-   All integer numbers are treated as long long.
-   All float numbers are treated as double.
-   For ensuring that number is treated as float it shall be sent as string with
-   f suffix */
-struct Handler
-{
-  Handler(yami::parameters& params)
-  : params_(params)
-  {
-  }
-  
-  enum class state
-  {
-    none,
-    parameter,
-    array
-  } state_ = state::none;
-
-  yami::parameters& params_;
-  std::string name_;
-
-  bool StartObject()
-  {
-    cout << "StartObject()" << endl;
-    return true;
-  }
-
-  bool EndObject(SizeType memberCount)
-  {
-    cout << "EndObject(" << memberCount << ")" << endl;
-    return true;
-  }
-
-  bool Key(const char* str, SizeType length, bool copy)
-  {
-    cout << "Key(" << str << ", " << length << ", " << boolalpha << copy << ")" << endl;
-    name_.assign(str, length);
-    state_ = state::parameter;
-    return true;
-  }
-
-  bool StartArray()
-  {
-    cout << "StartArray()" << endl;
-    return true;
-  }
-
-  bool EndArray(SizeType elementCount)
-  {
-    cout << "EndArray(" << elementCount << ")" << endl;
-    return true;
-  }
-
-  bool Null()
-  {
-    return true;
-  }
-
-  bool Bool(bool b)
-  {
-    cout << "Bool(" << boolalpha << b << ")" << endl;
-    if (state_ == state::parameter)
-    {
-      params_.set_boolean(name_, b);
-      state_ = state::none;
-      return true;
-    }
-    return false;
-  }
-
-  bool Int(int i)
-  {
-    cout << "Int(" << i << ")" << endl;
-    return Uint64(i);
-  }
-
-  bool Uint(unsigned u)
-  {
-    cout << "Uint(" << u << ")" << endl;
-    return Uint64(u);
-  }
-
-  bool Int64(int64_t i)
-  {
-    cout << "Int64(" << i << ")" << endl;
-    return Uint64(i);
-  }
-
-  bool Uint64(uint64_t u)
-  {
-    cout << "Uint64(" << u << ")" << endl;
-    if (state_ == state::parameter)
-    {
-      params_.set_long_long(name_, u);
-      state_ = state::none;
-      return true;
-    }
-    return false;
-  }
-
-  bool Double(double d)
-  {
-    cout << "Double(" << d << ")" << endl;
-    if (state_ == state::parameter)
-    {
-      params_.set_double_float(name_, d);
-      state_ = state::none;
-      return true;
-    }
-    return false;
-  }
-
-  bool String(const char* str, SizeType length, bool copy)
-  {
-    cout << "String(" << str << ", " << length << ", " << boolalpha << copy << ")" << endl;
-    if (state_ == state::parameter)
-    {
-      params_.set_string(name_, string(str, length));
-      state_ = state::none;
-      return true;
-    }
-    return false;
-  }
-};
-
-struct stream
-{
-  typedef char Ch;
-  std::istream& is_;
-
-  stream(std::istream& is)
-  : is_(is)
-  {
-  }
-  //! Read the current character from stream without moving the read cursor.
-
-  Ch Peek() const
-  {
-    if (is_.eof())
-      return '\0';
-    return is_.peek();
-  }
-
-  //! Read the current character from stream and moving the read cursor to next character.
-
-  Ch Take()
-  {
-    if (is_.eof())
-      return '\0';
-    Ch ch;
-    is_.get(ch);
-    return ch;
-  }
-
-  //! Get the current read cursor.
-  //! \return Number of characters read from start.
-
-  size_t Tell()
-  {
-    return is_.tellg();
-  }
-  // no need to implement those
-
-  Ch* PutBegin()
-  {
-    return nullptr;
-  }
-
-  void Put(Ch c)
-  {
-  }
-
-  void Flush()
-  {
-  }
-
-  size_t PutEnd(Ch* begin)
-  {
-    return 0;
-  }
-};
 
 class request_handler : public HTTPRequestHandler
 {
@@ -216,149 +25,6 @@ public:
 
   request_handler()
   {
-  }
-
-  void process_parameters(yami::parameters* params, std::ostream& out)
-  {
-    out << '{';
-    bool first = true;
-    for (yami::parameters::iterator it = params->begin(); it != params->end(); ++it)
-    {
-      if (!first)
-      {
-        out << ',';
-      }
-      first = false;
-
-      out << '"' << (*it).name() << '"' << ':';
-
-      switch ((*it).type())
-      {
-        case yami::boolean:
-          out << ((*it).get_boolean() ? "true" : "false");
-          break;
-        case yami::integer:
-          out << boost::lexical_cast<string>((*it).get_integer());
-          break;
-        case yami::long_long:
-          out << boost::lexical_cast<string>((*it).get_long_long());
-          break;
-        case yami::double_float:
-          out << boost::lexical_cast<string>((*it).get_double_float());
-          break;
-        case yami::string:
-          out << '"' << (*it).get_string() << '"';
-          break;
-        case yami::integer_array:
-        {
-          out << "[";
-          size_t ybs;
-          int* yb = (*it).get_integer_array(ybs);
-          if (ybs > 0)
-          {
-            for (size_t i = 0; i < ybs - 1; ++i)
-            {
-              out << boost::lexical_cast<string>(yb[i]) << ',';
-            }
-            out << boost::lexical_cast<string>(yb[ybs - 1]);
-          }
-          out << ']';
-          break;
-        }
-        case yami::boolean_array:
-        {
-          out << "[";
-          size_t ybs;
-          bool* yb = (*it).get_boolean_array(ybs);
-          if (ybs > 0)
-          {
-            for (size_t i = 0; i < ybs - 1; ++i)
-            {
-              out << (yb[i] ? "true" : "false") << ',';
-            }
-            out << (yb[ybs - 1] ? "true" : "false");
-          }
-          out << ']';
-          break;
-        }
-        case yami::long_long_array:
-        {
-          out << "[";
-          size_t ybs;
-          long long* yb = (*it).get_long_long_array(ybs);
-          if (ybs > 0)
-          {
-            for (size_t i = 0; i < ybs - 1; ++i)
-            {
-              out << boost::lexical_cast<string>(yb[i]) << ',';
-            }
-            out << boost::lexical_cast<string>(yb[ybs - 1]);
-          }
-          out << ']';
-          break;
-        }
-        case yami::double_float_array:
-        {
-          out << "[";
-          size_t ybs;
-          double* yb = (*it).get_double_float_array(ybs);
-          if (ybs > 0)
-          {
-            for (size_t i = 0; i < ybs - 1; ++i)
-            {
-              out << boost::lexical_cast<string>(yb[i]) << ',';
-            }
-            out << boost::lexical_cast<string>(yb[ybs - 1]);
-          }
-          out << ']';
-          break;
-        }
-        case yami::string_array:
-        {
-          out << "[";
-          size_t ybs = (*it).get_string_array_length();
-          if (ybs > 0)
-          {
-            for (size_t i = 0; i < ybs - 1; ++i)
-            {
-              out << '"' << (*it).get_string_in_array(i) << '"' << ',';
-            }
-            out << '"' << (*it).get_string_in_array(ybs - 1) << '"';
-          }
-          out << ']';
-          break;
-        }
-        case yami::nested_parameters:
-        {
-          yami::parameters nested((*it).get_nested_parameters());
-          process_parameters(&nested, out);
-          break;
-        }
-        case yami::nested_parameters_array:
-        {
-          out << '[';
-          size_t ybs = params->get_nested_array_length((*it).name());
-          if (ybs > 0)
-          {
-            for (size_t i = 0; i < ybs - 1; ++i)
-            {
-              yami::parameters nested(params->get_nested_in_array((*it).name(), i));
-              process_parameters(&nested, out);
-              out << ',';
-            }
-            yami::parameters nested(params->get_nested_in_array((*it).name(), ybs - 1));
-            process_parameters(&nested, out);
-          }
-          out << ']';
-          break;
-        }
-        case yami::unused:
-          break;
-        default:
-          break;
-      }
-    }
-    out << '}';
   }
 
   void handleRequest(HTTPServerRequest& request, HTTPServerResponse& response)
@@ -413,9 +79,9 @@ public:
 
       try
       {
-        Handler handler(params);
-        Reader reader;
-        stream ss(request.stream());
+        home_system::Handler handler(params);
+        rapidjson::Reader reader;
+        home_system::stream ss(request.stream());
         reader.Parse(ss, handler);
       }
       catch (const std::exception& e)
@@ -552,5 +218,3 @@ HTTPRequestHandler* request_handler_factory::createRequestHandler(const HTTPServ
 }
 
 }
-}
-

@@ -7,8 +7,6 @@
 
 namespace home_system
 {
-namespace control_server
-{
 
 class request_handler_factory : public Poco::Net::HTTPRequestHandlerFactory
 {
@@ -19,7 +17,7 @@ public:
 
 private:
 };
-}
+
 }
 
 #endif	/* HTTP_H */

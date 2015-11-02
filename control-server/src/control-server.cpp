@@ -61,12 +61,12 @@ public:
 		try
 			{
 				Poco::Net::WebSocket ws(request, response);
-				std::auto_ptr<char> pBuffer(new char[1234]);
+				std::auto_ptr<char> pBuffer(new char[1024]);
 				int flags;
 				int n;
 				do
 				{
-					n = ws.receiveFrame(pBuffer.get(), 1234, flags);
+					n = ws.receiveFrame(pBuffer.get(), 1024, flags);
 					ws.sendFrame(pBuffer.get(), n, flags);
 				}
 				while (n > 0 || (flags & Poco::Net::WebSocket::FRAME_OP_BITMASK) != Poco::Net::WebSocket::FRAME_OP_CLOSE);
@@ -185,7 +185,7 @@ int main(int argc, char** argv)
     int port = vm["port"].as<int>();
     Poco::Net::ServerSocket svs(port);
     Poco::Net::HTTPServer srv(
-      new home_system::control_server::request_handler_factory(),
+      new home_system::request_handler_factory(),
       svs, new Poco::Net::HTTPServerParams);
     srv.start();
 
@@ -226,8 +226,8 @@ int main(int argc, char** argv)
 
           std::cout << "client session" << std::endl;
 
-          HTTPSClientSession cs("52.29.100.55",443);
-          cs.setProxy("172.23.0.100", 8080);
+          HTTPSClientSession cs("atorchardstreet.com");
+          //cs.setProxy("172.23.0.100", 8080);
 
           std::cout << "request" << std::endl;
           HTTPRequest request(HTTPRequest::HTTP_GET, "/access/", HTTPMessage::HTTP_1_1);
@@ -236,7 +236,7 @@ int main(int argc, char** argv)
 
           std::cout << "ws" << std::endl;
           WebSocket ws(cs, request, response);
-          char *testStr="Hello echo websocket laaaaalhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhjjjjjjjjjjjjjjjjjjjjjjjjjjkkkkkkkkkkkkkkkkkkkkkkkkgggggggggggggggggggggggggyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyuuuuuuuuuuuuuuuuuuuuuudddddddddddddddddddddddddddddddddeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee!";
+          char *testStr="";
           char receiveBuff[2560];
 
           boost::posix_time::time_duration dur;
