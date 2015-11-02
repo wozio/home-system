@@ -2,27 +2,24 @@
 #include "yamicontainer.h"
 #include "logger.h"
 #include "discovery.h"
+#include "file_request_handler.h"
 #include "json_converter.h"
 #include <Poco/Net/HTTPServerResponse.h>
 #include <Poco/URI.h>
-#include <boost/filesystem.hpp>
-#include <stack>
 
 using Poco::Net::HTTPRequestHandler;
 using Poco::Net::HTTPServerRequest;
 using Poco::Net::HTTPServerResponse;
 
-using namespace boost::filesystem;
 using namespace std;
 using namespace Poco;
 
 namespace home_system
 {
-
+  
 class request_handler : public HTTPRequestHandler
 {
 public:
-
   request_handler()
   {
   }
@@ -206,15 +203,24 @@ private:
   };
 };
 
-request_handler_factory::request_handler_factory()
+request_handler_factory::request_handler_factory(const std::string& root)
+: root_(root)
 {
+  fill_media_types();
 }
 
 HTTPRequestHandler* request_handler_factory::createRequestHandler(const HTTPServerRequest& request)
 {
   string uri = request.getURI();
-  LOG("Request: " << request.clientAddress().toString() << uri);
-  return new request_handler();
+  LOG("Request: " << request.clientAddress().toString() << " URI: " << uri);
+  if (uri == "/access/" || uri == "/access")
+  {
+    return new request_handler();
+  }
+  else
+  {
+    return new file_request_handler(root_);
+  }
 }
 
 }

@@ -35,10 +35,11 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
 OBJECTFILES= \
-	${OBJECTDIR}/src/json_converter.o \
 	${OBJECTDIR}/src/control-server.o \
 	${OBJECTDIR}/src/control-service.o \
-	${OBJECTDIR}/src/http.o
+	${OBJECTDIR}/src/file_request_handler.o \
+	${OBJECTDIR}/src/http.o \
+	${OBJECTDIR}/src/json_converter.o
 
 
 # C Compiler Flags
@@ -67,11 +68,6 @@ LDLIBSOPTIONS=-L../common/yami4/lib -lPocoFoundation -lPocoXML -lboost_filesyste
 	${MKDIR} -p ../bin/${CND_CONF}
 	${LINK.cc} -o ../bin/${CND_CONF}/control-server ${OBJECTFILES} ${LDLIBSOPTIONS}
 
-${OBJECTDIR}/_ext/278941292/json_converter.o: src/json_converter.cpp 
-	${MKDIR} -p ${OBJECTDIR}/src
-	${RM} "$@.d"
-	$(COMPILE.cc) -g -Wall -D_DEBUG -I../common/common/src -I../common/yami4/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/json_converter.o src/json_converter.cpp
-
 ${OBJECTDIR}/src/control-server.o: src/control-server.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} "$@.d"
@@ -82,10 +78,20 @@ ${OBJECTDIR}/src/control-service.o: src/control-service.cpp
 	${RM} "$@.d"
 	$(COMPILE.cc) -g -Wall -D_DEBUG -I../common/common/src -I../common/yami4/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/control-service.o src/control-service.cpp
 
+${OBJECTDIR}/src/file_request_handler.o: src/file_request_handler.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -Wall -D_DEBUG -I../common/common/src -I../common/yami4/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/file_request_handler.o src/file_request_handler.cpp
+
 ${OBJECTDIR}/src/http.o: src/http.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} "$@.d"
 	$(COMPILE.cc) -g -Wall -D_DEBUG -I../common/common/src -I../common/yami4/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/http.o src/http.cpp
+
+${OBJECTDIR}/src/json_converter.o: src/json_converter.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -Wall -D_DEBUG -I../common/common/src -I../common/yami4/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/json_converter.o src/json_converter.cpp
 
 # Subprojects
 .build-subprojects:

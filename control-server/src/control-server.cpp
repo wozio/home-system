@@ -115,13 +115,9 @@ int main(int argc, char** argv)
   desc.add_options()
     ("help,h", "produce help message")
     ("daemonize,d", "run as daemon")
-    ("cloud,c", "run as cloud server")
-#ifdef _DEBUG
-    ("port,p", po::value<int>()->default_value(5002),
-#else
-    ("port,p", po::value<int>()->default_value(5001),
-#endif
-      "port number for http access")
+    ("cloud,c", "integrate with cloud server")
+    ("root,r", po::value<std::string>()->default_value("/var/www/"), "path to web page root")
+    ("port,p", po::value<int>()->default_value(80), "port number for web page access")
     ("log_level,l", po::value<string>()->default_value("debug"), "Logging level, valid values are:\nerror\nwarning\ninformation\ndebug")
   ;
 
@@ -185,7 +181,7 @@ int main(int argc, char** argv)
     int port = vm["port"].as<int>();
     Poco::Net::ServerSocket svs(port);
     Poco::Net::HTTPServer srv(
-      new home_system::request_handler_factory(),
+      new home_system::request_handler_factory(vm["root"].as<std::string>()),
       svs, new Poco::Net::HTTPServerParams);
     srv.start();
 

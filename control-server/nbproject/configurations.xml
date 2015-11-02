@@ -7,10 +7,12 @@
       <itemPath>src/control-server.cpp</itemPath>
       <itemPath>src/control-service.cpp</itemPath>
       <itemPath>src/control-service.h</itemPath>
+      <itemPath>src/file_request_handler.cpp</itemPath>
+      <itemPath>src/file_request_handler.h</itemPath>
       <itemPath>src/http.cpp</itemPath>
       <itemPath>src/http.h</itemPath>
-      <itemPath>//SERVER/storage/develop/home-system/control-server/src/json_converter.cpp</itemPath>
-      <itemPath>//SERVER/storage/develop/home-system/control-server/src/json_converter.h</itemPath>
+      <itemPath>src/json_converter.cpp</itemPath>
+      <itemPath>src/json_converter.h</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
@@ -73,25 +75,23 @@
           </linkerLibItems>
         </linkerTool>
       </compileType>
-      <item path="//SERVER/storage/develop/home-system/control-server/src/json_converter.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
-      <item path="//SERVER/storage/develop/home-system/control-server/src/json_converter.h"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
       <item path="src/control-server.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="src/control-service.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="src/control-service.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="src/file_request_handler.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/file_request_handler.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="src/http.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="src/http.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="src/json_converter.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/json_converter.h" ex="false" tool="3" flavor2="0">
       </item>
     </conf>
     <conf name="Release" type="1">
@@ -150,97 +150,23 @@
           </linkerLibItems>
         </linkerTool>
       </compileType>
-      <item path="//SERVER/storage/develop/home-system/control-server/src/json_converter.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
-      <item path="//SERVER/storage/develop/home-system/control-server/src/json_converter.h"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
       <item path="src/control-server.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="src/control-service.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="src/control-service.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="src/http.cpp" ex="false" tool="1" flavor2="0">
+      <item path="src/file_request_handler.cpp" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="src/http.h" ex="false" tool="3" flavor2="0">
-      </item>
-    </conf>
-    <conf name="Debug_laptop" type="1">
-      <toolsSet>
-        <compilerSet>default</compilerSet>
-        <dependencyChecking>true</dependencyChecking>
-        <rebuildPropChanged>false</rebuildPropChanged>
-      </toolsSet>
-      <compileType>
-        <cTool>
-          <warningLevel>2</warningLevel>
-        </cTool>
-        <ccTool>
-          <standard>8</standard>
-          <incDir>
-            <pElem>../common/common/src</pElem>
-            <pElem>../common/yami4/include</pElem>
-          </incDir>
-          <preprocessorList>
-            <Elem>_DEBUG</Elem>
-          </preprocessorList>
-          <warningLevel>2</warningLevel>
-        </ccTool>
-        <linkerTool>
-          <output>../bin/${CND_CONF}/control-server</output>
-          <linkerAddLib>
-            <pElem>../common/yami4/lib</pElem>
-          </linkerAddLib>
-          <linkerLibItems>
-            <linkerLibLibItem>PocoFoundation</linkerLibLibItem>
-            <linkerLibLibItem>PocoNet</linkerLibLibItem>
-            <linkerLibLibItem>PocoXML</linkerLibLibItem>
-            <linkerLibLibItem>boost_filesystem</linkerLibLibItem>
-            <linkerLibLibItem>boost_program_options</linkerLibLibItem>
-            <linkerLibLibItem>boost_system</linkerLibLibItem>
-            <linkerLibLibItem>boost_thread</linkerLibLibItem>
-            <linkerLibProjectItem>
-              <makeArtifact PL="../common/common"
-                            CT="3"
-                            CN="Debug_laptop"
-                            AC="false"
-                            BL="true"
-                            WD="../common/common"
-                            BC="${MAKE}  -f Makefile CONF=Debug_laptop"
-                            CC="${MAKE}  -f Makefile CONF=Debug_laptop clean"
-                            OP="../bin/${CND_CONF}/libcommon.a">
-              </makeArtifact>
-            </linkerLibProjectItem>
-            <linkerLibLibItem>yamicpp</linkerLibLibItem>
-            <linkerLibLibItem>yamicore</linkerLibLibItem>
-          </linkerLibItems>
-        </linkerTool>
-      </compileType>
-      <item path="//SERVER/storage/develop/home-system/control-server/src/json_converter.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
-      <item path="//SERVER/storage/develop/home-system/control-server/src/json_converter.h"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="src/control-server.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="src/control-service.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="src/control-service.h" ex="false" tool="3" flavor2="0">
+      <item path="src/file_request_handler.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="src/http.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="src/http.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="src/json_converter.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/json_converter.h" ex="false" tool="3" flavor2="0">
       </item>
     </conf>
   </confs>
