@@ -4,6 +4,8 @@
     <logicalFolder name="SourceFiles"
                    displayName="Source Files"
                    projectFiles="true">
+      <itemPath>src/cloud_ws.cpp</itemPath>
+      <itemPath>src/cloud_ws.h</itemPath>
       <itemPath>src/control-server.cpp</itemPath>
       <itemPath>src/control-service.cpp</itemPath>
       <itemPath>src/control-service.h</itemPath>
@@ -75,6 +77,10 @@
           </linkerLibItems>
         </linkerTool>
       </compileType>
+      <item path="src/cloud_ws.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/cloud_ws.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="src/control-server.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="src/control-service.cpp" ex="false" tool="1" flavor2="0">
@@ -150,6 +156,10 @@
           </linkerLibItems>
         </linkerTool>
       </compileType>
+      <item path="src/cloud_ws.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/cloud_ws.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="src/control-server.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="src/control-service.cpp" ex="false" tool="1" flavor2="0">
