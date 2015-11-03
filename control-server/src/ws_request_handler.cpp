@@ -120,10 +120,7 @@ void ws_request_handler::handleRequest(HTTPServerRequest& request, HTTPServerRes
 
     try
     {
-      home_system::Handler handler(params);
-      rapidjson::Reader reader;
-      home_system::stream ss(request.stream());
-      reader.Parse(ss, handler);
+      
     }
     catch (const std::exception& e)
     {

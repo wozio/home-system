@@ -9,7 +9,9 @@ using namespace rapidjson;
 using namespace std;
 
 Handler::Handler(std::string& service, std::string& message, yami::parameters& params)
-: params_(params)
+: service_(service),
+  message_(message),
+  params_(params)
 {
 }
 
