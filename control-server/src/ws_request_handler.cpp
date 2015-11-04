@@ -31,7 +31,7 @@ void ws_request_handler::handleRequest(HTTPServerRequest& request, HTTPServerRes
   try
   {
     Poco::Net::WebSocket ws(request, response);
-    std::unique_ptr<char[]> data(new char[1024]);
+    std::unique_ptr<char[]> data(new char[1025]);
     int flags;
     int n;
     do
