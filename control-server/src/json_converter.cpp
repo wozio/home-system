@@ -1,6 +1,8 @@
 #include "json_converter.h"
+#include "rapidjson/document.h"
 #include <boost/lexical_cast.hpp>
-#include <iostream>
+//#include <iostream>
+#include <sstream>
 
 namespace home_system
 {
@@ -8,168 +10,39 @@ namespace home_system
 using namespace rapidjson;
 using namespace std;
 
-Handler::Handler(std::string& service, std::string& message, yami::parameters& params)
-: service_(service),
-  message_(message),
-  params_(params)
+void process_json(const char* json, std::string& service, std::string& message,
+  bool& expect_reply, yami::parameters& params)
 {
-}
-
-bool Handler::StartObject()
-{
-  cout << "StartObject()" << endl;
-  return true;
-}
-
-bool Handler::EndObject(SizeType memberCount)
-{
-  cout << "EndObject(" << memberCount << ")" << endl;
-  return true;
-}
-
-bool Handler::Key(const char* str, SizeType length, bool copy)
-{
-  cout << "Key(" << str << ", " << length << ", " << boolalpha << copy << ")" << endl;
-  name_.assign(str, length);
-  state_ = state::parameter;
-  return true;
-}
-
-bool Handler::StartArray()
-{
-  cout << "StartArray()" << endl;
-  return true;
-}
-
-bool Handler::EndArray(SizeType elementCount)
-{
-  cout << "EndArray(" << elementCount << ")" << endl;
-  return true;
-}
-
-bool Handler::Null()
-{
-  return true;
-}
-
-bool Handler::Bool(bool b)
-{
-  cout << "Bool(" << boolalpha << b << ")" << endl;
-  if (state_ == state::parameter)
+  Document d;
+  d.Parse(json);
+  
+  if (d.IsObject())
   {
-    params_.set_boolean(name_, b);
-    state_ = state::none;
-    return true;
+    Value::ConstMemberIterator itr = d.FindMember("message");
+    if (itr != d.MemberEnd())
+    {
+      message = itr->value.GetString();
+    }
+    else
+      throw incorrect_message();
+    itr = d.FindMember("service");
+    if (itr != d.MemberEnd())
+    {
+      service = itr->value.GetString();
+    }
+    else
+      throw incorrect_message();
+    itr = d.FindMember("expect_reply");
+    if (itr != d.MemberEnd())
+    {
+      expect_reply = itr->value.GetBool();
+    }
+    else
+      expect_reply = false;
   }
-  return false;
 }
 
-bool Handler::Int(int i)
-{
-  cout << "Int(" << i << ")" << endl;
-  return Uint64(i);
-}
-
-bool Handler::Uint(unsigned u)
-{
-  cout << "Uint(" << u << ")" << endl;
-  return Uint64(u);
-}
-
-bool Handler::Int64(int64_t i)
-{
-  cout << "Int64(" << i << ")" << endl;
-  return Uint64(i);
-}
-
-bool Handler::Uint64(uint64_t u)
-{
-  cout << "Uint64(" << u << ")" << endl;
-  if (state_ == state::parameter)
-  {
-    params_.set_long_long(name_, u);
-    state_ = state::none;
-    return true;
-  }
-  return false;
-}
-
-bool Handler::Double(double d)
-{
-  cout << "Double(" << d << ")" << endl;
-  if (state_ == state::parameter)
-  {
-    params_.set_double_float(name_, d);
-    state_ = state::none;
-    return true;
-  }
-  return false;
-}
-
-bool Handler::String(const char* str, SizeType length, bool copy)
-{
-  cout << "String(" << str << ", " << length << ", " << boolalpha << copy << ")" << endl;
-  if (state_ == state::parameter)
-  {
-    params_.set_string(name_, string(str, length));
-    state_ = state::none;
-    return true;
-  }
-  return false;
-}
-
-stream::stream(std::istream& is)
-: is_(is)
-{
-}
-//! Read the current character from stream without moving the read cursor.
-
-char stream::Peek() const
-{
-  if (is_.eof())
-    return '\0';
-  return is_.peek();
-}
-
-//! Read the current character from stream and moving the read cursor to next character.
-
-char stream::Take()
-{
-  if (is_.eof())
-    return '\0';
-  char ch;
-  is_.get(ch);
-  return ch;
-}
-
-//! Get the current read cursor.
-//! \return Number of characters read from start.
-
-size_t stream::Tell()
-{
-  return is_.tellg();
-}
-// no need to implement those
-
-char* stream::PutBegin()
-{
-  return nullptr;
-}
-
-void stream::Put(char c)
-{
-}
-
-void stream::Flush()
-{
-}
-
-size_t stream::PutEnd(char* begin)
-{
-  return 0;
-}
-
-void process_parameters(yami::parameters* params, std::ostream& out)
+void process_parameters(yami::parameters* params, std::ostringstream& out)
 {
   out << '{';
   bool first = true;
@@ -311,5 +184,14 @@ void process_parameters(yami::parameters* params, std::ostream& out)
   }
   out << '}';
 }
+
+void process_parameters(yami::parameters* params, std::string& outstr)
+{
+  ostringstream out;
+  process_parameters(params, out);
+  outstr = out.str();
+}
+
+
 
 }

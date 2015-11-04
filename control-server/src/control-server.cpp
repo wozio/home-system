@@ -135,7 +135,7 @@ int main(int argc, char** argv)
       }
     }
 
-    srv.stop();
+    srv.stopAll(true);
   }
   catch (const exception& e)
   {

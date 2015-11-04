@@ -45,7 +45,7 @@ void file_request_handler::handleRequest(HTTPServerRequest& request, HTTPServerR
 
     path.insert(0, root_);
 
-    LOG("Path: " << path);
+    //LOG("Path: " << path);
 
     // selecting mime type according to extension
     std::string ext = path.substr(path.find_last_of(".") + 1);
