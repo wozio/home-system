@@ -18,11 +18,9 @@
   function onOpen(evt) {
     writeToScreen("CONNECTED");
     doSend(JSON.stringify({
-      service: "control-server",
+      service: "io-control-dev",
       message: "get_services",
-      expect_reply: true,
-      data: 1234,
-      float: 1.3
+      expect_reply: true
     }));
   }
   function onClose(evt) {

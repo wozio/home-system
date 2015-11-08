@@ -1,13 +1,13 @@
 <!doctype html>
-<html ng-app="servicesApp" ng-controller="ServicesCtrl">
+<html ng-app="app" ng-controller="ServicesCtrl">
 <head>
   <meta charset="utf-8">
   <title>my Home</title>
   <script src="libs/angular.min.js"></script>
+  <script src="libs/angular-websocket.js"></script>
   <script src="services_ctrl.js"></script>
 </head>
 <body>
-
 <ul>
   <li ng-repeat="service in services">
     <p>{{service.name}}</p>

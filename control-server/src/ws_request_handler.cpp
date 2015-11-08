@@ -135,7 +135,11 @@ void ws_request_handler::handleRequest(HTTPServerRequest& request, HTTPServerRes
       {
         LOGWARN("EXCEPTION: bad_request: " << e.what());
       }
-      catch (const Poco::Exception& e)
+      catch (const TimeoutException& e)
+      {
+        // do nothing with this one
+      }
+      catch (const Exception& e)
       {
         LOGWARN("EXCEPTION: " << e.displayText());
       }
