@@ -28,7 +28,7 @@ angular.module('app', [
     services: services,
     get: function() {
       dataStream.send(JSON.stringify({
-        service: 'control-server',
+        service: 'io-control-dev',
         message: 'get_services',
         expect_reply: true
       }));
