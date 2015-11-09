@@ -2,20 +2,30 @@ angular.module('app', [
       'ngWebSocket'
 ])
 .factory('MyData', function($websocket) {
-  var dataStream = $websocket('ws://192.168.1.2:8080/access');
+  var loc = window.location, new_uri;
+  if (loc.protocol === "https:") {
+      new_uri = "wss:";
+  } else {
+      new_uri = "ws:";
+  }
+  new_uri += "//" + loc.host;
+  new_uri += "/access";
+  console.log(new_uri);
+  var dataStream = $websocket(new_uri);
 
-  var collection = [];
+  var services = [];
 
   dataStream.onMessage(function(message) {
     recvServices = JSON.parse(message.data).services;
-    collection.splice(0, collection.length);
+    services.splice(0, services.length);
     for (i = 0; i < recvServices.length; i++) { 
-      collection.push(recvServices[i]);
+      services.push(recvServices[i]);
     }
+    console.log(services);
   });
 
   var methods = {
-    collection: collection,
+    services: services,
     get: function() {
       dataStream.send(JSON.stringify({
         service: 'control-server',

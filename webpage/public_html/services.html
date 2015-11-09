@@ -8,6 +8,11 @@
   <script src="services_ctrl.js"></script>
 </head>
 <body>
+  <ul>
+    <li ng-repeat="service in MyData.services">
+      {{service}}
+    </li>
+</ul>
 <ul>
   <li ng-repeat="service in services">
     <p>{{service.name}}</p>

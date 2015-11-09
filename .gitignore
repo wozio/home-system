@@ -17,3 +17,5 @@ Debug
 *.pyc
 /input-output/build/
 *~
+/cloud-server/build/
+/cloud-server/dist/

@@ -35,13 +35,13 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
 OBJECTFILES= \
-	${OBJECTDIR}/_ext/278941292/ws_request_handler.o \
 	${OBJECTDIR}/src/cloud_ws.o \
 	${OBJECTDIR}/src/control-server.o \
 	${OBJECTDIR}/src/control-service.o \
 	${OBJECTDIR}/src/file_request_handler.o \
 	${OBJECTDIR}/src/http.o \
-	${OBJECTDIR}/src/json_converter.o
+	${OBJECTDIR}/src/json_converter.o \
+	${OBJECTDIR}/src/ws_request_handler.o
 
 
 # C Compiler Flags
@@ -69,11 +69,6 @@ LDLIBSOPTIONS=-L../common/yami4/lib -lPocoFoundation -lPocoXML -lboost_filesyste
 ../bin/${CND_CONF}/control-server: ${OBJECTFILES}
 	${MKDIR} -p ../bin/${CND_CONF}
 	${LINK.cc} -o ../bin/${CND_CONF}/control-server ${OBJECTFILES} ${LDLIBSOPTIONS}
-
-${OBJECTDIR}/_ext/278941292/ws_request_handler.o: //SERVER/storage/develop/home-system/control-server/src/ws_request_handler.cpp 
-	${MKDIR} -p ${OBJECTDIR}/_ext/278941292
-	${RM} "$@.d"
-	$(COMPILE.cc) -g -Wall -D_DEBUG -I../common/common/src -I../common/yami4/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/278941292/ws_request_handler.o //SERVER/storage/develop/home-system/control-server/src/ws_request_handler.cpp
 
 ${OBJECTDIR}/src/cloud_ws.o: src/cloud_ws.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
@@ -104,6 +99,11 @@ ${OBJECTDIR}/src/json_converter.o: src/json_converter.cpp
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} "$@.d"
 	$(COMPILE.cc) -g -Wall -D_DEBUG -I../common/common/src -I../common/yami4/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/json_converter.o src/json_converter.cpp
+
+${OBJECTDIR}/src/ws_request_handler.o: src/ws_request_handler.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -Wall -D_DEBUG -I../common/common/src -I../common/yami4/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/ws_request_handler.o src/ws_request_handler.cpp
 
 # Subprojects
 .build-subprojects:
