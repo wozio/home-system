@@ -4,10 +4,15 @@
 #include <Poco/Net/HTTPServerRequest.h>
 #include <Poco/Net/HTTPServerResponse.h>
 #include <Poco/URI.h>
+#include <boost/algorithm/string.hpp>
 #include <map>
+#include <fstream>
+#include <vector>
 
 using namespace Poco::Net;
 using namespace Poco;
+using namespace std;
+using namespace boost;
 
 namespace home_system
 {
@@ -16,11 +21,25 @@ std::map<std::string, std::string> media_types_;
 
 void fill_media_types()
 {
-  media_types_["txt"] = "text/plain";
-  media_types_["html"] = "text/html";
-  media_types_["json"] = "application/json";
-  media_types_["js"] = "application/javascript";
-  media_types_["xml"] = "application/xml";
+  ifstream f("mime.types");
+  string line;
+  while (f.good())
+  {
+    getline(f, line);
+    trim(line);
+    if (line.size() > 0 && line[0] != '#') // ignore comments
+    {
+      vector<string> split_str;
+      split(split_str, line, is_any_of(" \t"), token_compress_on);
+      if (split_str.size() > 1)
+      {
+        for (size_t i = 1; i < split_str.size(); ++i)
+        {
+          media_types_[split_str[i]] = split_str[0];
+        }
+      }
+    }
+  }
 }
 
 file_request_handler::file_request_handler(const std::string& root)
