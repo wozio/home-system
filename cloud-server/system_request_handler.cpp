@@ -1,10 +1,9 @@
 #include "system_request_handler.h"
+#include "client_request_handler.h"
 #include "logger.h"
 #include <Poco/Net/HTTPServerRequest.h>
 #include <Poco/Net/HTTPServerResponse.h>
 #include <Poco/Net/NetException.h>
-#include <Poco/Net/WebSocket.h>
-#include <memory>
 
 using namespace Poco::Net;
 using namespace Poco;
@@ -12,7 +11,9 @@ using namespace std;
 
 namespace home_system
 {
-
+  
+std::unique_ptr<Poco::Net::WebSocket> system_request_handler::ws_;
+  
 system_request_handler::system_request_handler()
 {
 }
@@ -25,7 +26,7 @@ void system_request_handler::handleRequest(HTTPServerRequest& request, HTTPServe
 {
   try
   {
-    Poco::Net::WebSocket ws(request, response);
+    ws_.reset(new WebSocket(request, response));
     std::unique_ptr<char[]> data(new char[1025]);
     int flags;
     int n;
@@ -33,18 +34,18 @@ void system_request_handler::handleRequest(HTTPServerRequest& request, HTTPServe
     {
       try
       {
-        n = ws.receiveFrame(data.get(), 1024, flags);
+        n = ws_->receiveFrame(data.get(), 1024, flags);
         
         if ((flags & WebSocket::FRAME_OP_BITMASK) == WebSocket::FRAME_OP_CLOSE)
         {
           LOG("Closing connection");
-          ws.shutdown();
+          ws_->shutdown();
           return;
         }
         
         if ((flags & WebSocket::FRAME_OP_BITMASK) == WebSocket::FRAME_OP_TEXT && n > 0)
         {
-          ws.sendFrame(data.get(), n, WebSocket::FRAME_OP_TEXT);
+          client_request_handler::sendToClient(data.get(), n);
         }
       }
       catch (const runtime_error& e)
@@ -82,11 +83,16 @@ void system_request_handler::handleRequest(HTTPServerRequest& request, HTTPServe
       break;
     }
   }
+  
+  ws_.reset();
 }
 
 void system_request_handler::sendToSystem(char* buf, size_t size)
 {
-  //ws.sendFrame(buf, size, WebSocket::FRAME_OP_TEXT);
+  if (ws_)
+  {
+    ws_->sendFrame(buf, size, WebSocket::FRAME_OP_TEXT);
+  }
 }
   
 }
