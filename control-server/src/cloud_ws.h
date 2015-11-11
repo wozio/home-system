@@ -1,8 +1,7 @@
 #ifndef CLOUD_WS_H
 #define	CLOUD_WS_H
 
-#include "Poco/Net/WebSocket.h"
-#include <memory>
+#include <thread>
 
 namespace home_system
 {
@@ -14,9 +13,9 @@ public:
   cloud_ws(const cloud_ws& orig) = delete;
   ~cloud_ws();
 private:
-  
-  std::unique_ptr<Poco::Net::WebSocket> ws_;
-
+  bool run_thread_;
+  std::thread thr_;
+  void thr_exec();
 };
 
 }

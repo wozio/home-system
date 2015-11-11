@@ -1,5 +1,6 @@
 #include "cloud_ws.h"
 #include "logger.h"
+#include "ws_com_handler.h"
 #include "Poco/Net/HTTPSClientSession.h"
 #include "Poco/Net/NetException.h"
 #include "Poco/Net/SSLException.h"
@@ -13,56 +14,69 @@
 
 using namespace Poco::Net;
 using namespace Poco;
+using namespace std;
 
 namespace home_system
 {
 
 cloud_ws::cloud_ws()
+: run_thread_(true),
+  thr_([this] () {this->thr_exec();})
+{
+  
+}
+
+cloud_ws::~cloud_ws()
+{
+  run_thread_ = false;
+  thr_.join();
+}
+
+void cloud_ws::thr_exec()
 {
   LOGINFO("Integrating with cloud server");
   
   Poco::Net::initializeSSL();
   
-  try {
-    SharedPtr<PrivateKeyPassphraseHandler> pConsoleHandler = new KeyConsoleHandler(false);
-    SharedPtr<InvalidCertificateHandler> pInvalidCertHandler = new AcceptCertificateHandler(false);
-    Context::Ptr pContext = new Context(Context::CLIENT_USE, "", Context::VERIFY_NONE, 9, true);
-    SSLManager::instance().initializeClient(pConsoleHandler, pInvalidCertHandler, pContext);
+  bool errorLogged = false;
+  while (run_thread_)
+  {
+    try
+    {
+      SharedPtr<PrivateKeyPassphraseHandler> pConsoleHandler = new KeyConsoleHandler(false);
+      SharedPtr<InvalidCertificateHandler> pInvalidCertHandler = new AcceptCertificateHandler(false);
+      Context::Ptr pContext = new Context(Context::CLIENT_USE, "", Context::VERIFY_NONE, 9, true);
+      SSLManager::instance().initializeClient(pConsoleHandler, pInvalidCertHandler, pContext);
 
-    // TODO: configurable cloud server
-    HTTPSClientSession cs("atorchardstreet.com");
-    
-    // TODO: add proxy handling as below but from system or from command line params
-    //cs.setProxy("172.23.0.100", 8080);
+      // TODO: configurable cloud server
+      HTTPSClientSession cs("atorchardstreet.com");
 
-    HTTPRequest request(HTTPRequest::HTTP_GET, "/access/", HTTPMessage::HTTP_1_1);
-    
-    HTTPResponse response;
+      // TODO: add proxy handling as below but from system or from command line params
+      //cs.setProxy("172.23.0.100", 8080);
 
-    ws_.reset(new WebSocket(cs, request, response));
-    char *testStr="";
-    char receiveBuff[2560];
+      // TODO: configurable URI
+      HTTPRequest request(HTTPRequest::HTTP_GET, "/access/system/", HTTPMessage::HTTP_1_1);
 
-    int len = ws_->sendFrame(testStr, strlen(testStr) + 1, WebSocket::FRAME_TEXT);
-    int flags = 0;
-    int rlen = ws_->receiveFrame(receiveBuff, 2560, flags);
-    
-  } catch (HTTPException &e) {
-      LOGERROR("HTTP Exception: " << e.displayText());
-  } catch (SSLException &e) {
-    LOGERROR("SSL Exception " << e.displayText());
-  } catch (WebSocketException &e) {
-    LOGERROR("WebSocket Exception " << e.displayText());
-  } catch (std::exception& e) {
-    LOGERROR("Exception: " << e.what());
+      HTTPResponse response;
+
+      WebSocket ws(cs, request, response);
+      
+      LOG("Connected");
+      
+      errorLogged = false;
+      
+      handle_ws_communication(ws);
+    }
+    catch (Exception &e)
+    {
+      if (!errorLogged)
+      {
+        LOGERROR("Error: " << e.displayText() << ", reconnecting");
+        errorLogged = true;
+      }
+    }
   }
-
   Poco::Net::uninitializeSSL();
-}
-
-cloud_ws::~cloud_ws()
-{
-  
 }
 
 }
