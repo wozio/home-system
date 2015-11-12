@@ -35,6 +35,7 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
 OBJECTFILES= \
+	${OBJECTDIR}/_ext/888364097/system_handler.o \
 	${OBJECTDIR}/client_request_handler.o \
 	${OBJECTDIR}/cloud-server.o \
 	${OBJECTDIR}/request_handler_factories.o \
@@ -66,6 +67,11 @@ LDLIBSOPTIONS=-lPocoFoundation -lPocoNet -lpthread -lboost_program_options -lboo
 ../bin/${CND_CONF}/cloud-server: ${OBJECTFILES}
 	${MKDIR} -p ../bin/${CND_CONF}
 	${LINK.cc} -o ../bin/${CND_CONF}/cloud-server ${OBJECTFILES} ${LDLIBSOPTIONS} -s
+
+${OBJECTDIR}/_ext/888364097/system_handler.o: //SERVER/storage/develop/home-system/cloud-server/system_handler.cpp 
+	${MKDIR} -p ${OBJECTDIR}/_ext/888364097
+	${RM} "$@.d"
+	$(COMPILE.cc) -O3 -s -I../common/common/src -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/888364097/system_handler.o //SERVER/storage/develop/home-system/cloud-server/system_handler.cpp
 
 ${OBJECTDIR}/client_request_handler.o: client_request_handler.cpp 
 	${MKDIR} -p ${OBJECTDIR}

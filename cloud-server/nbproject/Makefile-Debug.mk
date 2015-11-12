@@ -21,8 +21,8 @@ FC=gfortran
 AS=as
 
 # Macros
-CND_PLATFORM=GNU-Linux-x86
-CND_DLIB_EXT=so
+CND_PLATFORM=MinGW-Windows
+CND_DLIB_EXT=dll
 CND_CONF=Debug
 CND_DISTDIR=dist
 CND_BUILDDIR=build
@@ -35,6 +35,7 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
 OBJECTFILES= \
+	${OBJECTDIR}/_ext/888364097/system_handler.o \
 	${OBJECTDIR}/client_request_handler.o \
 	${OBJECTDIR}/cloud-server.o \
 	${OBJECTDIR}/request_handler_factories.o \
@@ -59,13 +60,18 @@ LDLIBSOPTIONS=../common/common/../bin/Debug/libcommon.a -lPocoFoundation -lPocoN
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
-	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk ../bin/${CND_CONF}/cloud-server
+	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk ../bin/${CND_CONF}/cloud-server.exe
 
-../bin/${CND_CONF}/cloud-server: ../common/common/../bin/Debug/libcommon.a
+../bin/${CND_CONF}/cloud-server.exe: ../common/common/../bin/Debug/libcommon.a
 
-../bin/${CND_CONF}/cloud-server: ${OBJECTFILES}
+../bin/${CND_CONF}/cloud-server.exe: ${OBJECTFILES}
 	${MKDIR} -p ../bin/${CND_CONF}
 	${LINK.cc} -o ../bin/${CND_CONF}/cloud-server ${OBJECTFILES} ${LDLIBSOPTIONS}
+
+${OBJECTDIR}/_ext/888364097/system_handler.o: //SERVER/storage/develop/home-system/cloud-server/system_handler.cpp 
+	${MKDIR} -p ${OBJECTDIR}/_ext/888364097
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -I../common/common/src -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/888364097/system_handler.o //SERVER/storage/develop/home-system/cloud-server/system_handler.cpp
 
 ${OBJECTDIR}/client_request_handler.o: client_request_handler.cpp 
 	${MKDIR} -p ${OBJECTDIR}
@@ -94,7 +100,7 @@ ${OBJECTDIR}/system_request_handler.o: system_request_handler.cpp
 # Clean Targets
 .clean-conf: ${CLEAN_SUBPROJECTS}
 	${RM} -r ${CND_BUILDDIR}/${CND_CONF}
-	${RM} ../bin/${CND_CONF}/cloud-server
+	${RM} ../bin/${CND_CONF}/cloud-server.exe
 
 # Subprojects
 .clean-subprojects:

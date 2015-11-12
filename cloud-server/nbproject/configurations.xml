@@ -9,6 +9,7 @@
       <itemPath>cloud-server.cpp</itemPath>
       <itemPath>request_handler_factories.cpp</itemPath>
       <itemPath>request_handler_factories.h</itemPath>
+      <itemPath>//SERVER/storage/develop/home-system/cloud-server/system_handler.cpp</itemPath>
       <itemPath>system_request_handler.cpp</itemPath>
       <itemPath>system_request_handler.h</itemPath>
     </logicalFolder>
@@ -23,6 +24,7 @@
                    kind="IMPORTANT_FILES_FOLDER">
       <itemPath>Makefile</itemPath>
     </logicalFolder>
+    <itemPath>//SERVER/storage/develop/home-system/cloud-server/system_handler.h</itemPath>
   </logicalFolder>
   <projectmakefile>Makefile</projectmakefile>
   <confs>
@@ -62,6 +64,16 @@
           </linkerLibItems>
         </linkerTool>
       </compileType>
+      <item path="//SERVER/storage/develop/home-system/cloud-server/system_handler.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="//SERVER/storage/develop/home-system/cloud-server/system_handler.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="client_request_handler.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="client_request_handler.h" ex="false" tool="3" flavor2="0">
@@ -125,6 +137,16 @@
           </linkerLibItems>
         </linkerTool>
       </compileType>
+      <item path="//SERVER/storage/develop/home-system/cloud-server/system_handler.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="//SERVER/storage/develop/home-system/cloud-server/system_handler.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="client_request_handler.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="client_request_handler.h" ex="false" tool="3" flavor2="0">

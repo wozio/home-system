@@ -15,11 +15,9 @@ public:
   ~system_request_handler();
   void handleRequest(Poco::Net::HTTPServerRequest& request, Poco::Net::HTTPServerResponse& response);
   
-  static void sendToSystem(char* buf, size_t size);
-
-private:
+  static std::unique_ptr<system_handler> system_h_;
   
-  static std::unique_ptr<Poco::Net::WebSocket> ws_;
+private:
 };
 
 }
