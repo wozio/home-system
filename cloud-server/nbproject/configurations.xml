@@ -10,6 +10,7 @@
       <itemPath>request_handler_factories.cpp</itemPath>
       <itemPath>request_handler_factories.h</itemPath>
       <itemPath>//SERVER/storage/develop/home-system/cloud-server/system_handler.cpp</itemPath>
+      <itemPath>//SERVER/storage/develop/home-system/cloud-server/system_handler.h</itemPath>
       <itemPath>system_request_handler.cpp</itemPath>
       <itemPath>system_request_handler.h</itemPath>
     </logicalFolder>
@@ -24,7 +25,6 @@
                    kind="IMPORTANT_FILES_FOLDER">
       <itemPath>Makefile</itemPath>
     </logicalFolder>
-    <itemPath>//SERVER/storage/develop/home-system/cloud-server/system_handler.h</itemPath>
   </logicalFolder>
   <projectmakefile>Makefile</projectmakefile>
   <confs>
