@@ -1,7 +1,6 @@
 #include "system_request_handler.h"
-#include "client_request_handler.h"
 #include "logger.h"
-#include "system_handler.h"
+#include "systems.h"
 #include <Poco/Net/HTTPServerRequest.h>
 #include <Poco/Net/HTTPServerResponse.h>
 #include <Poco/Net/NetException.h>
@@ -13,8 +12,6 @@ using namespace std;
 namespace home_system
 {
 
-std::unique_ptr<ws_handler> system_request_handler::system_h_;
-  
 system_request_handler::system_request_handler()
 {
 }
@@ -27,9 +24,10 @@ void system_request_handler::handleRequest(HTTPServerRequest& request, HTTPServe
 {
   try
   {
-    std::shared_ptr<WebSocket> ws(new WebSocket(request, response));
+    ws_t ws(new WebSocket(request, response));
+    system_t h(new system(ws));
     
-    system_h_.reset(new system_handler(ws));
+    SYSTEMS.add(h);
   }
   catch (Poco::Net::WebSocketException& exc)
   {

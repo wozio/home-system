@@ -4,15 +4,25 @@
     <logicalFolder name="SourceFiles"
                    displayName="Source Files"
                    projectFiles="true">
+      <itemPath>client.cpp</itemPath>
+      <itemPath>client.h</itemPath>
       <itemPath>client_request_handler.cpp</itemPath>
       <itemPath>client_request_handler.h</itemPath>
+      <itemPath>clients.cpp</itemPath>
+      <itemPath>clients.h</itemPath>
       <itemPath>cloud-server.cpp</itemPath>
+      <itemPath>handler.cpp</itemPath>
+      <itemPath>handler.h</itemPath>
+      <itemPath>handlers.cpp</itemPath>
+      <itemPath>handlers.h</itemPath>
       <itemPath>request_handler_factories.cpp</itemPath>
       <itemPath>request_handler_factories.h</itemPath>
-      <itemPath>//SERVER/storage/develop/home-system/cloud-server/system_handler.cpp</itemPath>
-      <itemPath>//SERVER/storage/develop/home-system/cloud-server/system_handler.h</itemPath>
+      <itemPath>system.cpp</itemPath>
+      <itemPath>system.h</itemPath>
       <itemPath>system_request_handler.cpp</itemPath>
       <itemPath>system_request_handler.h</itemPath>
+      <itemPath>systems.cpp</itemPath>
+      <itemPath>systems.h</itemPath>
     </logicalFolder>
     <logicalFolder name="TestFiles"
                    displayName="Test Files"
@@ -64,29 +74,43 @@
           </linkerLibItems>
         </linkerTool>
       </compileType>
-      <item path="//SERVER/storage/develop/home-system/cloud-server/system_handler.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
+      <item path="client.cpp" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="//SERVER/storage/develop/home-system/cloud-server/system_handler.h"
-            ex="false"
-            tool="3"
-            flavor2="0">
+      <item path="client.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="client_request_handler.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="client_request_handler.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="clients.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="clients.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="cloud-server.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="handler.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="handler.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="handlers.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="handlers.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="request_handler_factories.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="request_handler_factories.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="system.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="system.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="system_request_handler.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="system_request_handler.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="systems.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="systems.h" ex="false" tool="3" flavor2="0">
       </item>
     </conf>
     <conf name="Release" type="1">
@@ -137,29 +161,43 @@
           </linkerLibItems>
         </linkerTool>
       </compileType>
-      <item path="//SERVER/storage/develop/home-system/cloud-server/system_handler.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
+      <item path="client.cpp" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="//SERVER/storage/develop/home-system/cloud-server/system_handler.h"
-            ex="false"
-            tool="3"
-            flavor2="0">
+      <item path="client.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="client_request_handler.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="client_request_handler.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="clients.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="clients.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="cloud-server.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="handler.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="handler.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="handlers.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="handlers.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="request_handler_factories.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="request_handler_factories.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="system.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="system.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="system_request_handler.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="system_request_handler.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="systems.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="systems.h" ex="false" tool="3" flavor2="0">
       </item>
     </conf>
   </confs>

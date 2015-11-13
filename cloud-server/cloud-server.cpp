@@ -1,6 +1,9 @@
 #include "request_handler_factories.h"
 #include <boost/asio.hpp>
 #include "logger.h"
+#include "systems.h"
+#include "clients.h"
+#include "handlers.h"
 #ifdef __linux__
 #include <unistd.h>
 #endif
@@ -13,6 +16,10 @@
 
 using namespace std;
 namespace po = boost::program_options;
+
+clients_t _clients;
+systems_t _systems;
+handlers_t _handlers;
 
 int main(int argc, char** argv)
 {
@@ -84,6 +91,10 @@ int main(int argc, char** argv)
 
   try
   {
+    _handlers = handlers::create();
+    _clients = clients::create();
+    _systems = systems::create();
+    
     int port = vm["client_port"].as<int>();
     Poco::Net::ServerSocket client_svs(port);
     Poco::Net::HTTPServer client_srv(
@@ -132,6 +143,10 @@ int main(int argc, char** argv)
     
     system_srv.stopAll(true);
     client_srv.stopAll(true);
+    
+    _clients.reset();
+    _systems.reset();
+    _handlers.reset();
   }
   catch (const exception& e)
   {

@@ -1,21 +1,56 @@
-#include "system_handler.h"
+#include "system.h"
+#include "logger.h"
 
-ws_handler::ws_handler(std::shared_ptr<Poco::Net::WebSocket> ws, on_read_t on_read)
-: ws_(ws),
-  on_read_(on_read),
-  run_thread_(true),
-  thr_([this] () {this->thr_exec();})
+using namespace Poco::Net;
+using namespace Poco;
+using namespace std;
+
+namespace home_system
 {
+
+system::system(ws_t ws)
+: handler(ws)
+{
+  LOG("New system connected, performing handshake");
+  
+  unique_ptr<char[]> data(new char[1025]);
+  int flags;
+  int n;
+  try
+  {
+    n = ws->receiveFrame(data.get(), 1024, flags);
+
+    if ((flags & WebSocket::FRAME_OP_BITMASK) == WebSocket::FRAME_OP_CLOSE)
+    {
+      ws->shutdown();
+    }
+    else if ((flags & WebSocket::FRAME_OP_BITMASK) == WebSocket::FRAME_OP_TEXT && n > 0)
+    {
+      // for now just echo the message
+      ws->sendFrame(data.get(), n, WebSocket::FRAME_OP_TEXT);
+    }
+  }
+  catch (const TimeoutException& e)
+  {
+    ws->shutdown();
+  }
+  catch (const Exception& e)
+  {
+    LOGWARN("EXCEPTION: " << e.displayText());
+  }
+  catch (const std::exception& e)
+  {
+    LOGWARN("EXCEPTION: " << e.what());
+  }
 }
 
-ws_handler::~ws_handler()
+system::~system()
 {
-  run_thread_ = false;
-  thr_.join();
 }
-
-void ws_handler::thr_exec()
+  /*
+void system::thr_exec()
 {
+
   std::unique_ptr<char[]> data(new char[1025]);
   int flags;
   int n;
@@ -66,4 +101,7 @@ void ws_handler::send(char* buf, size_t size)
     LOG("Sending " << size << " bytes to system");
     ws_->sendFrame(buf, size, WebSocket::FRAME_OP_TEXT);
   }
+}
+*/
+
 }
