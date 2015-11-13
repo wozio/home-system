@@ -25,8 +25,11 @@ public:
   };
   
   void add(system_t system);
+  system_t get();
 private:
   systems();
+  
+  system_t system_;
 
 };
 

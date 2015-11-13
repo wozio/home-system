@@ -1,6 +1,7 @@
 #ifndef HANDLERS_H
 #define	HANDLERS_H
 #include "handler.h"
+#include "ios_wrapper.h"
 #include <memory>
 
 namespace home_system
@@ -25,6 +26,10 @@ public:
   
 private:
   handlers();
+  
+  ios_wrapper ios_;
+  
+  void read(handler_t handler);
 
 };
 

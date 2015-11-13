@@ -16,7 +16,7 @@ public:
   handler(const handler& orig) = delete;
   virtual ~handler();
   
-protected:
+  Poco::Net::WebSocket& ws();
   size_t read(std::unique_ptr<char[]>& data, size_t data_size);
   void send(std::unique_ptr<char[]>& data, size_t data_size);
   

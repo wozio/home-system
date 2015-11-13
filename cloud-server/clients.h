@@ -24,8 +24,11 @@ public:
   };
   
   void add(client_t client);
+  client_t get();
 private:
   clients();
+  
+  client_t client_;
 
 };
 

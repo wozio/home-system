@@ -17,6 +17,11 @@ handler::~handler()
   ws_->shutdown();
 }
 
+Poco::Net::WebSocket& handler::ws()
+{
+  return *ws_;
+}
+
 size_t handler::read(std::unique_ptr<char[]>& data, size_t data_size)
 {
   int flags;
