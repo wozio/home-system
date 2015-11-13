@@ -30,6 +30,7 @@ private:
   ios_wrapper ios_;
   
   void read(handler_t handler);
+  void send(handler_t handler, data_t data, int data_size);
 
 };
 

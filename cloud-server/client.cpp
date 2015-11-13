@@ -14,14 +14,16 @@ client::client(ws_t ws)
   LOG("New client connected, performing client logging in");
   
   // any exception thrown from logging in will lead to deleting client
-  unique_ptr<char[]> data(new char[1025]);
-  int n = read(data, 1024);
+  auto data = create_data();
+  int n = read(data);
   // for now just echo the message
+  LOG(n);
   send(data, n);
 }
 
 client::~client()
 {
+  LOG("Client disconnected");
 }
 
 }

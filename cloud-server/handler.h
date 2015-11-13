@@ -8,6 +8,8 @@ namespace home_system
 {
 
 typedef std::shared_ptr<Poco::Net::WebSocket> ws_t;
+typedef std::shared_ptr<std::array<char, 1024>> data_t;
+data_t create_data();
 
 class handler
 {
@@ -17,8 +19,8 @@ public:
   virtual ~handler();
   
   Poco::Net::WebSocket& ws();
-  size_t read(std::unique_ptr<char[]>& data, size_t data_size);
-  void send(std::unique_ptr<char[]>& data, size_t data_size);
+  size_t read(data_t data);
+  void send(data_t data, size_t data_size);
   
 private:
   ws_t ws_;

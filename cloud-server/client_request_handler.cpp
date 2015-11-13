@@ -31,26 +31,30 @@ void client_request_handler::handleRequest(HTTPServerRequest& request, HTTPServe
     
     CLIENTS.add(h);
   }
-  catch (WebSocketException& exc)
+  catch (const WebSocketException& exc)
   {
     LOGERROR(exc.displayText());
     switch (exc.code())
     {
-    case Poco::Net::WebSocket::WS_ERR_HANDSHAKE_UNSUPPORTED_VERSION:
-      response.set("Sec-WebSocket-Version", Poco::Net::WebSocket::WEBSOCKET_VERSION);
+    case WebSocket::WS_ERR_HANDSHAKE_UNSUPPORTED_VERSION:
+      response.set("Sec-WebSocket-Version", WebSocket::WEBSOCKET_VERSION);
       // fallthrough
-    case Poco::Net::WebSocket::WS_ERR_NO_HANDSHAKE:
-    case Poco::Net::WebSocket::WS_ERR_HANDSHAKE_NO_VERSION:
-    case Poco::Net::WebSocket::WS_ERR_HANDSHAKE_NO_KEY:
+    case WebSocket::WS_ERR_NO_HANDSHAKE:
+    case WebSocket::WS_ERR_HANDSHAKE_NO_VERSION:
+    case WebSocket::WS_ERR_HANDSHAKE_NO_KEY:
       response.setStatusAndReason(HTTPResponse::HTTP_BAD_REQUEST);
       response.setContentLength(0);
       response.send();
       break;
     }
   }
-  catch (Exception& e)
+  catch (const Exception& e)
   {
     LOGERROR(e.displayText());
+  }
+  catch (const runtime_error& e)
+  {
+    LOGERROR(e.what());
   }
 }
 

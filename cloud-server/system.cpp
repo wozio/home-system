@@ -12,8 +12,8 @@ system::system(ws_t ws)
   LOG("New system connected, performing system logging in");
   
   // any exception thrown from logging in will lead to deleting system
-  unique_ptr<char[]> data(new char[1025]);
-  int n = read(data, 1024);
+  auto data = create_data();
+  int n = read(data);
   // for now just echo the message
   send(data, n);
 }

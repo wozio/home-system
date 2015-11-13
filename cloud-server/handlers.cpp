@@ -1,5 +1,6 @@
 #include "handlers.h"
 #include "logger.h"
+#include <utility>
 
 using namespace std;
 
@@ -27,14 +28,23 @@ void handlers::add(handler_t handler)
 
 void handlers::read(handler_t handler)
 {
-  LOG("Reading data...");
-  unique_ptr<char[]> data(new char[1025]);
-  int n = handler->read(data, 1024);
-  ios_.io_service().post([handler, this] ()
+  auto data = create_data();
+  int n = handler->read(data);
+  ios_.io_service().post([this, handler, data, n] ()
+    {
+      this->send(handler, data, n);
+    }
+  );
+  ios_.io_service().post([this, handler] ()
     {
       this->read(handler);
     }
   );
+}
+
+void handlers::send(handler_t handler, data_t data, int data_size)
+{
+  handler->send(data, data_size);
 }
 
 }

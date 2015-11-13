@@ -21,8 +21,8 @@ FC=gfortran
 AS=as
 
 # Macros
-CND_PLATFORM=GNU-Linux-x86
-CND_DLIB_EXT=so
+CND_PLATFORM=MinGW-Windows
+CND_DLIB_EXT=dll
 CND_CONF=Debug
 CND_DISTDIR=dist
 CND_BUILDDIR=build
@@ -65,11 +65,11 @@ LDLIBSOPTIONS=../common/common/../bin/Debug/libcommon.a -lPocoFoundation -lPocoN
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
-	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk ../bin/${CND_CONF}/cloud-server
+	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk ../bin/${CND_CONF}/cloud-server.exe
 
-../bin/${CND_CONF}/cloud-server: ../common/common/../bin/Debug/libcommon.a
+../bin/${CND_CONF}/cloud-server.exe: ../common/common/../bin/Debug/libcommon.a
 
-../bin/${CND_CONF}/cloud-server: ${OBJECTFILES}
+../bin/${CND_CONF}/cloud-server.exe: ${OBJECTFILES}
 	${MKDIR} -p ../bin/${CND_CONF}
 	${LINK.cc} -o ../bin/${CND_CONF}/cloud-server ${OBJECTFILES} ${LDLIBSOPTIONS}
 
@@ -130,7 +130,7 @@ ${OBJECTDIR}/systems.o: systems.cpp
 # Clean Targets
 .clean-conf: ${CLEAN_SUBPROJECTS}
 	${RM} -r ${CND_BUILDDIR}/${CND_CONF}
-	${RM} ../bin/${CND_CONF}/cloud-server
+	${RM} ../bin/${CND_CONF}/cloud-server.exe
 
 # Subprojects
 .clean-subprojects:

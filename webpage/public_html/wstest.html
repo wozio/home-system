@@ -2,10 +2,12 @@
 <meta charset="utf-8" />
 <title>WebSocket Test</title>
 <script language="javascript" type="text/javascript">
-  var wsUri = "ws://192.168.1.2:8080/access";
+  var wsUri = "ws://192.168.1.2:5000";
   var output;
+  var c;
   function init() {
     output = document.getElementById("output");
+    c = document.getElementById("counter");
     testWebSocket();
   }
   function testWebSocket() {
@@ -17,24 +19,22 @@
   }
   function onOpen(evt) {
     writeToScreen("CONNECTED");
-    doSend(JSON.stringify({
+    setInterval(function(){doSend(JSON.stringify({
       service: "io-control-dev",
       message: "get_services",
       expect_reply: true
-    }));
+    }));}, 0);
   }
   function onClose(evt) {
     writeToScreen("DISCONNECTED");
   }
   function onMessage(evt) {
-    writeToScreen('<span style="color: blue;">RESPONSE: ' + evt.data + '</span>');
-    //websocket.close();
+    c.innerHTML = parseInt(c.innerHTML) + 1;
   }
   function onError(evt) {
     writeToScreen('<span style="color: red;">ERROR:</span> ' + evt.data);
   }
   function doSend(message) {
-    writeToScreen("SENT: " + message);
     websocket.send(message);
   }
   function writeToScreen(message) {
@@ -47,3 +47,4 @@
 </script>
 <h2>WebSocket Test</h2>
 <div id="output"></div>
+<div id="counter">0</div>
