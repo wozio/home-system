@@ -61,7 +61,7 @@ FFLAGS=
 ASFLAGS=
 
 # Link Libraries and Options
-LDLIBSOPTIONS=../common/common/../bin/Debug/libcommon.a -lPocoFoundation -lPocoNet -lpthread -lboost_program_options -lboost_system
+LDLIBSOPTIONS=../common/common/../bin/Debug/libcommon.a -lPocoFoundation -lPocoNet -lpthread -lboost_program_options -lboost_system -lboost_date_time
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}

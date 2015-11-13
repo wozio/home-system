@@ -1,8 +1,6 @@
 #include "system.h"
 #include "logger.h"
 
-using namespace Poco::Net;
-using namespace Poco;
 using namespace std;
 
 namespace home_system
@@ -11,97 +9,17 @@ namespace home_system
 system::system(ws_t ws)
 : handler(ws)
 {
-  LOG("New system connected, performing handshake");
+  LOG("New system connected, performing system logging in");
   
+  // any exception thrown from logging in will lead to deleting system
   unique_ptr<char[]> data(new char[1025]);
-  int flags;
-  int n;
-  try
-  {
-    n = ws->receiveFrame(data.get(), 1024, flags);
-
-    if ((flags & WebSocket::FRAME_OP_BITMASK) == WebSocket::FRAME_OP_CLOSE)
-    {
-      ws->shutdown();
-    }
-    else if ((flags & WebSocket::FRAME_OP_BITMASK) == WebSocket::FRAME_OP_TEXT && n > 0)
-    {
-      // for now just echo the message
-      ws->sendFrame(data.get(), n, WebSocket::FRAME_OP_TEXT);
-    }
-  }
-  catch (const TimeoutException& e)
-  {
-    ws->shutdown();
-  }
-  catch (const Exception& e)
-  {
-    LOGWARN("EXCEPTION: " << e.displayText());
-  }
-  catch (const std::exception& e)
-  {
-    LOGWARN("EXCEPTION: " << e.what());
-  }
+  int n = read(data, 1024);
+  // for now just echo the message
+  send(data, n);
 }
 
 system::~system()
 {
 }
-  /*
-void system::thr_exec()
-{
-
-  std::unique_ptr<char[]> data(new char[1025]);
-  int flags;
-  int n;
-  do
-  {
-    try
-    {
-      n = ws_->receiveFrame(data.get(), 1024, flags);
-
-      if ((flags & WebSocket::FRAME_OP_BITMASK) == WebSocket::FRAME_OP_CLOSE)
-      {
-        break;
-      }
-
-      if ((flags & WebSocket::FRAME_OP_BITMASK) == WebSocket::FRAME_OP_TEXT && n > 0)
-      {
-        on_read_(data.get(), n);
-      }
-    }
-    catch (const runtime_error& e)
-    {
-      LOGWARN("EXCEPTION: runtime_error: " << e.what());
-    }
-    catch (const TimeoutException& e)
-    {
-      // do nothing with this one
-    }
-    catch (const Exception& e)
-    {
-      LOGWARN("EXCEPTION: " << e.displayText());
-    }
-    catch (const std::exception& e)
-    {
-      LOGWARN("EXCEPTION: " << e.what());
-    }
-  }
-  while ((flags & WebSocket::FRAME_OP_BITMASK) != WebSocket::FRAME_OP_CLOSE);
-
-  LOG("Closing connection");
-  ws_->shutdown();
-  ws_.reset();
-}
-
-void ws_handler::send(char* buf, size_t size)
-{
-  if (ws_)
-  {
-    LOG("Sending " << size << " bytes to system");
-    ws_->sendFrame(buf, size, WebSocket::FRAME_OP_TEXT);
-  }
-}
-*/
 
 }

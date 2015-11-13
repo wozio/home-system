@@ -24,13 +24,16 @@ void client_request_handler::handleRequest(HTTPServerRequest& request, HTTPServe
 {
   try
   {
+    // any exceptions thrown on WebSocket handshake or client validation
+    // will lead to not registering client
     ws_t ws(new WebSocket(request, response));
     client_t h(new client(ws));
     
     CLIENTS.add(h);
   }
-  catch (Poco::Net::WebSocketException& exc)
+  catch (WebSocketException& exc)
   {
+    LOGERROR(exc.displayText());
     switch (exc.code())
     {
     case Poco::Net::WebSocket::WS_ERR_HANDSHAKE_UNSUPPORTED_VERSION:
@@ -44,6 +47,10 @@ void client_request_handler::handleRequest(HTTPServerRequest& request, HTTPServe
       response.send();
       break;
     }
+  }
+  catch (Exception& e)
+  {
+    LOGERROR(e.displayText());
   }
 }
 

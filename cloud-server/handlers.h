@@ -3,6 +3,9 @@
 #include "handler.h"
 #include <memory>
 
+namespace home_system
+{
+
 class handlers;
 
 typedef std::unique_ptr<handlers> handlers_t;
@@ -25,7 +28,9 @@ private:
 
 };
 
-extern handlers_t _handlers;
+}
+
+extern home_system::handlers_t _handlers;
 
 #define HANDLERS (*::_handlers)
 

@@ -71,6 +71,7 @@
             <linkerLibLibItem>pthread</linkerLibLibItem>
             <linkerLibLibItem>boost_program_options</linkerLibLibItem>
             <linkerLibLibItem>boost_system</linkerLibLibItem>
+            <linkerLibLibItem>boost_date_time</linkerLibLibItem>
           </linkerLibItems>
         </linkerTool>
       </compileType>

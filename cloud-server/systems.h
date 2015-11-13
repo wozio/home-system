@@ -4,6 +4,9 @@
 #include "system.h"
 #include <memory>
 
+namespace home_system
+{
+
 class systems;
 
 typedef std::unique_ptr<systems> systems_t;
@@ -27,7 +30,9 @@ private:
 
 };
 
-extern systems_t _systems;
+}
+
+extern home_system::systems_t _systems;
 
 #define SYSTEMS (*::_systems)
 

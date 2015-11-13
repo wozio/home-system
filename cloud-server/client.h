@@ -3,6 +3,9 @@
 
 #include "handler.h"
 
+namespace home_system
+{
+
 class client
 : public handler
 {
@@ -13,6 +16,8 @@ public:
   
 private:
 };
+
+}
 
 #endif	/* CLIENT_H */
 

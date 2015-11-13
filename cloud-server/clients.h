@@ -4,6 +4,9 @@
 #include "client.h"
 #include <memory>
 
+namespace home_system
+{
+
 class clients;
 class client;
 
@@ -26,7 +29,9 @@ private:
 
 };
 
-extern clients_t _clients;
+}
+
+extern home_system::clients_t _clients;
 
 #define CLIENTS (*::_clients)
 

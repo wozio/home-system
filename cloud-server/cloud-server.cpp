@@ -17,9 +17,9 @@
 using namespace std;
 namespace po = boost::program_options;
 
-clients_t _clients;
-systems_t _systems;
-handlers_t _handlers;
+home_system::clients_t _clients;
+home_system::systems_t _systems;
+home_system::handlers_t _handlers;
 
 int main(int argc, char** argv)
 {
@@ -91,9 +91,9 @@ int main(int argc, char** argv)
 
   try
   {
-    _handlers = handlers::create();
-    _clients = clients::create();
-    _systems = systems::create();
+    _handlers = home_system::handlers::create();
+    _clients = home_system::clients::create();
+    _systems = home_system::systems::create();
     
     int port = vm["client_port"].as<int>();
     Poco::Net::ServerSocket client_svs(port);
