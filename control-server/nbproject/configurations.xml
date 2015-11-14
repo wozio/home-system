@@ -78,6 +78,7 @@
             <linkerLibLibItem>pthread</linkerLibLibItem>
             <linkerLibLibItem>PocoNet</linkerLibLibItem>
             <linkerLibLibItem>PocoNetSSL</linkerLibLibItem>
+            <linkerLibLibItem>boost_date_time</linkerLibLibItem>
           </linkerLibItems>
         </linkerTool>
       </compileType>

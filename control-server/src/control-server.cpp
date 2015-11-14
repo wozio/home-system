@@ -27,12 +27,16 @@ int main(int argc, char** argv)
   // Declare the supported options.
   po::options_description desc("Allowed options");
   desc.add_options()
-    ("help,h", "produce help message")
-    ("daemonize,d", "run as daemon")
-    ("no-cloud,c", "do not integrate with cloud server")
-    ("root,r", po::value<std::string>()->default_value("/var/www"), "path to web page root")
-    ("port,p", po::value<int>()->default_value(80), "port number for web page access")
-    ("log_level,l", po::value<string>()->default_value("debug"), "Logging level, valid values are:\nerror\nwarning\ninformation\ndebug")
+  ("help,h", "produce help message")
+  ("daemonize,d", "run as daemon")
+  ("no-cloud,c", "do not integrate with cloud server")
+  ("cloud-host", po::value<string>()->default_value("atorchardstreet.com"), "cloud server host name")
+  ("cloud-port", po::value<int>()->default_value(443), "cloud server port number")
+  ("cloud-uri", po::value<string>()->default_value("/access/system/"), "cloud server uri")
+  ("cloud-no-secure", "do not use SSL when communicating with cloud server (NOT SECURE!)")
+  ("root,r", po::value<std::string>()->default_value("/var/www"), "path to web page root")
+  ("port,p", po::value<int>()->default_value(80), "port number for web page access")
+  ("log_level,l", po::value<string>()->default_value("debug"), "Logging level, valid values are:\nerror\nwarning\ninformation\ndebug")
   ;
 
   po::variables_map vm;
@@ -106,8 +110,13 @@ int main(int argc, char** argv)
     
     if (!vm.count("no-cloud"))
     {
-      cws.reset(new home_system::cloud_ws());
-            }
+      cws.reset(new home_system::cloud_ws(
+        vm["cloud-host"].as<std::string>(),
+        vm["cloud-port"].as<int>(),
+        vm["cloud-uri"].as<std::string>(),
+        vm.count("cloud-no-secure")
+      ));
+    }
 
     home_system::control_server::control_service csrv;
 #ifdef __linux__
