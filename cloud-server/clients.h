@@ -25,6 +25,8 @@ public:
   
   void add(client_t client);
   client_t get();
+  void remove(client_t client);
+  
 private:
   clients();
   

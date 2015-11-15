@@ -10,7 +10,6 @@ namespace home_system
 class handlers;
 
 typedef std::unique_ptr<handlers> handlers_t;
-typedef std::shared_ptr<handler> handler_t;
 
 class handlers {
 public:
@@ -23,6 +22,8 @@ public:
   };
   
   void add(handler_t handler);
+  
+  void post_send(handler_t handler, data_t data, size_t data_size);
   
 private:
   handlers();

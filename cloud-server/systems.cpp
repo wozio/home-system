@@ -23,4 +23,9 @@ system_t systems::get()
   return system_;
 }
 
+void systems::remove(system_t system)
+{
+  system_.reset();
+}
+
 }

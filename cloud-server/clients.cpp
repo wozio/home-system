@@ -23,4 +23,9 @@ client_t clients::get()
   return client_;
 }
 
+void clients::remove(client_t client)
+{
+  client_.reset();
+}
+
 }

@@ -1,4 +1,5 @@
 #include "handler.h"
+#include "handlers.h"
 #include "logger.h"
 #include <exception>
 
@@ -21,7 +22,7 @@ handler::handler(ws_t ws)
 
 handler::~handler()
 {
-  ws_->shutdown();
+  this->shutdown();
 }
 
 Poco::Net::WebSocket& handler::ws()
@@ -45,9 +46,21 @@ size_t handler::read(data_t data)
   return n;
 }
 
+void handler::on_send(handler_t handler, data_t data, size_t data_size)
+{
+  // posts send request to hadlers WebSocket hadling thread
+  HANDLERS.post_send(handler, data, data_size);
+}
+
 void handler::send(data_t data, size_t data_size)
 {
   ws_->sendFrame((*data).data(), data_size);
+}
+
+void handler::shutdown()
+{
+  ws_->shutdown();
+  LOG("Handler shut down");
 }
 
 }

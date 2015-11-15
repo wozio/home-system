@@ -26,6 +26,7 @@ public:
   
   void add(system_t system);
   system_t get();
+  void remove(system_t system);
 private:
   systems();
   
