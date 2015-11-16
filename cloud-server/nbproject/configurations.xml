@@ -46,10 +46,10 @@
       </toolsSet>
       <compileType>
         <ccTool>
-          <standard>8</standard>
           <incDir>
             <pElem>../common/common/src</pElem>
           </incDir>
+          <commandLine>-std=c++14</commandLine>
         </ccTool>
         <linkerTool>
           <output>../bin/${CND_CONF}/cloud-server</output>

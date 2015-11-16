@@ -1,14 +1,22 @@
 #include "handlers.h"
 #include "logger.h"
 #include <utility>
+#include <chrono>
 
 using namespace std;
+using namespace std::literals::chrono_literals;
+using namespace Poco;
+using namespace Poco::Net;
 
 namespace home_system
 {
 
 handlers::handlers()
 {
+  ios_.io_service().post([this] ()
+  {
+    this->select();
+  });
 }
 
 handlers::~handlers()
@@ -18,12 +26,34 @@ handlers::~handlers()
 
 void handlers::add(handler_t handler)
 {
-  // start reading from assiociated websocket
-  ios_.io_service().post([this, handler] ()
+  ws_to_handler_map_[handler->ws()] = handler;
+  list_.push_back(handler->ws());
+}
+
+void handlers::select()
+{
+  LOG("select");
+  Socket::SocketList readList(list_);
+  Socket::SocketList writeList;
+  Socket::SocketList exceptList;
+  
+  if (Socket::select(readList, writeList, exceptList, Timespan(0, 1000)))
+  {
+    for (auto socket : readList)
     {
-      this->read(handler);
+      auto handler = ws_to_handler_map_[socket];
+      // start reading from assiociated websocket
+      ios_.io_service().post([this, handler] ()
+        {
+          this->read(handler);
+        }
+      );
     }
-  );
+  }
+  else
+  {
+    std::this_thread::sleep_for(0.001s);
+  }
 }
 
 void handlers::read(handler_t handler)

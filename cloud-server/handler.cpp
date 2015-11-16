@@ -22,10 +22,10 @@ handler::handler(ws_t ws)
 
 handler::~handler()
 {
-  this->shutdown();
+  //this->shutdown();
 }
 
-Poco::Net::WebSocket& handler::ws()
+Poco::Net::WebSocket handler::ws()
 {
   return *ws_;
 }

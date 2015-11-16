@@ -22,7 +22,7 @@ public:
   handler(const handler& orig) = delete;
   virtual ~handler();
   
-  Poco::Net::WebSocket& ws();
+  Poco::Net::WebSocket ws();
   size_t read(data_t data);
   void send(data_t data, size_t data_size);
   

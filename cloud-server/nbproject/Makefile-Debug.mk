@@ -51,8 +51,8 @@ OBJECTFILES= \
 CFLAGS=
 
 # CC Compiler Flags
-CCFLAGS=
-CXXFLAGS=
+CCFLAGS=-std=c++14
+CXXFLAGS=-std=c++14
 
 # Fortran Compiler Flags
 FFLAGS=
@@ -76,52 +76,52 @@ LDLIBSOPTIONS=../common/common/../bin/Debug/libcommon.a -lPocoFoundation -lPocoN
 ${OBJECTDIR}/client.o: client.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -I../common/common/src -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/client.o client.cpp
+	$(COMPILE.cc) -g -I../common/common/src -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/client.o client.cpp
 
 ${OBJECTDIR}/client_request_handler.o: client_request_handler.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -I../common/common/src -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/client_request_handler.o client_request_handler.cpp
+	$(COMPILE.cc) -g -I../common/common/src -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/client_request_handler.o client_request_handler.cpp
 
 ${OBJECTDIR}/clients.o: clients.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -I../common/common/src -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/clients.o clients.cpp
+	$(COMPILE.cc) -g -I../common/common/src -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/clients.o clients.cpp
 
 ${OBJECTDIR}/cloud-server.o: cloud-server.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -I../common/common/src -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/cloud-server.o cloud-server.cpp
+	$(COMPILE.cc) -g -I../common/common/src -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/cloud-server.o cloud-server.cpp
 
 ${OBJECTDIR}/handler.o: handler.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -I../common/common/src -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/handler.o handler.cpp
+	$(COMPILE.cc) -g -I../common/common/src -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/handler.o handler.cpp
 
 ${OBJECTDIR}/handlers.o: handlers.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -I../common/common/src -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/handlers.o handlers.cpp
+	$(COMPILE.cc) -g -I../common/common/src -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/handlers.o handlers.cpp
 
 ${OBJECTDIR}/request_handler_factories.o: request_handler_factories.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -I../common/common/src -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/request_handler_factories.o request_handler_factories.cpp
+	$(COMPILE.cc) -g -I../common/common/src -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/request_handler_factories.o request_handler_factories.cpp
 
 ${OBJECTDIR}/system.o: system.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -I../common/common/src -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/system.o system.cpp
+	$(COMPILE.cc) -g -I../common/common/src -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/system.o system.cpp
 
 ${OBJECTDIR}/system_request_handler.o: system_request_handler.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -I../common/common/src -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/system_request_handler.o system_request_handler.cpp
+	$(COMPILE.cc) -g -I../common/common/src -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/system_request_handler.o system_request_handler.cpp
 
 ${OBJECTDIR}/systems.o: systems.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -I../common/common/src -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/systems.o systems.cpp
+	$(COMPILE.cc) -g -I../common/common/src -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/systems.o systems.cpp
 
 # Subprojects
 .build-subprojects:

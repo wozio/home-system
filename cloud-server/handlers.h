@@ -30,9 +30,13 @@ private:
   
   ios_wrapper ios_;
   
+  void select();
   void read(handler_t handler);
   void send(handler_t handler, data_t data, int data_size);
-
+  
+  typedef std::map<Poco::Net::WebSocket, handler_t> ws_to_handler_map_t;
+  Poco::Net::Socket::SocketList list_;
+  ws_to_handler_map_t ws_to_handler_map_;
 };
 
 }
