@@ -16,15 +16,14 @@ client::client(ws_t ws)
   LOG("New client connected, performing client logging in");
   
   // any exception thrown from logging in will lead to deleting client
-  auto data = create_data();
-  int n = read(data);
+  //auto data = create_data();
+  //int n = read(data);
   // for now just echo the message
-  send(data, n);
+  //send(data, n);
 }
 
 client::~client()
 {
-  LOG("Client disconnected");
 }
 
 void client::on_read(data_t data, size_t data_size)
@@ -37,10 +36,16 @@ void client::on_read(data_t data, size_t data_size)
 
 void client::shutdown()
 {
+  LOG("Client '" << name() << "' shutdown");
+  handler::shutdown();
   // from shared_from_this shared_ptr<handler> is obtained
   // casting it to shared_ptr<client>
   CLIENTS.remove(dynamic_pointer_cast<client>(shared_from_this()));
-  handler::shutdown();
+}
+
+std::string client::name()
+{
+  return string("client");
 }
 
 

@@ -22,6 +22,7 @@ public:
   };
   
   void add(handler_t handler);
+  void remove(handler_t handler);
   
   void post_send(handler_t handler, data_t data, size_t data_size);
   

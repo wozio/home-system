@@ -4,7 +4,7 @@
 #include <chrono>
 
 using namespace std;
-using namespace std::literals::chrono_literals;
+using namespace std::chrono;
 using namespace Poco;
 using namespace Poco::Net;
 
@@ -30,14 +30,30 @@ void handlers::add(handler_t handler)
   list_.push_back(handler->ws());
 }
 
+void handlers::remove(handler_t handler)
+{
+  for (Socket::SocketList::iterator i = list_.begin(); i != list_.end(); ++i)
+  {
+    if (*i == handler->ws())
+    {
+      list_.erase(i);
+    }
+  }
+  ws_to_handler_map_.erase(handler->ws());
+}
+
 void handlers::select()
 {
-  LOG("select");
+  //LOG("select");
   Socket::SocketList readList(list_);
   Socket::SocketList writeList;
   Socket::SocketList exceptList;
   
-  if (Socket::select(readList, writeList, exceptList, Timespan(0, 1000)))
+  int n = Socket::select(readList, writeList, exceptList, Timespan(0, 1000));
+  
+  //LOG("select: " << n);
+  
+  if (n > 0)
   {
     for (auto socket : readList)
     {
@@ -52,8 +68,13 @@ void handlers::select()
   }
   else
   {
-    std::this_thread::sleep_for(0.001s);
+    this_thread::sleep_for(milliseconds(1));
   }
+  ios_.io_service().post([this] ()
+  {
+    this->select();
+  });
+  //LOG("after select");
 }
 
 void handlers::read(handler_t handler)
@@ -66,11 +87,6 @@ void handlers::read(handler_t handler)
     {
       handler->on_read(data, n);
     }
-    ios_.io_service().post([this, handler] ()
-      {
-        this->read(handler);
-      }
-    );
   }
   catch (...)
   {

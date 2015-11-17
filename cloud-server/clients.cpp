@@ -26,6 +26,7 @@ client_t clients::get()
 void clients::remove(client_t client)
 {
   client_.reset();
+  HANDLERS.remove(client);
 }
 
 }

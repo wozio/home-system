@@ -18,11 +18,13 @@ data_t create_data()
 handler::handler(ws_t ws)
 : ws_(ws)
 {
+  ws_->setBlocking(false);
+  LOG("Handler created");
 }
 
 handler::~handler()
 {
-  //this->shutdown();
+  LOG("Handler destroyed");
 }
 
 Poco::Net::WebSocket handler::ws()
@@ -60,7 +62,7 @@ void handler::send(data_t data, size_t data_size)
 void handler::shutdown()
 {
   ws_->shutdown();
-  LOG("Handler shut down");
+  LOG(this->name() << " Handler shut down");
 }
 
 }

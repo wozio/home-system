@@ -30,6 +30,7 @@ public:
   static void on_send(handler_t handler, data_t data, size_t data_size);
   
   virtual void shutdown() = 0;
+  virtual std::string name() = 0;
   
 private:
   ws_t ws_;

@@ -26,6 +26,7 @@ system_t systems::get()
 void systems::remove(system_t system)
 {
   system_.reset();
+  HANDLERS.remove(system);
 }
 
 }
