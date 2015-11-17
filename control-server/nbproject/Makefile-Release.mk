@@ -21,7 +21,7 @@ FC=gfortran
 AS=as
 
 # Macros
-CND_PLATFORM=GNU_4.7.3-Linux-x86
+CND_PLATFORM=GNU-Linux-x86
 CND_DLIB_EXT=so
 CND_CONF=Release
 CND_DISTDIR=dist
@@ -35,9 +35,14 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
 OBJECTFILES= \
+	${OBJECTDIR}/src/cloud_ws.o \
 	${OBJECTDIR}/src/control-server.o \
 	${OBJECTDIR}/src/control-service.o \
-	${OBJECTDIR}/src/http.o
+	${OBJECTDIR}/src/file_request_handler.o \
+	${OBJECTDIR}/src/http.o \
+	${OBJECTDIR}/src/json_converter.o \
+	${OBJECTDIR}/src/ws_com_handler.o \
+	${OBJECTDIR}/src/ws_request_handler.o
 
 
 # C Compiler Flags
@@ -54,7 +59,7 @@ FFLAGS=
 ASFLAGS=
 
 # Link Libraries and Options
-LDLIBSOPTIONS=-L../common/yami4/lib -lPocoFoundation -lPocoNet -lPocoXML -lboost_filesystem -lboost_program_options -lboost_system -lboost_thread ../common/common/../bin/Release/libcommon.a -lyamicpp -lyamicore
+LDLIBSOPTIONS=-L../common/yami4/lib -lPocoFoundation -lPocoNet -lPocoXML -lboost_filesystem -lboost_program_options -lboost_system -lboost_thread ../common/common/../bin/Release/libcommon.a -lyamicpp -lyamicore -lpthread -lPocoNetSSL -lboost_date_time
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
@@ -66,6 +71,11 @@ LDLIBSOPTIONS=-L../common/yami4/lib -lPocoFoundation -lPocoNet -lPocoXML -lboost
 	${MKDIR} -p ../bin/${CND_CONF}
 	${LINK.cc} -o ../bin/${CND_CONF}/control-server ${OBJECTFILES} ${LDLIBSOPTIONS} -s
 
+${OBJECTDIR}/src/cloud_ws.o: src/cloud_ws.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src
+	${RM} "$@.d"
+	$(COMPILE.cc) -O3 -Wall -s -I../common/common/src -I../common/yami4/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/cloud_ws.o src/cloud_ws.cpp
+
 ${OBJECTDIR}/src/control-server.o: src/control-server.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} "$@.d"
@@ -76,10 +86,30 @@ ${OBJECTDIR}/src/control-service.o: src/control-service.cpp
 	${RM} "$@.d"
 	$(COMPILE.cc) -O3 -Wall -s -I../common/common/src -I../common/yami4/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/control-service.o src/control-service.cpp
 
+${OBJECTDIR}/src/file_request_handler.o: src/file_request_handler.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src
+	${RM} "$@.d"
+	$(COMPILE.cc) -O3 -Wall -s -I../common/common/src -I../common/yami4/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/file_request_handler.o src/file_request_handler.cpp
+
 ${OBJECTDIR}/src/http.o: src/http.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} "$@.d"
 	$(COMPILE.cc) -O3 -Wall -s -I../common/common/src -I../common/yami4/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/http.o src/http.cpp
+
+${OBJECTDIR}/src/json_converter.o: src/json_converter.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src
+	${RM} "$@.d"
+	$(COMPILE.cc) -O3 -Wall -s -I../common/common/src -I../common/yami4/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/json_converter.o src/json_converter.cpp
+
+${OBJECTDIR}/src/ws_com_handler.o: src/ws_com_handler.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src
+	${RM} "$@.d"
+	$(COMPILE.cc) -O3 -Wall -s -I../common/common/src -I../common/yami4/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/ws_com_handler.o src/ws_com_handler.cpp
+
+${OBJECTDIR}/src/ws_request_handler.o: src/ws_request_handler.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src
+	${RM} "$@.d"
+	$(COMPILE.cc) -O3 -Wall -s -I../common/common/src -I../common/yami4/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/ws_request_handler.o src/ws_request_handler.cpp
 
 # Subprojects
 .build-subprojects:

@@ -15,13 +15,13 @@ CND_PACKAGE_DIR_Debug=dist/Debug/GNU-Linux-x86/package
 CND_PACKAGE_NAME_Debug=control-server.tar
 CND_PACKAGE_PATH_Debug=dist/Debug/GNU-Linux-x86/package/control-server.tar
 # Release configuration
-CND_PLATFORM_Release=GNU_4.7.3-Linux-x86
+CND_PLATFORM_Release=GNU-Linux-x86
 CND_ARTIFACT_DIR_Release=../bin/Release
 CND_ARTIFACT_NAME_Release=control-server
 CND_ARTIFACT_PATH_Release=../bin/Release/control-server
-CND_PACKAGE_DIR_Release=dist/Release/GNU_4.7.3-Linux-x86/package
+CND_PACKAGE_DIR_Release=dist/Release/GNU-Linux-x86/package
 CND_PACKAGE_NAME_Release=control-server.tar
-CND_PACKAGE_PATH_Release=dist/Release/GNU_4.7.3-Linux-x86/package/control-server.tar
+CND_PACKAGE_PATH_Release=dist/Release/GNU-Linux-x86/package/control-server.tar
 #
 # include compiler specific variables
 #

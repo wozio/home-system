@@ -46,7 +46,7 @@ void handle_ws_communication(Poco::Net::WebSocket& ws)
 
         process_json(data.get(), service, msg, expect_reply, params);
 
-        LOG("Service: " << service << ", message: " << msg);
+        //LOG("Service: " << service << ", message: " << msg);
 
         string ye = DISCOVERY.get(service);
 
@@ -62,7 +62,7 @@ void handle_ws_communication(Poco::Net::WebSocket& ws)
           {
             case yami::replied:
             {
-              LOG("Replied");
+              //LOG("Replied");
               // converting yami output to json
               // yami binary values are not supported
 

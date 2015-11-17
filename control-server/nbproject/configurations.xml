@@ -15,8 +15,8 @@
       <itemPath>src/http.h</itemPath>
       <itemPath>src/json_converter.cpp</itemPath>
       <itemPath>src/json_converter.h</itemPath>
-      <itemPath>//SERVER/storage/develop/home-system/control-server/src/ws_com_handler.cpp</itemPath>
-      <itemPath>//SERVER/storage/develop/home-system/control-server/src/ws_com_handler.h</itemPath>
+      <itemPath>src/ws_com_handler.cpp</itemPath>
+      <itemPath>src/ws_com_handler.h</itemPath>
       <itemPath>src/ws_request_handler.cpp</itemPath>
       <itemPath>src/ws_request_handler.h</itemPath>
     </logicalFolder>
@@ -82,16 +82,6 @@
           </linkerLibItems>
         </linkerTool>
       </compileType>
-      <item path="//SERVER/storage/develop/home-system/control-server/src/ws_com_handler.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
-      <item path="//SERVER/storage/develop/home-system/control-server/src/ws_com_handler.h"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
       <item path="src/cloud_ws.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="src/cloud_ws.h" ex="false" tool="3" flavor2="0">
@@ -114,6 +104,10 @@
       </item>
       <item path="src/json_converter.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="src/ws_com_handler.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/ws_com_handler.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="src/ws_request_handler.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="src/ws_request_handler.h" ex="false" tool="3" flavor2="0">
@@ -121,7 +115,7 @@
     </conf>
     <conf name="Release" type="1">
       <toolsSet>
-        <compilerSet>GNU_4.7.3|GNU</compilerSet>
+        <compilerSet>GNU|GNU</compilerSet>
         <dependencyChecking>true</dependencyChecking>
         <rebuildPropChanged>false</rebuildPropChanged>
       </toolsSet>
@@ -172,19 +166,12 @@
             </linkerLibProjectItem>
             <linkerLibLibItem>yamicpp</linkerLibLibItem>
             <linkerLibLibItem>yamicore</linkerLibLibItem>
+            <linkerLibLibItem>pthread</linkerLibLibItem>
+            <linkerLibLibItem>PocoNetSSL</linkerLibLibItem>
+            <linkerLibLibItem>boost_date_time</linkerLibLibItem>
           </linkerLibItems>
         </linkerTool>
       </compileType>
-      <item path="//SERVER/storage/develop/home-system/control-server/src/ws_com_handler.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
-      <item path="//SERVER/storage/develop/home-system/control-server/src/ws_com_handler.h"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
       <item path="src/cloud_ws.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="src/cloud_ws.h" ex="false" tool="3" flavor2="0">
@@ -206,6 +193,10 @@
       <item path="src/json_converter.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="src/json_converter.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="src/ws_com_handler.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/ws_com_handler.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="src/ws_request_handler.cpp" ex="false" tool="1" flavor2="0">
       </item>
