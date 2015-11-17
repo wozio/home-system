@@ -2,7 +2,7 @@
 <meta charset="utf-8" />
 <title>WebSocket Test</title>
 <script language="javascript" type="text/javascript">
-  var wsUri = "ws://192.168.1.2:5000";
+  var wsUri = "ws://localhost:5000";
   var output;
   var c;
   function init() {
@@ -29,12 +29,14 @@
     writeToScreen("DISCONNECTED");
   }
   function onMessage(evt) {
+    //writeToScreen(evt.data);
     c.innerHTML = parseInt(c.innerHTML) + 1;
   }
   function onError(evt) {
     writeToScreen('<span style="color: red;">ERROR:</span> ' + evt.data);
   }
   function doSend(message) {
+    //writeToScreen(message);
     websocket.send(message);
   }
   function writeToScreen(message) {
@@ -46,5 +48,5 @@
   window.addEventListener("load", init, false);
 </script>
 <h2>WebSocket Test</h2>
-<div id="output"></div>
 <div id="counter">0</div>
+<div id="output"></div>
