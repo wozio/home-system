@@ -49,6 +49,7 @@
           <standard>8</standard>
           <incDir>
             <pElem>../common/common/src</pElem>
+            <pElem>../rapidjson/include</pElem>
           </incDir>
         </ccTool>
         <linkerTool>
@@ -130,6 +131,7 @@
           <standard>8</standard>
           <incDir>
             <pElem>../common/common/src</pElem>
+            <pElem>../rapidjson/include</pElem>
           </incDir>
         </ccTool>
         <fortranCompilerTool>

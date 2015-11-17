@@ -43,6 +43,7 @@
           <incDir>
             <pElem>../common/common/src</pElem>
             <pElem>../common/yami4/include</pElem>
+            <pElem>../rapidjson/include</pElem>
           </incDir>
           <preprocessorList>
             <Elem>_DEBUG</Elem>
@@ -132,6 +133,7 @@
           <incDir>
             <pElem>../common/common/src</pElem>
             <pElem>../common/yami4/include</pElem>
+            <pElem>../rapidjson/include</pElem>
           </incDir>
           <warningLevel>2</warningLevel>
         </ccTool>
