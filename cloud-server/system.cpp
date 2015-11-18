@@ -29,8 +29,11 @@ void system::on_read(data_t data, size_t data_size)
   // unpack message to find client
   // get client
   auto handler = CLIENTS.get();
-  // send data to client
-  on_send(handler, data, data_size);
+  if (handler)
+  {
+    // send data to client
+    on_send(handler, data, data_size);
+  }
 }
 
 void system::shutdown()

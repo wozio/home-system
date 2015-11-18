@@ -37,6 +37,7 @@ void handlers::remove(handler_t handler)
     if (*i == handler->ws())
     {
       list_.erase(i);
+      break;
     }
   }
   ws_to_handler_map_.erase(handler->ws());

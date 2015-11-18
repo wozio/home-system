@@ -30,8 +30,11 @@ void client::on_read(data_t data, size_t data_size)
 {
   // get system
   auto handler = SYSTEMS.get();
-  // send data to system
-  on_send(handler, data, data_size);
+  if (handler)
+  {
+    // send data to system
+    on_send(handler, data, data_size);
+  }
 }
 
 void client::shutdown()
