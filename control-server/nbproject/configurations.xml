@@ -44,6 +44,7 @@
             <pElem>../common/common/src</pElem>
             <pElem>../common/yami4/include</pElem>
             <pElem>../rapidjson/include</pElem>
+            <pElem>../common/wshandling</pElem>
           </incDir>
           <preprocessorList>
             <Elem>_DEBUG</Elem>
@@ -62,6 +63,18 @@
             <linkerLibLibItem>boost_program_options</linkerLibLibItem>
             <linkerLibLibItem>boost_system</linkerLibLibItem>
             <linkerLibLibItem>boost_thread</linkerLibLibItem>
+            <linkerLibProjectItem>
+              <makeArtifact PL="../common/wshandling"
+                            CT="3"
+                            CN="Debug"
+                            AC="true"
+                            BL="true"
+                            WD="../common/wshandling"
+                            BC="${MAKE}  -f Makefile CONF=Debug"
+                            CC="${MAKE}  -f Makefile CONF=Debug clean"
+                            OP="../bin/${CND_CONF}/libwshandling.a">
+              </makeArtifact>
+            </linkerLibProjectItem>
             <linkerLibProjectItem>
               <makeArtifact PL="../common/common"
                             CT="3"
@@ -82,6 +95,28 @@
             <linkerLibLibItem>boost_date_time</linkerLibLibItem>
           </linkerLibItems>
         </linkerTool>
+        <requiredProjects>
+          <makeArtifact PL="../common/common"
+                        CT="3"
+                        CN="Debug"
+                        AC="true"
+                        BL="false"
+                        WD="../common/common"
+                        BC="${MAKE}  -f Makefile CONF=Debug"
+                        CC="${MAKE}  -f Makefile CONF=Debug clean"
+                        OP="../bin/${CND_CONF}/libcommon.a">
+          </makeArtifact>
+          <makeArtifact PL="../common/wshandling"
+                        CT="3"
+                        CN="Debug"
+                        AC="true"
+                        BL="false"
+                        WD="../common/wshandling"
+                        BC="${MAKE}  -f Makefile CONF=Debug"
+                        CC="${MAKE}  -f Makefile CONF=Debug clean"
+                        OP="../bin/${CND_CONF}/libwshandling.a">
+          </makeArtifact>
+        </requiredProjects>
       </compileType>
       <item path="src/cloud_ws.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -134,6 +169,7 @@
             <pElem>../common/common/src</pElem>
             <pElem>../common/yami4/include</pElem>
             <pElem>../rapidjson/include</pElem>
+            <pElem>../common/wshandling</pElem>
           </incDir>
           <warningLevel>2</warningLevel>
         </ccTool>
@@ -148,12 +184,23 @@
           <stripSymbols>true</stripSymbols>
           <linkerLibItems>
             <linkerLibLibItem>PocoFoundation</linkerLibLibItem>
-            <linkerLibLibItem>PocoNet</linkerLibLibItem>
             <linkerLibLibItem>PocoXML</linkerLibLibItem>
             <linkerLibLibItem>boost_filesystem</linkerLibLibItem>
             <linkerLibLibItem>boost_program_options</linkerLibLibItem>
             <linkerLibLibItem>boost_system</linkerLibLibItem>
             <linkerLibLibItem>boost_thread</linkerLibLibItem>
+            <linkerLibProjectItem>
+              <makeArtifact PL="../common/wshandling"
+                            CT="3"
+                            CN="Release"
+                            AC="false"
+                            BL="true"
+                            WD="../common/wshandling"
+                            BC="${MAKE}  -f Makefile CONF=Release"
+                            CC="${MAKE}  -f Makefile CONF=Release clean"
+                            OP="../bin/${CND_CONF}/libwshandling.a">
+              </makeArtifact>
+            </linkerLibProjectItem>
             <linkerLibProjectItem>
               <makeArtifact PL="../common/common"
                             CT="3"
@@ -169,10 +216,33 @@
             <linkerLibLibItem>yamicpp</linkerLibLibItem>
             <linkerLibLibItem>yamicore</linkerLibLibItem>
             <linkerLibLibItem>pthread</linkerLibLibItem>
+            <linkerLibLibItem>PocoNet</linkerLibLibItem>
             <linkerLibLibItem>PocoNetSSL</linkerLibLibItem>
             <linkerLibLibItem>boost_date_time</linkerLibLibItem>
           </linkerLibItems>
         </linkerTool>
+        <requiredProjects>
+          <makeArtifact PL="../common/wshandling"
+                        CT="3"
+                        CN="Release"
+                        AC="false"
+                        BL="false"
+                        WD="../common/wshandling"
+                        BC="${MAKE}  -f Makefile CONF=Release"
+                        CC="${MAKE}  -f Makefile CONF=Release clean"
+                        OP="../bin/${CND_CONF}/libwshandling.a">
+          </makeArtifact>
+          <makeArtifact PL="../common/common"
+                        CT="3"
+                        CN="Release"
+                        AC="false"
+                        BL="false"
+                        WD="../common/common"
+                        BC="${MAKE}  -f Makefile CONF=Release"
+                        CC="${MAKE}  -f Makefile CONF=Release clean"
+                        OP="../bin/${CND_CONF}/libcommon.a">
+          </makeArtifact>
+        </requiredProjects>
       </compileType>
       <item path="src/cloud_ws.cpp" ex="false" tool="1" flavor2="0">
       </item>

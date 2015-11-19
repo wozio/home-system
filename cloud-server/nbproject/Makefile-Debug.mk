@@ -39,8 +39,6 @@ OBJECTFILES= \
 	${OBJECTDIR}/client_request_handler.o \
 	${OBJECTDIR}/clients.o \
 	${OBJECTDIR}/cloud-server.o \
-	${OBJECTDIR}/handler.o \
-	${OBJECTDIR}/handlers.o \
 	${OBJECTDIR}/request_handler_factories.o \
 	${OBJECTDIR}/system.o \
 	${OBJECTDIR}/system_request_handler.o \
@@ -61,11 +59,13 @@ FFLAGS=
 ASFLAGS=
 
 # Link Libraries and Options
-LDLIBSOPTIONS=../common/common/../bin/Debug/libcommon.a -lPocoFoundation -lPocoNet -lpthread -lboost_program_options -lboost_system -lboost_date_time
+LDLIBSOPTIONS=-lPocoFoundation -lPocoNet -lpthread -lboost_program_options -lboost_system ../common/wshandling/../bin/Debug/libwshandling.a ../common/common/../bin/Debug/libcommon.a -lboost_date_time
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
 	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk ../bin/${CND_CONF}/cloud-server
+
+../bin/${CND_CONF}/cloud-server: ../common/wshandling/../bin/Debug/libwshandling.a
 
 ../bin/${CND_CONF}/cloud-server: ../common/common/../bin/Debug/libcommon.a
 
@@ -76,55 +76,46 @@ LDLIBSOPTIONS=../common/common/../bin/Debug/libcommon.a -lPocoFoundation -lPocoN
 ${OBJECTDIR}/client.o: client.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -I../common/common/src -I../rapidjson/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/client.o client.cpp
+	$(COMPILE.cc) -g -I../common/common/src -I../rapidjson/include -I../common/wshandling -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/client.o client.cpp
 
 ${OBJECTDIR}/client_request_handler.o: client_request_handler.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -I../common/common/src -I../rapidjson/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/client_request_handler.o client_request_handler.cpp
+	$(COMPILE.cc) -g -I../common/common/src -I../rapidjson/include -I../common/wshandling -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/client_request_handler.o client_request_handler.cpp
 
 ${OBJECTDIR}/clients.o: clients.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -I../common/common/src -I../rapidjson/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/clients.o clients.cpp
+	$(COMPILE.cc) -g -I../common/common/src -I../rapidjson/include -I../common/wshandling -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/clients.o clients.cpp
 
 ${OBJECTDIR}/cloud-server.o: cloud-server.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -I../common/common/src -I../rapidjson/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/cloud-server.o cloud-server.cpp
-
-${OBJECTDIR}/handler.o: handler.cpp 
-	${MKDIR} -p ${OBJECTDIR}
-	${RM} "$@.d"
-	$(COMPILE.cc) -g -I../common/common/src -I../rapidjson/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/handler.o handler.cpp
-
-${OBJECTDIR}/handlers.o: handlers.cpp 
-	${MKDIR} -p ${OBJECTDIR}
-	${RM} "$@.d"
-	$(COMPILE.cc) -g -I../common/common/src -I../rapidjson/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/handlers.o handlers.cpp
+	$(COMPILE.cc) -g -I../common/common/src -I../rapidjson/include -I../common/wshandling -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/cloud-server.o cloud-server.cpp
 
 ${OBJECTDIR}/request_handler_factories.o: request_handler_factories.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -I../common/common/src -I../rapidjson/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/request_handler_factories.o request_handler_factories.cpp
+	$(COMPILE.cc) -g -I../common/common/src -I../rapidjson/include -I../common/wshandling -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/request_handler_factories.o request_handler_factories.cpp
 
 ${OBJECTDIR}/system.o: system.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -I../common/common/src -I../rapidjson/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/system.o system.cpp
+	$(COMPILE.cc) -g -I../common/common/src -I../rapidjson/include -I../common/wshandling -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/system.o system.cpp
 
 ${OBJECTDIR}/system_request_handler.o: system_request_handler.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -I../common/common/src -I../rapidjson/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/system_request_handler.o system_request_handler.cpp
+	$(COMPILE.cc) -g -I../common/common/src -I../rapidjson/include -I../common/wshandling -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/system_request_handler.o system_request_handler.cpp
 
 ${OBJECTDIR}/systems.o: systems.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -I../common/common/src -I../rapidjson/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/systems.o systems.cpp
+	$(COMPILE.cc) -g -I../common/common/src -I../rapidjson/include -I../common/wshandling -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/systems.o systems.cpp
 
 # Subprojects
 .build-subprojects:
+	cd ../common/wshandling && ${MAKE}  -f Makefile CONF=Debug
 	cd ../common/common && ${MAKE}  -f Makefile CONF=Debug
 
 # Clean Targets
@@ -134,6 +125,7 @@ ${OBJECTDIR}/systems.o: systems.cpp
 
 # Subprojects
 .clean-subprojects:
+	cd ../common/wshandling && ${MAKE}  -f Makefile CONF=Debug clean
 	cd ../common/common && ${MAKE}  -f Makefile CONF=Debug clean
 
 # Enable dependency checking

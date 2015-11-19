@@ -11,10 +11,6 @@
       <itemPath>clients.cpp</itemPath>
       <itemPath>clients.h</itemPath>
       <itemPath>cloud-server.cpp</itemPath>
-      <itemPath>handler.cpp</itemPath>
-      <itemPath>handler.h</itemPath>
-      <itemPath>handlers.cpp</itemPath>
-      <itemPath>handlers.h</itemPath>
       <itemPath>request_handler_factories.cpp</itemPath>
       <itemPath>request_handler_factories.h</itemPath>
       <itemPath>system.cpp</itemPath>
@@ -50,11 +46,29 @@
           <incDir>
             <pElem>../common/common/src</pElem>
             <pElem>../rapidjson/include</pElem>
+            <pElem>../common/wshandling</pElem>
           </incDir>
         </ccTool>
         <linkerTool>
           <output>../bin/${CND_CONF}/cloud-server</output>
           <linkerLibItems>
+            <linkerLibLibItem>PocoFoundation</linkerLibLibItem>
+            <linkerLibLibItem>PocoNet</linkerLibLibItem>
+            <linkerLibLibItem>pthread</linkerLibLibItem>
+            <linkerLibLibItem>boost_program_options</linkerLibLibItem>
+            <linkerLibLibItem>boost_system</linkerLibLibItem>
+            <linkerLibProjectItem>
+              <makeArtifact PL="../common/wshandling"
+                            CT="3"
+                            CN="Debug"
+                            AC="true"
+                            BL="true"
+                            WD="../common/wshandling"
+                            BC="${MAKE}  -f Makefile CONF=Debug"
+                            CC="${MAKE}  -f Makefile CONF=Debug clean"
+                            OP="../bin/${CND_CONF}/libwshandling.a">
+              </makeArtifact>
+            </linkerLibProjectItem>
             <linkerLibProjectItem>
               <makeArtifact PL="../common/common"
                             CT="3"
@@ -67,11 +81,6 @@
                             OP="../bin/${CND_CONF}/libcommon.a">
               </makeArtifact>
             </linkerLibProjectItem>
-            <linkerLibLibItem>PocoFoundation</linkerLibLibItem>
-            <linkerLibLibItem>PocoNet</linkerLibLibItem>
-            <linkerLibLibItem>pthread</linkerLibLibItem>
-            <linkerLibLibItem>boost_program_options</linkerLibLibItem>
-            <linkerLibLibItem>boost_system</linkerLibLibItem>
             <linkerLibLibItem>boost_date_time</linkerLibLibItem>
           </linkerLibItems>
         </linkerTool>
@@ -89,14 +98,6 @@
       <item path="clients.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="cloud-server.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="handler.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="handler.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="handlers.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="handlers.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="request_handler_factories.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -132,6 +133,7 @@
           <incDir>
             <pElem>../common/common/src</pElem>
             <pElem>../rapidjson/include</pElem>
+            <pElem>../common/wshandling</pElem>
           </incDir>
         </ccTool>
         <fortranCompilerTool>
@@ -144,11 +146,6 @@
           <output>../bin/${CND_CONF}/cloud-server</output>
           <stripSymbols>true</stripSymbols>
           <linkerLibItems>
-            <linkerLibLibItem>PocoFoundation</linkerLibLibItem>
-            <linkerLibLibItem>PocoNet</linkerLibLibItem>
-            <linkerLibLibItem>pthread</linkerLibLibItem>
-            <linkerLibLibItem>boost_program_options</linkerLibLibItem>
-            <linkerLibLibItem>boost_system</linkerLibLibItem>
             <linkerLibProjectItem>
               <makeArtifact PL="../common/common"
                             CT="3"
@@ -161,6 +158,24 @@
                             OP="../bin/${CND_CONF}/libcommon.a">
               </makeArtifact>
             </linkerLibProjectItem>
+            <linkerLibProjectItem>
+              <makeArtifact PL="../common/wshandling"
+                            CT="3"
+                            CN="Release"
+                            AC="false"
+                            BL="true"
+                            WD="../common/wshandling"
+                            BC="${MAKE}  -f Makefile CONF=Release"
+                            CC="${MAKE}  -f Makefile CONF=Release clean"
+                            OP="../bin/${CND_CONF}/libwshandling.a">
+              </makeArtifact>
+            </linkerLibProjectItem>
+            <linkerLibLibItem>PocoFoundation</linkerLibLibItem>
+            <linkerLibLibItem>PocoNet</linkerLibLibItem>
+            <linkerLibLibItem>pthread</linkerLibLibItem>
+            <linkerLibLibItem>boost_program_options</linkerLibLibItem>
+            <linkerLibLibItem>boost_system</linkerLibLibItem>
+            <linkerLibLibItem>boost_date_time</linkerLibLibItem>
           </linkerLibItems>
         </linkerTool>
       </compileType>
@@ -177,14 +192,6 @@
       <item path="clients.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="cloud-server.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="handler.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="handler.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="handlers.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="handlers.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="request_handler_factories.cpp" ex="false" tool="1" flavor2="0">
       </item>
