@@ -1,5 +1,4 @@
 #include "clients.h"
-#include "handlers.h"
 
 namespace home_system
 {
@@ -15,7 +14,6 @@ clients::~clients()
 void clients::add(client_t client)
 {
   client_ = client;
-  HANDLERS.add(client);
 }
 
 client_t clients::get()
@@ -26,7 +24,6 @@ client_t clients::get()
 void clients::remove(client_t client)
 {
   client_.reset();
-  HANDLERS.remove(client);
 }
 
 }

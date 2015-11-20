@@ -20,6 +20,8 @@ client::client(ws_t ws)
   //int n = read(data);
   // for now just echo the message
   //send(data, n);
+  
+  init();
 }
 
 client::~client()
