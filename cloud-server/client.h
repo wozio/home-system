@@ -17,7 +17,6 @@ public:
   void on_read(data_t data, size_t data_size);
   
   void shutdown();
-  std::string name();
   
 private:
 };

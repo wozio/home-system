@@ -13,15 +13,7 @@ namespace home_system
 client::client(ws_t ws)
 : handler(ws)
 {
-  LOG("New client connected, performing client logging in");
-  
-  // any exception thrown from logging in will lead to deleting client
-  //auto data = create_data();
-  //int n = read(data);
-  // for now just echo the message
-  //send(data, n);
-  
-  init();
+  LOG("New client connected");
 }
 
 client::~client()
@@ -41,17 +33,11 @@ void client::on_read(data_t data, size_t data_size)
 
 void client::shutdown()
 {
-  LOG("Client '" << name() << "' shutdown");
+  LOG("Client shutdown");
   handler::shutdown();
   // from shared_from_this shared_ptr<handler> is obtained
   // casting it to shared_ptr<client>
   CLIENTS.remove(dynamic_pointer_cast<client>(shared_from_this()));
 }
-
-std::string client::name()
-{
-  return string("client");
-}
-
 
 }
