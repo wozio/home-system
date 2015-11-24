@@ -24,10 +24,13 @@ void client_request_handler::handleRequest(HTTPServerRequest& request, HTTPServe
 {
   try
   {
+    LOG("Request for client connection");
+    
     // any exceptions thrown on WebSocket handshake or client validation
     // will lead to not registering client
     ws_t ws(new WebSocket(request, response));
     client_t h(new client(ws));
+    h->init();
     
     CLIENTS.add(h);
   }
@@ -52,7 +55,7 @@ void client_request_handler::handleRequest(HTTPServerRequest& request, HTTPServe
   {
     LOGERROR(e.displayText());
   }
-  catch (const runtime_error& e)
+  catch (const exception& e)
   {
     LOGERROR(e.what());
   }

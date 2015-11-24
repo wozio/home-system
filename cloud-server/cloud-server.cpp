@@ -144,9 +144,10 @@ int main(int argc, char** argv)
     system_srv.stopAll(true);
     client_srv.stopAll(true);
     
+    _handlers.reset();
+    
     _clients.reset();
     _systems.reset();
-    _handlers.reset();
   }
   catch (const exception& e)
   {

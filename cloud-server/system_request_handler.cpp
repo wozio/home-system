@@ -24,8 +24,11 @@ void system_request_handler::handleRequest(HTTPServerRequest& request, HTTPServe
 {
   try
   {
+    LOG("Request for system connection");
+    
     ws_t ws(new WebSocket(request, response));
     system_t h(new system(ws));
+    h->init();
     
     SYSTEMS.add(h);
   }
@@ -50,7 +53,7 @@ void system_request_handler::handleRequest(HTTPServerRequest& request, HTTPServe
   {
     LOGERROR(e.displayText());
   }
-  catch (const runtime_error& e)
+  catch (const exception& e)
   {
     LOGERROR(e.what());
   }
