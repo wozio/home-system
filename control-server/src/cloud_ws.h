@@ -1,6 +1,7 @@
 #ifndef CLOUD_WS_H
 #define	CLOUD_WS_H
 
+#include "timer.h"
 #include <thread>
 #include <string>
 
@@ -18,10 +19,10 @@ private:
   int port_;
   std::string uri_;
   bool no_ssl_;
+  bool logged_;
   
-  bool run_thread_;
-  std::thread thr_;
-  void thr_exec();
+  timer timer_;
+  void connect();
 };
 
 }

@@ -4,8 +4,8 @@
     <logicalFolder name="SourceFiles"
                    displayName="Source Files"
                    projectFiles="true">
-      <itemPath>client.cpp</itemPath>
-      <itemPath>client.h</itemPath>
+      <itemPath>cloud_client.cpp</itemPath>
+      <itemPath>cloud_client.h</itemPath>
       <itemPath>src/cloud_ws.cpp</itemPath>
       <itemPath>src/cloud_ws.h</itemPath>
       <itemPath>src/control-server.cpp</itemPath>
@@ -120,9 +120,9 @@
           </makeArtifact>
         </requiredProjects>
       </compileType>
-      <item path="client.cpp" ex="false" tool="1" flavor2="0">
+      <item path="cloud_client.cpp" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="client.h" ex="false" tool="3" flavor2="0">
+      <item path="cloud_client.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="src/cloud_ws.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -250,9 +250,9 @@
           </makeArtifact>
         </requiredProjects>
       </compileType>
-      <item path="client.cpp" ex="false" tool="1" flavor2="0">
+      <item path="cloud_client.cpp" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="client.h" ex="false" tool="3" flavor2="0">
+      <item path="cloud_client.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="src/cloud_ws.cpp" ex="false" tool="1" flavor2="0">
       </item>
