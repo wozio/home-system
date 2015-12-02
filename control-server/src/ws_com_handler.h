@@ -1,11 +1,11 @@
 #ifndef WS_COM_HANDLER_H
 #define	WS_COM_HANDLER_H
 
-#include "Poco/Net/WebSocket.h"
+#include "handler.h"
 
 namespace home_system
 {
-void handle_ws_communication(Poco::Net::WebSocket& ws);
+void handle_ws_data(data_t data, size_t data_size, handler_t handler);
 
 // exceptions
 

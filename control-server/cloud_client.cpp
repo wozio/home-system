@@ -21,6 +21,7 @@ cloud_client::~cloud_client()
 
 void cloud_client::on_read(data_t data, size_t data_size)
 {
+  
 }
 
 void cloud_client::shutdown()
