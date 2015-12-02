@@ -63,7 +63,7 @@ void cloud_ws::connect()
     }
 
     // TODO: add proxy handling as below but from system or from command line params
-    cs->setProxy("172.23.0.100", 8080);
+    //cs->setProxy("172.23.0.100", 8080);
 
     HTTPRequest request(HTTPRequest::HTTP_GET, uri_, HTTPMessage::HTTP_1_1);
 
