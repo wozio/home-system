@@ -4,6 +4,7 @@
 #include "yamicontainer.h"
 #include "discovery.h"
 #include "cloud_ws.h"
+#include "handlers.h"
 #ifdef __linux__
 #include <unistd.h>
 #endif
@@ -19,6 +20,7 @@ namespace po = boost::program_options;
 
 home_system::yc_t _yc;
 home_system::discovery_t _discovery;
+home_system::handlers_t _handlers;
 
 int main(int argc, char** argv)
 {
@@ -95,6 +97,7 @@ int main(int argc, char** argv)
   {
     _yc = home_system::yami_container::create();
     _discovery = home_system::discovery::create();
+    _handlers = home_system::handlers::create();
 
     int port = vm["port"].as<int>();
     Poco::Net::ServerSocket svs(port);
@@ -145,6 +148,7 @@ int main(int argc, char** argv)
     }
 
     srv.stopAll(true);
+    
   }
   catch (const exception& e)
   {
@@ -154,7 +158,8 @@ int main(int argc, char** argv)
   {
     LOGERROR("Unknown Exception");
   }
-
+  
+  _handlers.reset();
   _discovery.reset();
   _yc.reset();
   

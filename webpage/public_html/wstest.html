@@ -20,7 +20,7 @@
   function onOpen(evt) {
     writeToScreen("CONNECTED");
     setInterval(function(){doSend(JSON.stringify({
-      service: "io-control-dev",
+      service: "control-server",
       message: "get_services",
       expect_reply: true
     }));}, 0);
