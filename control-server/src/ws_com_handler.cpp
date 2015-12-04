@@ -5,6 +5,7 @@
 #include "yamicontainer.h"
 #include "logger.h"
 #include "discovery.h"
+#include "ws_com_handler.h"
 #include <boost/algorithm/string.hpp>
 #include <memory>
 #include <string>
