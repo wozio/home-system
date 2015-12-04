@@ -1,6 +1,7 @@
 #include "json_converter.h"
 #include "rapidjson/document.h"
 #include <boost/lexical_cast.hpp>
+#include <boost/interprocess/streams/bufferstream.hpp>
 //#include <iostream>
 #include <sstream>
 
@@ -10,11 +11,11 @@ namespace home_system
 using namespace rapidjson;
 using namespace std;
 
-void process_json(const char* json, std::string& service, std::string& message,
+void process_json(data_t data, std::string& service, std::string& message,
   bool& expect_reply, yami::parameters& params)
 {
   Document d;
-  d.Parse(json);
+  d.Parse(data->data());
   
   if (d.IsObject())
   {
@@ -42,7 +43,7 @@ void process_json(const char* json, std::string& service, std::string& message,
   }
 }
 
-void process_parameters(yami::parameters* params, std::ostringstream& out)
+void process_parameters(yami::parameters* params, std::ostream& out)
 {
   out << '{';
   bool first = true;
@@ -192,6 +193,11 @@ void process_parameters(yami::parameters* params, std::string& outstr)
   outstr = out.str();
 }
 
-
+void process_parameters(yami::parameters* params, data_t data, size_t& data_size)
+{
+  boost::interprocess::bufferstream out(data->data(), DATA_SIZE);
+  process_parameters(params, out);
+  data_size = out.tellp();
+}
 
 }

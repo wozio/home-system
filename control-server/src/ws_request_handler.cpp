@@ -24,7 +24,7 @@ void ws_request_handler::handleRequest(HTTPServerRequest& request, HTTPServerRes
   try
   {
     Poco::Net::WebSocket ws(request, response);
-    handle_ws_communication(ws);
+    //handle_ws_communication(ws);
   }
   catch (WebSocketException& exc)
   {
