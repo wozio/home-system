@@ -1,5 +1,5 @@
 #include "ws_request_handler.h"
-#include "ws_com_handler.h"
+#include "client.h"
 #include <Poco/Net/HTTPServerRequest.h>
 #include <Poco/Net/HTTPServerResponse.h>
 #include <Poco/Net/NetException.h>
@@ -23,8 +23,10 @@ void ws_request_handler::handleRequest(HTTPServerRequest& request, HTTPServerRes
 {
   try
   {
-    Poco::Net::WebSocket ws(request, response);
-    //handle_ws_communication(ws);
+    ws_t ws(new WebSocket(request, response));
+
+    shared_ptr<client> h(new client(ws));
+    h->init();
   }
   catch (WebSocketException& exc)
   {

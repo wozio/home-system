@@ -4,6 +4,8 @@
     <logicalFolder name="SourceFiles"
                    displayName="Source Files"
                    projectFiles="true">
+      <itemPath>//SERVER/storage/develop/home-system/control-server/src/client.cpp</itemPath>
+      <itemPath>//SERVER/storage/develop/home-system/control-server/src/client.h</itemPath>
       <itemPath>src/cloud_client.cpp</itemPath>
       <itemPath>src/cloud_client.h</itemPath>
       <itemPath>src/cloud_ws.cpp</itemPath>
@@ -120,6 +122,16 @@
           </makeArtifact>
         </requiredProjects>
       </compileType>
+      <item path="//SERVER/storage/develop/home-system/control-server/src/client.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="//SERVER/storage/develop/home-system/control-server/src/client.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="src/cloud_client.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="src/cloud_client.h" ex="false" tool="3" flavor2="0">
@@ -250,6 +262,16 @@
           </makeArtifact>
         </requiredProjects>
       </compileType>
+      <item path="//SERVER/storage/develop/home-system/control-server/src/client.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="//SERVER/storage/develop/home-system/control-server/src/client.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="src/cloud_client.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="src/cloud_client.h" ex="false" tool="3" flavor2="0">

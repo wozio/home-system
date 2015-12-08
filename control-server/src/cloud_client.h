@@ -1,20 +1,18 @@
-#ifndef CLIENT_H
-#define	CLIENT_H
+#ifndef CLOUD_CLIENT_H
+#define	CLOUD_CLIENT_H
 
-#include "handler.h"
+#include "client.h"
 
 namespace home_system
 {
 
 class cloud_client
-: public handler
+: public client
 {
 public:
   cloud_client(ws_t ws, std::function<void()>shutdown_callback);
   cloud_client(const cloud_client& orig) = delete;
   ~cloud_client();
-  
-  void on_read(data_t data, size_t data_size);
   
   void shutdown();
   
@@ -24,5 +22,5 @@ private:
 
 }
 
-#endif	/* CLIENT_H */
+#endif	/* CLOUD_CLIENT_H */
 

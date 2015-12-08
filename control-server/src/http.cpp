@@ -19,8 +19,8 @@ request_handler_factory::request_handler_factory(const std::string& root)
 HTTPRequestHandler* request_handler_factory::createRequestHandler(const HTTPServerRequest& request)
 {
   std::string uri = request.getURI();
-  //LOG("Request: " << request.clientAddress().toString() << " URI: " << uri);
-  if (uri == "/access/" || uri == "/access")
+  LOG("Request: " << request.clientAddress().toString() << " URI: " << uri);
+  if (uri == "/access/client/" || uri == "/access/client")
   {
     return new ws_request_handler();
   }
