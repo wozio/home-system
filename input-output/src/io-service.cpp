@@ -14,7 +14,7 @@ namespace input_output
 {
 
 io_service::io_service()
-: service("io.1wire"),
+: service("io.1wire", false),
   net_("DS2490-1",
     [this](uint64_t id)
     {
@@ -22,7 +22,7 @@ io_service::io_service()
     })
 {
   // todo: configurable path to adapter
-  
+  init();
 }
 
 io_service::~io_service()
