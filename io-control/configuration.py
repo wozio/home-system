@@ -29,7 +29,7 @@ defined_outputs = [
     {
         'name': "Pompa cyrkulacji CWU",
         'service': 'io.relay-board',
-        'id': 3
+        'id': 2
     }
 ]
 
@@ -48,9 +48,9 @@ def heating_on():
 
 def circulation_auto():
     now = inputs.inputs["Timer"].get()
-    minutes = now.hour * 0 + now.minute
+    minutes = now.hour * 60 + now.minute
     if 0 <= now.weekday() <= 4:
-        if 345 <= minutes <= 420 or 960 <= minutes <= 1380:
+        if (345 <= minutes < 420) or (960 <= minutes < 1380):
             outputs.outputs["Pompa cyrkulacji CWU"].set(1)
         else:
             outputs.outputs["Pompa cyrkulacji CWU"].set(0)

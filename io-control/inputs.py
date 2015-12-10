@@ -4,7 +4,6 @@ import logging
 import input
 import mytimer
 import configuration
-import yami
 import yagent
 import discovery
 
@@ -45,12 +44,13 @@ def on_service(new_service, available):
             if state == message.REPLIED:
                 reply_content = message.get_reply()
 
-                for id in reply_content["inputs"]:
-                    logging.debug("Input %d found", id)
+                for iid in reply_content["inputs"]:
+                    logging.debug("Input %d found", iid)
 
-                    if (new_service, id) not in inputs_per_id:
-                        i = input.input(new_service + "_" + str(id), new_service, id)
-                        inputs_per_id[(new_service, id)] = i
+                    if (new_service, iid) not in inputs_per_id:
+                        i = input.input(new_service + "_" + str(iid), new_service, iid)
+                        inputs_per_id[(new_service, iid)] = i
                         inputs[i.name()] = i
                     else:
-                      logging.debug("Input known")
+                        logging.debug("Input known")
+                
