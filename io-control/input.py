@@ -23,6 +23,9 @@ class input:
 
     discovery.register(self.on_service)
 
+  def exit(self):
+    pass
+
   def get(self):
     if not self.ready:
       raise RuntimeError("Input not ready")

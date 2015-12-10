@@ -2,6 +2,7 @@
 
 import logging
 import input
+import mytimer
 import configuration
 import yami
 import yagent
@@ -13,12 +14,22 @@ inputs = {}
 def init():
     logging.debug("Inputs init")
 
+    # timer is always defined input
+    itimer = mytimer.timer()
+    inputs_per_id[("", "Timer")] = itimer
+    inputs["Timer"] = itimer
+
+    #defined inputs in configuration
     for i in configuration.defined_inputs:
         iobj = input.input(i['name'], i['service'], i['id'])
         inputs_per_id[(i['service'], i['id'])] = iobj
         inputs[i['name']] = iobj
 
     discovery.register(on_service)
+
+def exit():
+  for i in inputs.itervalues():
+    i.exit()
 
 def on_service(new_service, available):
     if available:

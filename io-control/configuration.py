@@ -47,6 +47,18 @@ def heating_on():
     outputs.outputs["Kocioł grzanie"].set(1)
 
 def circulation_auto():
+    now = inputs.inputs["Timer"].get()
+    minutes = now.hour * 0 + now.minute
+    if 0 <= now.weekday() <= 4:
+        if 345 <= minutes <= 420 or 960 <= minutes <= 1380:
+            outputs.outputs["Pompa cyrkulacji CWU"].set(1)
+        else:
+            outputs.outputs["Pompa cyrkulacji CWU"].set(0)
+    else:
+        if 420 <= minutes <= 1380:
+            outputs.outputs["Pompa cyrkulacji CWU"].set(1)
+        else:
+            outputs.outputs["Pompa cyrkulacji CWU"].set(0)
     pass
 
 def circulation_off():
@@ -91,6 +103,7 @@ rules = [
         "name": "Cyrkulacja automatyczna",
         "rule": circulation_auto,
         "inputs": [
+            "Timer"
         ],
         "outputs": [
             "Pompa cyrkulacji CWU"
@@ -148,7 +161,7 @@ services = [
                 "name": "Tryb cyrkulacji",
                 "type": "switch",
                 "data": {
-                    "default": "wl",
+                    "default": "auto",
                     "values": {
                         "wyl": {
                             "rule": "Cyrkulacja wylaczona"

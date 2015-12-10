@@ -35,7 +35,7 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
 OBJECTFILES= \
-	${OBJECTDIR}/src/client.o \
+	${OBJECTDIR}/_ext/278941292/client.o \
 	${OBJECTDIR}/src/cloud_client.o \
 	${OBJECTDIR}/src/cloud_ws.o \
 	${OBJECTDIR}/src/control-server.o \
@@ -75,10 +75,10 @@ LDLIBSOPTIONS=-L../common/yami4/lib -lPocoFoundation -lPocoXML -lboost_filesyste
 	${MKDIR} -p ../bin/${CND_CONF}
 	${LINK.cc} -o ../bin/${CND_CONF}/control-server ${OBJECTFILES} ${LDLIBSOPTIONS}
 
-${OBJECTDIR}/src/client.o: src/client.cpp 
-	${MKDIR} -p ${OBJECTDIR}/src
+${OBJECTDIR}/_ext/278941292/client.o: //SERVER/storage/develop/home-system/control-server/src/client.cpp 
+	${MKDIR} -p ${OBJECTDIR}/_ext/278941292
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -Wall -D_DEBUG -I../common/common/src -I../common/yami4/include -I../rapidjson/include -I../common/wshandling -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/client.o src/client.cpp
+	$(COMPILE.cc) -g -Wall -D_DEBUG -I../common/common/src -I../common/yami4/include -I../rapidjson/include -I../common/wshandling -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/278941292/client.o //SERVER/storage/develop/home-system/control-server/src/client.cpp
 
 ${OBJECTDIR}/src/cloud_client.o: src/cloud_client.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src

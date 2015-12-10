@@ -36,6 +36,6 @@ def exit():
   logging.info("Home System IO Control quitting")
 
   yagent.agent = None
+  inputs.exit()
   mainservice.exit()
   discovery.exit()
-
