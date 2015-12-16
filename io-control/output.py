@@ -20,10 +20,6 @@ class output:
 
         logging.info("Created output '%s' with service=%s and id=%d", self.name, output_service, output_id)
 
-        yagent.agent.register_object(self.name, self.on_msg)
-
-        discovery.register(self.on_service)
-
     def get(self):
         if not self.ready:
             raise RuntimeError("Output not ready")
@@ -38,45 +34,23 @@ class output:
             self.set_state()
 
     def set_state(self):
-        try:
-            params = yami.Parameters()
-            params["output"] = int(self.id)
-            params["state"] = int(self.wanted_state)
+        params = yami.Parameters()
+        params["output"] = int(self.id)
+        params["state"] = int(self.wanted_state)
 
-            yagent.agent.send(discovery.get(self.service), self.service,
-                            "set_output_state", params);
-        except Exception as e:
-            print "Exception ", e
+        yagent.agent.send_one_way(discovery.get(self.service), self.service,
+                        "set_output_state", params);
 
-    def on_service(self, service, available):
-        if service == self.service:
-            if available:
-                logging.debug("Output service %s is available", service)
-
-            # subscribe for output state change notifications
-            params = yami.Parameters()
-            params["id"] = long(self.id)
-            params["name"] = self.name
-            params["endpoint"] = yagent.endpoint
-
-            yagent.agent.send(discovery.get(self.service), self.service,
-                            "subscribe", params);
-
-    def on_msg(self, message):
-        if message.get_message_name() == "state_change":
-            new_state = message.get_parameters()["state"]
-            if not self.ready or new_state != self.state:
-                self.ready = True
-                self.state = message.get_parameters()["state"]
-                logging.debug("'%s' state changed to %f", self.name, self.state)
-                for c in self.callbacks:
-                    c()
-                if self.wanted_state != self.state:
-                    logging.debug("Wanted state of '%s' different from actual, setting to %f", self.name, self.wanted_state)
-                    self.set_state()
-        else:
-            logging.debug("Unknown message %s from %s", message.get_message_name(), message.get_source())
-            message.reject("Unknown message")
+    def on_state_change(self, state):
+        if not self.ready or state != self.state:
+            self.ready = True
+            logging.debug("'%s' state changed %d->%d", self.name, self.state, state)
+            self.state = state
+            for c in self.callbacks:
+                c()
+            if self.wanted_state != self.state:
+                logging.debug("Wanted state of '%s' different from actual, setting to %d", self.name, self.wanted_state)
+                self.set_state()
 
     def subscribe(self, callback):
         self.callbacks.append(callback)
