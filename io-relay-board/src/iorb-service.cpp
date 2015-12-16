@@ -64,21 +64,19 @@ void iorb_service::on_msg(yami::incoming_message & im)
 void iorb_service::send_current_state()
 {
   std::vector<long long> ids;
-  net_.get_inputs(ids);
-  for (auto id : ids)
+  for (size_t id = 0; id < 8; id++)
   {
-    LOG("Sending for id " << id);
-    on_state_change(id);
+    on_output_state_change(id, port_.get_relay_state(id));
   }
 }
 
-void iorb_service::on_output_state_change(int output, int state)
+void iorb_service::on_output_state_change(int id, int state)
 {
   lock_guard<mutex> lock(subscription_mutex_);
 
   yami::parameters params;
   params.set_string("name", service::name());
-  params.set_long_long("id", output);
+  params.set_long_long("id", id);
   params.set_integer("type", static_cast<int>(io_type::output_switch));
   params.set_integer("state", state);
 
@@ -91,12 +89,7 @@ void iorb_service::on_output_state_change(int output, int state)
         "state_change", params);
       ++it;
     }
-    catch (const yami::yami_runtime_error& e)
-    {
-      LOGWARN("EXCEPTION: " << e.what() << ". Removing subscription for: " << id);
-      subscriptions_.erase(it++);
-    }
-    catch (const exception& e)
+    catch (const std::exception& e)
     {
       LOGWARN("EXCEPTION: " << e.what() << ". Removing subscription for: " << id);
       subscriptions_.erase(it++);
