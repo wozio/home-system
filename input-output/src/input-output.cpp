@@ -5,6 +5,7 @@
 #include <boost/program_options.hpp>
 #include <chrono>
 #include <thread>
+#include <iostream>
 
 using namespace std;
 namespace po = boost::program_options;
