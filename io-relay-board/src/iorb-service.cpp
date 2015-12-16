@@ -10,6 +10,11 @@ namespace home_system
 namespace input_output
 {
 
+enum class io_type
+{
+  output_switch = 1
+};
+
 iorb_service::iorb_service(const std::string& name, const std::string& port)
 : service(name, false),
   port_(port, this)
@@ -24,37 +29,8 @@ iorb_service::~iorb_service()
 
 void iorb_service::on_msg(yami::incoming_message & im)
 {
-  if (im.get_message_name() == "get_all_outputs")
+  if (im.get_message_name() == "set_output_state")
   {
-    vector<int> outputs;
-    for (size_t j = 0; j < 8; ++j)
-      outputs.push_back(j);
-    
-    yami::parameters params;
-    params.set_integer_array_shallow("outputs", &outputs[0], outputs.size());
-    im.reply(params);
-  }
-  else if (im.get_message_name() == "get_outputs")
-  {
-    vector<long long> outputs;
-    for (size_t j = 0; j < 8; ++j)
-      outputs.push_back(j);
-    
-    yami::parameters params;
-    params.set_long_long_array_shallow("outputs", &outputs[0], outputs.size());
-    im.reply(params);
-  }
-  else if (im.get_message_name() == "get_output_state")
-  {
-    int output = im.get_parameters().get_integer("output");
-    yami::parameters params;
-    params.set_integer("output", output);
-    params.set_integer("state", port_.get_relay_state(output));
-    im.reply(params);
-  }
-  else if (im.get_message_name() == "set_output_state")
-  {
-
     int output = im.get_parameters().get_integer("output");
     int state = im.get_parameters().get_integer("state");
 
@@ -67,22 +43,17 @@ void iorb_service::on_msg(yami::incoming_message & im)
   }
   else if (im.get_message_name() == "subscribe")
   {
-    int id = im.get_parameters().get_long_long("id");
-    
-    // adding subscription to port
-    rs nrs;
-    nrs.name_ = im.get_parameters().get_string("name");
-    nrs.ye_ = im.get_parameters().get_string("endpoint");
-
+    auto ns = make_pair<std::string, std::string>(
+      std::string(im.get_parameters().get_string("endpoint")),
+      std::string(im.get_parameters().get_string("name")));
     {
       lock_guard<mutex> lock(subscription_mutex_);
-      state_subscriptions_.insert(std::pair<int, rs>(id, nrs));
+      subscriptions_.insert(ns);
     }
 
-    LOG(nrs.name_ << " (" << nrs.ye_ << ") subscribed for changes of " << id);
+    LOG(ns.second << " (" << ns.first << ") subscribed");
     
-    // sending current state
-    on_output_state_change(id, port_.get_relay_state(id));
+    send_current_state();
   }
   else
   {
@@ -90,32 +61,45 @@ void iorb_service::on_msg(yami::incoming_message & im)
   }
 }
 
+void iorb_service::send_current_state()
+{
+  std::vector<long long> ids;
+  net_.get_inputs(ids);
+  for (auto id : ids)
+  {
+    LOG("Sending for id " << id);
+    on_state_change(id);
+  }
+}
+
 void iorb_service::on_output_state_change(int output, int state)
 {
   lock_guard<mutex> lock(subscription_mutex_);
 
-  if (state_subscriptions_.find(output) != state_subscriptions_.end())
+  yami::parameters params;
+  params.set_string("name", service::name());
+  params.set_long_long("id", output);
+  params.set_integer("type", static_cast<int>(io_type::output_switch));
+  params.set_integer("state", state);
+
+  for (auto it = subscriptions_.begin(); it != subscriptions_.end();)
   {
-    yami::parameters params;
-    params.set_string("name", name_);
-    params.set_integer("id", output);
-    params.set_integer("state", state);
-    
-    auto subs = state_subscriptions_.equal_range(output);
-    for (auto it = subs.first; it != subs.second; )
+    LOG("Sending state change to subscription " << it->second << " (" << it->first << ") for: " << id);
+    try
     {
-      LOG("Sending state change to subscription " << it->second.name_ << " (" << it->second.ye_ << ") for: " << output);
-      try
-      {
-        AGENT.send(it->second.ye_, it->second.name_,
-          "state_change", params);
-        ++it;
-      }
-      catch (const yami::yami_runtime_error& e)
-      {
-        LOGWARN("EXCEPTION: " << e.what() << ". Removing subscription for output: " << output);
-        state_subscriptions_.erase(it++);
-      }
+      AGENT.send_one_way(it->first, it->second,
+        "state_change", params);
+      ++it;
+    }
+    catch (const yami::yami_runtime_error& e)
+    {
+      LOGWARN("EXCEPTION: " << e.what() << ". Removing subscription for: " << id);
+      subscriptions_.erase(it++);
+    }
+    catch (const exception& e)
+    {
+      LOGWARN("EXCEPTION: " << e.what() << ". Removing subscription for: " << id);
+      subscriptions_.erase(it++);
     }
   }
 }

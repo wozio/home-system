@@ -4,6 +4,7 @@
 #include "service.h"
 #include "ownetwork.h"
 #include <mutex>
+#include <set>
 
 namespace home_system
 {
@@ -21,14 +22,11 @@ private:
   ow::net net_;
   
   std::mutex subscription_mutex_;
-  // key = id
-  struct rs
-  {
-    std::string ye_;
-    std::string name_;
-  };
-  std::multimap<uint64_t, rs> state_subscriptions_;
+
+  // yamie endpoint and name
+  std::set<std::pair<std::string, std::string>> subscriptions_;
   void on_state_change(uint64_t id);
+  void send_current_state();
 };
 
 }
