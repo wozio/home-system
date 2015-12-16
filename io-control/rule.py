@@ -33,7 +33,7 @@ class rule:
             except KeyError:
                 logging.error("Rule '%s': Input or output has not been found, something is wrong with configuration...", self.name)
             except RuntimeError:
-                logging.warn("Rule '%s': Something is not ready yet", self.name)
+                logging.warn("Rule '%s': Something is not ready", self.name)
             
     def enable(self):
         logging.debug("Enabling rule '%s'", self.name)
