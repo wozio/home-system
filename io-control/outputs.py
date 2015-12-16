@@ -3,7 +3,6 @@
 import logging
 import output
 import configuration
-import yami
 import yagent
 import discovery
 
@@ -34,12 +33,12 @@ def on_service(new_service, available):
             if state == message.REPLIED:
                 reply_content = message.get_reply()
 
-                for id in reply_content["outputs"]:
-                    logging.debug("Output %d found", id)
+                for oid in reply_content["outputs"]:
+                    logging.debug("Output %d found", oid)
 
-                    if (new_service, id) not in outputs_per_id:
-                        o = output.output(new_service + "_" + str(id), new_service, id)
-                        outputs_per_id[(new_service, id)] = o
+                    if (new_service, oid) not in outputs_per_id:
+                        o = output.output(new_service + "_" + str(oid), new_service, oid)
+                        outputs_per_id[(new_service, oid)] = o
                         outputs[o.name] = o
                     else:
-                      logging.debug("Output known")
+                        logging.debug("Output known")
