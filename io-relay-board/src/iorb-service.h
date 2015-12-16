@@ -3,7 +3,7 @@
 
 #include "rbport.h"
 #include "service.h"
-#include <map>
+#include <set>
 
 namespace home_system
 {
@@ -28,13 +28,10 @@ private:
   std::mutex subscription_mutex_;
   rb::port port_;
   
-  // key = output id and yamie endpoint of remote services subscribing
-  struct rs
-  {
-    std::string ye_;
-    std::string name_;
-  };
-  std::multimap<int, rs> state_subscriptions_;
+  // yamie endpoint and name
+  std::set<std::pair<std::string, std::string>> subscriptions_;
+  void on_state_change(uint64_t id);
+  void send_current_state();
 };
 
 }

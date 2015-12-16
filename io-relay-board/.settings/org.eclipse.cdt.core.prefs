@@ -1,0 +1,12 @@
+eclipse.preferences.version=1
+environment/project/cdt.managedbuild.toolchain.gnu.base.367009515/CPATH/delimiter=\:
+environment/project/cdt.managedbuild.toolchain.gnu.base.367009515/CPATH/operation=replace
+environment/project/cdt.managedbuild.toolchain.gnu.base.367009515/CPATH/value=/afs/ericpol.int/pl/kr/k/wopi/home/include
+environment/project/cdt.managedbuild.toolchain.gnu.base.367009515/LD_LIBRARY_PATH/delimiter=\:
+environment/project/cdt.managedbuild.toolchain.gnu.base.367009515/LD_LIBRARY_PATH/operation=append
+environment/project/cdt.managedbuild.toolchain.gnu.base.367009515/LD_LIBRARY_PATH/value=/afs/ericpol.int/pl/kr/k/wopi/home/lib
+environment/project/cdt.managedbuild.toolchain.gnu.base.367009515/LIBRARY_PATH/delimiter=\:
+environment/project/cdt.managedbuild.toolchain.gnu.base.367009515/LIBRARY_PATH/operation=replace
+environment/project/cdt.managedbuild.toolchain.gnu.base.367009515/LIBRARY_PATH/value=/afs/ericpol.int/pl/kr/k/wopi/home/lib
+environment/project/cdt.managedbuild.toolchain.gnu.base.367009515/append=true
+environment/project/cdt.managedbuild.toolchain.gnu.base.367009515/appendContributed=true
