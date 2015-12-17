@@ -15,6 +15,12 @@ enum class io_type
   output_switch = 1
 };
 
+enum class io_state
+{
+  unknown,
+  ok
+};
+
 iorb_service::iorb_service(const std::string& name, const std::string& port)
 : service(name, false),
   port_(port, this)
@@ -31,21 +37,22 @@ void iorb_service::on_msg(yami::incoming_message & im)
 {
   if (im.get_message_name() == "set_output_state")
   {
-    int output = im.get_parameters().get_integer("output");
-    int state = im.get_parameters().get_integer("state");
+    int id = im.get_parameters().get_integer("id");
+    int state = im.get_parameters().get_integer("value");
 
-    LOG("Set output state: " << output << " to " << state);
+    LOG("Set output value: " << id << " to " << state);
 
-    if (output < 8)
+    if (id < 8)
     {
-      state ? port_.enable_relay(output) : port_.disable_relay(output);
+      state ? port_.enable_relay(id) : port_.disable_relay(id);
     }
   }
   else if (im.get_message_name() == "subscribe")
   {
+    auto params = im.get_parameters();
     auto ns = make_pair<std::string, std::string>(
-      std::string(im.get_parameters().get_string("endpoint")),
-      std::string(im.get_parameters().get_string("name")));
+      std::string(params.get_string("endpoint")),
+      std::string(params.get_string("name")));
     {
       lock_guard<mutex> lock(subscription_mutex_);
       subscriptions_.insert(ns);
@@ -78,7 +85,9 @@ void iorb_service::on_output_state_change(int id, int state)
   params.set_string("name", service::name());
   params.set_long_long("id", id);
   params.set_integer("type", static_cast<int>(io_type::output_switch));
-  params.set_integer("state", state);
+  params.set_integer("state", state == -1 ? static_cast<int>(io_state::unknown) : static_cast<int>(io_state::ok));
+  // for simplicity we always send value even when state is not OK
+  params.set_integer("value", state);
 
   for (auto it = subscriptions_.begin(); it != subscriptions_.end();)
   {
