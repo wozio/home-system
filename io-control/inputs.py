@@ -26,15 +26,15 @@ def exit():
     for i in inputs.itervalues():
         i.exit()
 
-def on_state_change(name, id, state):
-    logging.debug("Input %s %d state change", name, id)
+def on_state_change(name, id, state, value):
+    #logging.debug("Input %s %d state change", name, id)
 
     if (name, id) not in inputs_per_id:
         logging.debug("Input not known, creating")
         i = input.input(name + "_" + str(id), name, id)
         inputs_per_id[(name, id)] = i
-        inputs[i.name()] = i
-        i.on_state_change(state)
+        inputs[i.name] = i
+        i.on_state_change(state, value)
     else:
-        logging.debug("Input known")
-        inputs_per_id[(name, id)].on_state_change(state)
+        #logging.debug("Input known")
+        inputs_per_id[(name, id)].on_state_change(state, value)

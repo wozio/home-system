@@ -16,8 +16,8 @@ class output:
         self.name = output_name
         self.state = state_unknown
         self.value = None
-        self.callbacks = []
         self.wanted_value = None
+        self.callbacks = []
 
         logging.info("Created output '%s' with service=%s and id=%d", self.name, output_service, output_id)
 

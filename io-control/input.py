@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 
-import socket
-import struct
 import logging
+
+state_unknown = 0
+state_ok = 1
 
 class input:
 
@@ -10,9 +11,9 @@ class input:
         self.id = input_id
         self.service = input_service
         self.name = input_name
-        self.state = 0
+        self.state = state_unknown
+        self.value = None
         self.callbacks = []
-        self.ready = False
 
         logging.info("Created input '%s' with service=%s and id=%d", input_name, input_service, input_id)
 
@@ -20,16 +21,19 @@ class input:
         pass
 
     def get(self):
-        if not self.ready:
-            raise RuntimeError("Input not ready")
-        return self.state
+        if self.state != state_ok:
+            raise RuntimeError("Input not OK")
+        return self.value
 
-    def on_state_change(self, state):
-        if not self.ready or state != self.state:
-            self.ready = True
-
-            logging.debug("'%s' state changed %f->%f", self.name, self.state, state)
+    def on_state_change(self, state, value):
+        if state != self.state:
+            logging.debug("'%s' state changed %d->%d", self.name, self.state, state)
             self.state = state
+            if self.state != state_ok:
+                self.value = None
+        if self.state == state_ok and value != self.value:
+            logging.debug("'%s' value changed %s->%s", self.name, str(self.value), str(value))
+            self.value = value
             for c in self.callbacks:
                 c()
 
