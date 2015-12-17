@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # This Python file uses the following encoding: utf-8
 
-import logging
+#import logging
 import inputs
 import outputs
 
@@ -29,7 +29,7 @@ defined_outputs = [
     {
         'name': "Pompa cyrkulacji CWU",
         'service': 'io.relay-board',
-        'id': 2
+        'id': 3
     }
 ]
 

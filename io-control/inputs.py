@@ -4,8 +4,6 @@ import logging
 import input
 import mytimer
 import configuration
-import yagent
-import discovery
 
 inputs_per_id = {}
 inputs = {}
@@ -24,33 +22,19 @@ def init():
         inputs_per_id[(i['service'], i['id'])] = iobj
         inputs[i['name']] = iobj
 
-    discovery.register(on_service)
-
 def exit():
-  for i in inputs.itervalues():
-    i.exit()
+    for i in inputs.itervalues():
+        i.exit()
 
-def on_service(new_service, available):
-    if available:
-        if new_service.find("io.", 0, 3) == 0:
-            logging.debug("IO service %s is available", new_service)
+def on_state_change(name, id, state):
+    logging.debug("Input %s %d state change", name, id)
 
-            # getting all inputs from service
-            message = yagent.agent.send(discovery.get(new_service), new_service, "get_inputs")
-
-            message.wait_for_completion(1000)
-
-            state = message.get_state()[0]
-            if state == message.REPLIED:
-                reply_content = message.get_reply()
-
-                for iid in reply_content["inputs"]:
-                    logging.debug("Input %d found", iid)
-
-                    if (new_service, iid) not in inputs_per_id:
-                        i = input.input(new_service + "_" + str(iid), new_service, iid)
-                        inputs_per_id[(new_service, iid)] = i
-                        inputs[i.name()] = i
-                    else:
-                        logging.debug("Input known")
-                
+    if (name, id) not in inputs_per_id:
+        logging.debug("Input not known, creating")
+        i = input.input(name + "_" + str(id), name, id)
+        inputs_per_id[(name, id)] = i
+        inputs[i.name()] = i
+        i.on_state_change(state)
+    else:
+        logging.debug("Input known")
+        inputs_per_id[(name, id)].on_state_change(state)

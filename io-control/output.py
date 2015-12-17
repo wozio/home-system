@@ -1,11 +1,12 @@
 #!/usr/bin/env python
 
-import socket
-import struct
 import logging
 import yami
 import yagent
 import discovery
+
+state_unknown = 0
+state_ok = 1
 
 class output:
 
@@ -13,70 +14,49 @@ class output:
         self.id = output_id
         self.service = output_service
         self.name = output_name
-        self.state = 0
+        self.state = state_unknown
+        self.value = None
         self.callbacks = []
-        self.ready = False
-        self.wanted_state = 0
+        self.wanted_value = None
 
         logging.info("Created output '%s' with service=%s and id=%d", self.name, output_service, output_id)
 
-        yagent.agent.register_object(self.name, self.on_msg)
-
-        discovery.register(self.on_service)
-
     def get(self):
-        if not self.ready:
-            raise RuntimeError("Output not ready")
-        return self.state
+        if self.state != state_ok:
+            raise RuntimeError("Output not OK")
+        return self.value
 
-    def set(self, state):
-        if state != self.wanted_state:
-            self.wanted_state = state
-            logging.debug("'%s' state set to %f", self.name, state)
+    def set(self, value):
+        if value != self.wanted_value:
+            self.wanted_value = value
+            logging.debug("'%s' state set to %f", self.name, value)
 
-        if self.wanted_state != self.state:
-            self.set_state()
+        if self.wanted_value != self.value:
+            self.set_value()
 
-    def set_state(self):
-        try:
+    def set_value(self):
+        if self.state == state_ok:
             params = yami.Parameters()
-            params["output"] = int(self.id)
-            params["state"] = int(self.wanted_state)
-
-            yagent.agent.send(discovery.get(self.service), self.service,
+            params["id"] = int(self.id)
+            params["value"] = int(self.wanted_value)
+    
+            yagent.agent.send_one_way(discovery.get(self.service), self.service,
                             "set_output_state", params);
-        except Exception as e:
-            print "Exception ", e
 
-    def on_service(self, service, available):
-        if service == self.service:
-            if available:
-                logging.debug("Output service %s is available", service)
-
-            # subscribe for output state change notifications
-            params = yami.Parameters()
-            params["id"] = long(self.id)
-            params["name"] = self.name
-            params["endpoint"] = yagent.endpoint
-
-            yagent.agent.send(discovery.get(self.service), self.service,
-                            "subscribe", params);
-
-    def on_msg(self, message):
-        if message.get_message_name() == "state_change":
-            new_state = message.get_parameters()["state"]
-            if not self.ready or new_state != self.state:
-                self.ready = True
-                self.state = message.get_parameters()["state"]
-                logging.debug("'%s' state changed to %f", self.name, self.state)
-                for c in self.callbacks:
-                    c()
-                if self.wanted_state != self.state:
-                    logging.debug("Wanted state of '%s' different from actual, setting to %f", self.name, self.wanted_state)
-                    self.set_state()
-        else:
-            logging.debug("Unknown message %s from %s", message.get_message_name(), message.get_source())
-            message.reject("Unknown message")
+    def on_state_change(self, state, value):
+        if state != self.state:
+            logging.debug("'%s' state changed %d->%d", self.name, self.state, state)
+            self.state = state
+            if self.state != state_ok:
+                self.value = None
+        if self.state == state_ok and value != self.value:
+            logging.debug("'%s' value changed %s->%s", self.name, str(self.value), str(value))
+            self.value = value
+            for c in self.callbacks:
+                c()
+            if self.wanted_value and self.wanted_value != self.value:
+                logging.debug("Wanted value of '%s' different from actual, setting to %s", self.name, str(self.wanted_value))
+                self.set_value()
 
     def subscribe(self, callback):
         self.callbacks.append(callback)

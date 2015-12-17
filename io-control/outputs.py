@@ -3,8 +3,6 @@
 import logging
 import output
 import configuration
-import yagent
-import discovery
 
 outputs = {}
 outputs_per_id = {}
@@ -17,28 +15,15 @@ def init():
         outputs_per_id[(o['service'], o['id'])] = oobj
         outputs[o['name']] = oobj
 
-    discovery.register(on_service)
+def on_state_change(name, id, state, value):
+    #logging.debug("Output %s %d state change", name, id)
 
-def on_service(new_service, available):
-    if available:
-        if new_service.find("io.", 0, 3) == 0:
-            logging.debug("IO service %s is available", new_service)
-
-            # getting all inputs from service
-            message = yagent.agent.send(discovery.get(new_service), new_service, "get_outputs")
-
-            message.wait_for_completion(1000)
-
-            state = message.get_state()[0]
-            if state == message.REPLIED:
-                reply_content = message.get_reply()
-
-                for oid in reply_content["outputs"]:
-                    logging.debug("Output %d found", oid)
-
-                    if (new_service, oid) not in outputs_per_id:
-                        o = output.output(new_service + "_" + str(oid), new_service, oid)
-                        outputs_per_id[(new_service, oid)] = o
-                        outputs[o.name] = o
-                    else:
-                        logging.debug("Output known")
+    if (name, id) not in outputs_per_id:
+        logging.debug("Output not known, creating")
+        o = output.output(name + "_" + str(id), name, id)
+        outputs_per_id[(name, id)] = o
+        outputs[o.name] = o
+        o.on_state_change(state, value)
+    else:
+        #logging.debug("Output known")
+        outputs_per_id[(name, id)].on_state_change(state, value)
