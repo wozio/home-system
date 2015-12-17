@@ -13,6 +13,12 @@ enum class io_type
   input_temperature = 0
 };
 
+enum class io_state
+{
+  unknown,
+  ok
+};
+
 namespace home_system
 {
 namespace input_output
@@ -38,9 +44,10 @@ void io_service::on_msg(incoming_message & im)
 {
   if (im.get_message_name() == "subscribe")
   {
+	auto params = im.get_parameters();
     auto ns = make_pair<std::string, std::string>(
-      std::string(im.get_parameters().get_string("endpoint")),
-      std::string(im.get_parameters().get_string("name")));
+      std::string(params.get_string("endpoint")),
+      std::string(params.get_string("name")));
     {
       lock_guard<mutex> lock(subscription_mutex_);
       subscriptions_.insert(ns);
@@ -75,26 +82,23 @@ void io_service::on_state_change(uint64_t id)
   params.set_string("name", service::name());
   params.set_long_long("id", id);
   params.set_integer("type", static_cast<int>(io_type::input_temperature));
+  params.set_integer("state", static_cast<int>(io_state::ok));
   ow::temp& input = net_.get_input(id);
-  params.set_double_float("state", input.get_value());
+  // for simplicity we always send value even when state is not OK
+  params.set_double_float("value", input.get_value());
 
   for (auto it = subscriptions_.begin(); it != subscriptions_.end();)
   {
     LOG("Sending state change to subscription " << it->second << " (" << it->first << ") for: " << id);
     try
     {
-      AGENT.send(it->first, it->second,
+      AGENT.send_one_way(it->first, it->second,
         "state_change", params);
       ++it;
     }
-    catch (const yami::yami_runtime_error& e)
-    {
-      LOGWARN("EXCEPTION: " << e.what() << ". Removing subscription for: " << id);
-      subscriptions_.erase(it++);
-    }
     catch (const exception& e)
     {
-      LOGWARN("EXCEPTION: " << e.what() << ". Removing subscription for: " << id);
+      LOGWARN("EXCEPTION: " << e.what() << ". Removing subscription: " << it->second << " (" << it->first << ")");
       subscriptions_.erase(it++);
     }
   }

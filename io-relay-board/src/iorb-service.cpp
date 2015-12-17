@@ -100,7 +100,7 @@ void iorb_service::on_output_state_change(int id, int state)
     }
     catch (const std::exception& e)
     {
-      LOGWARN("EXCEPTION: " << e.what() << ". Removing subscription for: " << id);
+      LOGWARN("EXCEPTION: " << e.what() << ". Removing subscription: " << it->second << " (" << it->first << ")");
       subscriptions_.erase(it++);
     }
   }
