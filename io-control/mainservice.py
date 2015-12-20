@@ -81,21 +81,34 @@ def on_msg(message):
         #preparing lists for sending
         services = []
 
-        for s in configuration.services:
+        for service in ioservices.Ioservices.itervalues():
             service_params = yami.Parameters()
-            service_params["name"] = s["name"]
-            settings = []
-            for st in s["settings"]:
-                setting_params = yami.Parameters()
-                setting_params["name"] = st["name"]
-                setting_params["type"] = st["type"]
-                setting_params["value"] = ioservices.Ioservices[s["name"]].settings[st["name"]].get()
-                values = []
-                for val in st["data"]["values"]:
-                    values.append(val)
-                setting_params["values"] = values
-                settings.append(setting_params)
-            service_params["settings"] = settings
+            service_params["name"] = service.name
+            
+            if len(service.settings) > 0:
+                settings = []
+                for st in service.settings.itervalues():
+                    setting_params = yami.Parameters()
+                    setting_params["name"] = st.name
+                    setting_params["type"] = st.type
+                    setting_params["value"] = st.get()
+                    values = []
+                    for val in st.values:
+                        values.append(val)
+                    setting_params["values"] = values
+                    settings.append(setting_params)
+                service_params["settings"] = settings
+            
+            if len(service.displays) > 0:
+                displays = []
+                for d in service.displays.itervalues():
+                    display_params = yami.Parameters()
+                    display_params["name"] = d.name
+                    display_params["type"] = d.type
+                    display_params["value"] = d.get()
+                    displays.append(display_params)
+                service_params["displays"] = displays
+            
             services.append(service_params)
 
         params = yami.Parameters()

@@ -55,7 +55,7 @@ def circulation_auto():
         else:
             outputs.outputs["Pompa cyrkulacji CWU"].set(0)
     else:
-        if 420 <= minutes <= 1380:
+        if 420 <= minutes < 1380:
             outputs.outputs["Pompa cyrkulacji CWU"].set(1)
         else:
             outputs.outputs["Pompa cyrkulacji CWU"].set(0)
@@ -133,11 +133,27 @@ rules = [
 services = [
     {
         "name": "Ogrzewanie",
+        "displays": [
+            {
+                "name": "Temperatura na zewnątrz",
+                "data": {
+                    "type": "temperature",
+                    "from": "Temperatura pole"
+                }
+            },
+            {
+                "name": "Temperatura w salonie",
+                "data": {
+                    "type": "temperature",
+                    "from": "Temperatura salon"
+                }
+            }
+        ],
         "settings": [
             {
                 "name": "Tryb ogrzewania",
-                "type": "switch",
                 "data": {
+                    "type": "switch",
                     "default": "auto",
                     "values": {
                         "wyl": {
@@ -156,11 +172,13 @@ services = [
     },
     {
         "name": "Cyrkulacja CWU",
+        "displays": [
+        ],
         "settings": [
             {
                 "name": "Tryb cyrkulacji",
-                "type": "switch",
                 "data": {
+                    "type": "switch",
                     "default": "auto",
                     "values": {
                         "wyl": {

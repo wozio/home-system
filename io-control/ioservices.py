@@ -8,7 +8,8 @@ Ioservices = {}
 
 def init():
     for s in configuration.services:
-        Ioservices[s["name"]] = ioservice.ioservice(s["name"], s["settings"])
+        Ioservices[s["name"]] = ioservice.ioservice(s["name"],
+            s["displays"], s["settings"])
 
 def exit():
     pass
