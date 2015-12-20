@@ -54,5 +54,5 @@ class service(object):
   def send(self, msg):
     MCAST_GRP = '239.255.255.255'
     MCAST_PORT = 10001
-
+    
     self.sock.sendto(msg, (MCAST_GRP, MCAST_PORT))
