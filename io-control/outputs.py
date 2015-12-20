@@ -3,6 +3,7 @@
 import logging
 import output
 import configuration
+import iomap
 
 outputs = {}
 outputs_per_id = {}
@@ -14,15 +15,17 @@ def init():
         oobj = output.output(o['name'], o['service'], o['id'])
         outputs_per_id[(o['service'], o['id'])] = oobj
         outputs[o['name']] = oobj
+        iomap.Iomap[o['name']] = oobj
 
 def on_state_change(name, id, state, value):
     #logging.debug("Output %s %d state change", name, id)
 
     if (name, id) not in outputs_per_id:
-        logging.debug("Output not known, creating")
+        #logging.debug("Output not known, creating")
         o = output.output(name + "_" + str(id), name, id)
         outputs_per_id[(name, id)] = o
         outputs[o.name] = o
+        iomap.Iomap[o.name] = o
         o.on_state_change(state, value)
     else:
         #logging.debug("Output known")

@@ -9,6 +9,7 @@ class Setting:
         logging.info("Created setting '%s'", name)
 
         self.name = name
+        self.type = data["type"]
         self.values = data["values"]
         self.value = self.values.iterkeys().next()
         self.set(data["default"])
