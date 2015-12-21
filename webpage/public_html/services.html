@@ -8,10 +8,13 @@
     <meta name="author" content="">
     <link rel="icon" href="../../favicon.ico">
 
-    <title>my Home</title>
+    <title>my Home at Orchard Street</title>
 
     <link href="css/bootstrap.min.css" rel="stylesheet">
     <link href="css/jumbotron.css" rel="stylesheet">
+    <script src="libs/angular.min.js"></script>
+  <script src="libs/angular-websocket.js"></script>
+  <script src="services_ctrl.js"></script>
   </head>
 
   <body>
@@ -44,15 +47,19 @@
     <div class="container">
       <!-- Example row of columns -->
       <div class="row">
-        <div class="col-md-4" ng-repeat="service in MyData.services">
+        <div class="col-sm-3" ng-repeat="service in MyData.services">
           <h2>{{service.name}}</h2>
-          <div class="form-group" ng-repeat="setting in service.settings">
-            <p>{{setting.name}}</p>
-            <select class="form-control"
-                    ng-model="settingValue"
-                    ng-init="settingValue=setting.value"
-                    ng-options="value as value for value in setting.values"
-                    ng-change="updateSetting(service, setting, settingValue)">
+          <div class="row">
+            <div class="col-xs-4 col-sm-6 lead" ng-repeat="display in service.displays" title="{{display.name}}">
+              {{display.value}}&#176;C
+            </div>
+          </div>
+          <div ng-repeat="setting in service.settings">
+            <select class="form-control" title="{{setting.name}}"
+                      ng-model="settingValue"
+                      ng-init="settingValue=setting.value"
+                      ng-options="value as value for value in setting.values"
+                      ng-change="updateSetting(service, setting, settingValue)">
             </select>
           </div>
         </div>
@@ -63,16 +70,10 @@
       <footer>
         <p>&copy; Company 2014</p>
       </footer>
+
     </div> <!-- /container -->
 
-
-    <!-- Bootstrap core JavaScript
-    ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     <script src="js/bootstrap.min.js"></script>
-    <script src="libs/angular.min.js"></script>
-  <script src="libs/angular-websocket.js"></script>
-  <script src="services_ctrl.js"></script>
   </body>
 </html>
