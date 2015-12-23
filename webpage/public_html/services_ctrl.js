@@ -16,7 +16,7 @@ angular.module('app', [
   var services = [];
 
   dataStream.onMessage(function(message) {
-    console.log("Received: " + message.data);
+    //console.log("Received: " + message.data);
     recvServices = JSON.parse(message.data).services;
     services.splice(0, services.length);
     for (i = 0; i < recvServices.length; i++) { 

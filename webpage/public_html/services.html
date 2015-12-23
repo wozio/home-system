@@ -6,15 +6,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
     <meta name="author" content="">
-    <link rel="icon" href="../../favicon.ico">
+    <link rel="icon" href="favicon.ico">
 
     <title>my Home at Orchard Street</title>
 
     <link href="css/bootstrap.min.css" rel="stylesheet">
     <link href="css/jumbotron.css" rel="stylesheet">
     <script src="libs/angular.min.js"></script>
-  <script src="libs/angular-websocket.js"></script>
-  <script src="services_ctrl.js"></script>
+  	<script src="libs/angular-websocket.js"></script>
+  	<script src="services_ctrl.js"></script>
+  	
   </head>
 
   <body>
@@ -40,17 +41,16 @@
             </div>
             <button type="submit" class="btn btn-success">Sign in</button>
           </form>
-        </div><!--/.navbar-collapse -->
+        </div>
       </div>
     </nav>
 
     <div class="container">
-      <!-- Example row of columns -->
       <div class="row">
-        <div class="col-sm-3" ng-repeat="service in MyData.services">
+        <div class="col-sm-4 col-md-3" ng-repeat="service in MyData.services">
           <h2>{{service.name}}</h2>
           <div class="row">
-            <div class="col-xs-4 col-sm-6 lead" ng-repeat="display in service.displays" title="{{display.name}}">
+            <div class="col-xs-4 h4" ng-repeat="display in service.displays" title="{{display.name}}">
               {{display.value}}&#176;C
             </div>
           </div>
@@ -71,9 +71,10 @@
         <p>&copy; Company 2014</p>
       </footer>
 
-    </div> <!-- /container -->
+    </div>
 
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-    <script src="js/bootstrap.min.js"></script>
+    <script src="libs/jquery.min.js"></script>
+    <script src="libs/bootstrap.min.js"></script>
+    
   </body>
 </html>
