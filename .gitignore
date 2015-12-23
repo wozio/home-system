@@ -19,3 +19,6 @@ Debug
 *~
 /cloud-server/build/
 /cloud-server/dist/
+/io-control/*.lib
+/io-control/*.dll
+/io-control/*.exp
