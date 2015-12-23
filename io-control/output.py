@@ -29,7 +29,7 @@ class output:
     def set(self, value):
         if value != self.wanted_value:
             self.wanted_value = value
-            logging.debug("'%s' state set to %f", self.name, value)
+            logging.debug("'%s' wanted value set to %s", self.name, str(value))
 
         if self.wanted_value != self.value:
             self.set_value()

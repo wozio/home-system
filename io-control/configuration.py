@@ -147,6 +147,13 @@ services = [
                     "type": "temperature",
                     "from": "Temperatura salon"
                 }
+            },
+            {
+                "name": "Ogrzewanie",
+                "data": {
+                    "type": "state",
+                    "from": "Kocioł grzanie"
+                }
             }
         ],
         "settings": [
@@ -154,15 +161,15 @@ services = [
                 "name": "Tryb ogrzewania",
                 "data": {
                     "type": "switch",
-                    "default": "auto",
+                    "default": "automatyczne",
                     "values": {
-                        "wyl": {
+                        "wyłączone": {
                             "rule": "Ogrzewanie wylaczone"
                         },
-                        "auto": {
+                        "automatyczne": {
                             "rule": "Ogrzewanie automatyczne"
                         },
-                        "wl": {
+                        "włączone": {
                             "rule": "Ogrzewanie włączone"
                         }
                     }
@@ -173,21 +180,28 @@ services = [
     {
         "name": "Cyrkulacja CWU",
         "displays": [
+            {
+                "name": "Cyrkulacja",
+                "data": {
+                    "type": "state",
+                    "from": "Pompa cyrkulacji CWU"
+                }
+            }
         ],
         "settings": [
             {
                 "name": "Tryb cyrkulacji",
                 "data": {
                     "type": "switch",
-                    "default": "auto",
+                    "default": "automatyczna",
                     "values": {
-                        "wyl": {
+                        "wyłączona": {
                             "rule": "Cyrkulacja wylaczona"
                         },
-                        "auto": {
+                        "automatyczna": {
                             "rule": "Cyrkulacja automatyczna"
                         },
-                        "wl": {
+                        "włączona": {
                             "rule": "Cyrkulacja włączona"
                         }
                     }
