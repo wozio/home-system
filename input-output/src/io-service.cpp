@@ -1,6 +1,5 @@
 #include <algorithm>
 #include <map>
-#include <math.h>
 
 #include "io-service.h"
 #include "logger.h"
@@ -87,8 +86,7 @@ void io_service::on_state_change(uint64_t id)
 
   // for simplicity we always send value even when state is not OK
   ow::temp& input = net_.get_input(id);
-  float v = roundf(input.get_value() * 10) / 10;
-  params.set_double_float("value", v);
+  params.set_double_float("value", input.get_value());
 
   for (auto it = subscriptions_.begin(); it != subscriptions_.end();)
   {
