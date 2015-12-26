@@ -61,10 +61,10 @@
           </div>
           <div ng-repeat="setting in service.settings track by $index">
             <select class="form-control" title="{{setting.name}}"
-                      ng-model="settingValue"
-                      ng-init="settingValue=setting.value"
+                      ng-model="setting.value"
+                      ng-init="setting.value"
                       ng-options="value as value for value in setting.values"
-                      ng-change="updateSetting(service.name, setting.name, settingValue)">
+                      ng-change="updateSetting(service.name, setting.name, setting.value)">
             </select>
           </div>
         </div>
