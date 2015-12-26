@@ -11,6 +11,33 @@ namespace home_system
 using namespace rapidjson;
 using namespace std;
 
+// json to YAMI conversion
+
+void parse_parameters(const Value& value, yami::parameters& params)
+{
+  for (auto itr = value.MemberBegin();
+      itr != value.MemberEnd(); ++itr)
+  {
+    switch (itr->value.GetType())
+    {
+    case kNullType: // ignore
+    case kObjectType:
+    case kArrayType:
+      break;
+    case kFalseType:
+    case kTrueType:
+      params.set_boolean(itr->name.GetString(), itr->value.GetBool());
+      break;
+    case kStringType:
+      params.set_string(itr->name.GetString(), itr->value.GetString());
+      break;
+    case kNumberType:
+      params.set_long_long(itr->name.GetString(), itr->value.GetInt64());
+      break;
+    }
+  }
+}
+
 void process_json(data_t data, std::string& service, std::string& message,
   bool& expect_reply, yami::parameters& params)
 {
@@ -40,6 +67,15 @@ void process_json(data_t data, std::string& service, std::string& message,
     }
     else
       expect_reply = false;
+    itr = d.FindMember("parameters");
+	if (itr != d.MemberEnd())
+	{
+	  if (itr->value.IsObject())
+	  {
+		const auto& v = itr->value;
+		parse_parameters(v, params);
+	  }
+	}
   }
 }
 
@@ -186,12 +222,8 @@ void process_parameters(yami::parameters* params, std::ostream& out)
   out << '}';
 }
 
-void process_parameters(yami::parameters* params, std::string& outstr)
-{
-  ostringstream out;
-  process_parameters(params, out);
-  outstr = out.str();
-}
+
+// YAMI to JSON string
 
 void process_parameters(yami::parameters* params, data_t data, size_t& data_size)
 {

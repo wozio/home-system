@@ -47,19 +47,24 @@
 
     <div class="container">
       <div class="row">
-        <div class="col-sm-4 col-md-3" ng-repeat="service in MyData.services">
+        <div class="col-sm-4 col-md-3" ng-repeat="service in MyData.services track by $index">
           <h2>{{service.name}}</h2>
           <div class="row">
-            <div class="col-xs-4 h4" ng-repeat="display in service.displays" title="{{display.name}}">
-              {{display.value}}&#176;C
-            </div>
+          	<div class="col-xs-4 h4" ng-repeat="display in service.displays track by $index" title="{{display.name}}">
+	            <div ng-show="display.type=='temperature'">
+	              {{display.value.toFixed(1)}}&#176;C
+	            </div>
+	            <div ng-show="display.type=='state'">
+	              <span class="{{display.value == 1 && 'glyphicon glyphicon-ok-sign' || 'glyphicon glyphicon-minus-sign'}}"></span>
+	            </div>
+	        </div>
           </div>
-          <div ng-repeat="setting in service.settings">
+          <div ng-repeat="setting in service.settings track by $index">
             <select class="form-control" title="{{setting.name}}"
                       ng-model="settingValue"
                       ng-init="settingValue=setting.value"
                       ng-options="value as value for value in setting.values"
-                      ng-change="updateSetting(service, setting, settingValue)">
+                      ng-change="updateSetting(service.name, setting.name, settingValue)">
             </select>
           </div>
         </div>

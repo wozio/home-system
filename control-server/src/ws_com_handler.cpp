@@ -31,7 +31,7 @@ void handle_ws_data(data_t data, size_t data_size, handler_t handler)
 
     process_json(data, service, msg, expect_reply, params);
 
-    //LOG("Service: " << service << ", message: " << msg);
+    LOG("Service: " << service << ", message: " << msg);
 
     string ye = DISCOVERY.get(service);
 

@@ -39,12 +39,17 @@ angular.module('app', [
         expect_reply: true
       }));
     },
-    get_services: function() {
-      console.log("Sending request");
+    set_setting: function(service, setting, settingValue) {
+      console.log("Sending set setting request");
       dataStream.send(JSON.stringify({
-        service: "control-server",
-        message: "get_services",
-        expect_reply: true
+        service: "io-control-dev",
+        message: "set_setting_value",
+        expect_reply: false,
+        parameters: {
+        	service: service,
+        	setting: setting,
+        	value: settingValue
+        }
       }));
     }
   };
@@ -55,4 +60,10 @@ angular.module('app', [
   $scope.MyData = MyData;
   MyData.get();
   window.setInterval(function(){ MyData.get(); }, 5000);
+  
+  $scope.updateSetting = function(service, setting, settingValue){
+	  console.log(service + " " + setting + " " + settingValue);
+	  MyData.set_setting(service, setting, settingValue);
+  };
+  
 });
