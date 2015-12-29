@@ -1,7 +1,12 @@
-angular.module('app', [
-      'ngWebSocket'
+'use strict';
+
+/* Controllers */
+
+var myHomeControllers = angular.module('myHome', [
+	'ngWebSocket'
 ])
-.factory('MyData', function($websocket) {
+
+myHomeControllers.factory('MyData', function($websocket) {
   var loc = window.location, new_uri;
   if (loc.protocol === "https:") {
       new_uri = "wss:";
@@ -56,7 +61,8 @@ angular.module('app', [
 
   return methods;
 })
-.controller('ServicesCtrl', function ($scope, MyData) {
+
+myHomeControllers.controller('ServicesCtrl', function ($scope, MyData) {
   $scope.MyData = MyData;
   MyData.get();
   window.setInterval(function(){ MyData.get(); }, 5000);

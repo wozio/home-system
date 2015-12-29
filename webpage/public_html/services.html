@@ -1,85 +1,25 @@
-<!DOCTYPE html>
-<html lang="en" ng-app="app" ng-controller="ServicesCtrl">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="">
-    <meta name="author" content="">
-    <link rel="icon" href="favicon.ico">
-
-    <title>my Home at Orchard Street</title>
-
-    <link href="css/bootstrap.min.css" rel="stylesheet">
-    <link href="css/jumbotron.css" rel="stylesheet">
-    <script src="libs/angular.min.js"></script>
-  	<script src="libs/angular-websocket.js"></script>
-  	<script src="services_ctrl.js"></script>
-  	
-  </head>
-
-  <body>
-
-    <nav class="navbar navbar-inverse navbar-fixed-top">
-      <div class="container">
-        <div class="navbar-header">
-          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-          <a class="navbar-brand" href="#">my Home</a>
-        </div>
-        <div id="navbar" class="navbar-collapse collapse">
-          <form class="navbar-form navbar-right">
-            <div class="form-group">
-              <input type="text" placeholder="Email" class="form-control">
-            </div>
-            <div class="form-group">
-              <input type="password" placeholder="Password" class="form-control">
-            </div>
-            <button type="submit" class="btn btn-success">Sign in</button>
-          </form>
-        </div>
-      </div>
-    </nav>
-
-    <div class="container">
+<div class="container">
+  <div class="row">
+    <div class="col-sm-6 col-md-4 col-lg-3" ng-repeat="service in MyData.services track by $index">
+      <h2>{{service.name}}</h2>
       <div class="row">
-        <div class="col-sm-6 col-md-4 col-lg-3" ng-repeat="service in MyData.services track by $index">
-          <h2>{{service.name}}</h2>
-          <div class="row">
-          	<div class="col-xs-4 h4" ng-repeat="display in service.displays track by $index" title="{{display.name}}">
-	            <div ng-show="display.type=='temperature'">
-	              {{display.value.toFixed(1)}}&#176;C
-	            </div>
-	            <div ng-show="display.type=='state'">
-	              <span class="{{display.value == 1 && 'glyphicon glyphicon-ok-sign' || 'glyphicon glyphicon-minus-sign'}}"></span>
-	            </div>
-	        </div>
+        <div class="col-xs-4 h4" ng-repeat="display in service.displays track by $index" title="{{display.name}}">
+          <div ng-show="display.type=='temperature'">
+            {{display.value.toFixed(1)}}&#176;C
           </div>
-          <div ng-repeat="setting in service.settings track by $index">
-            <select class="form-control" title="{{setting.name}}"
-                      ng-model="setting.value"
-                      ng-init="setting.value"
-                      ng-options="value as value for value in setting.values"
-                      ng-change="updateSetting(service.name, setting.name, setting.value)">
-            </select>
+          <div ng-show="display.type=='state'">
+            <span class="{{display.value == 1 && 'glyphicon glyphicon-ok-sign' || 'glyphicon glyphicon-minus-sign'}}"></span>
           </div>
         </div>
       </div>
-
-      <hr>
-
-      <footer>
-        <p>&copy; Company 2014</p>
-      </footer>
-
+      <div ng-repeat="setting in service.settings track by $index">
+        <select class="form-control" title="{{setting.name}}"
+          ng-model="setting.value"
+          ng-init="setting.value"
+          ng-options="value as value for value in setting.values"
+          ng-change="updateSetting(service.name, setting.name, setting.value)">
+        </select>
+      </div>
     </div>
-
-    <script src="libs/jquery.min.js"></script>
-    <script src="libs/bootstrap.min.js"></script>
-    
-  </body>
-</html>
+  </div>
+</div>
