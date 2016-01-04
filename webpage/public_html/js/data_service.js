@@ -4,7 +4,7 @@ angular.module('app.data',[
   'ngWebSocket'
 ])
 
-.factory('DataSrv', function($websocket) {
+.factory('DataSrv', function($websocket, $timeout) {
   
   // firefox WS bug workaround
   $(window).on('beforeunload', function(){
@@ -30,18 +30,27 @@ angular.module('app.data',[
   dataStream.onMessage(function(message) {
     console.log("Received: " + message.data);
     var recv_msg = JSON.parse(message.data);
-    if (recv_msg.sequence_number !== undefined) {
+    if (recv_msg.sequence_number !== undefined &&
+        queue[recv_msg.sequence_number] !== undefined) {
       if (recv_msg.result !== undefined) {
         if (recv_msg.result === "success") {
           console.log("Received reply for sequence number: " + recv_msg.sequence_number);
-          queue[recv_msg.sequence_number](recv_msg.params);
+          queue[recv_msg.sequence_number].callback(recv_msg.result, recv_msg.params);
         } else {
           console.log("Received failed result for sequence number: " + recv_msg.sequence_number + ": " + recv_msg.reason);
-          queue[recv_msg.sequence_number](null);
+          queue[recv_msg.sequence_number].callback("failed");
         }
       }
+      $timeout.cancel(queue[recv_msg.sequence_number].timeout);
+      delete queue[recv_msg.sequence_number];
     }
   });
+  
+  function on_timeout(seq){
+      console.log("Sequence " + seq + " timed out");
+      queue[seq].callback("timeout");
+      delete queue[seq];
+  }
 
   var methods = {
     send: function(msg, params, reply_callback) {
@@ -56,7 +65,14 @@ angular.module('app.data',[
       if (reply_callback) {
         prepared_msg["expect_reply"] = true;
         prepared_msg["sequence_number"] = seq;
-        queue[seq] = reply_callback;
+        queue[seq] = {
+          callback: reply_callback,
+          timeout: $timeout(
+            on_timeout,
+            5000,
+            true,
+            seq)
+        }
         seq++;
       }
       console.log("Sending: " + JSON.stringify(prepared_msg));
