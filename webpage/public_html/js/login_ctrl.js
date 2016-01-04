@@ -1,6 +1,8 @@
 'use strict';
   
-angular.module('myHome')
+angular.module('app.login',[
+                          'app.auth'
+])
   
 .controller('LoginCtrl',
   ['$scope', '$rootScope', '$location', 'AuthServ',
@@ -22,4 +24,5 @@ angular.module('myHome')
                 }
             });
         };
-    }]);
+    }]
+);

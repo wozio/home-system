@@ -1,6 +1,6 @@
 'use strict';
   
-angular.module('myHome')
+angular.module('app.auth',[])
   
 .factory('AuthServ',
     ['$cookies', '$rootScope', '$timeout',
@@ -47,4 +47,5 @@ angular.module('myHome')
         };
   
         return service;
-    }]);
+    }]
+);

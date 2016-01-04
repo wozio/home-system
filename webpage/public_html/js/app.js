@@ -2,13 +2,15 @@
 
 /* App Module */
 
-var app = angular.module('myHomeApp', [
+angular.module('app', [
   'ngRoute',
   'ngCookies',
-  'myHome'
-]);
+  'app.login',
+  'app.services',
+  'app.loading'
+])
 
-app.config(['$routeProvider',
+.config(['$routeProvider',
   function($routeProvider) {
     $routeProvider.
       when('/', {
@@ -22,8 +24,8 @@ app.config(['$routeProvider',
       otherwise({
         redirectTo: '/login'
       });
-  }]);
-app.run(['$rootScope', '$location', '$cookies',
+  }])
+.run(['$rootScope', '$location', '$cookies',
       function ($rootScope, $location, $cookies) {
           // keep user logged in after page refresh
           $rootScope.globals = $cookies.getObject('globals') || {};

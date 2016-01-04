@@ -2,11 +2,11 @@
 
 /* Controllers */
 
-var myHomeControllers = angular.module('myHome', [
+angular.module('app.services',[
 	'ngWebSocket'
 ])
 
-myHomeControllers.factory('MyData', function($websocket) {
+.factory('MyData', function($websocket) {
   var loc = window.location, new_uri;
   if (loc.protocol === "https:") {
       new_uri = "wss:";
@@ -22,9 +22,9 @@ myHomeControllers.factory('MyData', function($websocket) {
 
   dataStream.onMessage(function(message) {
     //console.log("Received: " + message.data);
-    recvServices = JSON.parse(message.data).services;
+    var recvServices = JSON.parse(message.data).services;
     services.splice(0, services.length);
-    for (i = 0; i < recvServices.length; i++) { 
+    for (var i = 0; i < recvServices.length; i++) { 
       services.push(recvServices[i]);
     }
     //console.log(services);
@@ -62,7 +62,7 @@ myHomeControllers.factory('MyData', function($websocket) {
   return methods;
 })
 
-myHomeControllers.controller('ServicesCtrl', function ($scope, MyData) {
+.controller('ServicesCtrl', function ($scope, MyData) {
   $scope.MyData = MyData;
   MyData.get();
   window.setInterval(function(){ MyData.get(); }, 5000);
@@ -71,5 +71,7 @@ myHomeControllers.controller('ServicesCtrl', function ($scope, MyData) {
 	  console.log(service + " " + setting + " " + settingValue);
 	  MyData.set_setting(service, setting, settingValue);
   };
+  
+  console.log();
   
 });
