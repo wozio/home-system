@@ -28,76 +28,89 @@ void handle_ws_data(data_t data, size_t data_size, handler_t handler)
     std::string service;
     std::string msg;
     bool expect_reply;
+    long long sequence_number;
 
-    process_json(data, service, msg, expect_reply, params);
+    process_json(data, service, msg, expect_reply, sequence_number, params);
 
     LOG("Service: " << service << ", message: " << msg);
 
-    string ye = DISCOVERY.get(service);
-
-    // sending message to service
-    auto_ptr<yami::outgoing_message> message(
-      AGENT.send(ye, service, msg, params));
-
-    if (expect_reply)
+    try
     {
-      message->wait_for_completion(1000);
+      string ye = DISCOVERY.get(service);
 
-      switch (message->get_state())
+      // sending message to service
+      if (!expect_reply)
       {
-        case yami::replied:
+        AGENT.send_one_way(ye, service, msg, params);
+      }
+      else
+      {
+        try
         {
-          //LOG("Replied");
-          // converting yami output to json
-          // yami binary values are not supported
+          auto_ptr <yami::outgoing_message> message(AGENT.send(ye, service, msg, params));
 
-          auto out = create_data();
-          yami::parameters* reply = message->extract_reply();
-          size_t out_size = 0;
-          process_parameters(reply, out, out_size);
-          delete reply;
+          message->wait_for_completion(1000);
 
-          handler::on_send(handler, out, out_size);
+          switch (message->get_state())
+          {
+          case yami::replied:
+          {
+            //LOG("Replied");
+            // converting yami output to json
+            // yami binary values are not supported
+            yami::parameters* reply = message->extract_reply();
+            size_t out_size = 0;
+            auto out = create_data();
+            yami_to_json(reply, sequence_number, out, out_size);
+            delete reply;
 
-          break;
+            handler::on_send(handler, out, out_size);
+
+            break;
+          }
+
+          case yami::abandoned:
+            LOGWARN("Posted/Transmitted/Abandoned after timeout");
+            throw service_unavailable("Message was abandoned");
+            break;
+
+          case yami::rejected:
+            LOGWARN("Rejected: " + message->get_exception_msg());
+            throw service_unavailable(
+                "Message was rejected: " + message->get_exception_msg());
+            break;
+          }
         }
-
-        case yami::posted:
-        case yami::transmitted:
-          //LOG("Posted/transmitted");
-          break;
-
-        case yami::abandoned:
-          LOGWARN("Abandoned");
-          throw service_unavailable("Message was abandoned");
-          break;
-
-        case yami::rejected:
-          LOGWARN("Rejected: " + message->get_exception_msg());
-          throw service_unavailable("Message was rejected: " + message->get_exception_msg());
-          break;
+        catch (const exception& e)
+        {
+          LOGWARN("EXCEPTION: " << e.what());
+          size_t out_size = 0;
+          auto out = create_data();
+          string result("failed");
+          string reason(e.what());
+          yami_to_json(result, reason, sequence_number, out, out_size);
+          handler::on_send(handler, out, out_size);
+        }
+      }
+    }
+    catch (const exception& e)
+    {
+      LOGWARN("EXCEPTION: " << e.what());
+      if (expect_reply)
+      {
+        LOGWARN("EXCEPTION: " << e.what());
+        size_t out_size = 0;
+        auto out = create_data();
+        string result("failed");
+        string reason(e.what());
+        yami_to_json(result, reason, sequence_number, out, out_size);
+        handler::on_send(handler, out, out_size);
       }
     }
   }
-  catch (const incorrect_message& e)
+  catch (const exception& e)
   {
-    LOGWARN("EXCEPTION: incorrect_message");
-  }
-  catch (const service_not_found& e)
-  {
-    LOGWARN("EXCEPTION: service_not_found: " << e.what());
-  }
-  catch (const service_unavailable& e)
-  {
-    LOGWARN("EXCEPTION: service_unavailable: " << e.what());
-  }
-  catch (const yami::yami_runtime_error& e)
-  {
-    LOGWARN("EXCEPTION: yami_runtime_error: " << e.what());
-  }
-  catch (const runtime_error& e)
-  {
-    LOGWARN("EXCEPTION: runtime_error: " << e.what());
+    LOGWARN("EXCEPTION: " << e.what());
   }
 }
 

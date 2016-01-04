@@ -15,8 +15,7 @@ using namespace std;
 
 void parse_parameters(const Value& value, yami::parameters& params)
 {
-  for (auto itr = value.MemberBegin();
-      itr != value.MemberEnd(); ++itr)
+  for (auto itr = value.MemberBegin(); itr != value.MemberEnd(); ++itr)
   {
     switch (itr->value.GetType())
     {
@@ -39,11 +38,11 @@ void parse_parameters(const Value& value, yami::parameters& params)
 }
 
 void process_json(data_t data, std::string& service, std::string& message,
-  bool& expect_reply, yami::parameters& params)
+    bool& expect_reply, long long& sequence_number, yami::parameters& params)
 {
   Document d;
   d.Parse(data->data());
-  
+
   if (d.IsObject())
   {
     Value::ConstMemberIterator itr = d.FindMember("message");
@@ -67,15 +66,29 @@ void process_json(data_t data, std::string& service, std::string& message,
     }
     else
       expect_reply = false;
+
+    if (expect_reply)
+    {
+      itr = d.FindMember("sequence_number");
+      if (itr != d.MemberEnd())
+      {
+        sequence_number = itr->value.GetInt64();
+      }
+      else
+      {
+        expect_reply = false;
+      }
+    }
+
     itr = d.FindMember("parameters");
-	if (itr != d.MemberEnd())
-	{
-	  if (itr->value.IsObject())
-	  {
-		const auto& v = itr->value;
-		parse_parameters(v, params);
-	  }
-	}
+    if (itr != d.MemberEnd())
+    {
+      if (itr->value.IsObject())
+      {
+        const auto& v = itr->value;
+        parse_parameters(v, params);
+      }
+    }
   }
 }
 
@@ -83,7 +96,8 @@ void process_parameters(yami::parameters* params, std::ostream& out)
 {
   out << '{';
   bool first = true;
-  for (yami::parameters::iterator it = params->begin(); it != params->end(); ++it)
+  for (yami::parameters::iterator it = params->begin(); it != params->end();
+      ++it)
   {
     if (!first)
     {
@@ -95,140 +109,158 @@ void process_parameters(yami::parameters* params, std::ostream& out)
 
     switch ((*it).type())
     {
-      case yami::boolean:
-        out << ((*it).get_boolean() ? "true" : "false");
-        break;
-      case yami::integer:
-        out << boost::lexical_cast<string>((*it).get_integer());
-        break;
-      case yami::long_long:
-        out << boost::lexical_cast<string>((*it).get_long_long());
-        break;
-      case yami::double_float:
-        out << boost::lexical_cast<string>((*it).get_double_float());
-        break;
-      case yami::string:
-        out << '"' << (*it).get_string() << '"';
-        break;
-      case yami::integer_array:
+    case yami::boolean:
+      out << ((*it).get_boolean() ? "true" : "false");
+      break;
+    case yami::integer:
+      out << boost::lexical_cast < string > ((*it).get_integer());
+      break;
+    case yami::long_long:
+      out << boost::lexical_cast < string > ((*it).get_long_long());
+      break;
+    case yami::double_float:
+      out << boost::lexical_cast < string > ((*it).get_double_float());
+      break;
+    case yami::string:
+      out << '"' << (*it).get_string() << '"';
+      break;
+    case yami::integer_array:
+    {
+      out << "[";
+      size_t ybs;
+      int* yb = (*it).get_integer_array(ybs);
+      if (ybs > 0)
       {
-        out << "[";
-        size_t ybs;
-        int* yb = (*it).get_integer_array(ybs);
-        if (ybs > 0)
+        for (size_t i = 0; i < ybs - 1; ++i)
         {
-          for (size_t i = 0; i < ybs - 1; ++i)
-          {
-            out << boost::lexical_cast<string>(yb[i]) << ',';
-          }
-          out << boost::lexical_cast<string>(yb[ybs - 1]);
+          out << boost::lexical_cast < string > (yb[i]) << ',';
         }
-        out << ']';
-        break;
+        out << boost::lexical_cast < string > (yb[ybs - 1]);
       }
-      case yami::boolean_array:
+      out << ']';
+      break;
+    }
+    case yami::boolean_array:
+    {
+      out << "[";
+      size_t ybs;
+      bool* yb = (*it).get_boolean_array(ybs);
+      if (ybs > 0)
       {
-        out << "[";
-        size_t ybs;
-        bool* yb = (*it).get_boolean_array(ybs);
-        if (ybs > 0)
+        for (size_t i = 0; i < ybs - 1; ++i)
         {
-          for (size_t i = 0; i < ybs - 1; ++i)
-          {
-            out << (yb[i] ? "true" : "false") << ',';
-          }
-          out << (yb[ybs - 1] ? "true" : "false");
+          out << (yb[i] ? "true" : "false") << ',';
         }
-        out << ']';
-        break;
+        out << (yb[ybs - 1] ? "true" : "false");
       }
-      case yami::long_long_array:
+      out << ']';
+      break;
+    }
+    case yami::long_long_array:
+    {
+      out << "[";
+      size_t ybs;
+      long long* yb = (*it).get_long_long_array(ybs);
+      if (ybs > 0)
       {
-        out << "[";
-        size_t ybs;
-        long long* yb = (*it).get_long_long_array(ybs);
-        if (ybs > 0)
+        for (size_t i = 0; i < ybs - 1; ++i)
         {
-          for (size_t i = 0; i < ybs - 1; ++i)
-          {
-            out << boost::lexical_cast<string>(yb[i]) << ',';
-          }
-          out << boost::lexical_cast<string>(yb[ybs - 1]);
+          out << boost::lexical_cast < string > (yb[i]) << ',';
         }
-        out << ']';
-        break;
+        out << boost::lexical_cast < string > (yb[ybs - 1]);
       }
-      case yami::double_float_array:
+      out << ']';
+      break;
+    }
+    case yami::double_float_array:
+    {
+      out << "[";
+      size_t ybs;
+      double* yb = (*it).get_double_float_array(ybs);
+      if (ybs > 0)
       {
-        out << "[";
-        size_t ybs;
-        double* yb = (*it).get_double_float_array(ybs);
-        if (ybs > 0)
+        for (size_t i = 0; i < ybs - 1; ++i)
         {
-          for (size_t i = 0; i < ybs - 1; ++i)
-          {
-            out << boost::lexical_cast<string>(yb[i]) << ',';
-          }
-          out << boost::lexical_cast<string>(yb[ybs - 1]);
+          out << boost::lexical_cast < string > (yb[i]) << ',';
         }
-        out << ']';
-        break;
+        out << boost::lexical_cast < string > (yb[ybs - 1]);
       }
-      case yami::string_array:
+      out << ']';
+      break;
+    }
+    case yami::string_array:
+    {
+      out << "[";
+      size_t ybs = (*it).get_string_array_length();
+      if (ybs > 0)
       {
-        out << "[";
-        size_t ybs = (*it).get_string_array_length();
-        if (ybs > 0)
+        for (size_t i = 0; i < ybs - 1; ++i)
         {
-          for (size_t i = 0; i < ybs - 1; ++i)
-          {
-            out << '"' << (*it).get_string_in_array(i) << '"' << ',';
-          }
-          out << '"' << (*it).get_string_in_array(ybs - 1) << '"';
+          out << '"' << (*it).get_string_in_array(i) << '"' << ',';
         }
-        out << ']';
-        break;
+        out << '"' << (*it).get_string_in_array(ybs - 1) << '"';
       }
-      case yami::nested_parameters:
+      out << ']';
+      break;
+    }
+    case yami::nested_parameters:
+    {
+      yami::parameters nested((*it).get_nested_parameters());
+      process_parameters(&nested, out);
+      break;
+    }
+    case yami::nested_parameters_array:
+    {
+      out << '[';
+      size_t ybs = params->get_nested_array_length((*it).name());
+      if (ybs > 0)
       {
-        yami::parameters nested((*it).get_nested_parameters());
-        process_parameters(&nested, out);
-        break;
-      }
-      case yami::nested_parameters_array:
-      {
-        out << '[';
-        size_t ybs = params->get_nested_array_length((*it).name());
-        if (ybs > 0)
+        for (size_t i = 0; i < ybs - 1; ++i)
         {
-          for (size_t i = 0; i < ybs - 1; ++i)
-          {
-            yami::parameters nested(params->get_nested_in_array((*it).name(), i));
-            process_parameters(&nested, out);
-            out << ',';
-          }
-          yami::parameters nested(params->get_nested_in_array((*it).name(), ybs - 1));
+          yami::parameters nested(params->get_nested_in_array((*it).name(), i));
           process_parameters(&nested, out);
+          out << ',';
         }
-        out << ']';
-        break;
+        yami::parameters nested(
+            params->get_nested_in_array((*it).name(), ybs - 1));
+        process_parameters(&nested, out);
       }
-      case yami::unused:
-        break;
-      default:
-        break;
+      out << ']';
+      break;
+    }
+    case yami::unused:
+      break;
+    default:
+      break;
     }
   }
   out << '}';
 }
 
-
 // YAMI to JSON string
 
-void process_parameters(yami::parameters* params, data_t data, size_t& data_size)
+void yami_to_json(yami::parameters* params, long long sequence_number,
+    data_t data, size_t& data_size)
 {
   boost::interprocess::bufferstream out(data->data(), DATA_SIZE);
+  out << "{"
+      << "\"sequence_number\":" << sequence_number
+      << ",\"result\":\"success\""
+      << ",\"params\":";
   process_parameters(params, out);
+  out << '}';
+  data_size = out.tellp();
+}
+
+void yami_to_json(std::string& result, std::string& reason,
+    long long sequence_number, data_t data, size_t& data_size)
+{
+  boost::interprocess::bufferstream out(data->data(), DATA_SIZE);
+  out << "{"
+      << "\"sequence_number\":" << sequence_number
+      << ",\"result\":\"" << result << "\""
+      << ",\"reason\":\"" << reason << "\""
+      << '}';
   data_size = out.tellp();
 }
 

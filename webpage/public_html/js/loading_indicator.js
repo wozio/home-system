@@ -17,7 +17,7 @@ angular
               });
 
               $rootScope.$on('$routeChangeSuccess', function() {
-                scope.isRouteLoading = false;
+                //scope.isRouteLoading = false;
               });
             }
           };
