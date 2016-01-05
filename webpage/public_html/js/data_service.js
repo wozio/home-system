@@ -35,10 +35,16 @@ angular.module('app.data',[
       if (recv_msg.result !== undefined) {
         if (recv_msg.result === "success") {
           console.log("Received reply for sequence number: " + recv_msg.sequence_number);
-          queue[recv_msg.sequence_number].callback(recv_msg.result, recv_msg.params);
+          queue[recv_msg.sequence_number].callback({
+            success: true,
+            data: recv_msg.params
+          });
         } else {
           console.log("Received failed result for sequence number: " + recv_msg.sequence_number + ": " + recv_msg.reason);
-          queue[recv_msg.sequence_number].callback("failed");
+          queue[recv_msg.sequence_number].callback({
+            success: false,
+            reason: recv_msg.reason
+          });
         }
       }
       $timeout.cancel(queue[recv_msg.sequence_number].timeout);
@@ -48,7 +54,10 @@ angular.module('app.data',[
   
   function on_timeout(seq){
       console.log("Sequence " + seq + " timed out");
-      queue[seq].callback("timeout");
+      queue[seq].callback({
+        success: false,
+        reason: "timed out"
+      });
       delete queue[seq];
   }
 

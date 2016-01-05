@@ -4,10 +4,11 @@
 
 angular.module('app', [
   'ngRoute',
-  'ngCookies',
   'app.login',
   'app.services',
-  'app.loading'
+  'app.loading',
+  'app.error',
+  'app.auth'
 ])
 
 .config(['$routeProvider',
@@ -15,7 +16,10 @@ angular.module('app', [
     $routeProvider.
       when('/', {
         templateUrl: 'services.html',
-        controller: 'ServicesCtrl'
+        controller: 'ServicesCtrl',
+        resolve: {
+          factory: checkUser
+        }
       }).
       when('/login', {
         templateUrl: 'login.html',
@@ -24,19 +28,33 @@ angular.module('app', [
       otherwise({
         redirectTo: '/login'
       });
-  }])
-.run(['$rootScope', '$location', '$cookies',
-      function ($rootScope, $location, $cookies) {
-          // keep user logged in after page refresh
-          $rootScope.globals = $cookies.getObject('globals') || {};
-          if ($rootScope.globals.currentUser) {
-              console.log("logged in: " + $rootScope.globals.currentUser.email);
-          }
-    
-          $rootScope.$on('$locationChangeStart', function (event, next, current) {
-              // redirect to login page if not logged in
-              if ($location.path() !== '/login' && !$rootScope.globals.currentUser) {
-                  $location.path('/login');
-              }
-          });
-      }]);
+  }
+]);
+
+    //$rootScope.globals = $cookies.getObject('globals') || {};
+    //if ($rootScope.globals.currentUser) {
+        //console.log("logged in: " + $rootScope.globals.currentUser.email);
+    //}
+  
+      // check if user logged in
+      // redirect to login page if not logged in
+      //if ($location.path() !== '/login' && !$rootScope.globals.currentUser) {
+          //$location.path('/login');
+      //}
+
+var checkUser = function ($q, $rootScope, $location, AuthSrv) {
+  if ($rootScope.user) {
+      return true;
+  } else {
+    var deferred = $q.defer();
+    AuthSrv.check(function (result) {
+      if (result.success) {
+        deferred.resolve(true);
+      } else {
+        deferred.reject();
+        $location.path("/login");
+      }
+    });
+    return deferred.promise;
+  }
+};

@@ -1,51 +1,52 @@
 'use strict';
   
-angular.module('app.auth',[])
+angular.module('app.auth',[
+  'ngCookies',
+  'app.data'
+])
   
-.factory('AuthServ',
-    ['$cookies', '$rootScope', '$timeout',
-    function ($cookies, $rootScope, $timeout) {
-        var service = {};
- 
-        service.Login = function (email, password, callback) {
- 
-            /* Dummy authentication for testing, uses $timeout to simulate api call
-             ----------------------------------------------*/
-            $timeout(function(){
-                var response = { success: email === 'test@test' && password === 'test' };
-                if(!response.success) {
-                    response.message = 'Email or password is incorrect';
-                }
-                callback(response);
-            }, 1000);
- 
- 
-            /* Use this for real authentication
-             ----------------------------------------------*/
-            //$http.post('/api/authenticate', { username: username, password: password })
-            //    .success(function (response) {
-            //        callback(response);
-            //    });
- 
-        };
+.factory('AuthSrv', [
+  '$cookies', '$timeout', '$rootScope', 'DataSrv',
+  function ($cookies, $timeout, $rootScope, DataSrv) {
+    var service = {};
+        
+    // check if user is logged in and try to login from cookies if it is not
+    service.check = function(callback) {
+      if ($rootScope.user === undefined) {
+        //var user = $cookies.getObject('user') || {};
+        var user = {};
+        if (user.email) {
+          login(user.email, user.password, function(result){
+            callback(result);
+          });
+        }
+      }
+    }; 
+
+    // login the user with credentials provided in arguments
+    service.login = function(email, password, callback) {
+      console.log("logging in: " + email);
+      $timeout(function() {
+        var result = { success: email === 'test@test' && password === 'test' };
+        if (!result.success) {
+          result.message = 'Email or password is incorrect';
+          delete $rootScope.user;
+        } else {
+          $rootScope.user = {
+            email: email,
+            password: password
+          }
+          //$cookies.putObject('user', $rootScope.user);
+        }
+        callback(response);
+      }, 1000);
+    };
   
-        service.SetCredentials = function (email, password) {
-  
-            $rootScope.globals = {
-                currentUser: {
-                	email: email,
-                    password: password
-                }
-            };
-  
-            $cookies.putObject('globals', $rootScope.globals);
-        };
-  
-        service.ClearCredentials = function () {
-            $rootScope.globals = {};
-            $cookies.remove('globals');
-        };
-  
-        return service;
-    }]
+    service.logout = function () {
+      delete $rootScope.user;
+      $cookies.remove('user');
+    };
+
+    return service;
+  }]
 );

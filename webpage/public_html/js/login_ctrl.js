@@ -1,28 +1,31 @@
 'use strict';
   
 angular.module('app.login',[
-                          'app.auth'
+  'app.auth'
 ])
   
 .controller('LoginCtrl',
-  ['$scope', '$rootScope', '$location', 'AuthServ',
-   function ($scope, $rootScope, $location, AuthServ) {
-        // reset login status
-	  AuthServ.ClearCredentials();
-	  
-        $scope.login = function (email, password) {
-        	console.log(email + ": " + password);
-            $scope.dataLoading = true;
-            
-            AuthServ.Login($scope.email, $scope.password, function(response) {
-            	if(response.success) {
-            		AuthServ.SetCredentials($scope.email, $scope.password);
-                    $location.path('/');
-                } else {
-                    $scope.error = response.message;
-                    $scope.dataLoading = false;
-                }
-            });
-        };
-    }]
+  ['$scope', '$rootScope', '$location', 'AuthSrv',
+  function ($scope, $rootScope, $location, AuthSrv) {
+    $rootScope.loading = false;
+    $scope.dataLoading = false;
+    
+    $scope.login = function (email, password) {
+      console.log(email + ": " + password);
+      $rootScope.error = false;
+      $rootScope.loading = true;
+      $scope.dataLoading = true;
+      
+      AuthSrv.login($scope.email, $scope.password, function(result) {
+        $scope.dataLoading = false;
+      	if(result.success) {
+      	  $location.path('/');
+        } else {
+          $rootScope.loading = false;
+          $rootScope.error = true;
+          $rootScope.errorSlogan = result.reason;
+        }
+      });
+    };
+  }]
 );
