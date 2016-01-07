@@ -117,6 +117,7 @@ def on_msg(message):
         message.reply(params)
 
     elif message.get_message_name() == "set_setting_value":
+        logging.debug("set_setting_value")
         try:
             params = message.get_parameters()
             ioservices.Ioservices[params["service"]].settings[params["setting"]].set(params["value"])

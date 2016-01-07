@@ -43,6 +43,7 @@ angular.module('app', [
       //}
 
 var checkUser = function ($q, $rootScope, $location, AuthSrv) {
+    console.log("check user");
   if ($rootScope.user) {
       return true;
   } else {

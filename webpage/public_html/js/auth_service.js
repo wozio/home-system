@@ -13,14 +13,15 @@ angular.module('app.auth',[
     // check if user is logged in and try to login from cookies if it is not
     service.check = function(callback) {
       if ($rootScope.user === undefined) {
-        //var user = $cookies.getObject('user') || {};
-        var user = {};
+        var user = $cookies.getObject('user') || {};
         if (user.email) {
-          login(user.email, user.password, function(result){
+          service.login(user.email, user.password, function(result){
             callback(result);
+            return;
           });
         }
       }
+      callback({ success: false });
     }; 
 
     // login the user with credentials provided in arguments
@@ -36,9 +37,9 @@ angular.module('app.auth',[
             email: email,
             password: password
           }
-          //$cookies.putObject('user', $rootScope.user);
+          $cookies.putObject('user', $rootScope.user);
         }
-        callback(response);
+        callback(result);
       }, 1000);
     };
   

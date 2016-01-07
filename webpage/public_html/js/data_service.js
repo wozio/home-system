@@ -69,7 +69,7 @@ angular.module('app.data',[
         message: msg
       }
       if (params) {
-        prepared_msg["params"] = params;
+        prepared_msg["parameters"] = params;
       }
       if (reply_callback) {
         prepared_msg["expect_reply"] = true;
