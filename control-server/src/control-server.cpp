@@ -1,5 +1,6 @@
 #include "http.h"
 #include "control-service.h"
+#include "app.h"
 #include "logger.h"
 #include "yamicontainer.h"
 #include "discovery.h"
@@ -54,47 +55,13 @@ int main(int argc, char** argv)
   home_system::logger::_log_file_path = "control-server.log";
   
   LOGINFO("Home System Control Server started");
-#ifdef __linux__  
-  if (vm.count("daemonize"))
-  {
-    cout << "Running as daemon" << endl;
-    
-    pid_t pid = fork();
-    if (pid < 0)
-    {
-      cout << "Cannot fork" << endl;
-      exit(EXIT_FAILURE);
-    }
-    else if (pid > 0)
-    {
-      exit(EXIT_SUCCESS);
-    }
-    
-    umask(0);
-
-    pid_t sid = setsid();
-    if (sid < 0)
-    {
-      cout << "Cannot setsid" << endl;
-      exit(EXIT_FAILURE);
-    }
-    
-#ifndef _DEBUG
-    if ((chdir("/")) < 0)
-    {
-      cout << "Cannot chdir" << endl;
-      exit(EXIT_FAILURE);
-    }
-#endif
-
-    fclose(stdin);
-    fclose(stdout);
-    fclose(stderr);
-  }
-#endif
 
   try
   {
+    home_system::app app("control-server.conf", vm.count("daemonize"));
+
+    //cout << home_system::app::config().get<std::string>("testdata");
+
     _yc = home_system::yami_container::create();
     _discovery = home_system::discovery::create();
     _handlers = home_system::handlers::create();
@@ -122,33 +89,10 @@ int main(int argc, char** argv)
     }
 
     home_system::control_server::control_service csrv;
-#ifdef __linux__
-    if (vm.count("daemonize"))
-    {
-      sigset_t sset;
-      sigemptyset(&sset);
-      sigaddset(&sset, SIGQUIT);
-      sigaddset(&sset, SIGTERM);
-      sigprocmask(SIG_BLOCK, &sset, NULL);
-      int sig;
-      sigwait(&sset, &sig);
-    }
-    else
-#endif
-    {
-      cout << "Enter q to quit..." << endl;
-      string input_line;
-      while (std::getline(std::cin, input_line))
-      {
-        if (input_line == "q" || input_line == "quit")
-        {
-          break;
-        }
-      }
-    }
+
+    app.run();
 
     srv.stopAll(true);
-    
   }
   catch (const exception& e)
   {

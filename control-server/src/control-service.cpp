@@ -1,5 +1,7 @@
 #include "control-service.h"
 #include "discovery.h"
+#include "app.h"
+#include "logger.h"
 #include <vector>
 
 using namespace std;
@@ -29,6 +31,14 @@ void control_service::on_msg(yami::incoming_message & im)
     }
     im.reply(params);
   }
+  else if (im.get_message_name() == "login")
+  {
+    for (auto& v : home_system::app::config().get_child("users.email"))
+    {
+      LOG("User: " << v.second.data());
+    }
+    im.reject("Unknown email or bad password");
+  }
   else
   {
     service::on_msg(im);
@@ -37,4 +47,3 @@ void control_service::on_msg(yami::incoming_message & im)
 
 }
 }
-
