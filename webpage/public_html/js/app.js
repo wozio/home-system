@@ -6,8 +6,7 @@ angular.module('app', [
   'ngRoute',
   'app.login',
   'app.services',
-  'app.loading',
-  'app.error',
+  'app.indicator',
   'app.auth'
 ])
 
