@@ -30,17 +30,6 @@ angular.module('app', [
   }
 ]);
 
-    //$rootScope.globals = $cookies.getObject('globals') || {};
-    //if ($rootScope.globals.currentUser) {
-        //console.log("logged in: " + $rootScope.globals.currentUser.email);
-    //}
-  
-      // check if user logged in
-      // redirect to login page if not logged in
-      //if ($location.path() !== '/login' && !$rootScope.globals.currentUser) {
-          //$location.path('/login');
-      //}
-
 var checkUser = function ($q, $rootScope, $location, AuthSrv) {
   var deferred = $q.defer();
   AuthSrv.check(function (result) {

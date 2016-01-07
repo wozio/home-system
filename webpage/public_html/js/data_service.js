@@ -62,10 +62,10 @@ angular.module('app.data',[
   }
 
   var methods = {
-    send: function(msg, params, reply_callback) {
+    send: function(service, msg, params, reply_callback) {
       var prepared_msg = {
           //service: 'control-server',
-        service: 'io-control-dev',
+        service: service,
         message: msg
       }
       if (params) {

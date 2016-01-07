@@ -6,8 +6,8 @@ angular.module('app.auth',[
 ])
   
 .factory('AuthSrv', [
-  '$cookies', '$timeout', '$rootScope', 'DataSrv',
-  function ($cookies, $timeout, $rootScope, DataSrv) {
+  '$cookies', '$rootScope', 'DataSrv',
+  function ($cookies, $rootScope, DataSrv) {
     var service = {};
         
     // check if user is logged in and try to login from cookies if it is not
@@ -31,16 +31,20 @@ angular.module('app.auth',[
     // login the user with credentials provided in arguments
     service.login = function(email, password, callback) {
       console.log("logging in: " + email);
-      $timeout(function() {
-        console.log("timeout callback in login");
-        var result = { success: email === 'test@test' && password === 'test' };
+      DataSrv.send("control-server", "login", {
+        email: email,
+        password: password
+      }, function(result) {
+        console.log("result callback in login");
         if (!result.success) {
-          result.reason = 'Email or password is incorrect';
+          result.reason = 'Unable to login: ' + result.reason;
           delete $rootScope.user;
         } else {
           $rootScope.user = {
             email: email,
-            password: password
+            password: password,
+            user: result.data.user,
+            name: result.data.name
           }
           $cookies.putObject('user', $rootScope.user);
         }

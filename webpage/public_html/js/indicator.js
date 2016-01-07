@@ -10,7 +10,7 @@ angular
             restrict : 'E',
             templateUrl: 'indicator.html',
             link : function(scope, elem, attrs) {
-              scope.loading = true;
+              scope.loading = false;
               scope.error = false;
               scope.errorSlogan = "";
 
