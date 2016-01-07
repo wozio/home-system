@@ -8,7 +8,7 @@ angular
         function($rootScope) {
           return {
             restrict : 'E',
-            template : "<div ng-if='error' class='alert alert-danger'>{{errorSlogan}}</div>",
+            templateUrl : "error.html",
             link : function(scope, elem, attrs) {
               scope.error = false;
               scope.errorSlogan = "";

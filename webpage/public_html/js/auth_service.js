@@ -22,7 +22,7 @@ angular.module('app.auth',[
         }
       }
       callback({ success: false });
-    }; 
+    };
 
     // login the user with credentials provided in arguments
     service.login = function(email, password, callback) {

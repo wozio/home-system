@@ -8,7 +8,7 @@ angular
         function($rootScope) {
           return {
             restrict : 'E',
-            template : "<div ng-if='loading' class='alert alert-info'>Loading...</div>",
+            templateUrl: 'loading.html',
             link : function(scope, elem, attrs) {
               scope.loading = false;
 
