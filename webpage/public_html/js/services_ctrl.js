@@ -9,6 +9,7 @@ angular.module('app.services',[
   function ($scope, $rootScope, DataSrv, $interval) {
     var get = function() {
       $rootScope.error = false;
+      $rootScope.loading = true;
       DataSrv.send("get_services", null, function(result) {
         if (result.success) {
           $scope.services = result.data.services;
@@ -23,7 +24,7 @@ angular.module('app.services',[
     
     get();
     
-    //var interval = $interval(function(){ get(); }, 5000);
+    var interval = $interval(function(){ get(); }, 5000);
     
     $scope.$on("$destroy", function(){
       $interval.cancel(interval);

@@ -10,6 +10,6 @@
 
 .indicator {
 	display:inline-block;
-	box-shadow: 0 0 5px black;
+	box-shadow: 0 0 3px grey;
 	padding: 5px;
 }

@@ -30,7 +30,7 @@ angular.module('app.auth',[
       $timeout(function() {
         var result = { success: email === 'test@test' && password === 'test' };
         if (!result.success) {
-          result.message = 'Email or password is incorrect';
+          result.reason = 'Email or password is incorrect';
           delete $rootScope.user;
         } else {
           $rootScope.user = {
