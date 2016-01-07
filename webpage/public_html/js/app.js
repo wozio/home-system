@@ -42,19 +42,16 @@ angular.module('app', [
       //}
 
 var checkUser = function ($q, $rootScope, $location, AuthSrv) {
-    console.log("check user");
-  if ($rootScope.user) {
-      return true;
-  } else {
-    var deferred = $q.defer();
-    AuthSrv.check(function (result) {
-      if (result.success) {
-        deferred.resolve(true);
-      } else {
-        deferred.reject();
-        $location.path("/login");
-      }
-    });
-    return deferred.promise;
-  }
+  var deferred = $q.defer();
+  AuthSrv.check(function (result) {
+    if (result.success) {
+      console.log("result success");
+      deferred.resolve(true);
+    } else {
+      console.log("result not success");
+      deferred.reject();
+      $location.path("/login");
+    }
+  });
+  return deferred.promise;
 };
