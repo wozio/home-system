@@ -33,9 +33,24 @@ void control_service::on_msg(yami::incoming_message & im)
   }
   else if (im.get_message_name() == "login")
   {
-    for (auto& v : home_system::app::config().get_child("users.email"))
+    string req_email = im.get_parameters().get_string("email");
+    string req_password = im.get_parameters().get_string("password");
+    for (auto& v : home_system::app::config().get_child("users"))
     {
-      LOG("User: " << v.second.data());
+      string email = v.second.get<string>("email");
+      if (email == req_email)
+      {
+        if (v.second.get<string>("password") == req_password)
+        {
+          string name = v.second.get<string>("name");
+          LOG("User " << name << "(" << email << ") is logged in");
+          yami::parameters params;
+          params.set_string("name", name);
+          params.set_string("email", email);
+          im.reply(params);
+          return;
+        }
+      }
     }
     im.reject("Unknown email or bad password");
   }

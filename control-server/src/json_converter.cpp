@@ -37,7 +37,7 @@ void parse_parameters(const Value& value, yami::parameters& params)
   }
 }
 
-void process_json(data_t data, std::string& service, std::string& message,
+void process_json(data_t data, std::string& source, std::string& service, std::string& message,
     bool& expect_reply, long long& sequence_number, yami::parameters& params)
 {
   Document d;
@@ -52,6 +52,7 @@ void process_json(data_t data, std::string& service, std::string& message,
     }
     else
       throw incorrect_message();
+
     itr = d.FindMember("service");
     if (itr != d.MemberEnd())
     {
@@ -59,6 +60,13 @@ void process_json(data_t data, std::string& service, std::string& message,
     }
     else
       throw incorrect_message();
+
+    itr = d.FindMember("source");
+    if (itr != d.MemberEnd())
+    {
+      source = itr->value.GetString();
+    }
+
     itr = d.FindMember("expect_reply");
     if (itr != d.MemberEnd())
     {

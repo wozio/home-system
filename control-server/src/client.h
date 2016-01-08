@@ -18,6 +18,8 @@ public:
 private:
 };
 
+typdedef std::shared_ptr<client> client_t;
+
 }
 
 #endif	/* CLIENT_H */

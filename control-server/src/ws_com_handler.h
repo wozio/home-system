@@ -1,11 +1,11 @@
 #ifndef WS_COM_HANDLER_H
 #define	WS_COM_HANDLER_H
 
-#include "handler.h"
+#include "client.h"
 
 namespace home_system
 {
-void handle_ws_data(data_t data, size_t data_size, handler_t handler);
+void handle_ws_data(data_t data, size_t data_size, client_t client);
 
 // exceptions
 

@@ -1,6 +1,5 @@
 #include "ws_com_handler.h"
 
-#include "handlers.h"
 #include "json_converter.h"
 #include "yamicontainer.h"
 #include "logger.h"
@@ -17,7 +16,20 @@ using namespace std;
 namespace home_system
 {
 
-void handle_ws_data(data_t data, size_t data_size, handler_t handler)
+void reject(bool expect_reply, long long sequence_number, client_t client, const char* reason)
+{
+  if (expect_reply)
+  {
+    size_t out_size = 0;
+    auto out = create_data();
+    string result("failed");
+    string reas(reason);
+    yami_to_json(result, reason, sequence_number, out, out_size);
+    client::on_send(handler, out, out_size);
+  }
+}
+
+void handle_ws_data(data_t data, size_t data_size, client_t client)
 {
   try
   {
@@ -27,12 +39,22 @@ void handle_ws_data(data_t data, size_t data_size, handler_t handler)
     yami::parameters params;
     std::string service;
     std::string msg;
+    std::string source;
     bool expect_reply;
     long long sequence_number;
 
-    process_json(data, service, msg, expect_reply, sequence_number, params);
+    process_json(data, source, service, msg, expect_reply, sequence_number, params);
 
-    LOG("Service: " << service << ", message: " << msg);
+    LOG("Service: " << service << ", message: " << msg << ", from " << source);
+
+    if (!client->logged_in(source))
+    {
+      if (msg != "login")
+      {
+        LOGWARN("Message from not logged source: " << source);
+        reject(expect_reply, sequence_number, source, "Message from not logged source");
+      }
+    }
 
     try
     {
@@ -64,7 +86,7 @@ void handle_ws_data(data_t data, size_t data_size, handler_t handler)
             yami_to_json(reply, sequence_number, out, out_size);
             delete reply;
 
-            handler::on_send(handler, out, out_size);
+            client::on_send(handler, out, out_size);
 
             break;
           }
@@ -84,28 +106,14 @@ void handle_ws_data(data_t data, size_t data_size, handler_t handler)
         catch (const exception& e)
         {
           LOGWARN("EXCEPTION: " << e.what());
-          size_t out_size = 0;
-          auto out = create_data();
-          string result("failed");
-          string reason(e.what());
-          yami_to_json(result, reason, sequence_number, out, out_size);
-          handler::on_send(handler, out, out_size);
+          reject(expect_reply, sequence_number, client, e.what());
         }
       }
     }
     catch (const exception& e)
     {
       LOGWARN("EXCEPTION: " << e.what());
-      if (expect_reply)
-      {
-        LOGWARN("EXCEPTION: " << e.what());
-        size_t out_size = 0;
-        auto out = create_data();
-        string result("failed");
-        string reason(e.what());
-        yami_to_json(result, reason, sequence_number, out, out_size);
-        handler::on_send(handler, out, out_size);
-      }
+      reject(expect_reply, sequence_number, client, e.what());
     }
   }
   catch (const exception& e)
