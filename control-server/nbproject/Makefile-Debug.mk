@@ -43,7 +43,6 @@ OBJECTFILES= \
 	${OBJECTDIR}/src/file_request_handler.o \
 	${OBJECTDIR}/src/http.o \
 	${OBJECTDIR}/src/json_converter.o \
-	${OBJECTDIR}/src/ws_com_handler.o \
 	${OBJECTDIR}/src/ws_request_handler.o
 
 
@@ -114,11 +113,6 @@ ${OBJECTDIR}/src/json_converter.o: src/json_converter.cpp
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} "$@.d"
 	$(COMPILE.cc) -g -Wall -D_DEBUG -I../common/common/src -I../common/yami4/include -I../rapidjson/include -I../common/wshandling -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/json_converter.o src/json_converter.cpp
-
-${OBJECTDIR}/src/ws_com_handler.o: src/ws_com_handler.cpp 
-	${MKDIR} -p ${OBJECTDIR}/src
-	${RM} "$@.d"
-	$(COMPILE.cc) -g -Wall -D_DEBUG -I../common/common/src -I../common/yami4/include -I../rapidjson/include -I../common/wshandling -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/ws_com_handler.o src/ws_com_handler.cpp
 
 ${OBJECTDIR}/src/ws_request_handler.o: src/ws_request_handler.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src

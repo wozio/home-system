@@ -21,12 +21,8 @@ namespace home_system
 void process_json(data_t data, std::string& source, std::string& service, std::string& message,
   bool& expect_reply, long long& sequence_number, yami::parameters& params);
 
-void yami_to_json(yami::parameters* params, long long sequence_number, data_t data, size_t& data_size);
-void yami_to_json(std::string& result, std::string& reason, long long sequence_number, data_t data, size_t& data_size);
-
-class incorrect_message
-: public std::exception
-{};
+void yami_to_json(const std::string& destination, yami::parameters* params, long long sequence_number, data_t data, size_t& data_size);
+void yami_to_json(const std::string& destination, const std::string& result, const std::string& reason, long long sequence_number, data_t data, size_t& data_size);
 
 }
 

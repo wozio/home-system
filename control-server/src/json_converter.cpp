@@ -51,7 +51,7 @@ void process_json(data_t data, std::string& source, std::string& service, std::s
       message = itr->value.GetString();
     }
     else
-      throw incorrect_message();
+      throw runtime_error("Incorrect message: missing 'message' element");
 
     itr = d.FindMember("service");
     if (itr != d.MemberEnd())
@@ -59,13 +59,15 @@ void process_json(data_t data, std::string& source, std::string& service, std::s
       service = itr->value.GetString();
     }
     else
-      throw incorrect_message();
+      throw runtime_error("Incorrect message: missing 'service' element");
 
     itr = d.FindMember("source");
     if (itr != d.MemberEnd())
     {
       source = itr->value.GetString();
     }
+    else
+      throw runtime_error("Incorrect message: missing 'source' element");
 
     itr = d.FindMember("expect_reply");
     if (itr != d.MemberEnd())
@@ -247,8 +249,8 @@ void process_parameters(yami::parameters* params, std::ostream& out)
 
 // YAMI to JSON string
 
-void yami_to_json(yami::parameters* params, long long sequence_number,
-    data_t data, size_t& data_size)
+void yami_to_json(const std::string& destination, yami::parameters* params,
+    long long sequence_number, data_t data, size_t& data_size)
 {
   boost::interprocess::bufferstream out(data->data(), DATA_SIZE);
   out << "{"
@@ -260,8 +262,9 @@ void yami_to_json(yami::parameters* params, long long sequence_number,
   data_size = out.tellp();
 }
 
-void yami_to_json(std::string& result, std::string& reason,
-    long long sequence_number, data_t data, size_t& data_size)
+void yami_to_json(const std::string& destination, const std::string& result,
+    const std::string& reason, long long sequence_number,
+    data_t data, size_t& data_size)
 {
   boost::interprocess::bufferstream out(data->data(), DATA_SIZE);
   out << "{"

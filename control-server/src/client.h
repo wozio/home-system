@@ -15,10 +15,18 @@ public:
   ~client();
   
   void on_read(data_t data, size_t data_size);
+
+protected:
+  void handle_data(data_t data, size_t data_size);
+  void reject(bool expect_reply, long long sequence_number,
+      const std::string& source, const std::string& reason);
+  void reject(bool expect_reply, long long sequence_number,
+      const std::string& source, const char* reason);
+
+  virtual bool is_logged_in(const std::string& source);
+
 private:
 };
-
-typdedef std::shared_ptr<client> client_t;
 
 }
 

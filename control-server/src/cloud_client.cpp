@@ -1,10 +1,5 @@
 #include "cloud_client.h"
 #include "logger.h"
-#include "ws_com_handler.h"
-#include <thread>
-
-using namespace Poco;
-using namespace std;
 
 namespace home_system
 {
