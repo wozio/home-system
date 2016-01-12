@@ -5,11 +5,14 @@
 #include "discovery.h"
 #include "app.h"
 #include <thread>
+#include <cstdlib>
 
 using namespace std;
 
 namespace home_system
 {
+
+std::map<std::string, client::client_service_t> client::clients_;
 
 client::client(ws_t ws)
 : handler(ws)
@@ -19,6 +22,10 @@ client::client(ws_t ws)
 
 client::~client()
 {
+  if (clients_.find(client_) != clients_.end())
+  {
+    clients_.erase(client_);
+  }
 }
 
 void client::on_read(data_t data, size_t data_size)
@@ -56,25 +63,25 @@ void client::handle_login(const yami::parameters& params, long long sequence_num
         LOG("User " << name << " (" << email << ") is logged in");
 
         // create client service and assign id
-        string source = create_client(name);
+        string new_client = create_client(name);
 
-        LOG("Client assigned: " << source);
+        LOG("Client assigned: " << new_client);
 
-        source_ = source;
+        login(new_client);
 
         yami::parameters rparams;
         rparams.set_string("name", name);
         rparams.set_string("email", email);
-        rparams.set_string("client_id", source);
+        rparams.set_string("client_id", new_client);
         size_t out_size = 0;
         auto out = create_data();
-        to_json(target, source, rparams, sequence_number, out, out_size);
+        to_json(target, new_client, rparams, sequence_number, out, out_size);
         on_send(shared_from_this(), out, out_size);
         return;
       }
     }
   }
-  source_ = "";
+  client_ = "";
   throw runtime_error("Unknown email or wrong password");
 }
 
@@ -187,14 +194,30 @@ void client::reject(bool expect_reply, long long sequence_number,
   }
 }
 
-bool client::is_logged_in(const std::string& source)
+bool client::is_logged_in(const std::string& client)
 {
-  return source_.size() > 0 && source_ == source;
+  return client_.size() > 0 && client_ == client;
+}
+
+void client::login(const std::string& client)
+{
+  if (clients_.find(client_) != clients_.end())
+  {
+    clients_.erase(client_);
+  }
+  clients_[client] = make_shared<client_service>(client);
+  client_ = client;
 }
 
 std::string client::create_client(const std::string& name)
 {
-  return name + "123";
+  string client_name;
+  do
+  {
+    client_name = name + to_string(rand());
+  }
+  while (clients_.find(client_name) != clients_.end());
+  return client_name;
 }
 
 }

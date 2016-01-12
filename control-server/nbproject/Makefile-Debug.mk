@@ -43,7 +43,8 @@ OBJECTFILES= \
 	${OBJECTDIR}/src/file_request_handler.o \
 	${OBJECTDIR}/src/http.o \
 	${OBJECTDIR}/src/json_converter.o \
-	${OBJECTDIR}/src/ws_request_handler.o
+	${OBJECTDIR}/src/ws_request_handler.o \
+	${OBJECTDIR}/src/client_service.o
 
 
 # C Compiler Flags
@@ -118,6 +119,11 @@ ${OBJECTDIR}/src/ws_request_handler.o: src/ws_request_handler.cpp
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} "$@.d"
 	$(COMPILE.cc) -g -Wall -D_DEBUG -I../common/common/src -I../common/yami4/include -I../rapidjson/include -I../common/wshandling -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/ws_request_handler.o src/ws_request_handler.cpp
+	
+${OBJECTDIR}/src/client_service.o: src/client_service.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -Wall -D_DEBUG -I../common/common/src -I../common/yami4/include -I../rapidjson/include -I../common/wshandling -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/client_service.o src/client_service.cpp
 
 # Subprojects
 .build-subprojects:

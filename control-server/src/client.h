@@ -2,6 +2,7 @@
 #define	CLIENT_H
 
 #include "handler.h"
+#include "client_service.h"
 #include <yami4-cpp/parameters.h>
 
 namespace home_system
@@ -25,14 +26,20 @@ protected:
   void reject(bool expect_reply, long long sequence_number,
       const std::string& target, const std::string& source, const char* reason);
 
-  virtual bool is_logged_in(const std::string& source);
+  virtual bool is_logged_in(const std::string& client);
+  virtual void login(const std::string& client);
 
 private:
-  // logged in source
-  std::string source_;
+  // logged in client
+  std::string client_;
+
   void handle_login(const yami::parameters& params, long long sequence_number,
       const std::string& target);
+
   std::string create_client(const std::string& name);
+
+  typedef std::shared_ptr<client_service> client_service_t;
+  static std::map<std::string, client_service_t> clients_;
 };
 
 }

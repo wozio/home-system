@@ -1,10 +1,6 @@
 #include "control-service.h"
 #include "discovery.h"
-#include "app.h"
 #include "logger.h"
-#include <vector>
-
-using namespace std;
 
 namespace home_system
 {
