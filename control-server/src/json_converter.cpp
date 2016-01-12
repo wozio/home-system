@@ -37,7 +37,7 @@ void parse_parameters(const Value& value, yami::parameters& params)
   }
 }
 
-void process_json(data_t data, std::string& source, std::string& service, std::string& message,
+void from_json(data_t data, std::string& source, std::string& target, std::string& message,
     bool& expect_reply, long long& sequence_number, yami::parameters& params)
 {
   Document d;
@@ -53,21 +53,17 @@ void process_json(data_t data, std::string& source, std::string& service, std::s
     else
       throw runtime_error("Incorrect message: missing 'message' element");
 
-    itr = d.FindMember("service");
+    itr = d.FindMember("target");
     if (itr != d.MemberEnd())
     {
-      service = itr->value.GetString();
+      target = itr->value.GetString();
     }
-    else
-      throw runtime_error("Incorrect message: missing 'service' element");
 
     itr = d.FindMember("source");
     if (itr != d.MemberEnd())
     {
       source = itr->value.GetString();
     }
-    else
-      throw runtime_error("Incorrect message: missing 'source' element");
 
     itr = d.FindMember("expect_reply");
     if (itr != d.MemberEnd())
@@ -102,11 +98,13 @@ void process_json(data_t data, std::string& source, std::string& service, std::s
   }
 }
 
-void process_parameters(yami::parameters* params, std::ostream& out)
+// YAMI to JSON string
+
+void process_parameters(const yami::parameters& params, std::ostream& out)
 {
   out << '{';
   bool first = true;
-  for (yami::parameters::iterator it = params->begin(); it != params->end();
+  for (yami::parameters::iterator it = params.begin(); it != params.end();
       ++it)
   {
     if (!first)
@@ -216,24 +214,24 @@ void process_parameters(yami::parameters* params, std::ostream& out)
     case yami::nested_parameters:
     {
       yami::parameters nested((*it).get_nested_parameters());
-      process_parameters(&nested, out);
+      process_parameters(nested, out);
       break;
     }
     case yami::nested_parameters_array:
     {
       out << '[';
-      size_t ybs = params->get_nested_array_length((*it).name());
+      size_t ybs = params.get_nested_array_length((*it).name());
       if (ybs > 0)
       {
         for (size_t i = 0; i < ybs - 1; ++i)
         {
-          yami::parameters nested(params->get_nested_in_array((*it).name(), i));
-          process_parameters(&nested, out);
+          yami::parameters nested(params.get_nested_in_array((*it).name(), i));
+          process_parameters(nested, out);
           out << ',';
         }
         yami::parameters nested(
-            params->get_nested_in_array((*it).name(), ybs - 1));
-        process_parameters(&nested, out);
+            params.get_nested_in_array((*it).name(), ybs - 1));
+        process_parameters(nested, out);
       }
       out << ']';
       break;
@@ -247,14 +245,14 @@ void process_parameters(yami::parameters* params, std::ostream& out)
   out << '}';
 }
 
-// YAMI to JSON string
-
-void yami_to_json(const std::string& destination, yami::parameters* params,
-    long long sequence_number, data_t data, size_t& data_size)
+void to_json(const std::string& source, const std::string& target, const yami::parameters& params, long long sequence_number,
+    data_t data, size_t& data_size)
 {
   boost::interprocess::bufferstream out(data->data(), DATA_SIZE);
   out << "{"
-      << "\"sequence_number\":" << sequence_number
+      << "\"source\":\"" << source << "\""
+      << ",\"target\":\"" << target << "\""
+      << ",\"sequence_number\":" << sequence_number
       << ",\"result\":\"success\""
       << ",\"params\":";
   process_parameters(params, out);
@@ -262,14 +260,15 @@ void yami_to_json(const std::string& destination, yami::parameters* params,
   data_size = out.tellp();
 }
 
-void yami_to_json(const std::string& destination, const std::string& result,
-    const std::string& reason, long long sequence_number,
+void to_json(const std::string& source, const std::string& target, const std::string& reason, long long sequence_number,
     data_t data, size_t& data_size)
 {
   boost::interprocess::bufferstream out(data->data(), DATA_SIZE);
   out << "{"
-      << "\"sequence_number\":" << sequence_number
-      << ",\"result\":\"" << result << "\""
+      << "\"source\":\"" << source << "\""
+      << ",\"target\":\"" << target << "\""
+      << ",\"sequence_number\":" << sequence_number
+      << ",\"result\":\"failed\""
       << ",\"reason\":\"" << reason << "\""
       << '}';
   data_size = out.tellp();

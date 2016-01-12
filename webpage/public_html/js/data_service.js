@@ -26,6 +26,7 @@ angular.module('app.data',[
   // sequence number and queue of callbacks indexed by sequence number
   var seq = 0;
   var queue = {};
+  var client_id = "";
 
   dataStream.onMessage(function(message) {
     console.log("Received: " + message.data);
@@ -62,10 +63,11 @@ angular.module('app.data',[
   }
 
   var methods = {
-    send: function(service, msg, params, reply_callback) {
+    send: function(target, msg, params, reply_callback) {
       var prepared_msg = {
           //service: 'control-server',
-        service: service,
+        source: client_id,
+        target: target,
         message: msg
       }
       if (params) {
@@ -86,6 +88,9 @@ angular.module('app.data',[
       }
       console.log("Sending: " + JSON.stringify(prepared_msg));
       dataStream.send(JSON.stringify(prepared_msg));
+    },
+    set_client_id: function(client_id_) {
+      client_id = client_id_;
     }
   };
 

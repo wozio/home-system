@@ -35,11 +35,12 @@ angular.module('app.auth',[
         email: email,
         password: password
       }, function(result) {
-        console.log("result callback in login");
         if (!result.success) {
           result.reason = 'Unable to login: ' + result.reason;
           delete $rootScope.user;
+          DataSrv.set_client_id("");
         } else {
+          console.log("successfully logged in with client id: " + result.data.client_id);
           $rootScope.user = {
             email: email,
             password: password,
@@ -47,6 +48,7 @@ angular.module('app.auth',[
             name: result.data.name
           }
           $cookies.putObject('user', $rootScope.user);
+          DataSrv.set_client_id(result.data.client_id);
         }
         callback(result);
       }, 1000);
@@ -55,6 +57,7 @@ angular.module('app.auth',[
     service.logout = function () {
       delete $rootScope.user;
       $cookies.remove('user');
+      DataSrv.set_client_id("");
     };
 
     return service;
