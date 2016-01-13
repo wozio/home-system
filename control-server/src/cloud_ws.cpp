@@ -80,11 +80,11 @@ void cloud_ws::connect()
 
     logged_ = false;
   }
-  catch (Exception &e)
+  catch (const std::exception &e)
   {
     if (!logged_)
     {
-      LOGERROR("Error: " << e.displayText());
+      LOGERROR("Error: " << e.what());
       logged_ = true;
     }
     timer_.set_from_now(1000, [this](){
