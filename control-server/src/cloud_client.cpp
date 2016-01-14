@@ -1,7 +1,12 @@
 #include "cloud_client.h"
 #include "logger.h"
 #include "app.h"
+#include "rapidjson/document.h"
+#include "rapidjson/error/en.h"
 #include <boost/interprocess/streams/bufferstream.hpp>
+
+using namespace rapidjson;
+using namespace std;
 
 namespace home_system
 {
@@ -23,7 +28,23 @@ cloud_client::cloud_client(ws_t ws, std::function<void()>shutdown_callback)
   out << "{"
       << "\"system\":\"" << cloud_name << "\""
       << ",\"password\":\"" << cloud_password << "\""
-      << '}';
+      << ",\"users\": [";
+
+  // filling array of users
+  bool first = true;
+  for (auto& v : home_system::app::config().get_child("users"))
+  {
+    if (!first)
+    {
+      out << ",";
+    }
+    first = false;
+    auto email = v.second.get<std::string>("email");
+    out << "\"" << email << "\"";
+  }
+
+  out << "]}";
+
   data_size = out.tellp();
 
   // sending to cloud server
@@ -37,6 +58,33 @@ cloud_client::cloud_client(ws_t ws, std::function<void()>shutdown_callback)
   {
     throw std::runtime_error("Peer has shut down or closed connection");
   }
+
+  (*data)[data_size] = '\0';
+
+  // decode JSON
+  rapidjson::Document d;
+  d.Parse(data->data());
+  if (d.HasParseError())
+  {
+    LOG("Parse error: " << d.GetErrorOffset() << ": " << rapidjson::GetParseError_En(d.GetParseError()));
+    throw std::runtime_error("JSON parse error");
+  }
+
+  // checking result
+  if (d.IsObject())
+  {
+    auto itr = d.FindMember("result");
+    if (itr != d.MemberEnd())
+    {
+      if (string(itr->value.GetString()) == "success")
+      {
+        LOG("Successfully logged in");
+        return;
+      }
+    }
+  }
+
+  throw std::runtime_error("Unsuccessful result or incorrect reply");
 }
 
 cloud_client::~cloud_client()

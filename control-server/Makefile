@@ -44,8 +44,6 @@ build: .build-pre .build-impl .build-post
 # Add your pre 'build' code here...
 
 .build-post:
-# Add your post 'build' code here...
-
 
 # clean
 clean: .clean-pre .clean-impl .clean-post

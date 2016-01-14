@@ -66,6 +66,8 @@ LDLIBSOPTIONS=-L../common/yami4/lib -lPocoFoundation -lPocoXML -lboost_filesyste
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
 	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk ../bin/${CND_CONF}/control-server
+	cp src/mime.types ../bin/${CND_CONF}/
+	cp control-server.conf ../bin/${CND_CONF}/
 
 ../bin/${CND_CONF}/control-server: ../common/wshandling/../bin/Debug/libwshandling.a
 
@@ -134,6 +136,8 @@ ${OBJECTDIR}/src/client_service.o: src/client_service.cpp
 .clean-conf: ${CLEAN_SUBPROJECTS}
 	${RM} -r ${CND_BUILDDIR}/${CND_CONF}
 	${RM} ../bin/${CND_CONF}/control-server
+	${RM} ../bin/${CND_CONF}/mime.types
+	${RM} ../bin/${CND_CONF}/control-server.conf
 
 # Subprojects
 .clean-subprojects:
