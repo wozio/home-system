@@ -84,7 +84,7 @@ cloud_client::cloud_client(ws_t ws, std::function<void()>shutdown_callback)
     }
   }
 
-  throw std::runtime_error("Unsuccessful result or incorrect reply");
+  throw std::runtime_error("Unsuccessful login result or incorrect reply");
 }
 
 cloud_client::~cloud_client()

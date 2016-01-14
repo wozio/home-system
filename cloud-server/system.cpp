@@ -59,6 +59,7 @@ system::system(ws_t ws)
     }
     else
       throw std::runtime_error("No system name");
+
     itr = d.FindMember("users");
     if (itr != d.MemberEnd())
     {
