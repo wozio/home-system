@@ -3,7 +3,8 @@
 #include "app.h"
 #include "rapidjson/document.h"
 #include "rapidjson/error/en.h"
-#include <boost/interprocess/streams/bufferstream.hpp>
+#include "rapidjson/writer.h"
+#include "rapidjson/stringbuffer.h"
 
 using namespace rapidjson;
 using namespace std;
@@ -19,38 +20,36 @@ cloud_client::cloud_client(ws_t ws, std::function<void()>shutdown_callback)
 
   // fetching cloud system name, password and list of allowed users from configuration
   // and encoding to JSON
+  Document d(kObjectType);
+  Document::AllocatorType& allocator = d.GetAllocator();
+
   auto cloud_name = home_system::app::config().get<std::string>("cloud.name");
+  d.AddMember("system", StringRef(cloud_name.c_str()), allocator);
+
   auto cloud_password = home_system::app::config().get<std::string>("cloud.password");
+  d.AddMember("password", StringRef(cloud_password.c_str()), allocator);
 
-  size_t data_size = 0;
-  auto data = create_data();
-  boost::interprocess::bufferstream out(data->data(), DATA_SIZE);
-  out << "{"
-      << "\"system\":\"" << cloud_name << "\""
-      << ",\"password\":\"" << cloud_password << "\""
-      << ",\"users\": [";
-
-  // filling array of users
-  bool first = true;
+  // array of users
+  Value users(kArrayType);
   for (auto& v : home_system::app::config().get_child("users"))
   {
-    if (!first)
-    {
-      out << ",";
-    }
-    first = false;
-    auto email = v.second.get<std::string>("email");
-    out << "\"" << email << "\"";
+    //auto user = v.second.get<std::string>("email");
+    users.PushBack(Value(v.second.get<std::string>("email").c_str(), allocator).Move(),
+        allocator);
   }
+  d.AddMember("users", users, allocator);
 
-  out << "]}";
-
-  data_size = out.tellp();
+  // stringify JSON
+  StringBuffer buffer;
+  Writer<StringBuffer> writer(buffer);
+  d.Accept(writer);
 
   // sending to cloud server
-  ws->sendFrame(data->data(), data_size);
+  ws->sendFrame(buffer.GetString(), buffer.GetSize());
 
   // receive response
+  size_t data_size = 0;
+  auto data = create_data();
   int flags;
   data_size = ws->receiveFrame(data->data(), DATA_SIZE, flags);
 
@@ -62,7 +61,6 @@ cloud_client::cloud_client(ws_t ws, std::function<void()>shutdown_callback)
   (*data)[data_size] = '\0';
 
   // decode JSON
-  rapidjson::Document d;
   d.Parse(data->data());
   if (d.HasParseError())
   {

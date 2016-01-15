@@ -5,6 +5,7 @@
 #include "discovery.h"
 #include "app.h"
 #include <thread>
+//#include <chrono>
 #include <cstdlib>
 
 using namespace std;
@@ -30,7 +31,7 @@ client::~client()
 
 void client::on_read(data_t data, size_t data_size)
 {
-  //LOG("Read " << data_size << " bytes");
+  LOG("Read " << data_size << " bytes");
   try
   {
     thread t([this](data_t data, size_t data_size) {

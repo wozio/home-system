@@ -4,9 +4,11 @@
 #include "systems.h"
 #include "rapidjson/document.h"
 #include "rapidjson/error/en.h"
-#include <boost/interprocess/streams/bufferstream.hpp>
+#include "rapidjson/writer.h"
+#include "rapidjson/stringbuffer.h"
 
 using namespace std;
+using namespace rapidjson;
 
 namespace home_system
 {
@@ -70,7 +72,7 @@ system::system(ws_t ws)
           switch (vitr->GetType())
           {
           case rapidjson::kStringType:
-            LOG(vitr->GetString());
+            LOG("Allowed user: " << vitr->GetString());
             break;
           default:
             break;
@@ -80,14 +82,14 @@ system::system(ws_t ws)
     }
   }
 
-  boost::interprocess::bufferstream out(data->data(), DATA_SIZE);
-  out << "{"
-      << "\"result\":\"success\""
-      << "}";
+  Document reply(kObjectType);
+  reply.AddMember("result", "success", reply.GetAllocator());
+  StringBuffer buffer;
+  Writer<StringBuffer> writer(buffer);
+  reply.Accept(writer);
 
-  data_size = out.tellp();
-
-  ws->sendFrame(data->data(), data_size);
+  // sending to cloud server
+  ws->sendFrame(buffer.GetString(), buffer.GetSize());
 }
 
 system::~system()
