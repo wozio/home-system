@@ -47,13 +47,13 @@ temp& net::get_input(uint64_t id)
 void net::open()
 {
   if (!open_fault_logged_)
-    LOGINFO("Opening One Wire port " << port_);
+    LOG(INFO)  << "Opening One Wire port " << port_;
   // attempt to acquire the 1-Wire Net
   if ((portnum_ = owAcquireEx(port_.c_str())) < 0)
   {
     if (!open_fault_logged_)
     {
-      LOGWARN("Unable to open One Wire port " << port_ << ", keep trying...");
+      LOG(WARNING) << "Unable to open One Wire port " << port_ << ", keep trying...";
       open_fault_logged_ = true;
     }
     //OWERROR_DUMP(stdout);
@@ -69,7 +69,7 @@ void net::open()
 void net::search()
 {
   if (!search_fault_logged_)
-    LOG("Searching for devices");
+    LOG(DEBUG) << "Searching for devices";
   
   devices_.clear();
   
@@ -81,7 +81,7 @@ void net::search()
       break;
     uint64_t serial_num;
     owSerialNum(portnum_, (uchar*)&serial_num, TRUE);
-    LOG("Found device: " << serial_num_to_string(serial_num));
+    LOG(DEBUG) << "Found device: " << serial_num_to_string(serial_num);
     // TODO: add other types of devices when needed
     switch (serial_num & 0xFF) // family type is on first octet
     {
@@ -105,7 +105,7 @@ void net::search()
     // try again later
     if (!search_fault_logged_)
     {
-      LOGWARN("No devices found, keep trying...");
+      LOG(WARNING) << "No devices found, keep trying...";
       search_fault_logged_ = true;
     }
     timer_.set_from_now(1000, [this](){ search(); });
@@ -116,7 +116,7 @@ void net::close()
 {
   if (portnum_ > -1)
   {
-    LOGINFO("Closing One Wire port " << port_);
+    LOG(INFO) << "Closing One Wire port " << port_;
     owRelease(portnum_);
     open_fault_logged_ = false;
   }
@@ -124,7 +124,7 @@ void net::close()
 
 void net::send_request()
 {
-  LOG("Sending requests");
+  LOG(DEBUG) << "Sending requests";
   
   try
   {
@@ -137,7 +137,7 @@ void net::send_request()
   }
   catch (const std::runtime_error& e)
   {
-    LOGERROR("Error while sending requests: " << e.what());
+    LOG(ERROR) << "Error while sending requests: " << e.what();
     close();
     open();
   }
@@ -145,7 +145,7 @@ void net::send_request()
 
 void net::read_temp()
 {
-  LOG("Reading temperature");
+  LOG(DEBUG) << "Reading temperature";
   
   try
   {
@@ -158,7 +158,7 @@ void net::read_temp()
   }
   catch (const std::runtime_error& e)
   {
-    LOGERROR("Error while reading temperature: " << e.what());
+    LOG(ERROR) << "Error while reading temperature: " << e.what();
     close();
     open();
   }

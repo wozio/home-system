@@ -53,7 +53,7 @@ void io_service::on_msg(incoming_message & im)
       subscriptions_.insert(ns);
     }
 
-    LOG(ns.second << " (" << ns.first << ") subscribed");
+    LOG(DEBUG) << ns.second << " (" << ns.first << ") subscribed";
     
     send_current_state();
   }
@@ -69,7 +69,7 @@ void io_service::send_current_state()
   net_.get_inputs(ids);
   for (auto id : ids)
   {
-    LOG("Sending for id " << id);
+    LOG(DEBUG) << "Sending for id " << id;
     on_state_change(id);
   }
 }
@@ -90,7 +90,7 @@ void io_service::on_state_change(uint64_t id)
 
   for (auto it = subscriptions_.begin(); it != subscriptions_.end();)
   {
-    LOG("Sending state change to subscription " << it->second << " (" << it->first << ") for: " << id);
+    LOG(DEBUG) << "Sending state change to subscription " << it->second << " (" << it->first << ") for: " << id;
     try
     {
       AGENT.send_one_way(it->first, it->second,
@@ -99,7 +99,7 @@ void io_service::on_state_change(uint64_t id)
     }
     catch (const exception& e)
     {
-      LOGWARN("EXCEPTION: " << e.what() << ". Removing subscription: " << it->second << " (" << it->first << ")");
+      LOG(WARNING) << "EXCEPTION: " << e.what() << ". Removing subscription: " << it->second << " (" << it->first << ")";
       subscriptions_.erase(it++);
     }
   }

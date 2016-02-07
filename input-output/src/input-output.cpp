@@ -1,11 +1,13 @@
 #include "io-service.h"
 #include "app.h"
-#include "logger.h"
+#include "logger_init.h"
 #include "yamicontainer.h"
 #include <boost/program_options.hpp>
 #include <chrono>
 #include <thread>
 #include <iostream>
+
+INITIALIZE_EASYLOGGINGPP
 
 using namespace std;
 namespace po = boost::program_options;
@@ -21,7 +23,6 @@ int main(int argc, char** argv)
 #ifdef __linux__
     ("daemonize,d", "run as daemon")
 #endif
-    ("log_level,l", po::value<string>()->default_value("debug"), "Logging level, valid values are:\nerror\nwarning\ninformation\ndebug")
     ;
 
   po::variables_map vm;
@@ -34,9 +35,13 @@ int main(int argc, char** argv)
     return 1;
   }
 
-  home_system::logger::_log_file_path = "input-output.log";
+  home_system::init_log("input-output.log", !vm.count("daemonize"));
 
-  LOGINFO("1 wire input output started");
+  if (vm.count("daemonize"))
+  {
+    cout << "1 wire input output started" << endl;
+  }
+  LOG(INFO) << "1 wire input output started";
 
   home_system::app app(vm.count("daemonize"));
     
@@ -56,17 +61,17 @@ int main(int argc, char** argv)
     }
     catch (const std::exception & e)
     {
-      LOGERROR("Exception: " << e.what());
+      LOG(ERROR) << "Exception: " << e.what();
     }
     catch (...)
     {
-      LOGERROR("Unknown Exception");
+      LOG(ERROR) << "Unknown Exception";
     }
     if (!exit_init_loop)
     {
       if (++init_try < 60)
       {
-        LOGERROR("Initialization not done, waiting 1 second before next try...");
+        LOG(ERROR) << "Initialization not done, waiting 1 second before next try...";
         this_thread::sleep_for(chrono::seconds(1));
       }
       else
@@ -79,7 +84,7 @@ int main(int argc, char** argv)
   
   _yc.reset();
 
-  LOGINFO("1 wire input output quitting");
+  LOG(INFO) << "1 wire input output quitting";
 
   return 0;
 }

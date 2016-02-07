@@ -24,7 +24,7 @@ temp::temp(int portnum, uint64_t serial_num,
   serial_num_(serial_num),
   state_change_callback_(state_change_callback)
 {
-  LOG("Created temperature device (DS1920): " << serial_num_to_string(serial_num_));
+  LOG(DEBUG) << "Created temperature device (DS1920): " << serial_num_to_string(serial_num_);
 }
 
 uint64_t temp::id()
@@ -104,7 +104,7 @@ bool temp::read_temp()
         cpc = send_block[8];
         if ((cpc - cr) == 1)
         {
-          LOGWARN("Conversion not ready yet");
+          LOG(WARNING) << "Conversion not ready yet";
           return false;
         }
         if (cpc == 0)
@@ -114,7 +114,7 @@ bool temp::read_temp()
         else
           tmp = tmp - (float)0.25 + (cpc - cr)/cpc;
         
-        LOG(serial_num_to_string(serial_num_) << ": " << tmp);
+        LOG(DEBUG) << serial_num_to_string(serial_num_) << ": " << tmp;
         float old_value = value_;
         value_ = tmp;
         if (tmp != old_value)
@@ -137,3 +137,4 @@ bool temp::read_temp()
 }
 }
 }
+
