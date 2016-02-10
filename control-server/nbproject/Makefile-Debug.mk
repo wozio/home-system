@@ -21,7 +21,7 @@ FC=gfortran
 AS=as
 
 # Macros
-CND_PLATFORM=GNU-Linux-x86
+CND_PLATFORM=GNU-Linux
 CND_DLIB_EXT=so
 CND_CONF=Debug
 CND_DISTDIR=dist
@@ -36,6 +36,7 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 # Object Files
 OBJECTFILES= \
 	${OBJECTDIR}/src/client.o \
+	${OBJECTDIR}/src/client_service.o \
 	${OBJECTDIR}/src/cloud_client.o \
 	${OBJECTDIR}/src/cloud_ws.o \
 	${OBJECTDIR}/src/control-server.o \
@@ -43,8 +44,7 @@ OBJECTFILES= \
 	${OBJECTDIR}/src/file_request_handler.o \
 	${OBJECTDIR}/src/http.o \
 	${OBJECTDIR}/src/json_converter.o \
-	${OBJECTDIR}/src/ws_request_handler.o \
-	${OBJECTDIR}/src/client_service.o
+	${OBJECTDIR}/src/ws_request_handler.o
 
 
 # C Compiler Flags
@@ -66,8 +66,6 @@ LDLIBSOPTIONS=-L../common/yami4/lib -lPocoFoundation -lPocoXML -lboost_filesyste
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
 	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk ../bin/${CND_CONF}/control-server
-	cp src/mime.types ../bin/${CND_CONF}/
-	cp control-server.conf ../bin/${CND_CONF}/
 
 ../bin/${CND_CONF}/control-server: ../common/wshandling/../bin/Debug/libwshandling.a
 
@@ -80,52 +78,52 @@ LDLIBSOPTIONS=-L../common/yami4/lib -lPocoFoundation -lPocoXML -lboost_filesyste
 ${OBJECTDIR}/src/client.o: src/client.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -Wall -D_DEBUG -I../common/common/src -I../common/yami4/include -I../rapidjson/include -I../common/wshandling -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/client.o src/client.cpp
+	$(COMPILE.cc) -g -Wall -D_DEBUG -I../common/common/src -I../common/yami4/include -I../rapidjson/include -I../common/wshandling -I../common/easyloggingpp/src -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/client.o src/client.cpp
+
+${OBJECTDIR}/src/client_service.o: src/client_service.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -Wall -D_DEBUG -I../common/common/src -I../common/yami4/include -I../rapidjson/include -I../common/wshandling -I../common/easyloggingpp/src -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/client_service.o src/client_service.cpp
 
 ${OBJECTDIR}/src/cloud_client.o: src/cloud_client.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -Wall -D_DEBUG -I../common/common/src -I../common/yami4/include -I../rapidjson/include -I../common/wshandling -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/cloud_client.o src/cloud_client.cpp
+	$(COMPILE.cc) -g -Wall -D_DEBUG -I../common/common/src -I../common/yami4/include -I../rapidjson/include -I../common/wshandling -I../common/easyloggingpp/src -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/cloud_client.o src/cloud_client.cpp
 
 ${OBJECTDIR}/src/cloud_ws.o: src/cloud_ws.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -Wall -D_DEBUG -I../common/common/src -I../common/yami4/include -I../rapidjson/include -I../common/wshandling -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/cloud_ws.o src/cloud_ws.cpp
+	$(COMPILE.cc) -g -Wall -D_DEBUG -I../common/common/src -I../common/yami4/include -I../rapidjson/include -I../common/wshandling -I../common/easyloggingpp/src -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/cloud_ws.o src/cloud_ws.cpp
 
 ${OBJECTDIR}/src/control-server.o: src/control-server.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -Wall -D_DEBUG -I../common/common/src -I../common/yami4/include -I../rapidjson/include -I../common/wshandling -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/control-server.o src/control-server.cpp
+	$(COMPILE.cc) -g -Wall -D_DEBUG -I../common/common/src -I../common/yami4/include -I../rapidjson/include -I../common/wshandling -I../common/easyloggingpp/src -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/control-server.o src/control-server.cpp
 
 ${OBJECTDIR}/src/control-service.o: src/control-service.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -Wall -D_DEBUG -I../common/common/src -I../common/yami4/include -I../rapidjson/include -I../common/wshandling -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/control-service.o src/control-service.cpp
+	$(COMPILE.cc) -g -Wall -D_DEBUG -I../common/common/src -I../common/yami4/include -I../rapidjson/include -I../common/wshandling -I../common/easyloggingpp/src -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/control-service.o src/control-service.cpp
 
 ${OBJECTDIR}/src/file_request_handler.o: src/file_request_handler.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -Wall -D_DEBUG -I../common/common/src -I../common/yami4/include -I../rapidjson/include -I../common/wshandling -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/file_request_handler.o src/file_request_handler.cpp
+	$(COMPILE.cc) -g -Wall -D_DEBUG -I../common/common/src -I../common/yami4/include -I../rapidjson/include -I../common/wshandling -I../common/easyloggingpp/src -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/file_request_handler.o src/file_request_handler.cpp
 
 ${OBJECTDIR}/src/http.o: src/http.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -Wall -D_DEBUG -I../common/common/src -I../common/yami4/include -I../rapidjson/include -I../common/wshandling -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/http.o src/http.cpp
+	$(COMPILE.cc) -g -Wall -D_DEBUG -I../common/common/src -I../common/yami4/include -I../rapidjson/include -I../common/wshandling -I../common/easyloggingpp/src -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/http.o src/http.cpp
 
 ${OBJECTDIR}/src/json_converter.o: src/json_converter.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -Wall -D_DEBUG -I../common/common/src -I../common/yami4/include -I../rapidjson/include -I../common/wshandling -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/json_converter.o src/json_converter.cpp
+	$(COMPILE.cc) -g -Wall -D_DEBUG -I../common/common/src -I../common/yami4/include -I../rapidjson/include -I../common/wshandling -I../common/easyloggingpp/src -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/json_converter.o src/json_converter.cpp
 
 ${OBJECTDIR}/src/ws_request_handler.o: src/ws_request_handler.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -Wall -D_DEBUG -I../common/common/src -I../common/yami4/include -I../rapidjson/include -I../common/wshandling -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/ws_request_handler.o src/ws_request_handler.cpp
-	
-${OBJECTDIR}/src/client_service.o: src/client_service.cpp 
-	${MKDIR} -p ${OBJECTDIR}/src
-	${RM} "$@.d"
-	$(COMPILE.cc) -g -Wall -D_DEBUG -I../common/common/src -I../common/yami4/include -I../rapidjson/include -I../common/wshandling -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/client_service.o src/client_service.cpp
+	$(COMPILE.cc) -g -Wall -D_DEBUG -I../common/common/src -I../common/yami4/include -I../rapidjson/include -I../common/wshandling -I../common/easyloggingpp/src -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/ws_request_handler.o src/ws_request_handler.cpp
 
 # Subprojects
 .build-subprojects:
@@ -136,8 +134,6 @@ ${OBJECTDIR}/src/client_service.o: src/client_service.cpp
 .clean-conf: ${CLEAN_SUBPROJECTS}
 	${RM} -r ${CND_BUILDDIR}/${CND_CONF}
 	${RM} ../bin/${CND_CONF}/control-server
-	${RM} ../bin/${CND_CONF}/mime.types
-	${RM} ../bin/${CND_CONF}/control-server.conf
 
 # Subprojects
 .clean-subprojects:

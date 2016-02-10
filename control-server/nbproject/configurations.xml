@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configurationDescriptor version="95">
+<configurationDescriptor version="97">
   <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
     <logicalFolder name="SourceFiles"
                    displayName="Source Files"
                    projectFiles="true">
-      <itemPath>//SERVER/storage/develop/home-system/control-server/src/client.cpp</itemPath>
-      <itemPath>//SERVER/storage/develop/home-system/control-server/src/client.h</itemPath>
+      <itemPath>src/client.cpp</itemPath>
+      <itemPath>src/client.h</itemPath>
+      <itemPath>src/client_service.cpp</itemPath>
+      <itemPath>src/client_service.h</itemPath>
       <itemPath>src/cloud_client.cpp</itemPath>
       <itemPath>src/cloud_client.h</itemPath>
       <itemPath>src/cloud_ws.cpp</itemPath>
@@ -19,8 +21,6 @@
       <itemPath>src/http.h</itemPath>
       <itemPath>src/json_converter.cpp</itemPath>
       <itemPath>src/json_converter.h</itemPath>
-      <itemPath>src/ws_com_handler.cpp</itemPath>
-      <itemPath>src/ws_com_handler.h</itemPath>
       <itemPath>src/ws_request_handler.cpp</itemPath>
       <itemPath>src/ws_request_handler.h</itemPath>
     </logicalFolder>
@@ -49,6 +49,7 @@
             <pElem>../common/yami4/include</pElem>
             <pElem>../rapidjson/include</pElem>
             <pElem>../common/wshandling</pElem>
+            <pElem>../common/easyloggingpp/src</pElem>
           </incDir>
           <preprocessorList>
             <Elem>_DEBUG</Elem>
@@ -122,15 +123,13 @@
           </makeArtifact>
         </requiredProjects>
       </compileType>
-      <item path="//SERVER/storage/develop/home-system/control-server/src/client.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
+      <item path="src/client.cpp" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="//SERVER/storage/develop/home-system/control-server/src/client.h"
-            ex="false"
-            tool="3"
-            flavor2="0">
+      <item path="src/client.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="src/client_service.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/client_service.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="src/cloud_client.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -157,10 +156,6 @@
       <item path="src/json_converter.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="src/json_converter.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="src/ws_com_handler.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="src/ws_com_handler.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="src/ws_request_handler.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -262,15 +257,13 @@
           </makeArtifact>
         </requiredProjects>
       </compileType>
-      <item path="//SERVER/storage/develop/home-system/control-server/src/client.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
+      <item path="src/client.cpp" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="//SERVER/storage/develop/home-system/control-server/src/client.h"
-            ex="false"
-            tool="3"
-            flavor2="0">
+      <item path="src/client.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="src/client_service.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/client_service.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="src/cloud_client.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -297,10 +290,6 @@
       <item path="src/json_converter.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="src/json_converter.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="src/ws_com_handler.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="src/ws_com_handler.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="src/ws_request_handler.cpp" ex="false" tool="1" flavor2="0">
       </item>

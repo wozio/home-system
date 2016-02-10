@@ -40,7 +40,7 @@ void iorb_service::on_msg(yami::incoming_message & im)
     int id = im.get_parameters().get_integer("id");
     int state = im.get_parameters().get_integer("value");
 
-    LOG("Set output value: " << id << " to " << state);
+    LOG(DEBUG) << "Set output value: " << id << " to " << state;
 
     if (id < 8)
     {
@@ -58,7 +58,7 @@ void iorb_service::on_msg(yami::incoming_message & im)
       subscriptions_.insert(ns);
     }
 
-    LOG(ns.second << " (" << ns.first << ") subscribed");
+    LOG(DEBUG) << ns.second << " (" << ns.first << ") subscribed";
     
     send_current_state();
   }
@@ -91,7 +91,7 @@ void iorb_service::on_output_state_change(int id, int state)
 
   for (auto it = subscriptions_.begin(); it != subscriptions_.end();)
   {
-    LOG("Sending state change to subscription " << it->second << " (" << it->first << ") for: " << id);
+    LOG(DEBUG) << "Sending state change to subscription " << it->second << " (" << it->first << ") for: " << id;
     try
     {
       AGENT.send_one_way(it->first, it->second,
@@ -100,7 +100,7 @@ void iorb_service::on_output_state_change(int id, int state)
     }
     catch (const std::exception& e)
     {
-      LOGWARN("EXCEPTION: " << e.what() << ". Removing subscription: " << it->second << " (" << it->first << ")");
+      LOG(WARNING) << "EXCEPTION: " << e.what() << ". Removing subscription: " << it->second << " (" << it->first << ")";
       subscriptions_.erase(it++);
     }
   }

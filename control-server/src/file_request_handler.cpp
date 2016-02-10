@@ -83,7 +83,7 @@ void file_request_handler::handleRequest(HTTPServerRequest& request, HTTPServerR
   }
   catch (const FileNotFoundException& e)
   {
-    LOGWARN("EXCEPTION: " << e.displayText());
+    LOG(WARNING) << "EXCEPTION: " << e.displayText();
     response.setStatus(HTTPServerResponse::HTTP_NOT_FOUND);
     response.send();
   }

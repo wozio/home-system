@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import logging
+import logging.handlers
 import yagent
 import discovery
 import outputs
@@ -12,9 +13,9 @@ import mainservice
 def init(daemonize):
   logger = logging.getLogger()
   logger.setLevel(logging.DEBUG)
-  formatter = logging.Formatter('[%(levelname)s] %(asctime)s %(filename)s: %(lineno)d: %(message)s')
+  formatter = logging.Formatter('[%(asctime)s] [%(levelname)s] [%(thread)d] [%(filename)s:%(lineno)d] %(message)s')
 
-  fh = logging.FileHandler('iocontrol.log')
+  fh = logging.handlers.RotatingFileHandler('/var/log/home-system/iocontrol.log', maxBytes=1*1024*1024, backupCount=1)
   fh.setFormatter(formatter)
   logger.addHandler(fh)
 

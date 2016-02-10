@@ -18,7 +18,7 @@ std::map<std::string, client::client_service_t> client::clients_;
 client::client(ws_t ws)
 : handler(ws)
 {
-  LOG("Client connected");
+  LOG(DEBUG) << "Client connected";
 }
 
 client::~client()
@@ -31,7 +31,7 @@ client::~client()
 
 void client::on_read(data_t data, size_t data_size)
 {
-  LOG("Read " << data_size << " bytes");
+  LOG(DEBUG) << "Read " << data_size << " bytes";
   try
   {
     thread t([this](data_t data, size_t data_size) {
@@ -51,7 +51,7 @@ void client::handle_login(const yami::parameters& params, long long sequence_num
   string req_email = params.get_string("email");
   string req_password = params.get_string("password");
 
-  LOG("Login message for email:" << req_email);
+  LOG(DEBUG) << "Login message for email:" << req_email;
 
   for (auto& v : home_system::app::config().get_child("users"))
   {
@@ -61,12 +61,12 @@ void client::handle_login(const yami::parameters& params, long long sequence_num
       if (v.second.get<string>("password") == req_password)
       {
         string name = v.second.get<string>("name");
-        LOG("User " << name << " (" << email << ") is logged in");
+        LOG(DEBUG) << "User " << name << " (" << email << ") is logged in";
 
         // create client service and assign id
         string new_client = create_client(name);
 
-        LOG("Client assigned: " << new_client);
+        LOG(DEBUG) << "Client assigned: " << new_client;
 
         login(new_client);
 
@@ -112,7 +112,7 @@ void client::handle_data(data_t data, size_t data_size)
         return;
       }
 
-      LOG("Message: " << msg << ", from " << source << " to " << target);
+      LOG(DEBUG) << "Message: " << msg << ", from " << source << " to " << target;
 
       if (!this->is_logged_in(source))
       {
@@ -151,12 +151,12 @@ void client::handle_data(data_t data, size_t data_size)
         case yami::posted:
         case yami::transmitted:
         case yami::abandoned:
-          LOGWARN("Posted/Transmitted/Abandoned after timeout");
+          LOG(WARNING) << "Posted/Transmitted/Abandoned after timeout";
           throw runtime_error("Message was abandoned");
           break;
 
         case yami::rejected:
-          LOGWARN("Rejected: " + message->get_exception_msg());
+          LOG(WARNING) << "Rejected: " + message->get_exception_msg();
           throw runtime_error(
               "Message was rejected: " + message->get_exception_msg());
           break;
@@ -166,14 +166,14 @@ void client::handle_data(data_t data, size_t data_size)
     catch (const exception& e)
     {
       // reject message if reply is expected
-      LOGWARN("EXCEPTION: " << e.what());
+      LOG(WARNING) << "EXCEPTION: " << e.what();
       reject(expect_reply, sequence_number, target, source, e.what());
     }
   }
   catch (const exception& e)
   {
     // JSON parsing has failed, ignore such message
-    LOGWARN("EXCEPTION: " << e.what());
+    LOG(WARNING) << "EXCEPTION: " << e.what();
   }
 }
 

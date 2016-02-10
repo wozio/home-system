@@ -16,6 +16,8 @@ home_system::yc_t _yc;
 
 int main(int argc, char** argv)
 {
+  cout << "Home System IO 1 wire" << endl;
+  
   // Declare the supported options.
   po::options_description desc("Allowed options");
   desc.add_options()
@@ -37,11 +39,7 @@ int main(int argc, char** argv)
 
   home_system::init_log("input-output.log", !vm.count("daemonize"));
 
-  if (vm.count("daemonize"))
-  {
-    cout << "1 wire input output started" << endl;
-  }
-  LOG(INFO) << "1 wire input output started";
+  LOG(INFO) << "Started";
 
   home_system::app app(vm.count("daemonize"));
     

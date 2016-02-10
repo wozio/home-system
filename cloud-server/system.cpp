@@ -41,54 +41,60 @@ system::system(ws_t ws)
     throw std::runtime_error("JSON parse error");
   }
 
-  if (d.IsObject())
+  if (!d.IsObject())
   {
-    auto itr = d.FindMember("system");
-    if (itr != d.MemberEnd())
+    LOG("Incorrect message, root element has to be Object");
+    throw std::runtime_error("Incorrect message, root element has to be Object");
+  }
+
+  auto itr = d.FindMember("system");
+  if (itr != d.MemberEnd())
+  {
+    if (itr->value.IsString())
     {
-      if (itr->value.IsString())
+      string n(itr->value.GetString());
+      if (n.size() > 0)
       {
-        string n(itr->value.GetString());
-        if (n.size() > 0)
-        {
-          LOG("System name: " << itr->value.GetString());
-        }
-        else
-          throw std::runtime_error("Empty system name");
+        LOG("System name: " << n);
+        name_ = n;
       }
       else
-        throw std::runtime_error("Wrong system name");
+        throw std::runtime_error("Empty system name");
     }
     else
-      throw std::runtime_error("No system name");
+      throw std::runtime_error("Wrong system name");
+  }
+  else
+    throw std::runtime_error("No system name");
 
-    itr = d.FindMember("users");
-    if (itr != d.MemberEnd())
+  itr = d.FindMember("users");
+  if (itr != d.MemberEnd())
+  {
+    if (itr->value.IsArray())
     {
-      if (itr->value.IsArray())
+      for (auto vitr = itr->value.Begin(); vitr != itr->value.End(); ++vitr)
       {
-        for (auto vitr = itr->value.Begin(); vitr != itr->value.End(); ++vitr)
+        switch (vitr->GetType())
         {
-          switch (vitr->GetType())
-          {
-          case rapidjson::kStringType:
-            LOG("Allowed user: " << vitr->GetString());
-            break;
-          default:
-            break;
-          }
+        case rapidjson::kStringType:
+          LOG("Allowed user: " << vitr->GetString());
+          // adding client to client<->system map
+          CLIENTS.put(vitr->GetString(), name_);
+          break;
+        default:
+          break;
         }
       }
     }
   }
 
+  // sending result to system
   Document reply(kObjectType);
   reply.AddMember("result", "success", reply.GetAllocator());
   StringBuffer buffer;
   Writer<StringBuffer> writer(buffer);
   reply.Accept(writer);
 
-  // sending to cloud server
   ws->sendFrame(buffer.GetString(), buffer.GetSize());
 }
 
@@ -98,13 +104,44 @@ system::~system()
 
 void system::on_read(data_t data, size_t data_size)
 {
-  // unpack message to find client
-  // get client
-  auto handler = CLIENTS.get();
-  if (handler)
+  // unpack message
+  // adding \0 character at the end for JSON parser
+  // it is guaranteed that data size is bigger than data_size
+  (*data)[data_size] = '\0';
+
+  // decode JSON
+  rapidjson::Document d;
+  d.Parse(data->data());
+  if (d.HasParseError())
+  {
+    LOG("Parse error: " << d.GetErrorOffset() << ": " << rapidjson::GetParseError_En(d.GetParseError()));
+    throw std::runtime_error("JSON parse error");
+  }
+  if (!d.IsObject())
+  {
+    LOG("Incorrect message, root element has to be Object");
+    throw std::runtime_error("Incorrect message, root element has to be Object");
+  }
+
+  string target;
+  auto itr = d.FindMember("target");
+  if (itr != d.MemberEnd())
+  {
+    if (itr->value.IsString())
+    {
+      target = itr->value.GetString();
+    }
+  }
+  if (target.size() == 0)
+  {
+    throw std::runtime_error("No target in message.");
+  }
+  // find target client
+  auto client = CLIENTS.get(target);
+  if (client)
   {
     // send data to client
-    on_send(handler, data, data_size);
+    on_send(client, data, data_size);
   }
 }
 

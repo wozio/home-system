@@ -16,7 +16,7 @@ cloud_client::cloud_client(ws_t ws, std::function<void()>shutdown_callback)
 : client(ws),
   on_shutdown_(shutdown_callback)
 {
-  LOG("Connected to cloud server, logging in and sending allowed users");
+  LOG(DEBUG) << "Connected to cloud server, logging in and sending allowed users";
 
   // fetching cloud system name, password and list of allowed users from configuration
   // and encoding to JSON
@@ -64,7 +64,7 @@ cloud_client::cloud_client(ws_t ws, std::function<void()>shutdown_callback)
   d.Parse(data->data());
   if (d.HasParseError())
   {
-    LOG("Parse error: " << d.GetErrorOffset() << ": " << rapidjson::GetParseError_En(d.GetParseError()));
+    LOG(DEBUG) << "Parse error: " << d.GetErrorOffset() << ": " << rapidjson::GetParseError_En(d.GetParseError());
     throw std::runtime_error("JSON parse error");
   }
 
@@ -76,7 +76,7 @@ cloud_client::cloud_client(ws_t ws, std::function<void()>shutdown_callback)
     {
       if (string(itr->value.GetString()) == "success")
       {
-        LOG("Successfully logged in");
+        LOG(DEBUG) << "Successfully logged in";
         return;
       }
     }
@@ -91,7 +91,7 @@ cloud_client::~cloud_client()
 
 void cloud_client::shutdown()
 {
-  LOG("Cloud client shutting down");
+  LOG(DEBUG) << "Cloud client shutting down";
   handler::shutdown();
   on_shutdown_();
 }

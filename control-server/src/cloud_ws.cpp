@@ -43,7 +43,7 @@ cloud_ws::~cloud_ws()
 void cloud_ws::connect()
 {
   if (!logged_)
-    LOGINFO("Connecting to cloud server");
+    LOG(INFO) << "Connecting to cloud server";
   
   try
   {
@@ -84,7 +84,7 @@ void cloud_ws::connect()
   {
     if (!logged_)
     {
-      LOGERROR("Error: " << e.what());
+      LOG(ERROR) << "Error: " << e.what();
       logged_ = true;
     }
     timer_.set_from_now(1000, [this](){

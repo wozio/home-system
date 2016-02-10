@@ -43,14 +43,14 @@ void port::open_port()
   static bool logged = false;
   if (!logged)
   {
-    LOGINFO("Opening COM port " << port_);
+    LOG(INFO) << "Opening COM port " << port_;
   }
 
   try
   {
     serial_port_.open(port_);
     serial_port_.set_option(serial_port::baud_rate(2400));
-    LOGINFO("Opened COM port " << port_);
+    LOG(INFO) << "Opened COM port " << port_;
     logged = false;
     setup_read();
   }
@@ -58,8 +58,8 @@ void port::open_port()
   {
     if (!logged)
     {
-      LOGWARN("Unable to open COM port " << port_ << ": " << e.what() <<
-        ", keep trying...");
+      LOG(WARNING) << "Unable to open COM port " << port_ << ": " << e.what() <<
+        ", keep trying...";
       logged = true;
     }
     timer_.set_from_now(1000, [this] () { open_port(); });
@@ -73,7 +73,7 @@ void port::setup_read()
     
   timer_.cancel();
   timer_.set_from_now(2000, [this] () {
-    LOGWARN("Timeout on port read");
+    LOG(WARNING) << "Timeout on port read";
     close_port();
     open_port();
   });
@@ -115,7 +115,7 @@ void port::read_handler(const boost::system::error_code& error,
   }
   else if (error != error::operation_aborted)
   {
-    LOGWARN("Error on port read");
+    LOG(WARNING) << "Error on port read";
     close_port();
     open_port();
   }
@@ -130,7 +130,7 @@ void port::write_handler(const boost::system::error_code& error,
   }
   else if (error != error::operation_aborted)
   {
-    LOGWARN("Error on port write");
+    LOG(WARNING) << "Error on port write";
     close_port();
     open_port();
   }
@@ -143,8 +143,8 @@ void port::check_state(int bitmap)
     int state = bitmap & 1;
     if (state != state_[i])
     {
-      LOG("Relay " << i << " state: " << state_[i] <<
-        "->" << state);
+      LOG(DEBUG) << "Relay " << i << " state: " << state_[i] <<
+        "->" << state;
       service_->on_output_state_change(i, state);
       state_[i] = state;
     }
@@ -169,8 +169,8 @@ void port::exec_state_change()
           // disable relay number is encoded from 'i' ASCII code
           buf = 105;
         buf += j;
-        LOG("executing relay " << j << " state change: " <<
-          state_[j] << "->" << wanted_state_[j]);
+        LOG(DEBUG) << "executing relay " << j << " state change: " <<
+          state_[j] << "->" << wanted_state_[j];
         serial_port_.async_write_some(buffer(&buf, 1),
           [&] (const boost::system::error_code& error, std::size_t bytes_transferred) { write_handler(error, bytes_transferred); } );
         break;
@@ -179,7 +179,7 @@ void port::exec_state_change()
   }
   catch (const boost::system::system_error& e)
   {
-    LOGWARN("Unable to write to COM port " << port_ << ": " << e.what());
+    LOG(WARNING) << "Unable to write to COM port " << port_ << ": " << e.what();
     close_port();
     open_port();
   }
@@ -189,7 +189,7 @@ void port::close_port()
 {
   if (serial_port_.is_open())
   {
-    LOGINFO("Closing COM port: " << port_);
+    LOG(INFO) << "Closing COM port: " << port_;
     serial_port_.cancel();
     serial_port_.close();
   }
@@ -206,7 +206,7 @@ port::~port()
 {
   if (serial_port_.is_open())
   {
-    LOGINFO("Closing COM port: " << port_);
+    LOG(INFO) << "Closing COM port: " << port_;
     serial_port_.cancel();
     serial_port_.close();
   }

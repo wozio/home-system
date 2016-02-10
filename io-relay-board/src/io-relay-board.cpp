@@ -1,6 +1,6 @@
 #include "iorb-service.h"
 
-#include "logger.h"
+#include "logger_init.h"
 #include "yamicontainer.h"
 
 #include <boost/program_options.hpp>
@@ -10,6 +10,8 @@
 #include <signal.h>
 #endif
 
+INITIALIZE_EASYLOGGINGPP
+
 home_system::yc_t _yc;
 
 using namespace std;
@@ -18,8 +20,8 @@ namespace po = boost::program_options;
 
 int main(int argc, char** argv)
 {
-  cout << "Home System IO Relay Board controller" << endl;
-
+  cout << "Home System IO relay board" << endl;
+  
   // Declare the supported options.
   po::options_description desc("Allowed options");
   desc.add_options()
@@ -29,7 +31,6 @@ int main(int argc, char** argv)
 #endif
     ("name,n", po::value<string>()->default_value("relay-board"), "service name")
     ("port,p", po::value<string>(), "COM port")
-    ("log_level,l", po::value<string>()->default_value("debug"), "Logging level, valid values are:\nerror\nwarning\ninformation\ndebug")
   ;
 
   po::variables_map vm;
@@ -49,10 +50,12 @@ int main(int argc, char** argv)
     return 1;
   }
   
-  home_system::logger::_log_file_path = "io-relay-board.log";
+  home_system::init_log("io-relay-board.log", !vm.count("daemonize"));
+  
+  LOG(INFO) << "Started";
 
 #ifdef __linux__
-  LOGINFO("Relay Board started");
+  
   
   if (vm.count("daemonize"))
   {
@@ -61,7 +64,7 @@ int main(int argc, char** argv)
     pid_t pid = fork();
     if (pid < 0)
     {
-      LOGERROR("Cannot fork");
+      LOG(ERROR) << "Cannot fork";
       exit(EXIT_FAILURE);
     }
     else if (pid > 0)
@@ -74,7 +77,7 @@ int main(int argc, char** argv)
     pid_t sid = setsid();
     if (sid < 0)
     {
-      LOGERROR("Cannot setsid");
+      LOG(ERROR) << "Cannot setsid";
       exit(EXIT_FAILURE);
     }
     
@@ -117,15 +120,15 @@ int main(int argc, char** argv)
   }
   catch (const std::exception & e)
   {
-    LOGERROR("Exception: " << e.what());
+    LOG(ERROR) << "Exception: " << e.what();
   }
   catch (...)
   {
-    LOGERROR("Unknown Exception");
+    LOG(ERROR) << "Unknown Exception";
   }
 
   _yc.reset();
 
-  LOGINFO("Relay Board quitting");
+  LOG(INFO) << "Relay Board quitting";
   return 0;
 }

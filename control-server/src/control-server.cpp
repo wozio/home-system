@@ -1,7 +1,7 @@
 #include "http.h"
 #include "control-service.h"
 #include "app.h"
-#include "logger.h"
+#include "logger_init.h"
 #include "yamicontainer.h"
 #include "discovery.h"
 #include "cloud_ws.h"
@@ -15,6 +15,8 @@
 #include <boost/program_options.hpp>
 #include <signal.h>
 #include <iostream>
+
+INITIALIZE_EASYLOGGINGPP
 
 using namespace std;
 namespace po = boost::program_options;
@@ -39,7 +41,6 @@ int main(int argc, char** argv)
   ("cloud-no-secure", "do not use SSL when communicating with cloud server (NOT SECURE!)")
   ("root,r", po::value<std::string>()->default_value("/var/www"), "path to web page root")
   ("port,p", po::value<int>()->default_value(80), "port number for web page access")
-  ("log_level,l", po::value<string>()->default_value("debug"), "Logging level, valid values are:\nerror\nwarning\ninformation\ndebug")
   ;
 
   po::variables_map vm;
@@ -52,15 +53,13 @@ int main(int argc, char** argv)
     return 1;
   }
   
-  home_system::logger::_log_file_path = "control-server.log";
+  home_system::init_log("control-server.log", !vm.count("daemonize"));
   
-  LOGINFO("Home System Control Server started");
+  LOG(INFO) << "Started";
 
   try
   {
     home_system::app app("control-server.conf", vm.count("daemonize"));
-
-    //cout << home_system::app::config().get<std::string>("testdata");
 
     _yc = home_system::yami_container::create();
     _discovery = home_system::discovery::create();
@@ -73,8 +72,8 @@ int main(int argc, char** argv)
       svs, new Poco::Net::HTTPServerParams);
     srv.start();
 
-    LOGINFO("Listening for http access on " << boost::asio::ip::host_name() <<
-      ":" << port);
+    LOG(INFO) << "Listening for http access on " << boost::asio::ip::host_name() <<
+      ":" << port;
     
     std::unique_ptr<home_system::cloud_ws> cws;
     
@@ -96,18 +95,18 @@ int main(int argc, char** argv)
   }
   catch (const exception& e)
   {
-    LOGERROR("Exception: " << e.what());
+    LOG(ERROR) << "Exception: " << e.what();
   }
   catch (...)
   {
-    LOGERROR("Unknown Exception");
+    LOG(ERROR) << "Unknown Exception";
   }
   
   _handlers.reset();
   _discovery.reset();
   _yc.reset();
   
-  LOGINFO("Home System Control Server quitting");
+  LOG(INFO) << "Home System Control Server quitting";
   
   return 0;
 }
