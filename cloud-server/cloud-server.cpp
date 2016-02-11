@@ -1,6 +1,6 @@
 #include "request_handler_factories.h"
 #include <boost/asio.hpp>
-#include "logger.h"
+#include "logger_init.h"
 #include "systems.h"
 #include "clients.h"
 #include "handlers.h"
@@ -13,6 +13,8 @@
 #include <boost/program_options.hpp>
 #include <signal.h>
 #include <iostream>
+
+INITIALIZE_EASYLOGGINGPP
 
 using namespace std;
 namespace po = boost::program_options;
@@ -47,9 +49,9 @@ int main(int argc, char** argv)
     return 1;
   }
   
-  home_system::logger::_log_file_path = "cloud-server.log";
+  home_system::init_log("cloud-server.log", !vm.count("daemonize"));
   
-  LOGINFO("Home System Cloud Server started");
+  LOG(INFO) << "Started";
 #ifdef __linux__
   if (vm.count("daemonize"))
   {
@@ -102,8 +104,8 @@ int main(int argc, char** argv)
       client_svs, new Poco::Net::HTTPServerParams);
     client_srv.start();
 
-    LOGINFO("Listening for client access on " << boost::asio::ip::host_name() <<
-      ":" << port);
+    LOG(INFO) << "Listening for client access on " << boost::asio::ip::host_name() <<
+      ":" << port;
     
     port = vm["system_port"].as<int>();
     Poco::Net::ServerSocket system_svs(port);
@@ -112,8 +114,8 @@ int main(int argc, char** argv)
       system_svs, new Poco::Net::HTTPServerParams);
     system_srv.start();
 
-    LOGINFO("Listening for system access on " << boost::asio::ip::host_name() <<
-      ":" << port);
+    LOG(INFO) << "Listening for system access on " << boost::asio::ip::host_name() <<
+      ":" << port;
     
 #ifdef __linux__
     if (vm.count("daemonize"))
@@ -151,14 +153,14 @@ int main(int argc, char** argv)
   }
   catch (const exception& e)
   {
-    LOGERROR("Exception: " << e.what());
+    LOG(ERROR) << "Exception: " << e.what();
   }
   catch (...)
   {
-    LOGERROR("Unknown Exception");
+    LOG(ERROR) << "Unknown Exception";
   }
 
-  LOGINFO("Home System Cloud Server quitting");
+  LOG(INFO) << "Home System Cloud Server quitting";
   
   return 0;
 }

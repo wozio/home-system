@@ -13,7 +13,7 @@ namespace home_system
 client::client(ws_t ws)
 : handler(ws)
 {
-  LOG("New client connected");
+  LOG(DEBUG) << "New client connected";
 }
 
 client::~client()
@@ -33,7 +33,7 @@ void client::on_read(data_t data, size_t data_size)
 
 void client::shutdown()
 {
-  LOG("Client shutdown");
+  LOG(DEBUG) << "Client shutdown";
   handler::shutdown();
   // from shared_from_this shared_ptr<handler> is obtained
   // casting it to shared_ptr<client>

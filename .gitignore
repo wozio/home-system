@@ -16,4 +16,4 @@ dist/
 *.lib
 *.dll
 *.exp
-
+*.VC.opendb

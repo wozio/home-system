@@ -16,7 +16,7 @@ namespace home_system
 system::system(ws_t ws)
 : handler(ws)
 {
-  LOG("New system connected");
+  LOG(DEBUG) << "New system connected";
 
   size_t data_size = 0;
   auto data = create_data();
@@ -37,13 +37,13 @@ system::system(ws_t ws)
   d.Parse(data->data());
   if (d.HasParseError())
   {
-    LOG("Parse error: " << d.GetErrorOffset() << ": " << rapidjson::GetParseError_En(d.GetParseError()));
+    LOG(DEBUG) << "Parse error: " << d.GetErrorOffset() << ": " << rapidjson::GetParseError_En(d.GetParseError());
     throw std::runtime_error("JSON parse error");
   }
 
   if (!d.IsObject())
   {
-    LOG("Incorrect message, root element has to be Object");
+    LOG(DEBUG) << "Incorrect message, root element has to be Object";
     throw std::runtime_error("Incorrect message, root element has to be Object");
   }
 
@@ -55,8 +55,7 @@ system::system(ws_t ws)
       string n(itr->value.GetString());
       if (n.size() > 0)
       {
-        LOG("System name: " << n);
-        name_ = n;
+        LOG(DEBUG) << "System name: " << n;
       }
       else
         throw std::runtime_error("Empty system name");
@@ -77,7 +76,7 @@ system::system(ws_t ws)
         switch (vitr->GetType())
         {
         case rapidjson::kStringType:
-          LOG("Allowed user: " << vitr->GetString());
+          LOG(DEBUG) << "Allowed user: " << vitr->GetString();
           // adding client to client<->system map
           CLIENTS.put(vitr->GetString(), name_);
           break;
@@ -114,12 +113,12 @@ void system::on_read(data_t data, size_t data_size)
   d.Parse(data->data());
   if (d.HasParseError())
   {
-    LOG("Parse error: " << d.GetErrorOffset() << ": " << rapidjson::GetParseError_En(d.GetParseError()));
+    LOG(DEBUG) << "Parse error: " << d.GetErrorOffset() << ": " << rapidjson::GetParseError_En(d.GetParseError());
     throw std::runtime_error("JSON parse error");
   }
   if (!d.IsObject())
   {
-    LOG("Incorrect message, root element has to be Object");
+    LOG(DEBUG) << "Incorrect message, root element has to be Object";
     throw std::runtime_error("Incorrect message, root element has to be Object");
   }
 
@@ -147,7 +146,7 @@ void system::on_read(data_t data, size_t data_size)
 
 void system::shutdown()
 {
-  LOG("System shutdown");
+  LOG(DEBUG) << "System shutdown";
   // from shared_from_this shared_ptr<handler> is obtained
   // casting it to shared_ptr<system>
   SYSTEMS.remove(dynamic_pointer_cast<system>(shared_from_this()));

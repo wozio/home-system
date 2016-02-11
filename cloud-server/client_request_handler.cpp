@@ -24,7 +24,7 @@ void client_request_handler::handleRequest(HTTPServerRequest& request, HTTPServe
 {
   try
   {
-    LOG("Request for client connection");
+    LOG(DEBUG) << "Request for client connection";
     
     // any exceptions thrown on WebSocket handshake or client validation
     // will lead to not registering client
@@ -36,7 +36,7 @@ void client_request_handler::handleRequest(HTTPServerRequest& request, HTTPServe
   }
   catch (const WebSocketException& exc)
   {
-    LOGERROR(exc.displayText());
+    LOG(ERROR) << exc.displayText();
     switch (exc.code())
     {
     case WebSocket::WS_ERR_HANDSHAKE_UNSUPPORTED_VERSION:
@@ -53,11 +53,11 @@ void client_request_handler::handleRequest(HTTPServerRequest& request, HTTPServe
   }
   catch (const Exception& e)
   {
-    LOGERROR(e.displayText());
+    LOG(ERROR) << e.displayText();
   }
   catch (const exception& e)
   {
-    LOGERROR(e.what());
+    LOG(ERROR) << e.what();
   }
 }
 

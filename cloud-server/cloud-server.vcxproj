@@ -19,9 +19,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{EFE39903-B31C-45B8-B00E-E1B2EE62FADB}</ProjectGuid>
+    <ProjectGuid>{F42FDE94-1C2D-4CC2-8213-003F4F457F77}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>controlserver</RootNamespace>
+    <RootNamespace>cloudserver</RootNamespace>
     <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -58,34 +58,28 @@
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="..\common\common.props" />
     <Import Project="..\apps.props" />
-    <Import Project="..\ws_apps.props" />
+    <Import Project="..\common\common.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="..\apps.props" />
     <Import Project="..\common\common.props" />
-    <Import Project="..\ws_apps.props" />
-    <Import Project="..\common\libs.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="..\apps.props" />
     <Import Project="..\common\common.props" />
-    <Import Project="..\ws_apps.props" />
-    <Import Project="..\common\libs.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="..\apps.props" />
     <Import Project="..\common\common.props" />
-    <Import Project="..\ws_apps.props" />
-    <Import Project="..\common\libs.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
+    <IncludePath>..\rapidjson\include;..\common\wshandling;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
@@ -104,12 +98,10 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>Crypt32.lib; libeay32MTd.lib;ssleay32MTd.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -142,7 +134,6 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>libeay32MD.lib;ssleay32MD.lib;wshandling.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -164,27 +155,23 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\client.cpp" />
-    <ClCompile Include="src\client_service.cpp" />
-    <ClCompile Include="src\cloud_client.cpp" />
-    <ClCompile Include="src\cloud_ws.cpp" />
-    <ClCompile Include="src\control-server.cpp" />
-    <ClCompile Include="src\control-service.cpp" />
-    <ClCompile Include="src\file_request_handler.cpp" />
-    <ClCompile Include="src\http.cpp" />
-    <ClCompile Include="src\json_converter.cpp" />
-    <ClCompile Include="src\ws_request_handler.cpp" />
+    <ClCompile Include="client.cpp" />
+    <ClCompile Include="clients.cpp" />
+    <ClCompile Include="client_request_handler.cpp" />
+    <ClCompile Include="cloud-server.cpp" />
+    <ClCompile Include="request_handler_factories.cpp" />
+    <ClCompile Include="system.cpp" />
+    <ClCompile Include="systems.cpp" />
+    <ClCompile Include="system_request_handler.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\client.h" />
-    <ClInclude Include="src\client_service.h" />
-    <ClInclude Include="src\cloud_client.h" />
-    <ClInclude Include="src\cloud_ws.h" />
-    <ClInclude Include="src\control-service.h" />
-    <ClInclude Include="src\file_request_handler.h" />
-    <ClInclude Include="src\http.h" />
-    <ClInclude Include="src\json_converter.h" />
-    <ClInclude Include="src\ws_request_handler.h" />
+    <ClInclude Include="client.h" />
+    <ClInclude Include="clients.h" />
+    <ClInclude Include="client_request_handler.h" />
+    <ClInclude Include="request_handler_factories.h" />
+    <ClInclude Include="system.h" />
+    <ClInclude Include="systems.h" />
+    <ClInclude Include="system_request_handler.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

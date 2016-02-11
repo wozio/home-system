@@ -14,7 +14,7 @@ systems::~systems()
 
 void systems::add(system_t system)
 {
-  LOG("System add");
+  LOG(DEBUG) << "System add";
   system_ = system;
 }
 
@@ -25,7 +25,7 @@ system_t systems::get()
 
 void systems::remove(system_t system)
 {
-  LOG("System remove");
+  LOG(DEBUG) << "System remove";
   system_.reset();
 }
 
