@@ -21,7 +21,7 @@ FC=gfortran
 AS=as
 
 # Macros
-CND_PLATFORM=GNU-Linux-x86
+CND_PLATFORM=GNU-Linux
 CND_DLIB_EXT=so
 CND_CONF=Release
 CND_DISTDIR=dist
@@ -35,6 +35,8 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
 OBJECTFILES= \
+	${OBJECTDIR}/src/client.o \
+	${OBJECTDIR}/src/client_service.o \
 	${OBJECTDIR}/src/cloud_client.o \
 	${OBJECTDIR}/src/cloud_ws.o \
 	${OBJECTDIR}/src/control-server.o \
@@ -42,7 +44,6 @@ OBJECTFILES= \
 	${OBJECTDIR}/src/file_request_handler.o \
 	${OBJECTDIR}/src/http.o \
 	${OBJECTDIR}/src/json_converter.o \
-	${OBJECTDIR}/src/ws_com_handler.o \
 	${OBJECTDIR}/src/ws_request_handler.o
 
 
@@ -73,6 +74,16 @@ LDLIBSOPTIONS=-L../common/yami4/lib -lPocoFoundation -lPocoXML -lboost_filesyste
 ../bin/${CND_CONF}/control-server: ${OBJECTFILES}
 	${MKDIR} -p ../bin/${CND_CONF}
 	${LINK.cc} -o ../bin/${CND_CONF}/control-server ${OBJECTFILES} ${LDLIBSOPTIONS} -s
+
+${OBJECTDIR}/src/client.o: src/client.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src
+	${RM} "$@.d"
+	$(COMPILE.cc) -O3 -Wall -s -I../common/common/src -I../common/yami4/include -I../rapidjson/include -I../common/wshandling -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/client.o src/client.cpp
+
+${OBJECTDIR}/src/client_service.o: src/client_service.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src
+	${RM} "$@.d"
+	$(COMPILE.cc) -O3 -Wall -s -I../common/common/src -I../common/yami4/include -I../rapidjson/include -I../common/wshandling -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/client_service.o src/client_service.cpp
 
 ${OBJECTDIR}/src/cloud_client.o: src/cloud_client.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
@@ -108,11 +119,6 @@ ${OBJECTDIR}/src/json_converter.o: src/json_converter.cpp
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} "$@.d"
 	$(COMPILE.cc) -O3 -Wall -s -I../common/common/src -I../common/yami4/include -I../rapidjson/include -I../common/wshandling -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/json_converter.o src/json_converter.cpp
-
-${OBJECTDIR}/src/ws_com_handler.o: src/ws_com_handler.cpp 
-	${MKDIR} -p ${OBJECTDIR}/src
-	${RM} "$@.d"
-	$(COMPILE.cc) -O3 -Wall -s -I../common/common/src -I../common/yami4/include -I../rapidjson/include -I../common/wshandling -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/ws_com_handler.o src/ws_com_handler.cpp
 
 ${OBJECTDIR}/src/ws_request_handler.o: src/ws_request_handler.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src

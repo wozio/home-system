@@ -62,9 +62,6 @@
             <pElem>../common/yami4/lib</pElem>
           </linkerAddLib>
           <linkerLibItems>
-            <linkerLibLibItem>PocoFoundation</linkerLibLibItem>
-            <linkerLibLibItem>PocoXML</linkerLibLibItem>
-            <linkerLibLibItem>boost_filesystem</linkerLibLibItem>
             <linkerLibLibItem>boost_program_options</linkerLibLibItem>
             <linkerLibLibItem>boost_system</linkerLibLibItem>
             <linkerLibLibItem>boost_thread</linkerLibLibItem>
@@ -95,10 +92,12 @@
             <linkerLibLibItem>yamicpp</linkerLibLibItem>
             <linkerLibLibItem>yamicore</linkerLibLibItem>
             <linkerLibLibItem>pthread</linkerLibLibItem>
+            <linkerLibLibItem>PocoFoundation</linkerLibLibItem>
             <linkerLibLibItem>PocoNet</linkerLibLibItem>
             <linkerLibLibItem>PocoNetSSL</linkerLibLibItem>
-            <linkerLibLibItem>boost_date_time</linkerLibLibItem>
+            <linkerLibLibItem>boost_filesystem</linkerLibLibItem>
           </linkerLibItems>
+          <commandLine>-v</commandLine>
         </linkerTool>
         <requiredProjects>
           <makeArtifact PL="../common/common"

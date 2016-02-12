@@ -61,7 +61,7 @@ FFLAGS=
 ASFLAGS=
 
 # Link Libraries and Options
-LDLIBSOPTIONS=-L../common/yami4/lib -lPocoFoundation -lPocoXML -lboost_filesystem -lboost_program_options -lboost_system -lboost_thread ../common/wshandling/../bin/Debug/libwshandling.a ../common/common/../bin/Debug/libcommon.a -lyamicpp -lyamicore -lpthread -lPocoNet -lPocoNetSSL -lboost_date_time
+LDLIBSOPTIONS=-L../common/yami4/lib -lboost_program_options -lboost_system -lboost_thread ../common/wshandling/../bin/Debug/libwshandling.a ../common/common/../bin/Debug/libcommon.a -lyamicpp -lyamicore -lpthread -lPocoFoundation -lPocoNet -lPocoNetSSL -lboost_filesystem
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
@@ -73,7 +73,7 @@ LDLIBSOPTIONS=-L../common/yami4/lib -lPocoFoundation -lPocoXML -lboost_filesyste
 
 ../bin/${CND_CONF}/control-server: ${OBJECTFILES}
 	${MKDIR} -p ../bin/${CND_CONF}
-	${LINK.cc} -o ../bin/${CND_CONF}/control-server ${OBJECTFILES} ${LDLIBSOPTIONS}
+	${LINK.cc} -o ../bin/${CND_CONF}/control-server ${OBJECTFILES} ${LDLIBSOPTIONS} -v
 
 ${OBJECTDIR}/src/client.o: src/client.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
