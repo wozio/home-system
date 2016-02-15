@@ -58,14 +58,14 @@ int sources::create_session(int channel, const std::string& client_endpoint, con
   std::vector<std::string> dbsources;
   db_.get_sources_for_channel(channel, dbsources);
   
-  LOG("sources found for channel " << channel << " " << dbsources.size());
+  LOG(DEBUG) << "sources found for channel " << channel << " " << dbsources.size();
   
   for (auto dbsource : dbsources)
   {
     auto sit = sources_names_.find(dbsource);
     if (sit != sources_names_.end())
     {
-      LOG("Available source for channel: " << sit->first << "(" << sit->second->endpoint() << ")");
+      LOG(DEBUG) << "Available source for channel: " << sit->first << "(" << sit->second->endpoint() << ")";
       return sit->second->create_session(channel, client_endpoint, client);
     }
   }

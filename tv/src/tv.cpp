@@ -1,11 +1,13 @@
 #include "app.h"
-#include "logger.h"
+#include "logger_init.h"
 #include "db.h"
 #include "tv-service.h"
 #include "discovery.h"
 #include "yamicontainer.h"
 #include <boost/program_options.hpp>
 #include <vector>
+
+INITIALIZE_EASYLOGGINGPP
 
 using namespace std;
 namespace po = boost::program_options;
@@ -15,6 +17,8 @@ home_system::discovery_t _discovery;
 
 int main(int argc, char** argv)
 {
+  cout << "Home System TV" << endl;
+
   // Declare the supported options.
   po::options_description desc("Allowed options");
   desc.add_options()
@@ -35,9 +39,9 @@ int main(int argc, char** argv)
     return 1;
   }
   
-  home_system::logger::_log_file_path = "tv.log";
+  home_system::init_log("tv.log", !vm.count("daemonize"));
   
-  LOGINFO("TV started");
+  LOG(INFO) << "Started";
   
   home_system::app app(vm.count("daemonize"));
   
@@ -52,17 +56,17 @@ int main(int argc, char** argv)
   }
   catch (const std::exception & e)
   {
-    LOGERROR("Exception: " << e.what());
+    LOG(ERROR) << "Exception: " << e.what();
   }
   catch (...)
   {
-    LOGERROR("Unknown Exception");
+    LOG(ERROR) << "Unknown Exception";
   }
   
   _discovery.reset();
   _yc.reset();
 
-  LOGINFO("TV quitting");
+  LOG(INFO) << "Quitting";
   return 0;
 }
 

@@ -17,3 +17,4 @@ dist/
 *.dll
 *.exp
 *.VC.opendb
+/ipch/CLIENT_WIN-34da462a/*.ipch

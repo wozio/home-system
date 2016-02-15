@@ -5,6 +5,7 @@
 #include <Poco/Data/SQLite/Connector.h>
 
 using namespace Poco::Data;
+using namespace Poco::Data::Keywords;
 using namespace std;
 
 namespace home_system
@@ -16,7 +17,7 @@ db::db()
 {
   lock_guard<mutex> lock(db_mutex_);
 
-  LOG("DB created");
+  LOG(DEBUG) << "DB created";
   SQLite::Connector::registerConnector();
   
   session().begin();
@@ -25,9 +26,9 @@ db::db()
   session() << "CREATE TABLE IF NOT EXISTS recordings (id INTEGER PRIMARY KEY, channel INTEGER, start_time INTEGER, duration INTEGER)", now;
   session().commit();
   
-  vector<string> sources;
-  vector<long long> locals;
-  vector<int> channels;
+  std::vector<string> sources;
+  std::vector<long long> locals;
+  std::vector<int> channels;
   session() << "SELECT channel,source,local FROM channel_map",
     into(channels), into(sources), into(locals), now;
   
@@ -70,22 +71,22 @@ void db::check_and_add_local_channel(const std::string& source, long long local,
   }
   catch (const std::out_of_range&)
   {
-    LOG("New channel from " << source << ": [" << local << "] " << name);
+    LOG(DEBUG) << "New channel from " << source << ": [" << local << "] " << name;
     add_channel(source, local, name);
   }
 }
 
 void db::add_channel(const std::string& source, long long local, const std::string& name)
 {
-  session() << "INSERT INTO channel_map (local, source) VALUES (:local, :source)", use(local), use(source), now;
+  session() << "INSERT INTO channel_map (local, source) VALUES (:local, :source)", use(local), useRef(source), now;
   
   int channel = -1;
   session() << "SELECT channel FROM channel_map WHERE source = :s AND local = :l",
-    into(channel), use(source), use(local), now;
+    into(channel), useRef(source), use(local), now;
   source_local_to_global_[source][local] = channel;
   
   session() << "INSERT INTO names (channel, name) VALUES (:channel, :name)",
-    use(channel), use(name), now;
+    use(channel), useRef(name), now;
 }
 
 bool db::check_channel_existence(int channel)
@@ -107,7 +108,7 @@ void db::get_channels(std::vector<int>& channels, std::vector<std::string>& name
 
 
 
-int db::get_channel_from_source_local(const std::string& source, long long local) throw(std::out_of_range)
+int db::get_channel_from_source_local(const std::string& source, long long local)
 {
   //LOG("get channel from source local: source= " << source << ", local=" << local);
   
@@ -135,7 +136,7 @@ long long db::get_local_channel(int channel, const std::string& source)
 {
   long long local;
   session() << "SELECT local FROM channel_map WHERE channel = :channel AND source = :source",
-    into(local), use(channel), use(source), now;
+    into(local), use(channel), useRef(source), now;
   return local;
 }
 
@@ -152,14 +153,15 @@ void db::get_recordings_to_start(std::vector<int>& recordings)
   time_t cur_time = time(NULL);
   session() <<
     "SELECT id FROM recordings WHERE start_time - 300 <= :cur_time AND (start_time + duration + 300 >= :cur_time OR duration = -1)",
-    into(recordings), use((Poco::UInt64)cur_time), use((Poco::UInt64)cur_time), now;
+    into(recordings), use(cur_time), use(cur_time), now;
 }
 
 void db::get_recordings_to_stop(std::vector<int>& recordings)
 {
+  time_t cur_time = time(NULL);
   session() <<
     "SELECT id FROM recordings WHERE start_time + duration + 300 <= :cur_time",
-    into(recordings), use((Poco::UInt64)time(NULL)), now;
+    into(recordings), use(cur_time), now;
 }
 
 int db::create_recording(int channel, time_t start_time, int duration)
@@ -173,8 +175,8 @@ int db::create_recording(int channel, time_t start_time, int duration)
       into(id), now;
     session() <<
       "INSERT INTO recordings (id, channel, start_time, duration) VALUES (:id, :channel, :start_time, :duration)",
-      use(id), use(channel), use((Poco::UInt64)start_time), use(duration), now;
-    LOG("created recording: id=" << id << " channel=" << channel);
+      use(id), use(channel), use(start_time), use(duration), now;
+    LOG(DEBUG) << "created recording: id=" << id << " channel=" << channel;
   }
   return id;
 }

@@ -28,12 +28,12 @@ session::session(int id, std::string endpoint, std::string destination)
   ostringstream str;
   str << "timeshift_buffer_" << id_ << ".ts";
   buffer_.open(str.str(), ios::trunc | ios::binary | ios::out | ios::in);
-  LOG("Create session id=" << id << " endpoint=" << endpoint << " destination=" << destination);
+  LOG(DEBUG) << "Create session id=" << id << " endpoint=" << endpoint << " destination=" << destination;
 }
 
 session::~session()
 {
-  LOG("Delete client session id=" << id_);
+  LOG(DEBUG) << "Delete client session id=" << id_;
 
   try
   {
@@ -43,7 +43,7 @@ session::~session()
   }
   catch (const std::exception& e)
   {
-    LOGWARN("EXCEPTION: " << e.what());
+    LOG(WARNING) << "EXCEPTION: " << e.what();
   }
 }
 
@@ -55,7 +55,7 @@ void session::stream_part(const void* buf, size_t length)
   
   streampos to_write = length;
   
-  LOG("RECEIVED: " << length << " writepos=" << writepos_ << " readpos=" << dec << readpos_);
+  LOG(DEBUG)  << "RECEIVED: " << length << " writepos=" << writepos_ << " readpos=" << dec << readpos_;
   
   buffer_.seekp(writepos_);
 
@@ -105,27 +105,27 @@ void session::stream_part(const void* buf, size_t length)
   buffer_.write(mybuf, to_write);
   writepos_ += to_write;
 
-  LOG("RECV: writepos=" << dec << writepos_ << " readpos=" << dec << readpos_);
+  LOG(DEBUG) << "RECV: writepos=" << dec << writepos_ << " readpos=" << dec << readpos_;
 
   trigger_send_some();
 }
 
 void session::play()
 {
-  LOG("Play for session " << id_);
+  LOG(DEBUG) << "Play for session " << id_;
   playing_ = true;
   trigger_send_some();
 }
 
 void session::pause()
 {
-  LOG("Pause for session " << id_);
+  LOG(DEBUG) << "Pause for session " << id_;
   playing_ = false;
 }
 
 void session::seek(long long pos)
 {
-  LOG("Seek for session " << id_ << " to position " << pos);
+  LOG(DEBUG) << "Seek for session " << id_ << " to position " << pos;
   
   lock_guard<mutex> lock(m_mutex);
   
@@ -151,7 +151,7 @@ void session::send_some()
   {
     send();
     
-    streamsize end;
+    streampos end;
 
     if (readpos_ > writepos_)
     {
@@ -173,7 +173,7 @@ void session::send()
 {
   try
   {
-    LOG("SENDING: writepos=" << dec << writepos_ << " readpos=" << dec << readpos_);
+    LOG(DEBUG) << "SENDING: writepos=" << dec << writepos_ << " readpos=" << dec << readpos_;
     
     if (readpos_ == writepos_)
     {
@@ -218,16 +218,16 @@ void session::send()
 
       readpos_ = buffer_.tellg();
 
-      if (readpos_ == MAX_BUFFER_SIZE)
+      if (readpos_ == (streampos)MAX_BUFFER_SIZE)
       {
         readpos_ = 0;
       }
     }
-    LOG("SEND: writepos=" << dec << writepos_ << " readpos=" << dec << readpos_);
+    LOG(DEBUG) << "SEND: writepos=" << dec << writepos_ << " readpos=" << dec << readpos_;
   }
   catch (const std::exception& e)
   {
-    LOGWARN("Error sending stream poart to client: " << e.what());
+    LOG(WARNING) << "Error sending stream poart to client: " << e.what();
     trigger_send_some();
   }
 }

@@ -37,7 +37,7 @@ tv_service::tv_service(db& db)
     {
       if (sources_.check_source(service))
       {
-        LOG("Source not available: " << service);
+        LOG(DEBUG) << "Source not available: " << service;
         sources_.source_not_available(service);
       }
     }
@@ -64,7 +64,7 @@ void tv_service::handle_source_available(yami::incoming_message& im)
     names.push_back(im.get_parameters().get_string_in_array("channel_names", i));
   }
   
-  LOG("Source available: " << source << "("<< ye << ")");
+  LOG(DEBUG) << "Source available: " << source << "("<< ye << ")";
   sources_.source_available(source, ye);
   db_.check_and_add_local_channels(source, s, ids, names);
   //RECORDINGS.check();
@@ -147,7 +147,7 @@ void tv_service::on_msg(yami::incoming_message& im)
     }
     else if (im.get_message_name() == "hello")
     {
-      LOG("Some client said hello, waking up sources");
+      LOG(DEBUG) << "Some client said hello, waking up sources";
       // sending Wake On Lan message
       // TODO make it on separate function, maybe move to control-server
       string strmac("000C7620C5E0");
@@ -189,7 +189,7 @@ void tv_service::on_msg(yami::incoming_message& im)
         string endpoint = im.get_parameters().get_string("endpoint");
         string destination = im.get_parameters().get_string("destination");
         
-        LOG("Creating session for channel " << channel << "(" << db_.get_channel_name(channel) << ") to " << destination << "(" << endpoint << ")");
+        LOG(DEBUG) << "Creating session for channel " << channel << "(" << db_.get_channel_name(channel) << ") to " << destination << "(" << endpoint << ")";
 
         int session = sources_.create_session(channel, endpoint, destination);
 
@@ -199,7 +199,7 @@ void tv_service::on_msg(yami::incoming_message& im)
       }
       catch (const source_not_found& e)
       {
-        LOGWARN("Source not found");
+        LOG(WARNING) << "Source not found";
         yami::parameters reply;
         reply.set_integer("session", -1);
         im.reply(reply);
@@ -270,7 +270,7 @@ void tv_service::on_msg(yami::incoming_message& im)
   }
   catch (const std::exception& e)
   {
-    LOGWARN("Exception: " << e.what());
+    LOG(WARNING) << "Exception: " << e.what();
     im.reject(e.what());
   }
 }

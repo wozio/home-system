@@ -22,12 +22,12 @@ source::source(db& db, const std::string& name, const std::string& ye)
   ye_(ye),
   source_session_id_(-1)
 {
-  LOG("Creating source " << name_ << " (" << ye_ << ")");
+  LOG(DEBUG) << "Creating source " << name_ << " (" << ye_ << ")";
 }
 
 source::~source()
 {
-  LOG("Removing source " << name_ << " (" << ye_ << ")");
+  LOG(DEBUG) << "Removing source " << name_ << " (" << ye_ << ")";
   delete_source_session();
 }
 
@@ -56,7 +56,7 @@ int source::create_session(int channel, const std::string& client_endpoint, cons
   params.set_string("destination", "tv");
   params.set_string("endpoint", YC.endpoint());
   
-  LOG("Create session " << " channel=" << channel << "(" << hex << local << ")");
+  LOG(DEBUG) << "Create session " << " channel=" << channel << "(" << hex << local << ")";
   
   unique_ptr<yami::outgoing_message> message(YC.agent().send(ye_, name_, "create_session", params));
   
@@ -69,7 +69,7 @@ int source::create_session(int channel, const std::string& client_endpoint, cons
   
   source_session_id_ = message->get_reply().get_integer("session");
     
-  LOG("Got source session=" << source_session_id_);
+  LOG(DEBUG) << "Got source session=" << source_session_id_;
   
   // finding free session id
   int client_session_id_ = 0;
@@ -79,7 +79,7 @@ int source::create_session(int channel, const std::string& client_endpoint, cons
   }
   _client_session_ids[client_session_id_] = shared_from_this();
   
-  LOG("Creating client session " << client_session_id_);
+  LOG(DEBUG) << "Creating client session " << client_session_id_;
   
   client_session_.reset(new session(client_session_id_, client_endpoint, client));
   
@@ -97,7 +97,7 @@ void source::delete_source_session()
 {
   if (source_session_id_ != -1)
   {
-    LOG("Delete source session " << source_session_id_);
+    LOG(DEBUG) << "Delete source session " << source_session_id_;
 
     try
     {
@@ -108,7 +108,7 @@ void source::delete_source_session()
     }
     catch(const std::exception& e)
     {
-      LOGWARN("EXCEPTION: " << e.what());
+      LOG(WARNING) << "EXCEPTION: " << e.what();
     }
     
     source_session_id_ = -1;
@@ -126,7 +126,7 @@ void source::stream_part(int source_session, const void* buf, size_t len)
   }
   catch (const session_error& e)
   {
-    LOGERROR("Session error: " << e.what());
+    LOG(ERROR) << "Session error: " << e.what();
     
     delete_session(client_session_id_);
   }
