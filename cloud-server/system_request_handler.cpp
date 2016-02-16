@@ -29,8 +29,6 @@ void system_request_handler::handleRequest(HTTPServerRequest& request, HTTPServe
     ws_t ws(new WebSocket(request, response));
     system_t h(new system(ws));
     h->init();
-    
-    SYSTEMS.add(h);
   }
   catch (const WebSocketException& exc)
   {

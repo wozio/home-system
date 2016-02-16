@@ -12,21 +12,31 @@ systems::~systems()
 {
 }
 
-void systems::add(system_t system)
+system_t systems::get(const std::string& user)
 {
-  LOG(DEBUG) << "System add";
-  system_ = system;
-}
-
-system_t systems::get()
-{
-  return system_;
+  return user_to_system_.at(user);
 }
 
 void systems::remove(system_t system)
 {
   LOG(DEBUG) << "System remove";
-  system_.reset();
+  for (auto it = user_to_system_.begin(); it != user_to_system_.end();)
+  {
+    if (it->second == system)
+    {
+      user_to_system_.erase(it++);
+    }
+    else
+    {
+      ++it;
+    }
+  }
+}
+
+void systems::add(const std::string& user, system_t system)
+{
+  LOG(DEBUG) << "Adding system for user " << user;
+  user_to_system_[user] = system;
 }
 
 }

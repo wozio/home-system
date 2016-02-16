@@ -10,7 +10,6 @@ namespace home_system
 class systems;
 
 typedef std::unique_ptr<systems> systems_t;
-typedef std::shared_ptr<home_system::system> system_t;
 
 class systems
 {
@@ -24,13 +23,15 @@ public:
     return systems_t(new systems());
   };
   
-  void add(system_t system);
-  system_t get();
+  system_t get(const std::string& user);
+  
+  void add(const std::string& user, system_t system);
   void remove(system_t system);
+  
 private:
   systems();
   
-  system_t system_;
+  std::map<std::string, system_t> user_to_system_;
 
 };
 

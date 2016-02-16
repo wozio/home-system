@@ -21,6 +21,8 @@ public:
 private:
 };
 
+typedef std::shared_ptr<system> system_t;
+
 }
 
 #endif	/* SYSTEM_H */

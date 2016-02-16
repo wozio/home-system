@@ -18,15 +18,8 @@ system::system(ws_t ws)
 {
   LOG(DEBUG) << "New system connected";
 
-  size_t data_size = 0;
   auto data = create_data();
-  int flags;
-  data_size = ws->receiveFrame(data->data(), DATA_SIZE, flags);
-
-  if (data_size == 0)
-  {
-    throw std::runtime_error("Peer has shut down or closed connection");
-  }
+  size_t data_size = read_internal(data);
 
   // adding \0 character at the end for JSON parser
   // it is guaranteed that data size is bigger than data_size
@@ -76,10 +69,13 @@ system::system(ws_t ws)
         switch (vitr->GetType())
         {
         case rapidjson::kStringType:
-          LOG(DEBUG) << "Allowed user: " << vitr->GetString();
-          // adding client to client<->system map
-          CLIENTS.put(vitr->GetString(), name_);
+        {
+          std::string user(vitr->GetString());
+          LOG(DEBUG) << "Allowed user: " << user;
+          // adding user to allowed users map
+          SYSTEMS.add(user, dynamic_pointer_cast<system>(shared_from_this()));
           break;
+        }
         default:
           break;
         }
@@ -94,7 +90,7 @@ system::system(ws_t ws)
   Writer<StringBuffer> writer(buffer);
   reply.Accept(writer);
 
-  ws->sendFrame(buffer.GetString(), buffer.GetSize());
+  send_internal(buffer.GetString(), buffer.GetSize());
 }
 
 system::~system()
@@ -136,12 +132,6 @@ void system::on_read(data_t data, size_t data_size)
     throw std::runtime_error("No target in message.");
   }
   // find target client
-  auto client = CLIENTS.get(target);
-  if (client)
-  {
-    // send data to client
-    on_send(client, data, data_size);
-  }
 }
 
 void system::shutdown()

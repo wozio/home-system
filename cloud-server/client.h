@@ -1,7 +1,7 @@
 #ifndef CLIENT_H
 #define	CLIENT_H
 
-#include "handler.h"
+#include "system.h"
 
 namespace home_system
 {
@@ -19,6 +19,9 @@ public:
   void shutdown();
   
 private:
+  
+  system_t system_;
+  
 };
 
 }
