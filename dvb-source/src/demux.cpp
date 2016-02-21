@@ -55,32 +55,32 @@ int demux::set_channel(channel_t c, dvb::session_stream_part_callback_t callback
 
 void demux::set_mux()
 {
-  LOG("Setting demux");
+  LOG(TRACE) << "Setting demux";
   
   //lock_guard<mutex> lock(state_mutex_);
   
-  LOG("Setting PAT filter");
+  LOG(TRACE) << "Setting PAT filter";
   pat_version_number_ = 0xFF;
   if ((create_section_filter(TRANSPORT_PAT_PID, stag_mpeg_program_association, 0xFF,
     [this] (section* s){check_pat(s);})) < 0)
   {
-    LOGWARN("Failed to set PAT filter")
+    LOG(WARNING) << "Failed to set PAT filter";
   }
   
-  LOG("Setting SDT filter");
+  LOG(TRACE) << "Setting SDT filter";
   sdt_version_number_ = 0xFF;
   if ((create_section_filter(TRANSPORT_SDT_PID, stag_dvb_service_description_actual, 0xff,
     [this] (section* s){check_sdt(s);})) < 0)
   {
-    LOGWARN("Failed to set SDT filter");
+    LOG(WARNING) << "Failed to set SDT filter";
   }
   
-  LOG("Setting EIT filter");
+  LOG(TRACE) << "Setting EIT filter";
   
   if ((create_section_filter(TRANSPORT_EIT_PID, 0x6f, 0xc0,
     [this] (section* s){check_eit(s);})) < 0)
   {
-    LOGWARN("Failed to set EIT filter");
+    LOG(WARNING) << "Failed to set EIT filter";
   }
   
   /*LOG("Setting NIT filter");
@@ -118,7 +118,7 @@ void demux::reset_mux()
   
   if (state_ != demux_state::idle)
   {
-    LOG("Resetting demux");
+    LOG(TRACE) << "Resetting demux";
     
     for (auto i : pollfds_)
     {
@@ -168,7 +168,7 @@ void demux::change_state(demux_state new_state)
 {
   if (new_state != state_)
   {
-    LOG("Change state: " << state_ << "->" << new_state);
+    LOG(TRACE) << "Change state: " << state_ << "->" << new_state;
     state_ = new_state;
     if (state_callback_ != nullptr)
     {
@@ -191,7 +191,7 @@ int demux::create_section_filter(uint16_t pid, uint8_t table, uint8_t bitmask, s
   // open the demuxer
   if ((demux_fd = dvbdemux_open_demux(adapter_, demux_, 1)) < 0)
   {
-    LOGWARN("Failed to open demux");
+    LOG(WARNING) << "Failed to open demux";
     return -1;
   }
 
@@ -202,7 +202,7 @@ int demux::create_section_filter(uint16_t pid, uint8_t table, uint8_t bitmask, s
   mask[0] = bitmask;
   if (dvbdemux_set_section_filter(demux_fd, pid, filter, mask, 1, 1))
   {
-    LOGWARN("Failed to set section filter");
+    LOG(WARNING) << "Failed to set section filter";
     close(demux_fd);
     return -1;
   }
@@ -282,7 +282,7 @@ void demux::poll_filters()
   
   if (count < 0)
   {
-    LOGWARN("Poll error");
+    LOG(WARNING) << "Poll error";
     return;
   }
 
@@ -321,7 +321,7 @@ void demux::check_sdt(section* s)
   
   sdt_version_number_ = section_ext->version_number;
   
-  LOG("We have a SDT, parsing...");
+  LOG(TRACE) << "We have a SDT, parsing...";
    
   dvb_sdt_section* sdtsec = dvb_sdt_section_codec(section_ext);
   if (sdtsec != NULL)
@@ -370,7 +370,7 @@ void demux::check_sdt(section* s)
                       
                       string name(outbuf, outbufp - outbuf);
 
-                      LOG(hex << "Local channel ID: " << nid << ", name: " << name);
+                      LOG(TRACE) << hex << "Local channel ID: " << nid << ", name: " << name;
                       channels::channel_data_t transponder_channel;
                       transponder_channel.id = nid;
                       transponder_channel.name = name;
@@ -640,7 +640,7 @@ void demux::check_pat(section* s)
   if (pat == NULL)
     return;
   
-  LOG("We have a PAT, parsing...");
+  LOG(TRACE) << "We have a PAT, parsing...";
 
   // try and find the requested program
   mpeg_pat_program* cur_program;
@@ -648,7 +648,7 @@ void demux::check_pat(section* s)
   {
     if (cur_program->program_number == channel_->service_id())
     {
-      LOG("Program found, setting PMT filter");
+      LOG(TRACE) << "Program found, setting PMT filter";
       
       pmt_version_number_ = 0xFF;
 
@@ -656,7 +656,7 @@ void demux::check_pat(section* s)
       if ((create_section_filter(cur_program->pid, stag_mpeg_program_map, 0xFF,
        [this] (section* s){check_pmt(s);})) < 0)
       {
-        LOGWARN("Failed to set PMT filter")
+        LOG(WARNING) << "Failed to set PMT filter";
       }
        
        pmt_pid_ = cur_program->pid;
@@ -685,7 +685,7 @@ void demux::check_pmt(section* s)
   
   pmt_version_number_ = se->version_number;
   
-  LOG("We have PMT, parsing...");
+  LOG(TRACE) << "We have PMT, parsing...";
   
   mpeg_pmt_section* pmt = mpeg_pmt_section_codec(se);
   if (pmt == NULL)
@@ -730,7 +730,7 @@ void demux::check_pmt(section* s)
     pid_fd = create_pid_filter(stream->pid);
     if (pid_fd != -1)
     {
-      LOG("Found stream (pid: " << stream->pid << "), creating PID filter");
+      LOG(TRACE) << "Found stream (pid: " << stream->pid << "), creating PID filter";
       pid_fds_.push_back(pid_fd);
     }
   }
@@ -803,7 +803,7 @@ void demux::check_nit(section* s)
   
   nit_version_number_ = se->version_number;
 
-  LOG("We have a NIT, parsing...");
+  LOG(TRACE) << "We have a NIT, parsing...";
 }
 
 }

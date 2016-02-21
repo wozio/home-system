@@ -20,12 +20,12 @@ session::session(home_system::media::channel_t c, dvb::session_callback_t callba
   demux_.reset_mux();
   if (channel_->get_transponder() == frontend_.get_transponder() && frontend_.get_state() == frontend_state::tuned)
   {
-    LOG("Tuned to: " << *(frontend_.get_transponder()));
+    LOG(DEBUG) << "Tuned to: " << *(frontend_.get_transponder());
     demux_.set_channel(channel_, stream_part_callback_);
   }
   else
   {
-    LOG("Tuning to: " << *(channel_->get_transponder()));
+    LOG(DEBUG) << "Tuning to: " << *(channel_->get_transponder());
     transponders_.set(channel_->get_transponder());
     frontend_.set_transponder(transponders_.current());
     // now wait for frontend to tune to new transponder

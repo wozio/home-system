@@ -121,7 +121,7 @@ void dvb_service::on_bundle_timer()
   }
   catch (const std::exception& e)
   {
-    LOGWARN("EXCEPTION: " << e.what());
+    LOG(WARNING) << "EXCEPTION: " << e.what();
   }
 }
 
@@ -131,7 +131,7 @@ void dvb_service::on_remote_service_availability(const std::string& name, bool a
   {
     if (name == "tv")
     {
-      LOG("TV service available");
+      LOG(TRACE) << "TV service available";
       
       try
       {
@@ -155,7 +155,7 @@ void dvb_service::on_remote_service_availability(const std::string& name, bool a
       }
       catch (const std::exception& e)
       {
-        LOGWARN("EXCEPTION: " << e.what());
+        LOG(WARNING) << "EXCEPTION: " << e.what();
       }
     }
   }
@@ -165,7 +165,7 @@ void dvb_service::on_remote_service_availability(const std::string& name, bool a
     {
       tv_service_ = false;
       
-      LOG("TV service not available");
+      LOG(DEBUG) << "TV service not available";
     }
   }
 }
@@ -281,7 +281,7 @@ void dvb_service::on_stream_part(size_t size, char* buffer)
   {
     if (!exception_handled_)
     {
-      LOGWARN("EXCEPTION: " << e.what());
+      LOG(WARNING) << "EXCEPTION: " << e.what();
       
       exception_handled_ = true;
       
@@ -292,7 +292,7 @@ void dvb_service::on_stream_part(size_t size, char* buffer)
 
 void dvb_service::session_deleted()
 {
-  LOG("Session deleted");
+  LOG(TRACE) << "Session deleted";
   
   try
   {
@@ -303,7 +303,7 @@ void dvb_service::session_deleted()
   }
   catch (const exception& e)
   {
-    LOGWARN("EXCEPTION: " << e.what());
+    LOG(WARNING) << "EXCEPTION: " << e.what();
   }
 }
 
@@ -327,7 +327,7 @@ void dvb_service::send_channel(channel_t c)
     }
     catch (const std::exception& e)
     {
-      LOGWARN("EXCEPTION: " << e.what());
+      LOG(WARNING) << "EXCEPTION: " << e.what();
     }
   }
 }

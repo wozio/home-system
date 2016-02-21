@@ -18,7 +18,7 @@ transponder::~transponder()
 
 void transponder::add_channel(channel_t c)
 {
-  LOG("Channel added: " << c->get_name());
+  LOG(DEBUG) << "Channel added: " << c->get_name();
   channels_[c->get_id()] = c;
 }
 

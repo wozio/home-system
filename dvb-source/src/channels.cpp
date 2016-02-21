@@ -19,7 +19,7 @@ channels::channels(const std::string& channels_file, transponders& to)
   channels_file_(channels_file)
 {
   // parsing channels file for creating channel for each entry
-  LOG("Channel definition file: " << channels_file);
+  LOG(DEBUG) << "Channel definition file: " << channels_file;
   
   enum class state_t
   {
@@ -48,7 +48,7 @@ channels::channels(const std::string& channels_file, transponders& to)
         }
         catch (const transponder_configuration_exception& e)
         {
-          LOGWARN("Creating transponder failed: " << e.what());
+          LOG(WARNING) << "Creating transponder failed: " << e.what();
         }
 
         state = state_t::name;
@@ -69,7 +69,7 @@ channels::channels(const std::string& channels_file, transponders& to)
         }
         catch (const boost::bad_lexical_cast& e)
         {
-          LOGWARN("Creating channel failed: " << e.what());
+          LOG(WARNING) << "Creating channel failed: " << e.what();
         }
         
         state = state_t::transponder;
@@ -77,12 +77,12 @@ channels::channels(const std::string& channels_file, transponders& to)
       }
     }
   }
-  LOGINFO("Number of defined channels: " << channels_.size());
+  LOG(INFO) << "Number of defined channels: " << channels_.size();
 }
 
 channels::~channels()
 {
-  LOG("Saving channels list");
+  LOG(DEBUG) << "Saving channels list";
   
   ofstream f(channels_file_, ios_base::trunc);
   for (auto c : channels_)
@@ -108,7 +108,7 @@ void channels::add(uint64_t id, const std::string& name, uint16_t service_id)
 {
   if (channels_.find(id) == channels_.end())
   {
-    LOG("Channel added: " << id << " " << name);
+    LOG(DEBUG) << "Channel added: " << id << " " << name;
     channel_t nc = make_shared<channel>(id, name, transponders_.current(), service_id);
     channels_[id] = nc;
     transponders_.current()->add_channel(nc);
@@ -130,7 +130,7 @@ void channels::set_channels(channel_data_list_t& channel_data_list)
     auto cid = c->get_id();
     if (channel_data_list.find(cid) == channel_data_list.end())
     {
-      LOG("Channel to erase: " << c->get_name());
+      LOG(DEBUG) << "Channel to erase: " << c->get_name();
       // it is on list from transponder but not on actual list
       // remove it from transponder
       transponder->remove_channel(cid);
@@ -139,7 +139,7 @@ void channels::set_channels(channel_data_list_t& channel_data_list)
     }
     else
     {
-      LOG("Channel known: " << c->get_name());
+      LOG(DEBUG) << "Channel known: " << c->get_name();
     }
     // remove from actual list as it is checked
     channel_data_list.erase(cid);
@@ -147,7 +147,7 @@ void channels::set_channels(channel_data_list_t& channel_data_list)
   // remaining channels are to add
   for (auto c : channel_data_list)
   {
-    LOG("Channel to add: " << c.second.name);
+    LOG(DEBUG) << "Channel to add: " << c.second.name;
     add(c.second.id, c.second.name, c.second.service_id);
   }
 }

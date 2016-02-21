@@ -7,21 +7,21 @@ CND_BASEDIR=`pwd`
 CND_BUILDDIR=build
 CND_DISTDIR=dist
 # Debug configuration
-CND_PLATFORM_Debug=GNU-Linux-x86
+CND_PLATFORM_Debug=GNU-Linux
 CND_ARTIFACT_DIR_Debug=../bin/Debug
 CND_ARTIFACT_NAME_Debug=dvb-source
 CND_ARTIFACT_PATH_Debug=../bin/Debug/dvb-source
-CND_PACKAGE_DIR_Debug=dist/Debug/GNU-Linux-x86/package
+CND_PACKAGE_DIR_Debug=dist/Debug/GNU-Linux/package
 CND_PACKAGE_NAME_Debug=dvb-source.tar
-CND_PACKAGE_PATH_Debug=dist/Debug/GNU-Linux-x86/package/dvb-source.tar
+CND_PACKAGE_PATH_Debug=dist/Debug/GNU-Linux/package/dvb-source.tar
 # Release configuration
-CND_PLATFORM_Release=MinGW-Windows
+CND_PLATFORM_Release=None-Windows
 CND_ARTIFACT_DIR_Release=../bin/Release
 CND_ARTIFACT_NAME_Release=dvb-source
 CND_ARTIFACT_PATH_Release=../bin/Release/dvb-source
-CND_PACKAGE_DIR_Release=dist/Release/MinGW-Windows/package
+CND_PACKAGE_DIR_Release=dist/Release/None-Windows/package
 CND_PACKAGE_NAME_Release=dvb-source.tar
-CND_PACKAGE_PATH_Release=dist/Release/MinGW-Windows/package/dvb-source.tar
+CND_PACKAGE_PATH_Release=dist/Release/None-Windows/package/dvb-source.tar
 #
 # include compiler specific variables
 #

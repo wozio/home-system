@@ -46,7 +46,7 @@ int set_property(int fd, int cmd, int data)
 
   if (ioctl(fd, FE_SET_PROPERTY, &props) == -1)
   {
-    LOGWARN("FE_SET_PROPERTY failed");
+    LOG(WARNING) << "FE_SET_PROPERTY failed";
     return -1;
   }
   return 0;
@@ -79,7 +79,7 @@ void transponder_dvbs::clear_prepare(int fd, int& hiband, int& ifreq)
       ifreq = frequency_ - lnb_type_.low_val;
     }
   }
-  LOG("Use high band: " << hiband << ", intermediate frequency: " << ifreq);
+  LOG(DEBUG) << "Use high band: " << hiband << ", intermediate frequency: " << ifreq;
 }
 
 void transponder_dvbs::tune(int fd)
@@ -110,29 +110,29 @@ void diseqc_send_msg(int fd, fe_sec_voltage_t v, dvb_diseqc_master_cmd& cmd,
 {
   if (ioctl(fd, FE_SET_TONE, SEC_TONE_OFF) == -1)
   {
-    LOGWARN("FE_SET_TONE failed");
+    LOG(WARNING) << "FE_SET_TONE failed";
   }
   if (ioctl(fd, FE_SET_VOLTAGE, v) == -1)
   {
-    LOGWARN("FE_SET_VOLTAGE failed");
+    LOG(WARNING) << "FE_SET_VOLTAGE failed";
   }
   this_thread::sleep_for(chrono::milliseconds(5));
 
   if (ioctl(fd, FE_DISEQC_SEND_MASTER_CMD, &cmd) == -1)
   {
-    LOGWARN("FE_DISEQC_SEND_MASTER_CMD failed");
+    LOG(WARNING) << "FE_DISEQC_SEND_MASTER_CMD failed";
   }
   this_thread::sleep_for(chrono::milliseconds(15));
 
   if (ioctl(fd, FE_DISEQC_SEND_BURST, SEC_MINI_A) == -1)
   {
-    LOGWARN("FE_DISEQC_SEND_BURST failed");
+    LOG(WARNING) << "FE_DISEQC_SEND_BURST failed";
   }
   this_thread::sleep_for(chrono::milliseconds(15));
 
   if (ioctl(fd, FE_SET_TONE, t) == -1)
   {
-    LOGWARN("FE_SET_TONE failed");
+    LOG(WARNING) << "FE_SET_TONE failed";
   }
 }
 

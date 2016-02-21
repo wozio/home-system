@@ -1,12 +1,14 @@
 #include "dvb-service.h"
 #include "app.h"
-#include "logger.h"
+#include "logger_init.h"
 #include "discovery.h"
 #include "yamicontainer.h"
 #include <boost/program_options.hpp>
 #include <boost/asio.hpp>
 #include <iostream>
 #include <string>
+
+INITIALIZE_EASYLOGGINGPP
 
 using namespace std;
 namespace po = boost::program_options;
@@ -40,9 +42,9 @@ int main(int argc, char** argv)
     return 1;
   }
 
-  home_system::logger::_log_file_path = "dvb-source.log";
+  home_system::init_log("dvb-source.log", !vm.count("daemonize"));
 
-  LOGINFO("DVB Source started");
+  LOG(INFO) << "DVB Source started";
   
   home_system::media::dvb_service* service_p = nullptr;
   
@@ -77,12 +79,8 @@ int main(int argc, char** argv)
   {
     try
     {
-      _yc = home_system::yami_container::create([] (const std::string& msg) {
-        LOG("YC: " << msg);
-      });
-      _discovery = home_system::discovery::create([] (const std::string& msg) {
-        LOG("Discovery: " << msg);
-      });
+      _yc = home_system::yami_container::create();
+      _discovery = home_system::discovery::create();
       
       home_system::media::dvb_service service(vm["name"].as<string>(),
         vm["adapter"].as<int>(),
@@ -99,17 +97,17 @@ int main(int argc, char** argv)
     }
     catch (const std::exception & e)
     {
-      LOGERROR("Exception: " << e.what());
+      LOG(ERROR) << "Exception: " << e.what();
     }
     catch (...)
     {
-      LOGERROR("Unknown Exception");
+      LOG(ERROR) << "Unknown Exception";
     }
     if (!exit_init_loop)
     {
       if (++init_try < 60)
       {
-        LOGERROR("Initialization not done, waiting 1 second before next try...");
+        LOG(ERROR) << "Initialization not done, waiting 1 second before next try...";
         this_thread::sleep_for(chrono::seconds(1));
       }
       else
@@ -123,6 +121,6 @@ int main(int argc, char** argv)
   _discovery.reset();
   _yc.reset();
 
-  LOGINFO("DVB Source quitting");
+  LOG(INFO) << "DVB Source quitting";
   return 0;
 }

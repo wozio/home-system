@@ -40,11 +40,11 @@ void file_reader::thread_exec()
   running_ = true;
   
   //ofstream f("/storage/stream.ts", ofstream::binary);
-  LOG("File reader thread started");
+  LOG(DEBUG) << "File reader thread started";
   int fd = dvbdemux_open_dvr(adapter_, frontend_, 1, 0);
   if (fd == -1)
   {
-    LOGWARN("Failed to open DVR device");
+    LOG(WARNING) << "Failed to open DVR device";
     return;
   }
   
@@ -90,7 +90,7 @@ void file_reader::thread_exec()
   }
   catch (const dvb::session_error&)
   {
-    LOG("Session error, quiting file reader thread");
+    LOG(DEBUG) << "Session error, quiting file reader thread";
   }
 
   //f.close();
@@ -98,7 +98,7 @@ void file_reader::thread_exec()
   
   running_ = false;
 
-  LOG("File reader thread stopped");
+  LOG(DEBUG) << "File reader thread stopped";
 }
 
 }

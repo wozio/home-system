@@ -61,7 +61,7 @@ size_t dvb::create_session(home_system::media::channel_t c,
     session_callback_t session_callback,
     session_stream_part_callback_t stream_part_callback)
 {
-  LOG("Creating session");
+  LOG(DEBUG) << "Creating session";
   
   stop_idle_scan();
   
@@ -82,7 +82,7 @@ size_t dvb::create_session(home_system::media::channel_t c,
 
 void dvb::delete_session(size_t s)
 {
-  LOG("Deleting session");
+  LOG(DEBUG) << "Deleting session";
   {
     //lock_guard<mutex> lock(state_mutex_);
 
@@ -103,7 +103,7 @@ void dvb::start_idle_scan()
   {
     if (transponders_.size() > 0)
     {
-      LOG("Starting idle scan");
+      LOG(DEBUG) << "Starting idle scan";
       
       demux_.reset_mux();
       state_ = state::scan;
@@ -119,7 +119,7 @@ void dvb::idle_scan_timeout()
   
   if (state_ == state::scan)
   {
-    LOG("Continuing idle scan, setting next transponder");
+    LOG(DEBUG) << "Continuing idle scan, setting next transponder";
     demux_.reset_mux();
     frontend_.set_transponder(transponders_.next());
     timer_.set_from_now(25000, [this] (){idle_scan_timeout();});
@@ -132,7 +132,7 @@ void dvb::stop_idle_scan()
   
   if (state_ == state::scan)
   {
-    LOG("Stopping idle scan");
+    LOG(DEBUG) << "Stopping idle scan";
     
     state_ = state::idle;
     timer_.cancel();

@@ -64,7 +64,7 @@ void transponder_dvbt::tune(int fd)
 
   if ((ioctl(fd, FE_SET_PROPERTY, &mydtvproperties)) == -1)
   {
-    LOGWARN("FE_SET_PROPERTY failed");
+    LOG(WARNING) << "FE_SET_PROPERTY failed";
   }
 }
 

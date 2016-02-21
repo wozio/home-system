@@ -20,7 +20,7 @@ transponders::transponders(const std::string& transponder_file)
 : current_(transponders_.begin())
 {
   // parsing transponders file for creating transponder for each entry
-  LOG("Transponder definition file: " << transponder_file);
+  LOG(DEBUG) << "Transponder definition file: " << transponder_file;
   
   ifstream f(transponder_file);
   string line;
@@ -30,18 +30,18 @@ transponders::transponders(const std::string& transponder_file)
     try
     {
       auto nt = find_or_create(line);
-      LOG("Created transponder: " << *nt);
+      LOG(DEBUG) << "Created transponder: " << *nt;
       transponders_.insert(nt);
     }
     catch (const transponder_configuration_exception& e)
     {
-      LOGWARN("Creating transponder failed: " << e.what());
+      LOG(WARNING) << "Creating transponder failed: " << e.what();
     }
   }
   if (!transponders_.empty())
     current_ = transponders_.begin();
   
-  LOGINFO("Number of defined transponders: " << transponders_.size());
+  LOG(INFO) << "Number of defined transponders: " << transponders_.size();
 }
 
 transponders::~transponders()

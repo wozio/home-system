@@ -83,7 +83,7 @@ void frontend::open_adapter()
   {
     if (!fault_logged)
     {
-      LOGWARN("Unable to open adapter, keep trying...");
+      LOG(WARNING) << "Unable to open adapter, keep trying...";
       fault_logged = true;
     }
     
@@ -95,7 +95,7 @@ void frontend::open_adapter()
   memset(&result, 0, sizeof(result));
   ioctl(fe_, FE_GET_INFO, &result);
   
-  LOG("Opened frontend: " << result.name);
+  LOG(DEBUG) << "Opened frontend: " << result.name;
   
   change_state(frontend_state::opened);
 }
@@ -104,7 +104,7 @@ void frontend::set_transponder(std::shared_ptr<transponder> transponder)
 {
   if (state_ != frontend_state::closed)
   {
-    LOG("Setting to transponder: " << transponder);
+    LOG(DEBUG) << "Setting to transponder: " << transponder;
     transponder_ = transponder;
     check_signal_timer_.cancel();
     change_state(frontend_state::tunning);
@@ -124,13 +124,13 @@ void frontend::check_tunning()
   
   if ((ioctl(fe_, FE_READ_STATUS, &status)) == -1)
   {
-    LOGWARN("FE_READ_STATUS failed");
+    LOG(WARNING) << "FE_READ_STATUS failed";
   }
   else
   {
     if (status & FE_HAS_LOCK)
     {
-      LOG("We have lock");
+      LOG(DEBUG) << "We have lock";
       change_state(frontend_state::tuned);
       
       check_signal_timer_.set_from_now(1000, [&] (){check_signal();});
@@ -150,7 +150,7 @@ void frontend::check_signal()
 
   if ((ioctl(fe_, FE_READ_STATUS, &status)) == -1)
   {
-    LOGWARN("FE_READ_STATUS failed");
+    LOG(WARNING) << "FE_READ_STATUS failed";
   }
   
   if (!(status & FE_HAS_LOCK))
@@ -166,7 +166,7 @@ void frontend::check_signal()
   int16_t strength;
   if ((ioctl(fe_, FE_READ_SIGNAL_STRENGTH, &strength)) == -1)
   {
-    LOGWARN("FE_READ_SIGNAL_STRENGTH failed");
+    LOG(WARNING) << "FE_READ_SIGNAL_STRENGTH failed";
   }
 
   if (status & FE_HAS_SIGNAL)
@@ -174,7 +174,7 @@ void frontend::check_signal()
     int16_t snr;
     if ((ioctl(fe_, FE_READ_SNR, &snr)) == -1)
     {
-      LOGWARN("FE_READ_SNR failed");
+      LOG(WARNING) << "FE_READ_SNR failed";
     }
 
     str << " sig: " << hex << showbase << setw(4) << setfill('0') << strength <<
@@ -186,13 +186,13 @@ void frontend::check_signal()
     uint32_t ber;
     if ((ioctl(fe_, FE_READ_BER, &ber)) == -1)
     {
-      LOGWARN("FE_READ_BER failed");
+      LOG(WARNING) << "FE_READ_BER failed";
     }
 
     int32_t ublocks;
     if ((ioctl(fe_, FE_READ_UNCORRECTED_BLOCKS, &ublocks)) == -1)
     {
-      LOGWARN("FE_READ_UNCORRECTED_BLOCKS failed");
+      LOG(WARNING) << "FE_READ_UNCORRECTED_BLOCKS failed";
     }
     
     if (ber || ublocks)
@@ -202,7 +202,7 @@ void frontend::check_signal()
       " unc: " << hex << showbase << setw(4) << setfill('0') << ublocks;
   }
   if (dolog)
-    LOG(str.str());
+    LOG(DEBUG) << str.str();
   
   check_signal_timer_.set_from_now(1000, [&] (){check_signal();});
 }
