@@ -15,7 +15,8 @@ namespace home_system
 {
 
 client::client(ws_t ws)
-: handler(ws)
+: handler(ws),
+  state_(not_connected)
 {
   LOG(DEBUG) << "New client connected";
   
@@ -80,6 +81,7 @@ client::client(ws_t ws)
     throw std::runtime_error("No message field");
   
   // set up temporary system->client route
+  system_->set_route("fafa", dynamic_pointer_cast<client>(shared_from_this()));
   
   // now wait for login reply
   

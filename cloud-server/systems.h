@@ -2,13 +2,12 @@
 #define	SYSTEMS_H
 
 #include "system.h"
-#include <memory>
+#include "system_t.h"
 
 namespace home_system
 {
 
 class systems;
-
 typedef std::unique_ptr<systems> systems_t;
 
 class systems

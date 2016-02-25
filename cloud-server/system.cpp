@@ -97,6 +97,11 @@ system::~system()
 {
 }
 
+void system::set_route(const std::string& target, client_t client)
+{
+  route_[target] = client;
+}
+
 void system::on_read(data_t data, size_t data_size)
 {
   // unpack message
@@ -131,7 +136,15 @@ void system::on_read(data_t data, size_t data_size)
   {
     throw std::runtime_error("No target in message.");
   }
-  // find target client
+  auto c = route_.find(target);
+  if (c != route_.end())
+  {
+    on_send(c->second, data, data_size);
+  }
+  else
+  {
+    LOG(WARNING) << "No route for target: " << target;
+  }
 }
 
 void system::shutdown()

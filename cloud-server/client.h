@@ -1,7 +1,8 @@
 #ifndef CLIENT_H
 #define	CLIENT_H
 
-#include "system.h"
+#include "handler.h"
+#include "system_t.h"
 
 namespace home_system
 {
@@ -19,6 +20,11 @@ public:
   void shutdown();
   
 private:
+  enum {
+    not_connected,
+    wait_for_login,
+    logged_in
+  } state_;
   
   system_t system_;
   

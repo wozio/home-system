@@ -2,16 +2,13 @@
 #define	CLIENTS_H
 
 #include "client.h"
-#include <memory>
+#include "client_t.h"
 
 namespace home_system
 {
 
 class clients;
-class client;
-
 typedef std::unique_ptr<clients> clients_t;
-typedef std::shared_ptr<client> client_t;
 
 class clients {
 public:

@@ -2,10 +2,11 @@
 #define	SYSTEM_H
 
 #include "handler.h"
+#include "client_t.h"
 
 namespace home_system
 {
-  
+
 class system
 : public handler
 {
@@ -18,10 +19,12 @@ public:
   
   void shutdown();
   
+  void set_route(const std::string& target, client_t client);
+  
 private:
+  
+  std::map<std::string, client_t> route_;
 };
-
-typedef std::shared_ptr<system> system_t;
 
 }
 
