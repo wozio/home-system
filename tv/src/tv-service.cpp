@@ -2,7 +2,6 @@
 #include "logger.h"
 #include "yamicontainer.h"
 #include "epg.h"
-#include "discovery.h"
 #include <sstream>
 
 using namespace std;
@@ -30,18 +29,6 @@ tv_service::tv_service(db& db)
   epg_(db_)
 {
   init();
-  
-  DISCOVERY.subscribe([&] (const std::string& service, bool available)
-  {
-    if (!available)
-    {
-      if (sources_.check_source(service))
-      {
-        LOG(DEBUG) << "Source not available: " << service;
-        sources_.source_not_available(service);
-      }
-    }
-  });
 }
 
 tv_service::~tv_service()

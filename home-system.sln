@@ -10,6 +10,10 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "client_win", "client_win\client_win.vcxproj", "{24B9F703-EC8E-40A8-950F-14931749E68F}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cloud-server", "cloud-server\cloud-server.vcxproj", "{F42FDE94-1C2D-4CC2-8213-003F4F457F77}"
+	ProjectSection(ProjectDependencies) = postProject
+		{A0F3FB87-8030-42AE-BB78-5977DD717F86} = {A0F3FB87-8030-42AE-BB78-5977DD717F86}
+		{7B947294-4BC7-41A8-9791-1E8421EC50A8} = {7B947294-4BC7-41A8-9791-1E8421EC50A8}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "wshandling", "common\wshandling\wshandling.vcxproj", "{7B947294-4BC7-41A8-9791-1E8421EC50A8}"
 EndProject

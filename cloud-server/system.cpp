@@ -40,6 +40,7 @@ void system::on_read(data_t data, size_t data_size)
   {
     case logged_in:
     {
+      LOG(DEBUG) << "Got something";
       // unpack message
       // adding \0 character at the end for JSON parser
       // it is guaranteed that data size is bigger than data_size
@@ -85,6 +86,7 @@ void system::on_read(data_t data, size_t data_size)
     }
     case wait_for_login:
     {
+      LOG(DEBUG) << "Got something else";
       // adding \0 character at the end for JSON parser
       // it is guaranteed that data size is bigger than data_size
       (*data)[data_size] = '\0';
@@ -146,6 +148,8 @@ void system::on_read(data_t data, size_t data_size)
           }
         }
       }
+
+      sys_state_ = logged_in;
 
       // sending result to system
       // TODO make it async with on_send

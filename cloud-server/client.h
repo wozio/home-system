@@ -23,8 +23,8 @@ public:
   
 private:
   enum {
-    not_connected,
     wait_for_login,
+    wait_for_login_reply,
     logged_in
   } client_state_;
   
