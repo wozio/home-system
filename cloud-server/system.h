@@ -20,8 +20,14 @@ public:
   void shutdown();
   
   void set_route(const std::string& target, client_t client);
+  void unset_route(const std::string& target);
   
 private:
+  
+  enum {
+    wait_for_login,
+    logged_in
+  } sys_state_;
   
   std::map<std::string, client_t> route_;
 };
