@@ -152,8 +152,8 @@ void system::on_read(data_t data, size_t data_size)
       // sending result to system
       Document reply(kObjectType);
       reply.AddMember("result", "success", reply.GetAllocator());
-      StringBuffer buffer;
-      Writer<StringBuffer> writer(buffer);
+      buffer_t buffer(new StringBuffer);
+      Writer<StringBuffer> writer(*buffer);
       reply.Accept(writer);
       
       on_send(shared_from_this(), buffer);

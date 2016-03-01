@@ -228,6 +228,9 @@ void client::on_read(data_t data, size_t data_size)
     tmp_route_key_ = "fafa";
     system_->set_route(tmp_route_key_, dynamic_pointer_cast<client>(shared_from_this()));
 
+    // adding source
+    d.AddMember("source", tmp_route_key_, d.GetAllocator());
+
     // now wait for login reply
     client_state_ = wait_for_login_reply;
 
