@@ -73,7 +73,7 @@ LDLIBSOPTIONS=-L../common/yami4/lib -lboost_program_options -lboost_system -lboo
 
 ../bin/${CND_CONF}/control-server: ${OBJECTFILES}
 	${MKDIR} -p ../bin/${CND_CONF}
-	${LINK.cc} -o ../bin/${CND_CONF}/control-server ${OBJECTFILES} ${LDLIBSOPTIONS} -v
+	${LINK.cc} -o ../bin/${CND_CONF}/control-server ${OBJECTFILES} ${LDLIBSOPTIONS}
 
 ${OBJECTDIR}/src/client.o: src/client.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src

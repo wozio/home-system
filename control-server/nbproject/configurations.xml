@@ -97,7 +97,6 @@
             <linkerLibLibItem>PocoNetSSL</linkerLibLibItem>
             <linkerLibLibItem>boost_filesystem</linkerLibLibItem>
           </linkerLibItems>
-          <commandLine>-v</commandLine>
         </linkerTool>
         <requiredProjects>
           <makeArtifact PL="../common/common"

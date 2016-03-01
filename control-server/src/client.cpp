@@ -45,7 +45,7 @@ void client::on_read(data_t data, size_t data_size)
 }
 
 void client::handle_login(const yami::parameters& params, long long sequence_number,
-    const std::string& target)
+    const std::string& source, const std::string& target)
 {
   // verify if requested email is known and password is correct
   string req_email = params.get_string("email");
@@ -76,7 +76,7 @@ void client::handle_login(const yami::parameters& params, long long sequence_num
         rparams.set_string("client_id", new_client);
         size_t out_size = 0;
         auto out = create_data();
-        to_json(target, new_client, rparams, sequence_number, out, out_size);
+        to_json(target, source, rparams, sequence_number, out, out_size);
         on_send(shared_from_this(), out, out_size);
         return;
       }
@@ -108,7 +108,7 @@ void client::handle_data(data_t data, size_t data_size)
       // special handling for login message
       if (msg == "login")
       {
-        handle_login(params, sequence_number, target);
+        handle_login(params, sequence_number, source, target);
         return;
       }
 

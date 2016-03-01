@@ -34,7 +34,7 @@ private:
   std::string client_;
 
   void handle_login(const yami::parameters& params, long long sequence_number,
-      const std::string& target);
+      const std::string& source, const std::string& target);
 
   std::string create_client(const std::string& name);
 

@@ -5,7 +5,6 @@
 #include "rapidjson/document.h"
 #include "rapidjson/error/en.h"
 #include "rapidjson/writer.h"
-#include "rapidjson/stringbuffer.h"
 
 using namespace std;
 using namespace rapidjson;
@@ -40,7 +39,6 @@ void system::on_read(data_t data, size_t data_size)
   {
     case logged_in:
     {
-      LOG(DEBUG) << "Got something";
       // unpack message
       // adding \0 character at the end for JSON parser
       // it is guaranteed that data size is bigger than data_size
@@ -152,14 +150,15 @@ void system::on_read(data_t data, size_t data_size)
       sys_state_ = logged_in;
 
       // sending result to system
-      // TODO make it async with on_send
       Document reply(kObjectType);
       reply.AddMember("result", "success", reply.GetAllocator());
       StringBuffer buffer;
       Writer<StringBuffer> writer(buffer);
       reply.Accept(writer);
+      
+      on_send(shared_from_this(), buffer);
 
-      send_internal(buffer.GetString(), buffer.GetSize());
+      //send_internal(buffer.GetString(), buffer.GetSize());
       break;
     }
   }
