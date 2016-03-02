@@ -23,10 +23,6 @@ client::client(ws_t ws)
 
 client::~client()
 {
-  if (clients_.find(client_) != clients_.end())
-  {
-    clients_.erase(client_);
-  }
 }
 
 void client::on_read(data_t data, size_t data_size)
@@ -82,7 +78,6 @@ void client::handle_login(const yami::parameters& params, long long sequence_num
       }
     }
   }
-  client_ = "";
   throw runtime_error("Unknown email or wrong password");
 }
 
@@ -197,17 +192,12 @@ void client::reject(bool expect_reply, long long sequence_number,
 
 bool client::is_logged_in(const std::string& client)
 {
-  return client_.size() > 0 && client_ == client;
+  return clients_.find(client) != clients_.end();
 }
 
 void client::login(const std::string& client)
 {
-  if (clients_.find(client_) != clients_.end())
-  {
-    clients_.erase(client_);
-  }
   clients_[client] = make_shared<client_service>(client);
-  client_ = client;
 }
 
 std::string client::create_client(const std::string& name)
