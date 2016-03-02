@@ -107,24 +107,35 @@ void client::send(data_t data, size_t data_size)
     }
       
     // now client id assigned by system for setting up route in system object
-    itr = d.FindMember("client_id");
+    itr = d.FindMember("params");
     if (itr != d.MemberEnd())
     {
-      if (itr->value.IsString())
+      if (itr->value.IsObject())
       {
-        string v = itr->value.GetString();
-        LOG(DEBUG) << "client_id in message: " << v;
-        // set up route
-        system_->unset_route(tmp_route_key_);
-        system_->set_route(v, dynamic_pointer_cast<client>(shared_from_this()));
-        route_key_ = v;
-        client_state_ = logged_in;
+        auto itr2 = itr->value.FindMember("client_id");
+        if (itr2 != itr->value.MemberEnd())
+        {
+          if (itr2->value.IsString())
+          {
+            string v = itr2->value.GetString();
+            LOG(DEBUG) << "client_id in message: " << v;
+            // set up route
+            system_->unset_route(tmp_route_key_);
+            system_->set_route(v, dynamic_pointer_cast<client>(shared_from_this()));
+            route_key_ = v;
+            client_state_ = logged_in;
+          }
+          else
+            throw std::runtime_error("Wrong client_id field");
+        }
+        else
+          throw std::runtime_error("No client_id field");
       }
       else
-        throw std::runtime_error("Wrong sequence_number field");
+        throw std::runtime_error("Wrong params field");
     }
     else
-      throw std::runtime_error("No sequence_number field");
+      throw std::runtime_error("No params field");
       
     break;
   }
@@ -229,13 +240,18 @@ void client::on_read(data_t data, size_t data_size)
     system_->set_route(tmp_route_key_, dynamic_pointer_cast<client>(shared_from_this()));
 
     // adding source
-    d.AddMember("source", tmp_route_key_, d.GetAllocator());
+    d.RemoveMember("source");
+    d.AddMember("source", StringRef(tmp_route_key_.c_str()), d.GetAllocator());
 
     // now wait for login reply
     client_state_ = wait_for_login_reply;
 
     // send login message towards system
-    on_send(system_, data, data_size);
+    buffer_t buffer(new StringBuffer);
+    Writer<StringBuffer> writer(*buffer);
+    d.Accept(writer);
+
+    on_send(system_, buffer);
     break;
   }
   default:
