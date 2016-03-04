@@ -24,6 +24,28 @@ client::client(ws_t ws)
   lock_guard<mutex> lock(client_state_mutex_);
 }
 
+void client::logout()
+{
+  Document msg(kObjectType);
+  auto& alloc = msg.GetAllocator();
+  msg.AddMember("message", "logout", alloc);
+  if (client_state_ == wait_for_login_reply)
+  {
+    msg.AddMember("source", StringRef(tmp_route_key_.c_str()), alloc);
+  }
+  else
+  {
+    msg.AddMember("source", StringRef(route_key_.c_str()), alloc);
+  }
+  msg.AddMember("target", "control-server", alloc);
+  
+  buffer_t buffer(new StringBuffer);
+  Writer<StringBuffer> writer(*buffer);
+  msg.Accept(writer);
+
+  on_send(shared_from_this(), buffer);
+}
+
 client::~client()
 {
   lock_guard<mutex> lock(client_state_mutex_);
@@ -31,10 +53,14 @@ client::~client()
   {
     case wait_for_login_reply:
       system_->unset_route(tmp_route_key_);
+      logout();
       break;
+      
     case logged_in:
       system_->unset_route(route_key_);
+      logout();
       break;
+      
     default:
       break;
   }
@@ -236,7 +262,7 @@ void client::on_read(data_t data, size_t data_size)
       throw std::runtime_error("No sequence_number field");
 
     // set up temporary system->client route
-    tmp_route_key_ = "fafa";
+    tmp_route_key_ = to_string(rand());
     system_->set_route(tmp_route_key_, dynamic_pointer_cast<client>(shared_from_this()));
 
     // adding source

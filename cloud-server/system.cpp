@@ -84,7 +84,6 @@ void system::on_read(data_t data, size_t data_size)
     }
     case wait_for_login:
     {
-      LOG(DEBUG) << "Got something else";
       // adding \0 character at the end for JSON parser
       // it is guaranteed that data size is bigger than data_size
       (*data)[data_size] = '\0';

@@ -34,6 +34,8 @@ private:
   std::string tmp_route_key_;
   std::string route_key_;
   
+  void logout();
+  
 };
 
 }
