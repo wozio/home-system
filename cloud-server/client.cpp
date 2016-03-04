@@ -20,37 +20,39 @@ client::client(ws_t ws)
   client_state_(wait_for_login)
 {
   LOG(DEBUG) << "New client connected";
-  
-  lock_guard<mutex> lock(client_state_mutex_);
 }
 
 void client::logout()
 {
-  Document msg(kObjectType);
-  auto& alloc = msg.GetAllocator();
-  msg.AddMember("message", "logout", alloc);
-  switch (client_state_)
+  if (client_state_ != wait_for_login)
   {
-  case wait_for_login_reply:
-    msg.AddMember("source", StringRef(tmp_route_key_.c_str()), alloc);
-    break;
+    LOG(DEBUG) << "Logout";
+    Document msg(kObjectType);
+    auto& alloc = msg.GetAllocator();
+    msg.AddMember("message", "logout", alloc);
+    switch (client_state_)
+    {
+    case wait_for_login_reply:
+      msg.AddMember("source", StringRef(tmp_route_key_.c_str()), alloc);
+      break;
 
-  case logged_in:
-    msg.AddMember("source", StringRef(route_key_.c_str()), alloc);
-    break;
+    case logged_in:
+      msg.AddMember("source", StringRef(route_key_.c_str()), alloc);
+      break;
 
-  default:
-    break;
+    default:
+      break;
+    }
+    msg.AddMember("target", "control-server", alloc);
+
+    buffer_t buffer(new StringBuffer);
+    Writer<StringBuffer> writer(*buffer);
+    msg.Accept(writer);
+
+    on_send(system_, buffer);
+
+    client_state_ = wait_for_login;
   }
-  msg.AddMember("target", "control-server", alloc);
-  
-  buffer_t buffer(new StringBuffer);
-  Writer<StringBuffer> writer(*buffer);
-  msg.Accept(writer);
-
-  on_send(shared_from_this(), buffer);
-
-  client_state_ = wait_for_login;
 }
 
 client::~client()
