@@ -10,14 +10,15 @@ class cloud_client
 : public client
 {
 public:
-  cloud_client(ws_t ws, std::function<void()>shutdown_callback);
+  typedef std::function<void()> shutdown_callback_t;
+  cloud_client(ws_t ws, shutdown_callback_t shutdown_callback);
   cloud_client(const cloud_client& orig) = delete;
   ~cloud_client();
   
   void shutdown();
   
 private:
-  std::function<void()>on_shutdown_;
+  shutdown_callback_t on_shutdown_;
 };
 
 }

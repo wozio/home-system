@@ -13,8 +13,6 @@ using namespace std;
 namespace home_system
 {
 
-std::map<std::string, client::client_service_t> client::clients_;
-
 client::client(ws_t ws)
 : handler(ws)
 {
@@ -27,7 +25,6 @@ client::~client()
 
 void client::on_read(data_t data, size_t data_size)
 {
-  LOG(DEBUG) << "Read " << data_size << " bytes";
   try
   {
     thread t([this](data_t data, size_t data_size) {
@@ -64,7 +61,7 @@ void client::handle_login(const yami::parameters& params, long long sequence_num
 
         LOG(DEBUG) << "Client assigned: " << new_client;
 
-        login(new_client);
+        clients_[new_client] = make_shared<client_service>(new_client);
 
         yami::parameters rparams;
         rparams.set_string("name", name);
@@ -79,6 +76,11 @@ void client::handle_login(const yami::parameters& params, long long sequence_num
     }
   }
   throw runtime_error("Unknown email or wrong password");
+}
+
+void client::handle_logout(const std::string& source)
+{
+  clients_.erase(source);
 }
 
 void client::handle_data(data_t data, size_t data_size)
@@ -104,6 +106,11 @@ void client::handle_data(data_t data, size_t data_size)
       if (msg == "login")
       {
         handle_login(params, sequence_number, source, target);
+        return;
+      }
+      else if (msg == "logout")
+      {
+        handle_logout(source);
         return;
       }
 
@@ -193,11 +200,6 @@ void client::reject(bool expect_reply, long long sequence_number,
 bool client::is_logged_in(const std::string& client)
 {
   return clients_.find(client) != clients_.end();
-}
-
-void client::login(const std::string& client)
-{
-  clients_[client] = make_shared<client_service>(client);
 }
 
 std::string client::create_client(const std::string& name)

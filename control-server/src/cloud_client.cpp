@@ -93,6 +93,7 @@ void cloud_client::shutdown()
 {
   LOG(DEBUG) << "Cloud client shutting down";
   handler::shutdown();
+  clients_.clear();
   on_shutdown_();
 }
 
