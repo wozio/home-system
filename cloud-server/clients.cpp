@@ -15,7 +15,7 @@ clients::~clients()
 void clients::add(client_t client)
 {
   LOG(DEBUG) << "Client add";
-  client_ = client;
+//  client_ = client;
 }
 
 client_t clients::get()
@@ -26,7 +26,7 @@ client_t clients::get()
 void clients::remove(client_t client)
 {
   LOG(DEBUG) << "Client remove";
-  client_.reset();
+  //client_.reset();
 }
 
 }

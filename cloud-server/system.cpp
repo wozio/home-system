@@ -25,12 +25,16 @@ system::~system()
 
 void system::set_route(const std::string& target, client_t client)
 {
+  LOG(DEBUG) << "Set route: " << target;
   route_[target] = client;
+  LOG(DEBUG) << "Number of routes: " << route_.size();
 }
 
 void system::unset_route(const std::string& target)
 {
+  LOG(DEBUG) << "Unset route: " << target;
   route_.erase(target);
+  LOG(DEBUG) << "Number of routes: " << route_.size();
 }
 
 void system::on_read(data_t data, size_t data_size)

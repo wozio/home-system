@@ -29,13 +29,18 @@ void client::logout()
   Document msg(kObjectType);
   auto& alloc = msg.GetAllocator();
   msg.AddMember("message", "logout", alloc);
-  if (client_state_ == wait_for_login_reply)
+  switch (client_state_)
   {
+  case wait_for_login_reply:
     msg.AddMember("source", StringRef(tmp_route_key_.c_str()), alloc);
-  }
-  else
-  {
+    break;
+
+  case logged_in:
     msg.AddMember("source", StringRef(route_key_.c_str()), alloc);
+    break;
+
+  default:
+    break;
   }
   msg.AddMember("target", "control-server", alloc);
   
@@ -44,26 +49,13 @@ void client::logout()
   msg.Accept(writer);
 
   on_send(shared_from_this(), buffer);
+
+  client_state_ = wait_for_login;
 }
 
 client::~client()
 {
-  lock_guard<mutex> lock(client_state_mutex_);
-  switch (client_state_)
-  {
-    case wait_for_login_reply:
-      system_->unset_route(tmp_route_key_);
-      logout();
-      break;
-      
-    case logged_in:
-      system_->unset_route(route_key_);
-      logout();
-      break;
-      
-    default:
-      break;
-  }
+
 }
 
 void client::send(data_t data, size_t data_size)
@@ -291,9 +283,22 @@ void client::shutdown()
   LOG(DEBUG) << "Client shutdown";
   lock_guard<mutex> lock(client_state_mutex_);
   handler::shutdown();
-  // from shared_from_this shared_ptr<handler> is obtained
-  // casting it to shared_ptr<client>
-  CLIENTS.remove(dynamic_pointer_cast<client>(shared_from_this()));
+  
+  switch (client_state_)
+  {
+    case wait_for_login_reply:
+      system_->unset_route(tmp_route_key_);
+      logout();
+      break;
+      
+    case logged_in:
+      system_->unset_route(route_key_);
+      logout();
+      break;
+      
+    default:
+      break;
+  }
 }
 
 }
