@@ -26,17 +26,16 @@ protected:
   void reject(bool expect_reply, long long sequence_number,
       const std::string& target, const std::string& source, const char* reason);
 
-  virtual bool is_logged_in(const std::string& client);
-  virtual void login(const std::string& client);
+  typedef std::shared_ptr<client_service> client_service_t;
+  std::map<std::string, client_service_t> clients_;
 
 private:
+  bool is_logged_in(const std::string& client);
   void handle_login(const yami::parameters& params, long long sequence_number,
       const std::string& source, const std::string& target);
+  void handle_logout(const std::string& source);
 
   std::string create_client(const std::string& name);
-
-  typedef std::shared_ptr<client_service> client_service_t;
-  static std::map<std::string, client_service_t> clients_;
 };
 
 }
