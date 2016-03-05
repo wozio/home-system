@@ -1,9 +1,10 @@
 #include "json_converter.h"
+#include "logger.h"
 #include "rapidjson/document.h"
 #include <boost/lexical_cast.hpp>
 #include <boost/interprocess/streams/bufferstream.hpp>
 //#include <iostream>
-#include <sstream>
+//#include <sstream>
 
 namespace home_system
 {
@@ -37,11 +38,13 @@ void parse_parameters(const Value& value, yami::parameters& params)
   }
 }
 
-void from_json(data_t data, std::string& source, std::string& target, std::string& message,
-    bool& expect_reply, long long& sequence_number, yami::parameters& params)
+msg_type_t from_json(data_t data, std::string& source, std::string& target, std::string& message,
+    long long& sequence_number, yami::parameters& params)
 {
   Document d;
   d.Parse(data->data());
+
+  msg_type_t type;
 
   if (d.IsObject())
   {
@@ -49,9 +52,12 @@ void from_json(data_t data, std::string& source, std::string& target, std::strin
     if (itr != d.MemberEnd())
     {
       message = itr->value.GetString();
+      type = msg_type_t::one_way;
     }
     else
-      throw runtime_error("Incorrect message: missing 'message' element");
+    {
+      type = msg_type_t::reply;
+    }
 
     itr = d.FindMember("target");
     if (itr != d.MemberEnd())
@@ -65,24 +71,21 @@ void from_json(data_t data, std::string& source, std::string& target, std::strin
       source = itr->value.GetString();
     }
 
-    itr = d.FindMember("expect_reply");
+    itr = d.FindMember("sequence_number");
     if (itr != d.MemberEnd())
     {
-      expect_reply = itr->value.GetBool();
+      sequence_number = itr->value.GetInt64();
+      if (type == msg_type_t::one_way)
+      {
+        type == msg_type_t::for_reply;
+      }
     }
     else
-      expect_reply = false;
-
-    if (expect_reply)
     {
-      itr = d.FindMember("sequence_number");
-      if (itr != d.MemberEnd())
+      if (type == msg_type_t::reply)
       {
-        sequence_number = itr->value.GetInt64();
-      }
-      else
-      {
-        expect_reply = false;
+        LOG(ERROR) << "Message without 'message' element must have 'sequence_number' element";
+        throw runtime_error("Incorrect message");
       }
     }
 
@@ -95,6 +98,7 @@ void from_json(data_t data, std::string& source, std::string& target, std::strin
         parse_parameters(v, params);
       }
     }
+    return type;
   }
 }
 

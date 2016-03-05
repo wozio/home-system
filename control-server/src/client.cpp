@@ -1,8 +1,6 @@
 #include "client.h"
 #include "json_converter.h"
-#include "yamicontainer.h"
 #include "logger.h"
-#include "discovery.h"
 #include "app.h"
 #include <thread>
 //#include <chrono>
@@ -93,69 +91,31 @@ void client::handle_data(data_t data, size_t data_size)
     std::string msg;
     std::string source;
     std::string target;
-    bool expect_reply;
     long long sequence_number;
 
-    from_json(data, source, target, msg, expect_reply, sequence_number, params);
+    auto msg_type = from_json(data, source, target, msg, sequence_number, params);
 
     try
     {
       // special handling for login message
-      if (msg == "login")
+      if (msg_type == msg_type_t::for_reply && msg == "login")
       {
         handle_login(params, sequence_number, source, target);
         return;
       }
 
-      LOG(DEBUG) << "Message: " << msg << ", from " << source << " to " << target;
-
       if (!this->is_logged_in(source))
       {
+        LOG(WARNING) << "Message '" << msg << "' from not logged in source '" << source << "' to '" << "'";
         throw runtime_error("Message from not logged in source");
       }
 
-      string ye = DISCOVERY.get(target);
+      LOG(DEBUG) << "Message: '" << msg << "', from '" << source << "' to '" << target << "'";
 
-      // sending message to service
-      if (!expect_reply)
+      clients_[target]->on_remote_msg(source, target, msg_type, msg, sequence_number, params);
+
       {
-        AGENT.send_one_way(ye, target, msg, params);
-      }
-      else
-      {
-        auto_ptr <yami::outgoing_message> message(AGENT.send(ye, target, msg, params));
-
-        message->wait_for_completion(1000);
-
-        switch (message->get_state())
-        {
-        case yami::replied:
-        {
-          //LOG("Replied");
-          // converting yami output to json
-          // yami binary values are not supported
-          size_t out_size = 0;
-          auto out = create_data();
-          to_json(target, source, message->get_reply(), sequence_number, out, out_size);
-
-          on_send(shared_from_this(), out, out_size);
-
-          break;
-        }
-
-        case yami::posted:
-        case yami::transmitted:
-        case yami::abandoned:
-          LOG(WARNING) << "Posted/Transmitted/Abandoned after timeout";
-          throw runtime_error("Message was abandoned");
-          break;
-
-        case yami::rejected:
-          LOG(WARNING) << "Rejected: " + message->get_exception_msg();
-          throw runtime_error(
-              "Message was rejected: " + message->get_exception_msg());
-          break;
-        }
+        
       }
     }
     catch (const exception& e)
