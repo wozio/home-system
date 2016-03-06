@@ -2,6 +2,7 @@
 #define	CLOUD_CLIENT_H
 
 #include "client.h"
+#include <set>
 
 namespace home_system
 {
@@ -16,9 +17,14 @@ public:
   ~cloud_client();
   
   void shutdown();
+
+  bool is_logged_in(const std::string& client);
+  void login(const std::string& client);
+  void logout(const std::string& client);
   
 private:
   shutdown_callback_t on_shutdown_;
+  std::set<std::string> clients_ids_;
 };
 
 }

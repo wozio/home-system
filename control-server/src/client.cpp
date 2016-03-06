@@ -1,8 +1,6 @@
 #include "client.h"
 #include "json_converter.h"
-#include "yamicontainer.h"
 #include "logger.h"
-#include "discovery.h"
 #include "app.h"
 #include <thread>
 //#include <chrono>
@@ -13,6 +11,8 @@ using namespace std;
 namespace home_system
 {
 
+clients client::clients_;
+
 client::client(ws_t ws)
 : handler(ws)
 {
@@ -21,6 +21,13 @@ client::client(ws_t ws)
 
 client::~client()
 {
+}
+
+void client::shutdown()
+{
+  LOG(DEBUG) << "Shutdown";
+  this->logout(client_id_);
+  handler::shutdown();
 }
 
 void client::on_read(data_t data, size_t data_size)
@@ -44,7 +51,7 @@ void client::handle_login(const yami::parameters& params, long long sequence_num
   string req_email = params.get_string("email");
   string req_password = params.get_string("password");
 
-  LOG(DEBUG) << "Login message for email:" << req_email;
+  LOG(DEBUG) << "Login message for client id:" << req_email;
 
   for (auto& v : home_system::app::config().get_child("users"))
   {
@@ -56,17 +63,15 @@ void client::handle_login(const yami::parameters& params, long long sequence_num
         string name = v.second.get<string>("name");
         LOG(DEBUG) << "User " << name << " (" << email << ") is logged in";
 
-        // create client service and assign id
-        string new_client = create_client(name);
+        auto client_id = clients_.add(name, shared_from_this());
+        this->login(client_id);
 
-        LOG(DEBUG) << "Client assigned: " << new_client;
-
-        clients_[new_client] = make_shared<client_service>(new_client);
+        LOG(DEBUG) << "Client assigned: " << client_id;
 
         yami::parameters rparams;
         rparams.set_string("name", name);
         rparams.set_string("email", email);
-        rparams.set_string("client_id", new_client);
+        rparams.set_string("client_id", client_id);
         size_t out_size = 0;
         auto out = create_data();
         to_json(target, source, rparams, sequence_number, out, out_size);
@@ -80,7 +85,8 @@ void client::handle_login(const yami::parameters& params, long long sequence_num
 
 void client::handle_logout(const std::string& source)
 {
-  clients_.erase(source);
+  LOG(DEBUG) << "Logout message for client id:" << source;
+  this->logout(source);
 }
 
 void client::handle_data(data_t data, size_t data_size)
@@ -95,82 +101,29 @@ void client::handle_data(data_t data, size_t data_size)
     std::string msg;
     std::string source;
     std::string target;
-    bool expect_reply;
     long long sequence_number;
 
-    from_json(data, source, target, msg, expect_reply, sequence_number, params);
+    auto msg_type = from_json(data, source, target, msg, sequence_number, params);
 
-    try
+    // special handling for login message
+    if (msg_type == msg_type_t::for_reply && msg == "login")
     {
-      // special handling for login message
-      if (msg == "login")
-      {
-        handle_login(params, sequence_number, source, target);
-        return;
-      }
-      else if (msg == "logout")
-      {
-        handle_logout(source);
-        return;
-      }
-
-      LOG(DEBUG) << "Message: " << msg << ", from " << source << " to " << target;
-
-      if (!this->is_logged_in(source))
-      {
-        throw runtime_error("Message from not logged in source");
-      }
-
-      string ye = DISCOVERY.get(target);
-
-      // sending message to service
-      if (!expect_reply)
-      {
-        AGENT.send_one_way(ye, target, msg, params);
-      }
-      else
-      {
-        auto_ptr <yami::outgoing_message> message(AGENT.send(ye, target, msg, params));
-
-        message->wait_for_completion(1000);
-
-        switch (message->get_state())
-        {
-        case yami::replied:
-        {
-          //LOG("Replied");
-          // converting yami output to json
-          // yami binary values are not supported
-          size_t out_size = 0;
-          auto out = create_data();
-          to_json(target, source, message->get_reply(), sequence_number, out, out_size);
-
-          on_send(shared_from_this(), out, out_size);
-
-          break;
-        }
-
-        case yami::posted:
-        case yami::transmitted:
-        case yami::abandoned:
-          LOG(WARNING) << "Posted/Transmitted/Abandoned after timeout";
-          throw runtime_error("Message was abandoned");
-          break;
-
-        case yami::rejected:
-          LOG(WARNING) << "Rejected: " + message->get_exception_msg();
-          throw runtime_error(
-              "Message was rejected: " + message->get_exception_msg());
-          break;
-        }
-      }
+      handle_login(params, sequence_number, source, target);
+      return;
     }
-    catch (const exception& e)
+    else if (msg_type == msg_type_t::one_way && msg == "logout")
     {
-      // reject message if reply is expected
-      LOG(WARNING) << "EXCEPTION: " << e.what();
-      reject(expect_reply, sequence_number, target, source, e.what());
+      handle_logout(source);
+      return;
     }
+
+    if (!this->is_logged_in(source))
+    {
+      LOG(WARNING) << "Message '" << msg << "' from not logged in source '" << source << "' to '" << "'";
+      throw runtime_error("Message from not logged in source");
+    }
+
+    clients_.get(source)->on_remote_msg(source, target, msg_type, msg, sequence_number, params);
   }
   catch (const exception& e)
   {
@@ -199,18 +152,18 @@ void client::reject(bool expect_reply, long long sequence_number,
 
 bool client::is_logged_in(const std::string& client)
 {
-  return clients_.find(client) != clients_.end();
+  return client_id_ == client;
 }
 
-std::string client::create_client(const std::string& name)
+void client::login(const std::string& client)
 {
-  string client_name;
-  do
-  {
-    client_name = name + to_string(rand());
-  }
-  while (clients_.find(client_name) != clients_.end());
-  return client_name;
+  client_id_ = client;
+}
+
+void client::logout(const std::string& client)
+{
+  clients_.remove(client);
+  client_id_ = "";
 }
 
 }

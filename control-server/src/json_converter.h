@@ -2,6 +2,7 @@
 #define	JSON_CONVERTER_H
 
 #include "handler.h"
+#include "msg_type_t.h"
 #include <yami4-cpp/parameters.h>
 #include <string>
 #include <exception>
@@ -15,12 +16,11 @@ namespace home_system
  * @param source Source
  * @param target Target
  * @param message Message
- * @param expect_reply Reply expectation
  * @param sequence_number Sequence number of the message
  * @param params Output yami parameters
  */
-void from_json(data_t data, std::string& source, std::string& target, std::string& message,
-  bool& expect_reply, long long& sequence_number, yami::parameters& params);
+  msg_type_t from_json(data_t data, std::string& source, std::string& target, std::string& message,
+  long long& sequence_number, yami::parameters& params);
 
 /**
  * Convert successful YAMI reply into JSON string
