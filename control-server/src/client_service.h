@@ -12,7 +12,7 @@ class client_service
 : public service
 {
 public:
-  client_service(const std::string& name);
+  client_service(const std::string& name, handler_t handler);
 
   void on_msg(yami::incoming_message & im);
   void on_remote_msg(const std::string& source, const std::string& target,
@@ -21,6 +21,7 @@ public:
 
 private:
   std::string name_;
+  handler_t handler_;
 };
 
 }

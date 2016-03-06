@@ -92,9 +92,29 @@ cloud_client::~cloud_client()
 void cloud_client::shutdown()
 {
   LOG(DEBUG) << "Cloud client shutting down";
+  for (const auto& client : clients_ids_)
+  {
+    clients_.remove(client);
+  }
+  clients_ids_.clear();
   handler::shutdown();
-  clients_.clear();
   on_shutdown_();
+}
+
+bool cloud_client::is_logged_in(const std::string& client)
+{
+  return clients_ids_.find(client) != clients_ids_.end();
+}
+
+void cloud_client::login(const std::string& client)
+{
+  clients_ids_.insert(client);
+}
+
+void cloud_client::logout(const std::string& client)
+{
+  clients_ids_.erase(client);
+  clients_.remove(client);
 }
 
 }

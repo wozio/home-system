@@ -77,7 +77,7 @@ msg_type_t from_json(data_t data, std::string& source, std::string& target, std:
       sequence_number = itr->value.GetInt64();
       if (type == msg_type_t::one_way)
       {
-        type == msg_type_t::for_reply;
+        type = msg_type_t::for_reply;
       }
     }
     else

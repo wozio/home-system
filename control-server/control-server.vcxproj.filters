@@ -41,6 +41,9 @@
     <ClCompile Include="src\ws_request_handler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\clients.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\client.h">
@@ -68,6 +71,12 @@
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="src\ws_request_handler.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\msg_type_t.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\clients.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -165,6 +165,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\client.cpp" />
+    <ClCompile Include="src\clients.cpp" />
     <ClCompile Include="src\client_service.cpp" />
     <ClCompile Include="src\cloud_client.cpp" />
     <ClCompile Include="src\cloud_ws.cpp" />
@@ -177,6 +178,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\client.h" />
+    <ClInclude Include="src\clients.h" />
     <ClInclude Include="src\client_service.h" />
     <ClInclude Include="src\cloud_client.h" />
     <ClInclude Include="src\cloud_ws.h" />
@@ -184,6 +186,7 @@
     <ClInclude Include="src\file_request_handler.h" />
     <ClInclude Include="src\http.h" />
     <ClInclude Include="src\json_converter.h" />
+    <ClInclude Include="src\msg_type_t.h" />
     <ClInclude Include="src\ws_request_handler.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
