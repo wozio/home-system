@@ -214,31 +214,6 @@ void client::on_read(data_t data, size_t data_size)
     else
       throw std::runtime_error("No message field");
 
-    itr = d.FindMember("parameters");
-    if (itr != d.MemberEnd())
-    {
-      if (itr->value.IsObject())
-      {
-        auto itr2 = itr->value.FindMember("email");
-        if (itr2 != itr->value.MemberEnd())
-        {
-          if (itr2->value.IsString())
-          {
-            string v(itr2->value.GetString());
-            LOG(DEBUG) << "user in message: " << v;
-            // get system associated with this user
-            // it will throw an exception when user is not found in map
-            // what means that system handling such user is not connected
-            system_ = SYSTEMS.get(v);
-          }
-        }
-      }
-      else
-        throw std::runtime_error("Wrong parameters field");
-    }
-    else
-      throw std::runtime_error("No parameters field");
-
     itr = d.FindMember("sequence_number");
     if (itr != d.MemberEnd())
     {
@@ -254,6 +229,47 @@ void client::on_read(data_t data, size_t data_size)
     }
     else
       throw std::runtime_error("No sequence_number field");
+
+    itr = d.FindMember("parameters");
+    if (itr != d.MemberEnd())
+    {
+      if (itr->value.IsObject())
+      {
+        auto itr2 = itr->value.FindMember("email");
+        if (itr2 != itr->value.MemberEnd())
+        {
+          if (itr2->value.IsString())
+          {
+            string v(itr2->value.GetString());
+            LOG(DEBUG) << "user in message: " << v;
+            // get system associated with this user
+            // it will throw an exception when user is not found in map
+            // what means that system handling such user is not connected
+            try
+            {
+              system_ = SYSTEMS.get(v);
+            }
+            catch (const std::out_of_range&)
+            {
+              Document reply(kObjectType);
+              reply.AddMember("result", "failed", reply.GetAllocator());
+              reply.AddMember("sequence_number", seq_num_, reply.GetAllocator());
+              reply.AddMember("reason", "No system connected for such user", reply.GetAllocator());
+              buffer_t buffer(new StringBuffer);
+              Writer<StringBuffer> writer(*buffer);
+              reply.Accept(writer);
+
+              on_send(shared_from_this(), buffer);
+              return;
+            }
+          }
+        }
+      }
+      else
+        throw std::runtime_error("Wrong parameters field");
+    }
+    else
+      throw std::runtime_error("No parameters field");
 
     // set up temporary system->client route
     tmp_route_key_ = to_string(rand());
@@ -272,6 +288,7 @@ void client::on_read(data_t data, size_t data_size)
     d.Accept(writer);
 
     on_send(system_, buffer);
+
     break;
   }
   default:
