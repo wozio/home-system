@@ -21,7 +21,7 @@ FC=gfortran
 AS=as
 
 # Macros
-CND_PLATFORM=GNU-Linux-x86
+CND_PLATFORM=GNU-Linux
 CND_DLIB_EXT=so
 CND_CONF=Debug
 CND_DISTDIR=dist
@@ -52,7 +52,7 @@ FFLAGS=
 ASFLAGS=
 
 # Link Libraries and Options
-LDLIBSOPTIONS=-L../common/yami4/lib -lboost_system -lboost_thread -lboost_date_time -lPocoNet -lPocoFoundation -lpthread ../common/common/../bin/Debug/libcommon.a -lyamicpp -lyamicore
+LDLIBSOPTIONS=-L../common/yami4/lib -lboost_system -lboost_thread -lPocoFoundation ../common/common/../bin/Debug/libcommon.a -lyamicpp -lyamicore -lPocoNet -lpthread
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
@@ -67,7 +67,7 @@ LDLIBSOPTIONS=-L../common/yami4/lib -lboost_system -lboost_thread -lboost_date_t
 ${OBJECTDIR}/test.o: test.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -D_DEBUG -I../common/common/src -I../common/yami4/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/test.o test.cpp
+	$(COMPILE.cc) -g -D_DEBUG -I../common/common/src -I../common/yami4/include -I../common/easyloggingpp/src -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/test.o test.cpp
 
 # Subprojects
 .build-subprojects:

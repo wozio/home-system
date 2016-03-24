@@ -2,17 +2,18 @@
 #include "app.h"
 #include "discovery.h"
 #include "yamicontainer.h"
+#include "logger.h"
 #include <boost/lexical_cast.hpp>
 #include <fstream>
 #include <iostream>
 #include <memory>
 
+INITIALIZE_EASYLOGGINGPP
+
 home_system::yc_t _yc;
 home_system::discovery_t _discovery;
 
 using namespace std;
-
-#define LOG(x) std::cout << x << std::endl;
 
 class test_service
   : public home_system::service
@@ -31,7 +32,7 @@ public:
     {
       if (available && service == "tv")
       {
-        LOG("TV service available, registering as client");
+        LOG(DEBUG) << "TV service available, registering as client";
         
         AGENT.send(DISCOVERY.get("tv"), "tv", "hello");
       }
@@ -47,14 +48,14 @@ public:
     params.set_string("destination", "test");
     params.set_string("endpoint", YC.endpoint());
     
-    LOG("[CLIENT] Create session for channel: " << channel);
+    LOG(DEBUG) << "[CLIENT] Create session for channel: " << channel;
     
     unique_ptr<yami::outgoing_message> message(AGENT.send(DISCOVERY.get("tv"), "tv", "create_session", params));
     
     message->wait_for_completion(1000);
     if (message->get_state() == yami::replied)
     {
-      LOG("[CLIENT] Session created: " << message->get_reply().get_integer("session"));
+      LOG(DEBUG) << "[CLIENT] Session created: " << message->get_reply().get_integer("session");
       return message->get_reply().get_integer("session");
     }
     return -1;
@@ -62,7 +63,7 @@ public:
   
   void stop(int session)
   {
-    LOG("[CLIENT] Delete session: " << session);
+    LOG(DEBUG) << "[CLIENT] Delete session: " << session;
     
     yami::parameters params;
 
@@ -73,7 +74,7 @@ public:
   
   void pause(int session)
   {
-    LOG("[CLIENT] Pause session: " << session);
+    LOG(DEBUG) << "[CLIENT] Pause session: " << session;
     
     yami::parameters params;
 
@@ -84,7 +85,7 @@ public:
   
   void play(int session)
   {
-    LOG("[CLIENT] Play session: " << session);
+    LOG(DEBUG) << "[CLIENT] Play session: " << session;
     
     yami::parameters params;
 
@@ -112,16 +113,16 @@ public:
 
         received_ += len;
         
-        LOG("Received " << len << " bytes, total: " << received_);
+        LOG(DEBUG) << "Received " << len << " bytes, total: " << received_;
       }
       catch (const std::exception& e)
       {
-        LOG("Exception: " << e.what());
+        LOG(DEBUG) << "Exception: " << e.what();
       }
     }
     else if (im.get_message_name() == "session_deleted")
     {
-      LOG("[CLIENT] session deleted");
+      LOG(DEBUG) << "[CLIENT] session deleted";
     }
     else
     {
@@ -147,7 +148,7 @@ public:
     {
       if (available && service == "tv")
       {
-        LOG("TV service available, registering as source");
+        LOG(DEBUG) << "TV service available, registering as source";
         
         yami::parameters params;
 
@@ -174,7 +175,7 @@ public:
       destination = im.get_parameters().get_string("destination");
       endpoint = im.get_parameters().get_string("endpoint");
       
-      LOG("[SOURCE] Create source session: " << channel << " " << destination << " " << endpoint);
+      LOG(DEBUG) << "[SOURCE] Create source session: " << channel << " " << destination << " " << endpoint;
       
       yami::parameters params;
       params.set_integer("session", 4321);
@@ -184,7 +185,7 @@ public:
     {
       int session = im.get_parameters().get_integer("session");
       
-      LOG("[SOURCE] Delete source session: " << session);
+      LOG(DEBUG) << "[SOURCE] Delete source session: " << session;
       
       yami::parameters params;
 
@@ -214,7 +215,7 @@ void cmd_handler(const std::vector<string>& fields)
       }
       catch (const home_system::service_not_found&)
       {
-        LOG("dhwrec service not found");
+        LOG(DEBUG) << "dhwrec service not found";
       }
     }
     else if (fields[0] == "off")
@@ -228,7 +229,7 @@ void cmd_handler(const std::vector<string>& fields)
       }
       catch (const home_system::service_not_found&)
       {
-        LOG("dhwrec service not found");
+        LOG(DEBUG) << "dhwrec service not found";
       }
     }
     else if (fields[0] == "ls")
@@ -259,7 +260,7 @@ void cmd_handler(const std::vector<string>& fields)
         }
         catch (const std::exception& e)
         {
-          LOG("EXCEPTION: " << e.what());
+          LOG(DEBUG) << "EXCEPTION: " << e.what();
         }
       }
     }
@@ -274,7 +275,7 @@ void cmd_handler(const std::vector<string>& fields)
         }
         catch (const std::exception& e)
         {
-          LOG("EXCEPTION: " << e.what());
+          LOG(DEBUG) << "EXCEPTION: " << e.what();
         }
       }
     }
@@ -289,7 +290,7 @@ void cmd_handler(const std::vector<string>& fields)
         }
         catch (const std::exception& e)
         {
-          LOG("EXCEPTION: " << e.what());
+          LOG(DEBUG) << "EXCEPTION: " << e.what();
         }
       }
     }
@@ -304,7 +305,7 @@ void cmd_handler(const std::vector<string>& fields)
         }
         catch (const std::exception& e)
         {
-          LOG("EXCEPTION: " << e.what());
+          LOG(DEBUG) << "EXCEPTION: " << e.what();
         }
       }
     }
@@ -320,7 +321,7 @@ void cmd_handler(const std::vector<string>& fields)
         }
         catch (const std::exception& e)
         {
-          LOG("EXCEPTION: " << e.what());
+          LOG(DEBUG) << "EXCEPTION: " << e.what();
         }
       }
     }
@@ -347,12 +348,12 @@ void cmd_handler(const std::vector<string>& fields)
             }
             else
             {
-              LOG("Message not replied");
+              LOG(DEBUG) << "Message not replied";
             }
           }
           catch (const home_system::service_not_found&)
           {
-            LOG("TV service not found");
+            LOG(DEBUG) << "TV service not found";
           }
         }
         else if (fields[1] == "records")
@@ -375,12 +376,12 @@ void cmd_handler(const std::vector<string>& fields)
             }
             else
             {
-              LOG("Message not replied");
+              LOG(DEBUG) << "Message not replied";
             }
           }
           catch (const home_system::service_not_found&)
           {
-            LOG("TV service not found");
+            LOG(DEBUG) << "TV service not found";
           }
         }
         else if (fields[1] == "epg")
@@ -413,12 +414,12 @@ void cmd_handler(const std::vector<string>& fields)
               }
               else
               {
-                LOG("Message not replied");
+                LOG(DEBUG) << "Message not replied";
               }
             }
             catch (const home_system::service_not_found&)
             {
-              LOG("TV service not found");
+              LOG(DEBUG) << "TV service not found";
             }
           }
         }
@@ -502,19 +503,25 @@ void cmd_handler(const std::vector<string>& fields)
 
 int main(int argc, char** argv)
 {
-  LOG("Started");
+  LOG(DEBUG) << "Started";
 
   _yc = home_system::yami_container::create();
-  _discovery = home_system::discovery::create([] (const std::string& msg) { LOG("discovery: " << msg); });
+  _discovery = home_system::discovery::create();
 
   unique_ptr<test_service> s(new test_service());
   unique_ptr<source_service> ss(new source_service());
 
-  home_system::app app(false, cmd_handler);
+  cout << "Enter q to quit..." << endl;
+  std::string input_line;
+  while (std::getline(std::cin, input_line))
+  {
+    if (input_line == "q" || input_line == "quit")
+    {
+      break;
+    }
+  }
 
-  app.run();
-
-  LOG("Quitting");
+  LOG(DEBUG) << "Quitting";
   
   s.reset();
   ss.reset();
