@@ -23,28 +23,44 @@ namespace home_system
   long long& sequence_number, yami::parameters& params);
 
 /**
- * Convert successful YAMI reply into JSON string
- * @param source Source
+ * Convert YAMI reply into JSON string
  * @param target Target
- * @param params YAMI parameters
+ * @param result Result
+ * @param reason Reason of failed result
  * @param sequence_number Sequence number of the message
+ * @param params YAMI parameters
  * @param data Output JSON string
  * @param data_size Output JSON string size
  */
-void to_json(const std::string& source, const std::string& target, const yami::parameters& params, long long sequence_number,
-    data_t data, size_t& data_size);
+void reply_to_json(const std::string& target, const std::string& result, const std::string& reason,
+        long long sequence_number, const yami::parameters& params,
+        data_t data, size_t& data_size);
 
 /**
- * Convert failed YAMI reply into JSON string
- * @param source Source
+ * Convert YAMI reply without parameters into JSON string
  * @param target Target
- * @param reason Reason of failure
+ * @param result Result
+ * @param reason Reason of failed result
  * @param sequence_number Sequence number of the message
  * @param data Output JSON string
  * @param data_size Output JSON string size
  */
-void to_json(const std::string& source, const std::string& target, const std::string& reason, long long sequence_number,
-    data_t data, size_t& data_size);
+void reply_to_json(const std::string& target, const std::string& result, const std::string& reason,
+        long long sequence_number,
+        data_t data, size_t& data_size);
+
+/**
+ * Convert YAMI message into JSON string
+ * @param target Target
+ * @param message Message
+ * @param sequence_number Sequence number of the message
+ * @param params YAMI parameters
+ * @param data Output JSON string
+ * @param data_size Output JSON string size
+ */
+void msg_to_json(const std::string& target, const std::string& message,
+        long long sequence_number, const yami::parameters& params,
+        data_t data, size_t& data_size);
 
 }
 

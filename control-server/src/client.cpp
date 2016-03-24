@@ -74,13 +74,16 @@ void client::handle_login(const yami::parameters& params, long long sequence_num
         rparams.set_string("client_id", client_id);
         size_t out_size = 0;
         auto out = create_data();
-        to_json(target, source, rparams, sequence_number, out, out_size);
+        reply_to_json(source, "success", "", sequence_number, rparams, out, out_size);
         on_send(shared_from_this(), out, out_size);
         return;
       }
     }
   }
-  throw runtime_error("Unknown email or wrong password");
+  size_t out_size = 0;
+  auto out = create_data();
+  reply_to_json(source, "failed", "Unknown email or wrong password", sequence_number, out, out_size);
+  on_send(shared_from_this(), out, out_size);
 }
 
 void client::handle_logout(const std::string& source)
@@ -129,24 +132,6 @@ void client::handle_data(data_t data, size_t data_size)
   {
     // JSON parsing has failed, ignore such message
     LOG(WARNING) << "EXCEPTION: " << e.what();
-  }
-}
-
-void client::reject(bool expect_reply, long long sequence_number,
-    const std::string& target, const std::string& source, const char* reason)
-{
-  reject(expect_reply, sequence_number, target, source, string(reason));
-}
-
-void client::reject(bool expect_reply, long long sequence_number,
-    const std::string& target, const std::string& source, const std::string& reason)
-{
-  if (expect_reply)
-  {
-    size_t out_size = 0;
-    auto out = create_data();
-    to_json(target, source, reason, sequence_number, out, out_size);
-    client::on_send(shared_from_this(), out, out_size);
   }
 }
 

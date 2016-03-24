@@ -22,11 +22,6 @@ public:
 protected:
   void handle_data(data_t data, size_t data_size);
 
-  void reject(bool expect_reply, long long sequence_number,
-      const std::string& target, const std::string& source, const std::string& reason);
-  void reject(bool expect_reply, long long sequence_number,
-      const std::string& target, const std::string& source, const char* reason);
-
   static clients clients_;
 
   virtual bool is_logged_in(const std::string& client);

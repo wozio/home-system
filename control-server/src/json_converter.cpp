@@ -100,6 +100,8 @@ msg_type_t from_json(data_t data, std::string& source, std::string& target, std:
     }
     return type;
   }
+  LOG(ERROR) << "Root JSON element not an object";
+  throw runtime_error("Incorrect message");
 }
 
 // YAMI to JSON string
@@ -249,32 +251,48 @@ void process_parameters(const yami::parameters& params, std::ostream& out)
   out << '}';
 }
 
-void to_json(const std::string& source, const std::string& target, const yami::parameters& params, long long sequence_number,
-    data_t data, size_t& data_size)
+void reply_to_json(const std::string& target, const std::string& result, const std::string& reason,
+        long long sequence_number, const yami::parameters& params,
+        data_t data, size_t& data_size)
 {
   boost::interprocess::bufferstream out(data->data(), DATA_SIZE);
   out << "{"
-      << "\"source\":\"" << source << "\""
-      << ",\"target\":\"" << target << "\""
+      << "\"target\":\"" << target << "\""
       << ",\"sequence_number\":" << sequence_number
-      << ",\"result\":\"success\""
+      << ",\"result\":\"" << result << "\""
+      << ",\"reason\":\"" << reason << "\""
       << ",\"params\":";
   process_parameters(params, out);
   out << '}';
   data_size = out.tellp();
 }
 
-void to_json(const std::string& source, const std::string& target, const std::string& reason, long long sequence_number,
-    data_t data, size_t& data_size)
+void reply_to_json(const std::string& target, const std::string& result, const std::string& reason,
+        long long sequence_number,
+        data_t data, size_t& data_size)
 {
   boost::interprocess::bufferstream out(data->data(), DATA_SIZE);
   out << "{"
-      << "\"source\":\"" << source << "\""
-      << ",\"target\":\"" << target << "\""
+      << "\"target\":\"" << target << "\""
       << ",\"sequence_number\":" << sequence_number
-      << ",\"result\":\"failed\""
+      << ",\"result\":\"" << result << "\""
       << ",\"reason\":\"" << reason << "\""
       << '}';
+  data_size = out.tellp();
+}
+
+void msg_to_json(const std::string& target, const std::string& message,
+        long long sequence_number, const yami::parameters& params,
+        data_t data, size_t& data_size)
+{
+  boost::interprocess::bufferstream out(data->data(), DATA_SIZE);
+  out << "{"
+      << "\"target\":\"" << target << "\""
+      << ",\"message\":\"" << message << "\""
+      << ",\"sequence_number\":" << sequence_number
+      << ",\"params\":";
+  process_parameters(params, out);
+  out << '}';
   data_size = out.tellp();
 }
 

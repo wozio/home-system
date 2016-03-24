@@ -8,6 +8,8 @@
       <itemPath>src/client.h</itemPath>
       <itemPath>src/client_service.cpp</itemPath>
       <itemPath>src/client_service.h</itemPath>
+      <itemPath>src/clients.cpp</itemPath>
+      <itemPath>src/clients.h</itemPath>
       <itemPath>src/cloud_client.cpp</itemPath>
       <itemPath>src/cloud_client.h</itemPath>
       <itemPath>src/cloud_ws.cpp</itemPath>
@@ -128,6 +130,10 @@
       <item path="src/client_service.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="src/client_service.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="src/clients.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/clients.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="src/cloud_client.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -262,6 +268,10 @@
       <item path="src/client_service.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="src/client_service.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="src/clients.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/clients.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="src/cloud_client.cpp" ex="false" tool="1" flavor2="0">
       </item>

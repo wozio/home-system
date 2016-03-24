@@ -3,6 +3,7 @@
 #include "discovery.h"
 #include "yamicontainer.h"
 #include "logger.h"
+#include "timer.h"
 #include <boost/lexical_cast.hpp>
 #include <fstream>
 #include <iostream>
@@ -501,6 +502,31 @@ void cmd_handler(const std::vector<string>& fields)
   }
 }
 
+home_system::timer t;
+
+void send_dummy()
+{
+  LOG(DEBUG) << "Sending dummy message";
+  yami::parameters param;
+  param.set_integer("channel", 123);
+  param.set_integer("id", 321);
+  unique_ptr<yami::outgoing_message> message(AGENT.send(DISCOVERY.get("wozio1681692777"), "wozio1681692777", "update", param));
+  message->wait_for_completion(1000);
+  if (message->get_state() == yami::replied)
+  {
+    LOG(DEBUG) << "Replied????";
+  }
+  else if (message->get_state() == yami::rejected)
+  {
+    LOG(DEBUG) << "Rejected...";
+  }
+  else
+  {
+    LOG(DEBUG) << "Timed out";
+  }
+  t.set_from_now(1000, send_dummy);
+}
+
 int main(int argc, char** argv)
 {
   LOG(DEBUG) << "Started";
@@ -510,6 +536,8 @@ int main(int argc, char** argv)
 
   unique_ptr<test_service> s(new test_service());
   unique_ptr<source_service> ss(new source_service());
+  
+  t.set_from_now(1000, send_dummy);
 
   cout << "Enter q to quit..." << endl;
   std::string input_line;
