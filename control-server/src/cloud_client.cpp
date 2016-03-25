@@ -1,6 +1,7 @@
 #include "cloud_client.h"
 #include "logger.h"
 #include "app.h"
+#include "clients.h"
 #include "rapidjson/document.h"
 #include "rapidjson/error/en.h"
 #include "rapidjson/writer.h"
@@ -94,7 +95,7 @@ void cloud_client::shutdown()
   LOG(DEBUG) << "Cloud client shutting down";
   for (const auto& client : clients_ids_)
   {
-    clients_.remove(client);
+    CLIENTS.remove(client);
   }
   clients_ids_.clear();
   handler::shutdown();
@@ -114,7 +115,7 @@ void cloud_client::login(const std::string& client)
 void cloud_client::logout(const std::string& client)
 {
   clients_ids_.erase(client);
-  clients_.remove(client);
+  CLIENTS.remove(client);
 }
 
 }

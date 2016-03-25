@@ -2,7 +2,6 @@
 #define	CLIENT_H
 
 #include "handler.h"
-#include "clients.h"
 #include <yami4-cpp/parameters.h>
 
 namespace home_system
@@ -21,8 +20,6 @@ public:
 
 protected:
   void handle_data(data_t data, size_t data_size);
-
-  static clients clients_;
 
   virtual bool is_logged_in(const std::string& client);
   virtual void login(const std::string& client);

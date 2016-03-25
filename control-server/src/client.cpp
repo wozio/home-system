@@ -2,6 +2,7 @@
 #include "json_converter.h"
 #include "logger.h"
 #include "app.h"
+#include "clients.h"
 #include <thread>
 //#include <chrono>
 #include <cstdlib>
@@ -10,8 +11,6 @@ using namespace std;
 
 namespace home_system
 {
-
-clients client::clients_;
 
 client::client(ws_t ws)
 : handler(ws)
@@ -63,7 +62,7 @@ void client::handle_login(const yami::parameters& params, long long sequence_num
         string name = v.second.get<string>("name");
         LOG(DEBUG) << "User " << name << " (" << email << ") is logged in";
 
-        auto client_id = clients_.add(name, shared_from_this());
+        auto client_id = CLIENTS.add(name, shared_from_this());
         this->login(client_id);
 
         LOG(DEBUG) << "Client assigned: " << client_id;
@@ -126,7 +125,7 @@ void client::handle_data(data_t data, size_t data_size)
       throw runtime_error("Message from not logged in source");
     }
 
-    clients_.get(source)->on_remote_msg(source, target, msg_type, msg, sequence_number, params);
+    CLIENTS.get(source)->on_remote_msg(source, target, msg_type, msg, sequence_number, params);
   }
   catch (const exception& e)
   {
@@ -147,7 +146,7 @@ void client::login(const std::string& client)
 
 void client::logout(const std::string& client)
 {
-  clients_.remove(client);
+  CLIENTS.remove(client);
   client_id_ = "";
 }
 
