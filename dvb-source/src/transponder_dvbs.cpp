@@ -25,10 +25,10 @@ transponder_dvbs::transponder_dvbs(const std::vector<string>& fields)
     throw transponder_configuration_exception("It should be at least 5 parameters for DVB-S");
   }
 
-  frequency_ = to_frequency(fields[1]);
-  polarization_ = to_polarization(fields[2]);
-  symbol_rate_ = to_symbol_rate(fields[3]);
-  fec_ = to_fec(fields[4]);
+  frequency_ = stoi(fields[1]);
+  polarization_ = str_to_polarization(fields[2]);
+  symbol_rate_ = stoi(fields[3]);
+  fec_ = str_to_fec(fields[4]);
 }
 
 transponder_dvbs::~transponder_dvbs()

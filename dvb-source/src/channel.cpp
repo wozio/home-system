@@ -54,7 +54,7 @@ void channel::print()
 void channel::save(std::ostream& str)
 {
   transponder_->save(str);
-  str << name_ << endl;
+  str << endl << name_ << endl;
   str << id_ << endl;
 }
 

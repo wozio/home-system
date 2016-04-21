@@ -20,14 +20,14 @@ transponder_dvbt::transponder_dvbt(const std::vector<string>& fields)
     throw transponder_configuration_exception("It should be at least 9 parameters for DVB-T");
   }
   
-  frequency_ = to_frequency(fields[1]);
-  bandwidth_ = to_bandwidth(fields[2]);
-  fec_hi_ = to_fec(fields[3]);
-  fec_lo_ = to_fec(fields[4]);
-  mod_ = to_modulation(fields[5]);
-  tm_ = to_transmit_mode(fields[6]);
-  guard_ = to_guard_interval(fields[7]);
-  hi_ = to_hierarchy(fields[8]);
+  frequency_ = stoi(fields[1]);
+  bandwidth_ = stoi(fields[2]);
+  fec_hi_ = str_to_fec(fields[3]);
+  fec_lo_ = str_to_fec(fields[4]);
+  mod_ = str_to_modulation(fields[5]);
+  tm_ = str_to_transmit_mode(fields[6]);
+  guard_ = str_to_guard_interval(fields[7]);
+  hi_ = str_to_hierarchy(fields[8]);
 }
 
 transponder_dvbt::~transponder_dvbt()
@@ -42,7 +42,7 @@ void transponder_dvbt::tune(int fd)
   myproperties[1].cmd = DTV_FREQUENCY;
   myproperties[1].u.data = frequency_;
   myproperties[2].cmd = DTV_BANDWIDTH_HZ;
-  myproperties[2].u.data = bandwidth_;
+  myproperties[2].u.data = bandwidth_ * 1000000;
   myproperties[3].cmd = DTV_CODE_RATE_HP;
   myproperties[3].u.data = fec_hi_;
   myproperties[4].cmd = DTV_CODE_RATE_LP;
@@ -70,7 +70,14 @@ void transponder_dvbt::tune(int fd)
 
 void transponder_dvbt::print(std::ostream& str) const
 {
-  str << "Type: DVB-T, Frequency: " << frequency_;
+  str << "T " << frequency_ << " "
+    << bandwidth_ << "MHz "
+    << fec_to_str(fec_hi_) << " "
+    << fec_to_str(fec_lo_) << " "
+    << modulation_to_str(mod_) << " "
+    << transmit_mode_to_str(tm_) << " "
+    << guard_interval_to_str(guard_) << " "
+    << hierarchy_to_str(hi_);
 }
 
 bool transponder_dvbt::isless(const transponder* right)
@@ -88,7 +95,7 @@ bool transponder_dvbt::isless(const transponder* right)
 
 void transponder_dvbt::save(std::ostream& str) const
 {
-  
+  print(str);
 }
 
 }

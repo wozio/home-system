@@ -20,8 +20,8 @@ transponder_dvbs2::transponder_dvbs2(const std::vector<string>& fields)
     throw transponder_configuration_exception("It should be at least 7 parameters for DVB-S2");
   }
 
-  rolloff_ = to_rolloff(fields[5]);
-  mod_ = to_modulation(fields[6]);
+  rolloff_ = str_to_rolloff(fields[5]);
+  mod_ = str_to_modulation(fields[6]);
 }
 
 transponder_dvbs2::~transponder_dvbs2()

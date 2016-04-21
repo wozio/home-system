@@ -5,25 +5,26 @@
 #include <linux/dvb/frontend.h>
 #include <string>
 
-int to_frequency(const std::string& str);
+fe_code_rate str_to_fec(const std::string& str);
+const std::string& fec_to_str(fe_code_rate fec);
 
-int to_bandwidth(const std::string& str);
+fe_modulation str_to_modulation(const std::string& str);
+const std::string& modulation_to_str(fe_modulation mod);
 
-fe_code_rate to_fec(const std::string& str);
+fe_transmit_mode str_to_transmit_mode(const std::string& str);
+const std::string& transmit_mode_to_str(fe_transmit_mode tm);
 
-fe_modulation to_modulation(const std::string& str);
+fe_guard_interval str_to_guard_interval(const std::string& str);
+const std::string& guard_interval_to_str(fe_guard_interval gi);
 
-fe_transmit_mode to_transmit_mode(const std::string& str);
+fe_hierarchy str_to_hierarchy(const std::string& str);
+const std::string& hierarchy_to_str(fe_hierarchy hi);
 
-fe_guard_interval to_guard_interval(const std::string& str);
+polarization str_to_polarization(const std::string& str);
+const std::string& polarization_to_str(polarization p);
 
-fe_hierarchy to_hierarchy(const std::string& str);
-
-polarization to_polarization(const std::string& str);
-
-int to_symbol_rate(const std::string& str);
-
-fe_rolloff to_rolloff(const std::string& str);
+fe_rolloff str_to_rolloff(const std::string& str);
+const std::string& rolloff_to_str(fe_rolloff r);
 
 #endif	/* PARAM_CONVERT_H */
 

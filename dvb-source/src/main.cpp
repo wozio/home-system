@@ -46,32 +46,7 @@ int main(int argc, char** argv)
 
   LOG(INFO) << "DVB Source started";
   
-  home_system::media::dvb_service* service_p = nullptr;
-  
-  home_system::app app(vm.count("daemonize"), [&] (const std::vector<std::string>& cmd)
-  {
-    if (cmd[0] == "lc") // list local channels
-    {
-      if (service_p != nullptr)
-      {
-        service_p->print_channels();
-      }
-    }
-    else if (cmd[0] == "lt") // list transponders
-    {
-      if (service_p != nullptr)
-      {
-        service_p->print_transponders();
-      }
-    }
-    else if (cmd[0] == "ct") // current transponder
-    {
-      if (service_p != nullptr)
-      {
-        service_p->print_current_transponder();
-      }
-    }
-  });
+  home_system::app app(vm.count("daemonize"));
   
   bool exit_init_loop = false;
   int init_try = 0;
@@ -90,8 +65,6 @@ int main(int argc, char** argv)
 
       exit_init_loop = true;
       
-      service_p = &service;
-
       app.run();
       
     }

@@ -27,15 +27,22 @@ transponders::transponders(const std::string& transponder_file)
   while (f.good())
   {
     getline(f, line);
+    boost::trim(line);
+    if (line.size() == 0)
+      continue;
+    if (line[0] == '#')
+      continue;
     try
     {
-      auto nt = find_or_create(line);
-      LOG(DEBUG) << "Created transponder: " << *nt;
-      transponders_.insert(nt);
+      find_or_create(line);
     }
-    catch (const transponder_configuration_exception& e)
+    catch (const exception& e)
     {
       LOG(WARNING) << "Creating transponder failed: " << e.what();
+    }
+    catch(...)
+    {
+      LOG(ERROR) << "Unknown exception";
     }
   }
   if (!transponders_.empty())
@@ -87,20 +94,25 @@ transponder_t transponders::current()
 
 shared_ptr<transponder> transponders::find_or_create(std::string& definition)
 {
-  if (definition.size() == 0)
-    throw transponder_configuration_exception("Incorrect definition string");
-
-  shared_ptr<transponder> nt;
   // removing comments at the end
   definition = definition.substr(0, definition.find_first_of("#"));
+  boost::trim(definition);
+  if (definition.size() == 0)
+    throw runtime_error("Incorrect definition string");
+ 
   boost::to_upper(definition);
+  
+  LOG(DEBUG) << "Find or create transponder from definition: " << definition;
+
   vector<string> fields;
   boost::split(fields, definition, boost::is_any_of("\t\xA "), boost::token_compress_on);
   
   if (fields.size() < 1)
   {
-    throw transponder_configuration_exception("It should be at least 1 parameter for definition");
+    throw runtime_error("It should be at least 1 parameter for definition");
   }
+  
+  shared_ptr<transponder> nt;
 
   if (fields[0] == "T")
   {
@@ -117,11 +129,13 @@ shared_ptr<transponder> transponders::find_or_create(std::string& definition)
   auto tit = transponders_.find(nt);
   if (tit == transponders_.end())
   {
+    LOG(DEBUG) << "Created transponder: " << *nt;
     transponders_.insert(nt);
     return nt;
   }
   else
   {
+    LOG(DEBUG) << "Found transponder: " << **tit;
     return *tit;
   }
 }
