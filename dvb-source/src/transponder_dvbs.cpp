@@ -153,7 +153,18 @@ void transponder_dvbs::diseqc(int fd, int hiband)
 
 void transponder_dvbs::print(std::ostream& str) const
 {
-  str << "DVB-S, freq=" << frequency_ << " pol=" << polarization_;
+  str << "S";
+  print_dvbs_params(str);
+}
+
+void transponder_dvbs::print_dvbs_params(std::ostream& str) const
+{
+  str
+    << " " << dec << frequency_
+    << " " << polarization_to_str(polarization_)
+    << " " << dec << symbol_rate_
+    << " " << fec_to_str(fec_)
+    ;
 }
 
 transponder_dvbs::lnb_type_st transponder_dvbs::lnbs_[] ={
@@ -164,15 +175,18 @@ transponder_dvbs::lnb_type_st transponder_dvbs::lnbs_[] ={
   {"C-BAND", 5150, 0, 0}
 };
 
-bool transponder_dvbs::isless(const transponder* right)
+bool transponder_dvbs::isless(const transponder_t right)
 {
-  const transponder_dvbs* comp = dynamic_cast<const transponder_dvbs*> (right);
-  if (comp == NULL)
-    throw runtime_error("Comparing transponders of different type");
-
-  if (
-    frequency_ < comp->frequency_ &&
-    polarization_ < comp->polarization_)
+  auto comp = dynamic_pointer_cast<const transponder_dvbs>(right);
+  if (comp == nullptr)
+  {
+    return true;
+  }
+  if (frequency_ < comp->frequency_)
+  {
+    return true;
+  }
+  else if (frequency_ == comp->frequency_ && polarization_ < comp->polarization_)
   {
     return true;
   }
@@ -181,52 +195,7 @@ bool transponder_dvbs::isless(const transponder* right)
 
 void transponder_dvbs::save(std::ostream& str) const
 {
-  str << "S " << dec << frequency_ << " ";
-  str << (polarization_ == POLARIZATION_HORIZONTAL ? 'H' : 'V') << " ";
-  str << dec << symbol_rate_ << " ";
-  switch (fec_)
-  {
-    case FEC_NONE:
-      str << "NONE";
-      break;
-    case FEC_1_2:
-      str << "1/2";
-      break;
-    case FEC_2_3:
-      str << "2/3";
-      break;
-    case FEC_3_4:
-      str << "3/4";
-      break;
-    case FEC_4_5:
-      str << "4/5";
-      break;
-    case FEC_5_6:
-      str << "5/6";
-      break;
-    case FEC_6_7:
-      str << "6/7";
-      break;
-    case FEC_7_8:
-      str << "7/8";
-      break;
-    case FEC_8_9:
-      str << "8/9";
-      break;
-    case FEC_9_10:
-      str << "9/0";
-      break;
-    case FEC_AUTO:
-      str << "AUTO";
-      break;
-    case FEC_3_5:
-      str << "3/5";
-      break;
-    case FEC_2_5:
-      str << "2/5";
-      break;
-  }
-  str << endl;
+  print(str);
 }
 
 }

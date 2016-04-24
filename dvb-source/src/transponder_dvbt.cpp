@@ -80,12 +80,13 @@ void transponder_dvbt::print(std::ostream& str) const
     << hierarchy_to_str(hi_);
 }
 
-bool transponder_dvbt::isless(const transponder* right)
+bool transponder_dvbt::isless(const transponder_t right)
 {
-  const transponder_dvbt* comp = dynamic_cast<const transponder_dvbt*>(right);
-  if (comp == NULL)
-    throw runtime_error("Comparing transponders of different type");
-  
+  auto comp = dynamic_pointer_cast<const transponder_dvbt>(right);
+  if (comp == nullptr)
+  {
+    return true;
+  }
   if (frequency_ < comp->frequency_)
   {
     return true;

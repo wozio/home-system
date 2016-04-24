@@ -86,6 +86,7 @@ const std::string& modulation_to_str(fe_modulation mod)
     {APSK_16, "16APSK"},
     {APSK_32, "32APSK"},
     {DQPSK, "DQPSK"},
+    {QAM_4_NR, "AUTO"},
   };
   return map.at(mod);
 }

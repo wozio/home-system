@@ -49,5 +49,10 @@ std::ostream& operator<< (std::ostream& out, const std::shared_ptr<transponder> 
   return out;
 }
 
+bool transponder_comp::operator() (const transponder_t& lt, const transponder_t& rt) const
+{
+  return lt->isless(rt);
+}
+
 }
 }

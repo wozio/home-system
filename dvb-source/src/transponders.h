@@ -30,9 +30,10 @@ public:
   void print();
 private:
   transponders(const transponders&){};
-  std::set<transponder_t> transponders_;
+  typedef std::set<transponder_t, transponder_comp> transponder_set_t;
+  transponder_set_t transponders_;
   
-  std::set<transponder_t>::iterator current_;
+  transponder_set_t::iterator current_;
 };
 
 }

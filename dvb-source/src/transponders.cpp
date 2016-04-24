@@ -154,7 +154,7 @@ transponder_t transponders::set(transponder_t t)
 
 bool operator<(const transponder_t& left, const transponder_t& right)
 {
-  return left->isless(right.get());
+  return left->isless(right);
 }
 
 }
