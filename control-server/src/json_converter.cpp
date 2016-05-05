@@ -1,10 +1,8 @@
 #include "json_converter.h"
 #include "logger.h"
 #include "rapidjson/document.h"
-#include <boost/lexical_cast.hpp>
-#include <boost/interprocess/streams/bufferstream.hpp>
-//#include <iostream>
-//#include <sstream>
+#include "rapidjson/writer.h"
+#include "rapidjson/stringbuffer.h"
 
 namespace home_system
 {
@@ -106,140 +104,106 @@ msg_type_t from_json(data_t data, std::string& source, std::string& target, std:
 
 // YAMI to JSON string
 
-void process_parameters(const yami::parameters& params, std::ostream& out)
+void process_parameters(const yami::parameters& params, Writer<StringBuffer>& writer)
 {
-  out << '{';
-  bool first = true;
+  writer.StartObject();
   for (yami::parameters::iterator it = params.begin(); it != params.end();
       ++it)
   {
-    if (!first)
-    {
-      out << ',';
-    }
-    first = false;
-
-    out << '"' << (*it).name() << '"' << ':';
+    writer.Key(StringRef((*it).name().c_str()));
 
     switch ((*it).type())
     {
     case yami::boolean:
-      out << ((*it).get_boolean() ? "true" : "false");
+      writer.Bool((*it).get_boolean());
       break;
     case yami::integer:
-      out << boost::lexical_cast < string > ((*it).get_integer());
+      writer.Int((*it).get_integer());
       break;
     case yami::long_long:
-      out << boost::lexical_cast < string > ((*it).get_long_long());
+      writer.Int64((*it).get_long_long());
       break;
     case yami::double_float:
-      out << boost::lexical_cast < string > ((*it).get_double_float());
+      writer.Double((*it).get_double_float());
       break;
     case yami::string:
-      out << '"' << (*it).get_string() << '"';
+      writer.String(StringRef((*it).get_string().c_str()));
       break;
     case yami::integer_array:
     {
-      out << "[";
+      writer.StartArray();
       size_t ybs;
       int* yb = (*it).get_integer_array(ybs);
-      if (ybs > 0)
+      for (size_t i = 0; i < ybs; ++i)
       {
-        for (size_t i = 0; i < ybs - 1; ++i)
-        {
-          out << boost::lexical_cast < string > (yb[i]) << ',';
-        }
-        out << boost::lexical_cast < string > (yb[ybs - 1]);
+        writer.Int(yb[i]);
       }
-      out << ']';
+      writer.EndArray();
       break;
     }
     case yami::boolean_array:
     {
-      out << "[";
+      writer.StartArray();
       size_t ybs;
       bool* yb = (*it).get_boolean_array(ybs);
-      if (ybs > 0)
+      for (size_t i = 0; i < ybs; ++i)
       {
-        for (size_t i = 0; i < ybs - 1; ++i)
-        {
-          out << (yb[i] ? "true" : "false") << ',';
-        }
-        out << (yb[ybs - 1] ? "true" : "false");
+        writer.Bool(yb[i]);
       }
-      out << ']';
+      writer.EndArray();
       break;
     }
     case yami::long_long_array:
     {
-      out << "[";
+      writer.StartArray();
       size_t ybs;
       long long* yb = (*it).get_long_long_array(ybs);
-      if (ybs > 0)
+      for (size_t i = 0; i < ybs; ++i)
       {
-        for (size_t i = 0; i < ybs - 1; ++i)
-        {
-          out << boost::lexical_cast < string > (yb[i]) << ',';
-        }
-        out << boost::lexical_cast < string > (yb[ybs - 1]);
+        writer.Int64(yb[i]);
       }
-      out << ']';
+      writer.EndArray();
       break;
     }
     case yami::double_float_array:
     {
-      out << "[";
+      writer.StartArray();
       size_t ybs;
       double* yb = (*it).get_double_float_array(ybs);
-      if (ybs > 0)
+      for (size_t i = 0; i < ybs; ++i)
       {
-        for (size_t i = 0; i < ybs - 1; ++i)
-        {
-          out << boost::lexical_cast < string > (yb[i]) << ',';
-        }
-        out << boost::lexical_cast < string > (yb[ybs - 1]);
+        writer.Double(yb[i]);
       }
-      out << ']';
+      writer.EndArray();
       break;
     }
     case yami::string_array:
     {
-      out << "[";
+      writer.StartArray();
       size_t ybs = (*it).get_string_array_length();
-      if (ybs > 0)
+      for (size_t i = 0; i < ybs; ++i)
       {
-        for (size_t i = 0; i < ybs - 1; ++i)
-        {
-          out << '"' << (*it).get_string_in_array(i) << '"' << ',';
-        }
-        out << '"' << (*it).get_string_in_array(ybs - 1) << '"';
+        writer.String(StringRef((*it).get_string_in_array(i).c_str()));
       }
-      out << ']';
+      writer.EndArray();
       break;
     }
     case yami::nested_parameters:
     {
       yami::parameters nested((*it).get_nested_parameters());
-      process_parameters(nested, out);
+      process_parameters(nested, writer);
       break;
     }
     case yami::nested_parameters_array:
     {
-      out << '[';
+      writer.StartArray();
       size_t ybs = params.get_nested_array_length((*it).name());
-      if (ybs > 0)
+      for (size_t i = 0; i < ybs; ++i)
       {
-        for (size_t i = 0; i < ybs - 1; ++i)
-        {
-          yami::parameters nested(params.get_nested_in_array((*it).name(), i));
-          process_parameters(nested, out);
-          out << ',';
-        }
-        yami::parameters nested(
-            params.get_nested_in_array((*it).name(), ybs - 1));
-        process_parameters(nested, out);
+        yami::parameters nested(params.get_nested_in_array((*it).name(), i));
+        process_parameters(nested, writer);
       }
-      out << ']';
+      writer.EndArray();
       break;
     }
     case yami::unused:
@@ -248,52 +212,81 @@ void process_parameters(const yami::parameters& params, std::ostream& out)
       break;
     }
   }
-  out << '}';
+  writer.EndObject();
 }
 
 void reply_to_json(const std::string& target, const std::string& result, const std::string& reason,
         long long sequence_number, const yami::parameters& params,
-        data_t data, size_t& data_size)
+        buffer_t buffer)
 {
-  boost::interprocess::bufferstream out(data->data(), DATA_SIZE);
-  out << "{"
-      << "\"target\":\"" << target << "\""
-      << ",\"sequence_number\":" << sequence_number
-      << ",\"result\":\"" << result << "\""
-      << ",\"reason\":\"" << reason << "\""
-      << ",\"params\":";
-  process_parameters(params, out);
-  out << '}';
-  data_size = out.tellp();
+  Writer<StringBuffer> writer(*buffer);
+  
+  writer.StartObject();
+  
+  writer.Key("target");
+  writer.String(StringRef(target.c_str()));
+  
+  writer.Key("sequence_number");
+  writer.Uint(sequence_number);
+  
+  writer.Key("result");
+  writer.String(StringRef(result.c_str()));
+  
+  writer.Key("reason");
+  writer.String(StringRef(reason.c_str()));
+  
+  writer.Key("params");
+  
+  process_parameters(params, writer);
+  
+  writer.EndObject();
 }
 
 void reply_to_json(const std::string& target, const std::string& result, const std::string& reason,
         long long sequence_number,
-        data_t data, size_t& data_size)
+        buffer_t buffer)
 {
-  boost::interprocess::bufferstream out(data->data(), DATA_SIZE);
-  out << "{"
-      << "\"target\":\"" << target << "\""
-      << ",\"sequence_number\":" << sequence_number
-      << ",\"result\":\"" << result << "\""
-      << ",\"reason\":\"" << reason << "\""
-      << '}';
-  data_size = out.tellp();
+  Writer<StringBuffer> writer(*buffer);
+  
+  writer.StartObject();
+  
+  writer.Key("target");
+  writer.String(StringRef(target.c_str()));
+  
+  writer.Key("sequence_number");
+  writer.Uint(sequence_number);
+  
+  writer.Key("result");
+  writer.String(StringRef(result.c_str()));
+  
+  writer.Key("reason");
+  writer.String(StringRef(reason.c_str()));
+  
+  writer.EndObject();
 }
 
 void msg_to_json(const std::string& target, const std::string& message,
         long long sequence_number, const yami::parameters& params,
-        data_t data, size_t& data_size)
+        buffer_t buffer)
 {
-  boost::interprocess::bufferstream out(data->data(), DATA_SIZE);
-  out << "{"
-      << "\"target\":\"" << target << "\""
-      << ",\"message\":\"" << message << "\""
-      << ",\"sequence_number\":" << sequence_number
-      << ",\"params\":";
-  process_parameters(params, out);
-  out << '}';
-  data_size = out.tellp();
+  Writer<StringBuffer> writer(*buffer);
+  
+  writer.StartObject();
+  
+  writer.Key("target");
+  writer.String(StringRef(target.c_str()));
+  
+  writer.Key("message");
+  writer.String(StringRef(message.c_str()));
+  
+  writer.Key("sequence_number");
+  writer.Uint(sequence_number);
+  
+  writer.Key("params");
+  
+  process_parameters(params, writer);
+  
+  writer.EndObject();  
 }
 
 }

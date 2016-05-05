@@ -29,12 +29,11 @@ namespace home_system
  * @param reason Reason of failed result
  * @param sequence_number Sequence number of the message
  * @param params YAMI parameters
- * @param data Output JSON string
- * @param data_size Output JSON string size
+ * @param buffer Output buffer with JSON string
  */
 void reply_to_json(const std::string& target, const std::string& result, const std::string& reason,
         long long sequence_number, const yami::parameters& params,
-        data_t data, size_t& data_size);
+        buffer_t buffer);
 
 /**
  * Convert YAMI reply without parameters into JSON string
@@ -42,12 +41,11 @@ void reply_to_json(const std::string& target, const std::string& result, const s
  * @param result Result
  * @param reason Reason of failed result
  * @param sequence_number Sequence number of the message
- * @param data Output JSON string
- * @param data_size Output JSON string size
+ * @param buffer Output buffer with JSON string
  */
 void reply_to_json(const std::string& target, const std::string& result, const std::string& reason,
         long long sequence_number,
-        data_t data, size_t& data_size);
+        buffer_t buffer);
 
 /**
  * Convert YAMI message into JSON string
@@ -55,12 +53,11 @@ void reply_to_json(const std::string& target, const std::string& result, const s
  * @param message Message
  * @param sequence_number Sequence number of the message
  * @param params YAMI parameters
- * @param data Output JSON string
- * @param data_size Output JSON string size
+ * @param buffer Output buffer with JSON string
  */
 void msg_to_json(const std::string& target, const std::string& message,
         long long sequence_number, const yami::parameters& params,
-        data_t data, size_t& data_size);
+        buffer_t buffer);
 
 }
 

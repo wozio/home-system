@@ -15,9 +15,10 @@ def init(daemonize):
   logger.setLevel(logging.DEBUG)
   formatter = logging.Formatter('[%(asctime)s] [%(levelname)s] [%(thread)d] [%(filename)s:%(lineno)d] %(message)s')
 
-  fh = logging.handlers.RotatingFileHandler('/var/log/home-system/iocontrol.log', maxBytes=1*1024*1024, backupCount=1)
-  fh.setFormatter(formatter)
-  logger.addHandler(fh)
+  if daemonize:
+    fh = logging.handlers.RotatingFileHandler('/var/log/home-system/iocontrol.log', maxBytes=1*1024*1024, backupCount=1)
+    fh.setFormatter(formatter)
+    logger.addHandler(fh)
 
   if not daemonize:
     ch = logging.StreamHandler()

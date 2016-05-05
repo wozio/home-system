@@ -28,12 +28,11 @@ void client_service::on_msg(yami::incoming_message & im)
   LOG(TRACE) << "Assigned sequence_number = " << sn;
   
   // convert to json
-  auto data = create_data();
-  size_t data_size;
-  msg_to_json(name_, im.get_message_name(), sn, im.get_parameters(), data, data_size);
+  buffer_t buffer(new rapidjson::StringBuffer);
+  msg_to_json(name_, im.get_message_name(), sn, im.get_parameters(), buffer);
   
   // send to handler
-  handler::on_send(handler_, data, data_size);
+  handler::on_send(handler_, buffer);
   
   // move incoming message to map with assigned sequence number
   incoming_.emplace(sn, im);
@@ -81,11 +80,10 @@ void client_service::on_remote_msg(const std::string& source, const std::string&
         LOG(DEBUG) << "Got reply";
         // converting yami output to json
         // yami binary values are not supported
-        size_t out_size = 0;
-        auto out = create_data();
-        reply_to_json(source, "success", "", sequence_number, message->get_reply(), out, out_size);
+        buffer_t buffer(new rapidjson::StringBuffer);
+        reply_to_json(source, "success", "", sequence_number, message->get_reply(), buffer);
 
-        handler::on_send(handler_, out, out_size);
+        handler::on_send(handler_, buffer);
 
         break;
       }
@@ -99,10 +97,9 @@ void client_service::on_remote_msg(const std::string& source, const std::string&
       case yami::rejected:
       {
         LOG(WARNING) << "Rejected: " + message->get_exception_msg();
-        size_t out_size = 0;
-        auto out = create_data();
-        reply_to_json(source, "failed", message->get_exception_msg(), sequence_number, out, out_size);
-        handler::on_send(handler_, out, out_size);
+        buffer_t buffer(new rapidjson::StringBuffer);
+        reply_to_json(source, "failed", message->get_exception_msg(), sequence_number, buffer);
+        handler::on_send(handler_, buffer);
         break;
       }
       }
@@ -131,10 +128,9 @@ void client_service::on_remote_msg(const std::string& source, const std::string&
     LOG(WARNING) << "EXCEPTION: " << e.what();
     if (msg_type == msg_type_t::for_reply)
     {
-      size_t out_size = 0;
-      auto out = create_data();
-      reply_to_json(source, "failed", e.what(), sequence_number, out, out_size);
-      handler::on_send(handler_, out, out_size);
+      buffer_t buffer(new rapidjson::StringBuffer);
+      reply_to_json(source, "failed", e.what(), sequence_number, buffer);
+      handler::on_send(handler_, buffer);
     }
   }
 }

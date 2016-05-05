@@ -71,18 +71,16 @@ void client::handle_login(const yami::parameters& params, long long sequence_num
         rparams.set_string("name", name);
         rparams.set_string("email", email);
         rparams.set_string("client_id", client_id);
-        size_t out_size = 0;
-        auto out = create_data();
-        reply_to_json(source, "success", "", sequence_number, rparams, out, out_size);
-        on_send(shared_from_this(), out, out_size);
+        buffer_t buffer(new rapidjson::StringBuffer);
+        reply_to_json(source, "success", "", sequence_number, rparams, buffer);
+        on_send(shared_from_this(), buffer);
         return;
       }
     }
   }
-  size_t out_size = 0;
-  auto out = create_data();
-  reply_to_json(source, "failed", "Unknown email or wrong password", sequence_number, out, out_size);
-  on_send(shared_from_this(), out, out_size);
+  buffer_t buffer(new rapidjson::StringBuffer);
+  reply_to_json(source, "failed", "Unknown email or wrong password", sequence_number, buffer);
+  on_send(shared_from_this(), buffer);
 }
 
 void client::handle_logout(const std::string& source)
