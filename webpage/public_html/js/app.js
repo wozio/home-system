@@ -7,7 +7,8 @@ angular.module('app', [
   'app.login',
   'app.services',
   'app.indicator',
-  'app.auth'
+  'app.auth',
+  'app.epg'
 ])
 
 .config(['$routeProvider',
@@ -16,6 +17,13 @@ angular.module('app', [
       when('/', {
         templateUrl: 'services.html',
         controller: 'ServicesCtrl',
+        resolve: {
+          factory: checkUser
+        }
+      }).
+      when('/epg', {
+        templateUrl: 'epg.html',
+        controller: 'EpgCtrl',
         resolve: {
           factory: checkUser
         }

@@ -55,7 +55,6 @@ angular.module('app.data',[
       }
     } else {
       console.log("incoming message");
-      if 
     }
   });
   
