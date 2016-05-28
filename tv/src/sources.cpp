@@ -25,12 +25,9 @@ bool sources::check_source(const std::string& service)
 
 void sources::source_available(const std::string& service, const std::string& ye)
 {
-  if (sources_names_.find(service) == sources_names_.end())
-  {
-    source_t new_s = make_shared<source>(db_, service, ye);
-    sources_[ye] = new_s;
-    sources_names_[service] = new_s;
-  }
+  source_t new_s = make_shared<source>(db_, service, ye);
+  sources_[ye] = new_s;
+  sources_names_[service] = new_s;
 }
 
 void sources::source_not_available(const std::string& service)

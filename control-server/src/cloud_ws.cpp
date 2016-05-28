@@ -42,8 +42,7 @@ cloud_ws::~cloud_ws()
 
 void cloud_ws::connect()
 {
-  if (!logged_)
-    LOG(INFO) << "Connecting to cloud server";
+  LOG(INFO) << "Connecting to cloud server";
   
   try
   {
@@ -77,16 +76,10 @@ void cloud_ws::connect()
       });
     }));
     h->init();
-
-    logged_ = false;
   }
   catch (const std::exception &e)
   {
-    if (!logged_)
-    {
-      LOG(ERROR) << "Error: " << e.what();
-      logged_ = true;
-    }
+    LOG(ERROR) << "Error: " << e.what();
     timer_.set_from_now(1000, [this](){
       this->connect();
     });

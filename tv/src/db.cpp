@@ -31,6 +31,8 @@ db::db()
   std::vector<int> channels;
   session() << "SELECT channel,source,local FROM channel_map",
     into(channels), into(sources), into(locals), now;
+
+  LOG(DEBUG) << "Defined channels number " << channels.size();
   
   for (size_t i = 0; i < sources.size(); ++i){
     source_local_to_global_[sources[i]][locals[i]] = channels[i];

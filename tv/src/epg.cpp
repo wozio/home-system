@@ -37,6 +37,8 @@ void epg::handle_epg_data(const yami::parameters& params)
     throw runtime_error("Incorrect data in epg_data message (wrong sizes)");
   }
 
+  //LOG(TRACE) << "Received information for " << cs << " events";
+
   for (size_t i = 0; i < s; ++i)
   {
     int gc = db_.get_channel_from_source_local(source, channels[i]);
