@@ -12,9 +12,16 @@ namespace media
 channel::channel(uint64_t id, const std::string& name, transponder_t t, uint16_t service_id)
 : id_(id),
   name_(name),
-  transponder_(t),
-  service_id_(service_id)
+  transponder_(t)
 {
+  if (service_id == 0)
+  {
+    service_id_ = id & 0xFFFF;
+  }
+  else
+  {
+    service_id_ = service_id;
+  }
 }
 
 channel::~channel()

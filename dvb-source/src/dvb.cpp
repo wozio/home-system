@@ -168,9 +168,9 @@ void dvb::on_demux_state_change(demux_state newstate)
   case state::idle:
   {
     //lock_guard<mutex> lock(state_mutex_);
-    sessions_.clear();
-    state_ = state::idle;
-    start_idle_scan();
+//    sessions_.clear();
+//    state_ = state::idle;
+//    start_idle_scan();
     break;
   }
   default:

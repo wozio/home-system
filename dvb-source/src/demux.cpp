@@ -151,15 +151,6 @@ std::ostream& operator<<(std::ostream& out, demux_state s)
     case demux_state::mux_set:
       out << "mux_set";
       break;
-    case demux_state::sdt:
-      out << "sdt";
-      break;
-    case demux_state::pat:
-      out << "pat";
-      break;
-    case demux_state::pmts:
-      out << "pmts";
-      break;
   }
   return out;
 }
@@ -257,19 +248,7 @@ void demux::check()
   case demux_state::idle:
     break;
   case demux_state::mux_set:
-  case demux_state::sdt:
-  case demux_state::pat:
     poll_filters();
-    break;
-  case demux_state::pmts:
-    poll_filters();
-    if (file_reader_)
-    {
-      if (!file_reader_->is_running())
-      {
-        reset_mux();
-      }
-    }
     break;
   }
 }
@@ -370,7 +349,7 @@ void demux::check_sdt(section* s)
                       
                       string name(outbuf, outbufp - outbuf);
 
-                      LOG(TRACE) << hex << "Local channel ID: " << nid << ", name: " << name;
+                      LOG(TRACE) << "Local channel ID: " << nid << ", name: " << name << ", service id: " << curser->service_id;
                       channels::channel_data_t transponder_channel;
                       transponder_channel.id = nid;
                       transponder_channel.name = name;
@@ -390,7 +369,6 @@ void demux::check_sdt(section* s)
     }
     channels_.set_channels(transponder_channels);
   }
-  change_state(demux_state::sdt);
 }
 
 //struct mysection
@@ -640,7 +618,7 @@ void demux::check_pat(section* s)
   if (pat == NULL)
     return;
   
-  LOG(TRACE) << "We have a PAT, parsing...";
+  LOG(TRACE) << "We have a PAT, searching for " << channel_->service_id();
 
   // try and find the requested program
   mpeg_pat_program* cur_program;
@@ -648,7 +626,7 @@ void demux::check_pat(section* s)
   {
     if (cur_program->program_number == channel_->service_id())
     {
-      LOG(TRACE) << "Program found, setting PMT filter";
+      LOG(TRACE) << "Program found, setting PMT filter for PMT PID = " << cur_program->pid;
       
       pmt_version_number_ = 0xFF;
 
@@ -660,14 +638,8 @@ void demux::check_pat(section* s)
       }
        
        pmt_pid_ = cur_program->pid;
-
-      // close PAT filter
-      //close(pat_fd_);
-      
-      //fe_state_ = fe_waiting_pmt;
     }
   }
-  change_state(demux_state::pat);
 }
 
 void demux::check_pmt(section* s)
@@ -737,8 +709,6 @@ void demux::check_pmt(section* s)
   
   // creating file_reader
   file_reader_.reset(new file_reader(adapter_, demux_, session_callback_));
-  
-  change_state(demux_state::pmts);
 }
 
 //void dvb_service::check_tdt(section* section)

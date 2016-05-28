@@ -17,6 +17,7 @@ session::session(home_system::media::channel_t c, dvb::session_callback_t callba
   callback_(callback),
   stream_part_callback_(stream_part_callback)
 {
+  LOG(DEBUG) << "Creating session for channel " << c->get_name();
   demux_.reset_mux();
   if (channel_->get_transponder() == frontend_.get_transponder() && frontend_.get_state() == frontend_state::tuned)
   {
@@ -34,6 +35,7 @@ session::session(home_system::media::channel_t c, dvb::session_callback_t callba
 
 session::~session()
 {
+  LOG(DEBUG) << "Destroying session " << channel_->get_name();
   demux_.reset_mux();
   if (callback_)
   {

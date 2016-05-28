@@ -172,6 +172,7 @@ void dvb_service::on_remote_service_availability(const std::string& name, bool a
 
 void dvb_service::on_create_streaming_session(long long channel)
 {
+  LOG(DEBUG) << "Create streaming session request for channel " << channel;
   exception_handled_ = false;
     
   session_ = dvb_.create_session(dvb_.channels().get(channel),
@@ -186,6 +187,8 @@ void dvb_service::on_create_streaming_session(long long channel)
     {
       on_stream_part(size, buffer);
     });
+    
+    LOG(DEBUG) << "Session created " << session_;
 }
 
 void dvb_service::on_delete_streaming_session(int session)
