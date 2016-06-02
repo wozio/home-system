@@ -46,7 +46,7 @@ channels::channels(const std::string& channels_file, transponders& to)
         {
           t = transponders_.find_or_create(line);
         }
-        catch (const transponder_configuration_exception& e)
+        catch (const exception& e)
         {
           LOG(WARNING) << "Creating transponder failed: " << e.what();
         }

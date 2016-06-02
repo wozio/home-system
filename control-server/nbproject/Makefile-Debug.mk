@@ -35,9 +35,9 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
 OBJECTFILES= \
-	${OBJECTDIR}/src/clients.o \
 	${OBJECTDIR}/src/client.o \
 	${OBJECTDIR}/src/client_service.o \
+	${OBJECTDIR}/src/clients.o \
 	${OBJECTDIR}/src/cloud_client.o \
 	${OBJECTDIR}/src/cloud_ws.o \
 	${OBJECTDIR}/src/control-server.o \
@@ -76,11 +76,6 @@ LDLIBSOPTIONS=-L../common/yami4/lib -lboost_program_options -lboost_system -lboo
 	${MKDIR} -p ../bin/${CND_CONF}
 	${LINK.cc} -o ../bin/${CND_CONF}/control-server ${OBJECTFILES} ${LDLIBSOPTIONS}
 
-${OBJECTDIR}/src/clients.o: src/clients.cpp 
-	${MKDIR} -p ${OBJECTDIR}/src
-	${RM} "$@.d"
-	$(COMPILE.cc) -g -Wall -D_DEBUG -I../common/common/src -I../common/yami4/include -I../rapidjson/include -I../common/wshandling -I../common/easyloggingpp/src -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/clients.o src/clients.cpp
-	
 ${OBJECTDIR}/src/client.o: src/client.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} "$@.d"
@@ -90,6 +85,11 @@ ${OBJECTDIR}/src/client_service.o: src/client_service.cpp
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} "$@.d"
 	$(COMPILE.cc) -g -Wall -D_DEBUG -I../common/common/src -I../common/yami4/include -I../rapidjson/include -I../common/wshandling -I../common/easyloggingpp/src -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/client_service.o src/client_service.cpp
+
+${OBJECTDIR}/src/clients.o: src/clients.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -Wall -D_DEBUG -I../common/common/src -I../common/yami4/include -I../rapidjson/include -I../common/wshandling -I../common/easyloggingpp/src -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/clients.o src/clients.cpp
 
 ${OBJECTDIR}/src/cloud_client.o: src/cloud_client.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src

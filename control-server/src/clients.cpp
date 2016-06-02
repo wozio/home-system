@@ -2,6 +2,16 @@
 
 namespace home_system
 {
+  clients::clients()
+  {
+    
+  }
+  
+  clients::~clients()
+  {
+    
+  }
+  
   std::string clients::add(const std::string& name, handler_t handler)
   {
     std::string client_name;

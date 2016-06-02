@@ -19,13 +19,14 @@ public:
   
   void tune(int fd);
   void print(std::ostream& str) const;
-  bool isless(const transponder* right);
+  bool isless(const transponder_t right);
   void save(std::ostream& str) const;
 protected:
   unsigned long frequency_;
   polarization polarization_;
   int symbol_rate_;
   fe_code_rate fec_;
+  void print_dvbs_params(std::ostream& str) const;
   
   struct lnb_type_st
   {

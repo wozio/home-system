@@ -67,7 +67,7 @@ int sources::create_session(int channel, const std::string& client_endpoint, con
     }
   }
   
-  throw source_not_found();
+  throw runtime_error("Source not found or not available");
 }
 
 void sources::delete_session(int client_session)

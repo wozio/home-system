@@ -184,11 +184,12 @@ void tv_service::on_msg(yami::incoming_message& im)
         reply.set_integer("session", session);
         im.reply(reply);
       }
-      catch (const source_not_found& e)
+      catch (const runtime_error& e)
       {
-        LOG(WARNING) << "Source not found";
+        LOG(WARNING) << "EXCEPTION while creating session: " << e.what();
         yami::parameters reply;
         reply.set_integer("session", -1);
+        reply.set_string("reason", e.what());
         im.reply(reply);
       }
     }

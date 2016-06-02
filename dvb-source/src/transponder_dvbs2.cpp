@@ -20,8 +20,8 @@ transponder_dvbs2::transponder_dvbs2(const std::vector<string>& fields)
     throw transponder_configuration_exception("It should be at least 7 parameters for DVB-S2");
   }
 
-  rolloff_ = to_rolloff(fields[5]);
-  mod_ = to_modulation(fields[6]);
+  rolloff_ = str_to_rolloff(fields[5]);
+  mod_ = str_to_modulation(fields[6]);
 }
 
 transponder_dvbs2::~transponder_dvbs2()
@@ -67,120 +67,17 @@ void transponder_dvbs2::tune(int fd)
 
 void transponder_dvbs2::print(std::ostream& str) const
 {
-  str << "DVB-S2, freq=" << frequency_ << " pol=" << polarization_;
+  str << "S2";
+  print_dvbs_params(str);
+  str
+    << " " << rolloff_to_str(rolloff_)
+    << " " << modulation_to_str(mod_)
+    ;
 }
 
 void transponder_dvbs2::save(std::ostream& str) const
 {
-  str << "S2 " << dec << frequency_ << " ";
-  str << (polarization_ == POLARIZATION_HORIZONTAL ? 'H' : 'V') << " ";
-  str << dec << symbol_rate_ << " ";
-  switch (fec_)
-  {
-    case FEC_NONE:
-      str << "NONE";
-      break;
-    case FEC_1_2:
-      str << "1/2";
-      break;
-    case FEC_2_3:
-      str << "2/3";
-      break;
-    case FEC_3_4:
-      str << "3/4";
-      break;
-    case FEC_4_5:
-      str << "4/5";
-      break;
-    case FEC_5_6:
-      str << "5/6";
-      break;
-    case FEC_6_7:
-      str << "6/7";
-      break;
-    case FEC_7_8:
-      str << "7/8";
-      break;
-    case FEC_8_9:
-      str << "8/9";
-      break;
-    case FEC_9_10:
-      str << "9/0";
-      break;
-    case FEC_AUTO:
-      str << "AUTO";
-      break;
-    case FEC_3_5:
-      str << "3/5";
-      break;
-    case FEC_2_5:
-      str << "2/5";
-      break;
-  }
-  str << " ";
-  switch (rolloff_)
-  {
-    case ROLLOFF_35:
-      str << "35";
-      break;
-    case ROLLOFF_20:
-      str << "20";
-      break;
-    case ROLLOFF_25:
-      str << "25";
-      break;
-    case ROLLOFF_AUTO:
-      str << "AUTO";
-      break;
-  }
-
-  switch (mod_)
-  {
-    case QPSK:
-      str << "QPSK";
-      break;
-    case QAM_16:
-      str << "QAM16";
-      break;
-    case QAM_32:
-      str << "QAM32";
-      break;
-    case QAM_64:
-      str << "QAM64";
-      break;
-    case QAM_128:
-      str << "QAM128";
-      break;
-    case QAM_256:
-      str << "QAM256";
-      break;
-    case QAM_AUTO:
-      str << "AUTO";
-      break;
-    case VSB_8:
-      str << "VSB8";
-      break;
-    case VSB_16:
-      str << "VSB16";
-      break;
-    case PSK_8:
-      str << "8PSK";
-      break;
-    case APSK_16:
-      str << "16APSK";
-      break;
-    case APSK_32:
-      str << "32APSK";
-      break;
-    case DQPSK:
-      str << "DQPSK";
-      break;
-    case QAM_4_NR:
-      str << "AUTO"; // i don't know how it is encoded in transponders file
-      break;
-  }
-  
-  str << endl;
+  print(str);
 }
 
 }

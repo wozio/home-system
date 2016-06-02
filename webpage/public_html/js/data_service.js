@@ -31,25 +31,30 @@ angular.module('app.data',[
   dataStream.onMessage(function(message) {
     console.log("Received: " + message.data);
     var recv_msg = JSON.parse(message.data);
-    if (recv_msg.sequence_number !== undefined &&
-        queue[recv_msg.sequence_number] !== undefined) {
-      if (recv_msg.result !== undefined) {
-        if (recv_msg.result === "success") {
-          console.log("Received reply for sequence number: " + recv_msg.sequence_number);
-          queue[recv_msg.sequence_number].callback({
-            success: true,
-            data: recv_msg.params
-          });
-        } else {
-          console.log("Received failed result for sequence number: " + recv_msg.sequence_number + ": " + recv_msg.reason);
-          queue[recv_msg.sequence_number].callback({
-            success: false,
-            reason: recv_msg.reason
-          });
+    if (recv_msg.message === undefined) {
+      console.log("reply message");
+      if (recv_msg.sequence_number !== undefined &&
+          queue[recv_msg.sequence_number] !== undefined) {
+        if (recv_msg.result !== undefined) {
+          if (recv_msg.result === "success") {
+            console.log("Received reply for sequence number: " + recv_msg.sequence_number);
+            queue[recv_msg.sequence_number].callback({
+              success: true,
+              data: recv_msg.params
+            });
+          } else {
+            console.log("Received failed reply for sequence number: " + recv_msg.sequence_number + ": " + recv_msg.reason);
+            queue[recv_msg.sequence_number].callback({
+              success: false,
+              reason: recv_msg.reason
+            });
+          }
         }
+        $timeout.cancel(queue[recv_msg.sequence_number].timeout);
+        delete queue[recv_msg.sequence_number];
       }
-      $timeout.cancel(queue[recv_msg.sequence_number].timeout);
-      delete queue[recv_msg.sequence_number];
+    } else {
+      console.log("incoming message");
     }
   });
   

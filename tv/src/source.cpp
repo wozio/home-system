@@ -60,14 +60,19 @@ int source::create_session(int channel, const std::string& client_endpoint, cons
   
   unique_ptr<yami::outgoing_message> message(YC.agent().send(ye_, name_, "create_session", params));
   
-  message->wait_for_completion(1000);
+  message->wait_for_completion(10000);
   
   if (message->get_state() != yami::replied)
   {
-    throw failed_to_create_session();
+    throw runtime_error("Request to create session rejected by source");
   }
-  
+
   source_session_id_ = message->get_reply().get_integer("session");
+
+  if (source_session_id_ == -1)
+  {
+    throw runtime_error("Request to create session failed in source: " + message->get_reply().get_string("reason"));
+  }
     
   LOG(DEBUG) << "Got source session=" << source_session_id_;
   

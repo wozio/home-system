@@ -30,10 +30,10 @@ public:
   void print();
 private:
   transponders(const transponders&){};
-  // tried unique_ptr but it fails on GCC 4.7.3 with Internal Compiler Error when push_back into vector
-  std::set<transponder_t> transponders_;
+  typedef std::set<transponder_t, transponder_comp> transponder_set_t;
+  transponder_set_t transponders_;
   
-  std::set<transponder_t>::iterator current_;
+  transponder_set_t::iterator current_;
 };
 
 }

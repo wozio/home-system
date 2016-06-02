@@ -10,16 +10,6 @@ namespace home_system
 namespace media
 {
 
-class source_not_found
-: public std::runtime_error
-{
-public:
-  source_not_found()
-    : std::runtime_error("Source not found or not available")
-    {
-    }
-};
-
 class sources
 {
 public:

@@ -55,7 +55,7 @@ void session::stream_part(const void* buf, size_t length)
   
   streampos to_write = length;
   
-  LOG(DEBUG)  << "RECEIVED: " << length << " writepos=" << writepos_ << " readpos=" << dec << readpos_;
+  //LOG(TRACE)  << "RECEIVED: " << length << " writepos=" << writepos_ << " readpos=" << readpos_;
   
   buffer_.seekp(writepos_);
 
@@ -105,7 +105,7 @@ void session::stream_part(const void* buf, size_t length)
   buffer_.write(mybuf, to_write);
   writepos_ += to_write;
 
-  LOG(DEBUG) << "RECV: writepos=" << dec << writepos_ << " readpos=" << dec << readpos_;
+  //LOG(TRACE) << "RECV: writepos=" << writepos_ << " readpos=" << readpos_;
 
   trigger_send_some();
 }
@@ -173,7 +173,7 @@ void session::send()
 {
   try
   {
-    LOG(DEBUG) << "SENDING: writepos=" << dec << writepos_ << " readpos=" << dec << readpos_;
+    //LOG(TRACE) << "SENDING: writepos=" << dec << writepos_ << " readpos=" << dec << readpos_;
     
     if (readpos_ == writepos_)
     {
@@ -203,7 +203,7 @@ void session::send()
 
     buffer_.seekg(readpos_);
 
-    len = buffer_.readsome(buf, len);
+    buffer_.read(buf, len);
 
     if (len > 0)
     {
@@ -222,12 +222,12 @@ void session::send()
       {
         readpos_ = 0;
       }
+      //LOG(TRACE) << "SENT: len=" << len << " writepos=" << dec << writepos_ << " readpos=" << dec << readpos_;
     }
-    LOG(DEBUG) << "SEND: writepos=" << dec << writepos_ << " readpos=" << dec << readpos_;
   }
   catch (const std::exception& e)
   {
-    LOG(WARNING) << "Error sending stream poart to client: " << e.what();
+    LOG(WARNING) << "Error sending stream part to client: " << e.what();
     trigger_send_some();
   }
 }

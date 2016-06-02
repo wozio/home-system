@@ -19,7 +19,7 @@ public:
   
   void tune(int fd);
   void print(std::ostream& str) const;
-  bool isless(const transponder* right);
+  bool isless(const transponder_t right);
   void save(std::ostream& str) const;
 private:
   

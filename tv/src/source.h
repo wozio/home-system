@@ -12,16 +12,6 @@ namespace home_system
 namespace media
 {
 
-class failed_to_create_session
-: public std::runtime_error
-{
-public:
-  failed_to_create_session()
-    : std::runtime_error("Failed to create session on source")
-    {
-    }
-};
-
 class source;
 
 typedef std::shared_ptr<source> source_t;

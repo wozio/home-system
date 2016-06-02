@@ -19,10 +19,7 @@ namespace media
 enum class demux_state
 {
   idle,
-  mux_set,
-  sdt,
-  pat,
-  pmts
+  mux_set
 };
 
 class demux

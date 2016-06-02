@@ -25,7 +25,7 @@ public:
   virtual void tune(int fd) = 0;
   virtual void print(std::ostream& str) const = 0;
   virtual void save(std::ostream& str) const = 0;
-  virtual bool isless(const transponder* right) = 0;
+  virtual bool isless(const transponder_t right) = 0;
   
   void add_channel(channel_t c);
   void remove_channel(uint64_t cid);
@@ -37,6 +37,10 @@ private:
 
 std::ostream& operator<< (std::ostream& out, const transponder& t);
 std::ostream& operator<< (std::ostream& out, const transponder_t t);
+
+struct transponder_comp {
+  bool operator() (const transponder_t& lt, const transponder_t& rt) const;
+};
 
 }
 }

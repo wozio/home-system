@@ -2,6 +2,7 @@
 #include "json_converter.h"
 #include "logger.h"
 #include "app.h"
+#include "clients.h"
 #include <thread>
 //#include <chrono>
 #include <cstdlib>
@@ -10,8 +11,6 @@ using namespace std;
 
 namespace home_system
 {
-
-clients client::clients_;
 
 client::client(ws_t ws)
 : handler(ws)
@@ -63,7 +62,7 @@ void client::handle_login(const yami::parameters& params, long long sequence_num
         string name = v.second.get<string>("name");
         LOG(DEBUG) << "User " << name << " (" << email << ") is logged in";
 
-        auto client_id = clients_.add(name, shared_from_this());
+        auto client_id = CLIENTS.add(name, shared_from_this());
         this->login(client_id);
 
         LOG(DEBUG) << "Client assigned: " << client_id;
@@ -72,15 +71,16 @@ void client::handle_login(const yami::parameters& params, long long sequence_num
         rparams.set_string("name", name);
         rparams.set_string("email", email);
         rparams.set_string("client_id", client_id);
-        size_t out_size = 0;
-        auto out = create_data();
-        to_json(target, source, rparams, sequence_number, out, out_size);
-        on_send(shared_from_this(), out, out_size);
+        buffer_t buffer(new rapidjson::StringBuffer);
+        reply_to_json(source, "success", "", sequence_number, rparams, buffer);
+        on_send(shared_from_this(), buffer);
         return;
       }
     }
   }
-  throw runtime_error("Unknown email or wrong password");
+  buffer_t buffer(new rapidjson::StringBuffer);
+  reply_to_json(source, "failed", "Unknown email or wrong password", sequence_number, buffer);
+  on_send(shared_from_this(), buffer);
 }
 
 void client::handle_logout(const std::string& source)
@@ -123,30 +123,12 @@ void client::handle_data(data_t data, size_t data_size)
       throw runtime_error("Message from not logged in source");
     }
 
-    clients_.get(source)->on_remote_msg(source, target, msg_type, msg, sequence_number, params);
+    CLIENTS.get(source)->on_remote_msg(source, target, msg_type, msg, sequence_number, params);
   }
   catch (const exception& e)
   {
     // JSON parsing has failed, ignore such message
     LOG(WARNING) << "EXCEPTION: " << e.what();
-  }
-}
-
-void client::reject(bool expect_reply, long long sequence_number,
-    const std::string& target, const std::string& source, const char* reason)
-{
-  reject(expect_reply, sequence_number, target, source, string(reason));
-}
-
-void client::reject(bool expect_reply, long long sequence_number,
-    const std::string& target, const std::string& source, const std::string& reason)
-{
-  if (expect_reply)
-  {
-    size_t out_size = 0;
-    auto out = create_data();
-    to_json(target, source, reason, sequence_number, out, out_size);
-    client::on_send(shared_from_this(), out, out_size);
   }
 }
 
@@ -162,7 +144,7 @@ void client::login(const std::string& client)
 
 void client::logout(const std::string& client)
 {
-  clients_.remove(client);
+  CLIENTS.remove(client);
   client_id_ = "";
 }
 
