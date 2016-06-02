@@ -58,7 +58,7 @@ private:
   void stop_idle_scan();
   
   void on_frontend_state_change(home_system::media::frontend_state newstate);
-  void on_demux_state_change(home_system::media::demux_state newstate);
+  void on_demux_event(home_system::media::demux_event event);
   
   ei_callback_t ei_callback_;
   void on_ei(const home_system::media::demux::event_info& ei);

@@ -8,6 +8,7 @@
 #include <libucsi/dvb/descriptor.h>
 
 #include <iconv.h>
+#include <string>
 
 using namespace std;
 
@@ -21,22 +22,30 @@ demux::demux(int adapter, int demux, channels& channels, transponders& transpond
   demux_(demux),
   channels_(channels),
   transponders_(transponders),
-  send_event_info_(false),
-  state_(demux_state::idle)
+  send_event_info_(false)
 {
 }
 
 demux::~demux()
 {
-  state_callback_ = nullptr;
-  ei_callback_ = nullptr;
   reset_mux();
   timer_.cancel();
 }
 
-void demux::set_state_callback(state_callback_t callback)
+int demux::register_event_callback(event_callback_t callback)
 {
-  state_callback_ = callback;
+  int id = 0;
+  while (event_callbacks_.find(id) != event_callbacks_.end())
+  {
+    id++;
+  }
+  event_callbacks_[id] = callback;
+  return id;
+}
+
+void demux::unregister_event_callback(int id)
+{
+  event_callbacks_.erase(id);
 }
 
 void demux::set_ei_callback(ei_callback_t callback)
@@ -44,13 +53,14 @@ void demux::set_ei_callback(ei_callback_t callback)
   ei_callback_ = callback;
 }
 
-int demux::set_channel(channel_t c, dvb::session_stream_part_callback_t callback)
+void demux::set_channel(channel_t c, dvb::session_stream_part_callback_t callback)
 {
+  LOG(DEBUG) << "Channel setting to: " << c->get_name() << " (" << c->service_id() << ")";
+  
   session_callback_ = callback;
   channel_ = c;
   
   set_mux();
-  return 0;
 }
 
 void demux::set_mux()
@@ -108,63 +118,39 @@ void demux::set_mux()
   }*/
 
   
-  change_state(demux_state::mux_set);
+  event(demux_event::mux_set);
   set_timer(10);
 }
 
 void demux::reset_mux()
 {
   //lock_guard<mutex> lock(state_mutex_);
-  
-  if (state_ != demux_state::idle)
+  for (auto i : pollfds_)
   {
-    LOG(TRACE) << "Resetting demux";
-    
-    for (auto i : pollfds_)
-    {
-      close(i.fd);
-    }
-    
-    file_reader_.reset();
-    
-    for (auto i : pid_fds_)
-    {
-      close(i);
-    }
-
-    section_callbacks_.clear();
-    pollfds_.clear();
-
-    channel_ = nullptr;
-
-    change_state(demux_state::idle);
+    close(i.fd);
   }
+
+  file_reader_.reset();
+
+  for (auto i : pid_fds_)
+  {
+    close(i);
+  }
+
+  section_callbacks_.clear();
+  pollfds_.clear();
+
+  channel_ = nullptr;
+
+  event(demux_event::reset);
 }
 
-std::ostream& operator<<(std::ostream& out, demux_state s)
+void demux::event(demux_event event)
 {
-  switch (s)
+  LOG(TRACE) << "Event: " << event;
+  for (auto c : event_callbacks_)
   {
-    case demux_state::idle:
-      out << "idle";
-      break;
-    case demux_state::mux_set:
-      out << "mux_set";
-      break;
-  }
-  return out;
-}
-
-void demux::change_state(demux_state new_state)
-{
-  if (new_state != state_)
-  {
-    LOG(TRACE) << "Change state: " << state_ << "->" << new_state;
-    state_ = new_state;
-    if (state_callback_ != nullptr)
-    {
-      state_callback_(state_);
-    }
+    c.second(event);
   }
 }
 
@@ -241,16 +227,7 @@ int demux::create_pid_filter(uint16_t pid)
 
 void demux::check()
 {
-  //lock_guard<mutex> lock(state_mutex_);
-  
-  switch (state_)
-  {
-  case demux_state::idle:
-    break;
-  case demux_state::mux_set:
-    poll_filters();
-    break;
-  }
+  poll_filters();
 }
 
 void demux::poll_filters()
@@ -301,6 +278,8 @@ void demux::check_sdt(section* s)
   sdt_version_number_ = section_ext->version_number;
   
   LOG(TRACE) << "We have a SDT, parsing...";
+  
+  event(demux_event::services_found);
    
   dvb_sdt_section* sdtsec = dvb_sdt_section_codec(section_ext);
   if (sdtsec != NULL)
@@ -627,6 +606,7 @@ void demux::check_pat(section* s)
     if (cur_program->program_number == channel_->service_id())
     {
       LOG(TRACE) << "Program found, setting PMT filter for PMT PID = " << cur_program->pid;
+      event(demux_event::service_found);
       
       pmt_version_number_ = 0xFF;
 
@@ -709,6 +689,7 @@ void demux::check_pmt(section* s)
   
   // creating file_reader
   file_reader_.reset(new file_reader(adapter_, demux_, session_callback_));
+  event(demux_event::stream_reader_created);
 }
 
 //void dvb_service::check_tdt(section* section)
@@ -775,6 +756,32 @@ void demux::check_nit(section* s)
 
   LOG(TRACE) << "We have a NIT, parsing...";
 }
+
+std::ostream& operator << (std::ostream& os, const demux_event& s)
+{
+  switch (s)
+  {
+    case demux_event::reset:
+      os << "reset";
+      break;
+    case demux_event::mux_set:
+      os << "mux_set";
+      break;
+    case demux_event::services_found:
+      os << "services_found";
+      break;
+    case demux_event::service_found:
+      os << "service_found";
+      break;
+    case demux_event::stream_reader_created:
+      os << "stream_reader_created";
+      break;
+    default:
+      os << static_cast<std::underlying_type<demux_event>::type>(s);
+  }
+   return os;
+}
+
 
 }
 }

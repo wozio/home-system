@@ -18,9 +18,9 @@ dvb::dvb(int adapter, int frontend,
   demux_(adapter, frontend, channels_, transponders_),
   state_(state::idle)
 {
-  demux_.set_state_callback([this](demux_state state){ on_demux_state_change(state); });
+  demux_.register_event_callback([this](demux_event event){ on_demux_event(event); });
   demux_.set_ei_callback([this](const demux::event_info& ei){ on_ei(ei); });
-  frontend_.set_state_callback([this](frontend_state state){ on_frontend_state_change(state); });
+  frontend_.register_state_callback([this](frontend_state state){ on_frontend_state_change(state); });
     
   start_idle_scan();
 }
@@ -150,36 +150,13 @@ void dvb::on_frontend_state_change(frontend_state newstate)
       demux_.set_mux();
     }
     break;
-  case state::busy:
-    for (auto i = sessions_.begin(); i != sessions_.end(); ++i)
-    {
-      i->second->on_frontent_state_change(newstate);
-    }
-    break;
   default:
     break;
   }
 }
 
-void dvb::on_demux_state_change(demux_state newstate)
+void dvb::on_demux_event(demux_event event)
 {
-  switch (state_)
-  {
-  case state::idle:
-  {
-    //lock_guard<mutex> lock(state_mutex_);
-//    sessions_.clear();
-//    state_ = state::idle;
-//    start_idle_scan();
-    break;
-  }
-  default:
-    for (auto i = sessions_.begin(); i != sessions_.end(); ++i)
-    {
-      i->second->on_demux_state_change(newstate);
-    }
-    break;
-  }
 }
 
 void dvb::on_ei(const demux::event_info& ei)

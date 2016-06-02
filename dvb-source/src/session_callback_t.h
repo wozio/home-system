@@ -16,8 +16,22 @@ public:
   }
 };
 
+/**
+ * Session event
+ */
 enum class session_event_t
 {
+  /**
+   * Session is under initialization, requests to frontend and demux has been sent
+   */
+  starting,
+  /**
+   * Frontend is locked, demux is set up, first stream packet has been received
+   */
+  started,
+  /**
+   * Session ended due to request or error
+   */
   ended
 };
 
@@ -27,4 +41,3 @@ typedef std::function<void (size_t size, char* buffer)> session_stream_part_call
 }
 
 #endif	/* SESSION_CALLBACK_T_H */
-

@@ -172,23 +172,7 @@ void dvb_service::on_remote_service_availability(const std::string& name, bool a
 
 void dvb_service::on_create_streaming_session(long long channel)
 {
-  LOG(DEBUG) << "Create streaming session request for channel " << channel;
-  exception_handled_ = false;
-    
-  session_ = dvb_.create_session(dvb_.channels().get(channel),
-    [this] (dvb::session_event_t event)
-    {
-      if (event == dvb::session_event_t::ended)
-      {
-        session_deleted();
-      }
-    },
-    [this] (size_t size, char* buffer)
-    {
-      on_stream_part(size, buffer);
-    });
-    
-    LOG(DEBUG) << "Session created " << session_;
+  
 }
 
 void dvb_service::on_delete_streaming_session(int session)
@@ -253,8 +237,24 @@ void dvb_service::on_msg(yami::incoming_message & im)
     destination_ = im.get_parameters().get_string("destination");
     endpoint_ = im.get_parameters().get_string("endpoint");
     
-    on_create_streaming_session(channel);
-      
+    LOG(DEBUG) << "Create streaming session request for channel " << channel;
+    session_ = dvb_.create_session(dvb_.channels().get(channel),
+      [this] (dvb::session_event_t event)
+      {
+        switch (event)
+        {
+          case dvb::session_event_t::ended:
+            session_deleted();
+            break;
+        }
+      },
+      [this] (size_t size, char* buffer)
+      {
+        on_stream_part(size, buffer);
+      });
+
+    LOG(DEBUG) << "Session created " << session_;
+
     yami::parameters reply;
     reply.set_integer("session", 0);
     im.reply(reply);
