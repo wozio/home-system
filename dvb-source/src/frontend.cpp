@@ -31,18 +31,35 @@ frontend_state frontend::get_state()
   return state_;
 }
 
-void frontend::set_state_callback(state_callback_t callback)
+int frontend::register_state_callback(state_callback_t callback)
 {
-  state_callback_ = callback;
+  int id = 0;
+  while (state_callbacks_.find(id) != state_callbacks_.end())
+  {
+    id++;
+  }
+  state_callbacks_[id] = callback;
+  callback(state_);
+  return id;
 }
+
+void frontend::unregister_state_callback(int id)
+{
+  state_callbacks_.erase(id);
+}
+
 
 void frontend::change_state(frontend_state new_state)
 {
   timer_.cancel();
-  state_ = new_state;
-  if (state_callback_ != nullptr)
+  if (new_state != state_)
   {
-    state_callback_(state_);
+    LOG(DEBUG) << "Change state: " << state_ << "->" << new_state;
+    state_ = new_state;
+    for (auto c : state_callbacks_)
+    {
+      c.second(state_);
+    }
   }
 }
 
@@ -206,6 +223,29 @@ void frontend::check_signal()
   
   check_signal_timer_.set_from_now(1000, [&] (){check_signal();});
 }
+
+std::ostream& operator << (std::ostream& os, const frontend_state& fs)
+{
+  switch (fs)
+  {
+    case frontend_state::closed:
+      os << "closed";
+      break;
+    case frontend_state::opened:
+      os << "opened";
+      break;
+    case frontend_state::tunning:
+      os << "tunning";
+      break;
+    case frontend_state::tuned:
+      os << "tuned";
+      break;
+    default:
+      os << static_cast<std::underlying_type<frontend_state>::type>(fs);
+  }
+   return os;
+}
+
 
 }
 }

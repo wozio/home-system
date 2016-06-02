@@ -19,12 +19,14 @@ public:
   session(const session& orig) =  delete;
   ~session();
   
-  void on_frontent_state_change(home_system::media::frontend_state newstate);
-  void on_demux_state_change(home_system::media::demux_state newstate);
+  void on_frontend_state_change(home_system::media::frontend_state newstate);
+  void on_demux_state_change(home_system::media::demux_event newstate);
   
 private:
   home_system::media::frontend& frontend_;
+  int frontend_callback_id_;
   home_system::media::demux& demux_;
+  int demux_callback_id_;
   home_system::media::transponders& transponders_;
   
   home_system::media::channel_t channel_;

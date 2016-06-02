@@ -14,8 +14,10 @@ enum class frontend_state
   closed,
   opened,
   tunning,
-  tuned,
+  tuned
 };
+
+std::ostream& operator << (std::ostream& os, const frontend_state& fs);
 
 class frontend
 {
@@ -29,7 +31,8 @@ public:
   std::shared_ptr<transponder> get_transponder();
   
   typedef std::function<void (frontend_state)> state_callback_t;
-  void set_state_callback(state_callback_t callback = nullptr);
+  int register_state_callback(state_callback_t callback);
+  void unregister_state_callback(int callback_id);
   
 private:
   frontend(const frontend&){};
@@ -40,7 +43,7 @@ private:
   frontend_state state_;
   void change_state(frontend_state new_state);
   
-  std::function<void (frontend_state)> state_callback_;
+  std::map<int, state_callback_t> state_callbacks_;
   
   std::shared_ptr<transponder> transponder_;
   
