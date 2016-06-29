@@ -19,7 +19,6 @@ private:
   int port_;
   std::string uri_;
   bool no_ssl_;
-  bool logged_;
   
   timer timer_;
   void connect();

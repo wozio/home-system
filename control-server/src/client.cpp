@@ -13,7 +13,7 @@ namespace home_system
 {
 
 client::client(ws_t ws)
-: handler(ws)
+: handler(ws, true)
 {
   LOG(DEBUG) << "Client connected";
 }

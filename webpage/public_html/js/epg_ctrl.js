@@ -26,7 +26,7 @@ angular.module('app.epg',[
     
     get();
     
-    //var interval = $interval(function(){ get(); }, 5000);
+    var interval = $interval(function(){ get(); }, 5000);
     
     $scope.$on("$destroy", function(){
       $interval.cancel(interval);

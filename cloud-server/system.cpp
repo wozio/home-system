@@ -61,7 +61,7 @@ void system::on_read(data_t data, size_t data_size)
         LOG(DEBUG) << "Incorrect message, root element has to be Object";
         throw std::runtime_error("Incorrect message, root element has to be Object");
       }
-
+      
       string target;
       auto itr = d.FindMember("target");
       if (itr != d.MemberEnd())
