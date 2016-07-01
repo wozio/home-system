@@ -13,7 +13,7 @@ namespace home_system
 {
 
 system::system(ws_t ws)
-: handler(ws),
+: handler(ws, false),
   sys_state_(wait_for_login)
 {
   LOG(DEBUG) << "New system connected";

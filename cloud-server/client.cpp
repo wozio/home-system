@@ -16,7 +16,7 @@ namespace home_system
 {
 
 client::client(ws_t ws)
-: handler(ws),
+: handler(ws, true),
   client_state_(wait_for_login)
 {
   LOG(DEBUG) << "New client connected";
