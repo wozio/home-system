@@ -25,8 +25,7 @@ cloud_ws::cloud_ws(const std::string& host, int port, const std::string& uri, bo
 : host_(host),
   port_(port),
   uri_(uri),
-  no_ssl_(no_ssl),
-  logged_(false)
+  no_ssl_(no_ssl)
 {
   if (!no_ssl_)
     Poco::Net::initializeSSL();
