@@ -20,6 +20,7 @@ public:
   void send(data_t data, size_t data_size);
   
   void shutdown();
+  void system_disconnected();
   
 private:
   enum {

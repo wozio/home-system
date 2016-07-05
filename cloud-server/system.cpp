@@ -174,6 +174,11 @@ void system::shutdown()
   // casting it to shared_ptr<system>
   SYSTEMS.remove(dynamic_pointer_cast<system>(shared_from_this()));
   handler::shutdown();
+  
+  for (auto r : route_)
+  {
+    r.second->system_disconnected();
+  }
 }
 
 }

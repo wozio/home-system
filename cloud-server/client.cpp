@@ -24,6 +24,7 @@ client::client(ws_t ws)
 
 void client::logout()
 {
+  lock_guard<mutex> lock(client_state_mutex_);
   if (client_state_ != wait_for_login)
   {
     LOG(DEBUG) << "Logout";
@@ -297,6 +298,12 @@ void client::on_read(data_t data, size_t data_size)
   }
 }
 
+void client::system_disconnected()
+{
+  LOG(DEBUG) << "System disconnected";
+  logout();
+}
+
 void client::shutdown()
 {
   LOG(DEBUG) << "Client shutdown";
@@ -307,12 +314,10 @@ void client::shutdown()
   {
     case wait_for_login_reply:
       system_->unset_route(tmp_route_key_);
-      logout();
       break;
       
     case logged_in:
       system_->unset_route(route_key_);
-      logout();
       break;
       
     default:
