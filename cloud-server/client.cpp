@@ -58,7 +58,6 @@ void client::logout_complete()
 
 void client::logout()
 {
-  lock_guard<mutex> lock(client_state_mutex_);
   if (client_state_ != wait_for_login)
   {
     LOG(DEBUG) << "Logout";
@@ -80,11 +79,7 @@ void client::logout()
     }
     msg.AddMember("target", "control-server", alloc);
 
-    buffer_t buffer(new StringBuffer);
-    Writer<StringBuffer> writer(*buffer);
-    msg.Accept(writer);
-
-    on_send(system_, buffer);
+    system_->send_to_system(msg);
 
     client_state_ = wait_for_login;
   }

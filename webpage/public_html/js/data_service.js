@@ -19,6 +19,7 @@ angular.module('app.data',[
   }
   new_uri += "//" + loc.host;
   new_uri += "/access/client/";
+  //new_uri = "ws://localhost:5000";
   //console.log(new_uri);
   
   var dataStream = $websocket(new_uri);
@@ -31,31 +32,38 @@ angular.module('app.data',[
   dataStream.onMessage(function(message) {
     console.log("Received: " + message.data);
     var recv_msg = JSON.parse(message.data);
-    if (recv_msg.message === undefined) {
-      console.log("reply message");
-      if (recv_msg.sequence_number !== undefined &&
-          queue[recv_msg.sequence_number] !== undefined) {
-        if (recv_msg.result !== undefined) {
-          if (recv_msg.result === "success") {
-            console.log("Received reply for sequence number: " + recv_msg.sequence_number);
-            queue[recv_msg.sequence_number].callback({
-              success: true,
-              data: recv_msg.params
-            });
-          } else {
-            console.log("Received failed reply for sequence number: " + recv_msg.sequence_number + ": " + recv_msg.reason);
-            queue[recv_msg.sequence_number].callback({
-              success: false,
-              reason: recv_msg.reason
-            });
-          }
+    if (recv_msg.sequence_number !== undefined &&
+        queue[recv_msg.sequence_number] !== undefined) {
+      if (recv_msg.result !== undefined) {
+        if (recv_msg.result === "success") {
+          console.log("Received reply for sequence number: " + recv_msg.sequence_number);
+          queue[recv_msg.sequence_number].callback({
+            success: true,
+            data: recv_msg.params
+          });
+        } else {
+          console.log("Received failed result for sequence number: " + recv_msg.sequence_number + ": " + recv_msg.reason);
+          queue[recv_msg.sequence_number].callback({
+            success: false,
+            reason: recv_msg.reason
+          });
         }
-        $timeout.cancel(queue[recv_msg.sequence_number].timeout);
-        delete queue[recv_msg.sequence_number];
       }
-    } else {
-      console.log("incoming message");
+      $timeout.cancel(queue[recv_msg.sequence_number].timeout);
+      delete queue[recv_msg.sequence_number];
     }
+  });
+
+  dataStream.onClose(function() {
+    console.log("WebSocket connection closed");
+  });
+
+  dataStream.onError(function() {
+    console.log("WebSocket error");
+  });
+
+  dataStream.onOpen(function() {
+    console.log("WebSocket connection opened");
   });
   
   function on_timeout(seq){
