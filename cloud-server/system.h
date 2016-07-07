@@ -3,6 +3,7 @@
 
 #include "handler.h"
 #include "client_t.h"
+#include "rapidjson/document.h"
 
 namespace home_system
 {
@@ -16,11 +17,12 @@ public:
   ~system();
   
   void on_read(data_t data, size_t data_size);
-  
   void shutdown();
   
   void set_route(const std::string& target, client_t client);
   void unset_route(const std::string& target);
+  
+  void send_to_system(const rapidjson::Document& d);
   
 private:
   

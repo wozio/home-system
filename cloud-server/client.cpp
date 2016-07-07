@@ -22,6 +22,40 @@ client::client(ws_t ws)
   LOG(DEBUG) << "New client connected";
 }
 
+void client::logout_complete()
+{
+  lock_guard<mutex> lock(client_state_mutex_);
+  if (client_state_ != wait_for_login)
+  {
+    LOG(DEBUG) << "Logout";
+    Document msg(kObjectType);
+    auto& alloc = msg.GetAllocator();
+    msg.AddMember("message", "logout_complete", alloc);
+    
+    switch (client_state_)
+    {
+    case wait_for_login_reply:
+      msg.AddMember("target", StringRef(tmp_route_key_.c_str()), alloc);
+      break;
+
+    case logged_in:
+      msg.AddMember("target", StringRef(route_key_.c_str()), alloc);
+      break;
+
+    default:
+      break;
+    }
+
+    buffer_t buffer(new StringBuffer);
+    Writer<StringBuffer> writer(*buffer);
+    msg.Accept(writer);
+
+    on_send(shared_from_this(), buffer);
+
+    client_state_ = wait_for_login;
+  }
+}
+
 void client::logout()
 {
   lock_guard<mutex> lock(client_state_mutex_);
@@ -61,7 +95,7 @@ client::~client()
 
 }
 
-void client::send(data_t data, size_t data_size)
+void client::send_to_client(const rapidjson::Document& d)
 {
   lock_guard<mutex> lock(client_state_mutex_);
   switch (client_state_)
@@ -75,21 +109,6 @@ void client::send(data_t data, size_t data_size)
     // fetching client service id assigned by system.
     // it supposed to be unique within system so can be used as
     // system->client routing key in system object
-    // decode JSON
-    Document d;
-    d.Parse(data->data());
-    if (d.HasParseError())
-    {
-      LOG(WARNING) << "Parse error: " << d.GetErrorOffset() << ": " << GetParseError_En(d.GetParseError());
-      throw std::runtime_error("JSON parse error");
-    }
-
-    if (!d.IsObject())
-    {
-      LOG(WARNING) << "Incorrect message, root element has to be Object";
-      throw std::runtime_error("Incorrect message, root element has to be Object");
-    }
-      
     // checking sequence number
     auto itr = d.FindMember("sequence_number");
     if (itr != d.MemberEnd())
@@ -157,45 +176,48 @@ void client::send(data_t data, size_t data_size)
     }
     else
       throw std::runtime_error("No params field");
-      
+    
     break;
   }
   default:
     // drop message
     return;
   }
-  handler::send(data, data_size);
+  // encode back JSON
+  buffer_t buffer(new StringBuffer);
+  Writer<StringBuffer> writer(*buffer);
+  d.Accept(writer);
+      
+  on_send(shared_from_this(), buffer);
 }
 
 void client::on_read(data_t data, size_t data_size)
 {
+  // adding \0 character at the end for JSON parser
+  // it is guaranteed that data size is bigger than data_size
+  (*data)[data_size] = '\0';
+
+  // decode JSON
+  rapidjson::Document d;
+  d.Parse(data->data());
+  if (d.HasParseError())
+  {
+    LOG(DEBUG) << "Parse error: " << d.GetErrorOffset() << ": " << rapidjson::GetParseError_En(d.GetParseError());
+    throw std::runtime_error("JSON parse error");
+  }
+
+  if (!d.IsObject())
+  {
+    LOG(DEBUG) << "Incorrect message, root element has to be Object";
+    throw std::runtime_error("Incorrect message, root element has to be Object");
+  }
   lock_guard<mutex> lock(client_state_mutex_);
   switch (client_state_)
   {
   case logged_in:
-    on_send(system_, data, data_size);
     break;
   case wait_for_login:
   {
-    // adding \0 character at the end for JSON parser
-    // it is guaranteed that data size is bigger than data_size
-    (*data)[data_size] = '\0';
-
-    // decode JSON
-    rapidjson::Document d;
-    d.Parse(data->data());
-    if (d.HasParseError())
-    {
-      LOG(DEBUG) << "Parse error: " << d.GetErrorOffset() << ": " << rapidjson::GetParseError_En(d.GetParseError());
-      throw std::runtime_error("JSON parse error");
-    }
-
-    if (!d.IsObject())
-    {
-      LOG(DEBUG) << "Incorrect message, root element has to be Object";
-      throw std::runtime_error("Incorrect message, root element has to be Object");
-    }
-
     auto itr = d.FindMember("message");
     if (itr != d.MemberEnd())
     {
@@ -282,26 +304,19 @@ void client::on_read(data_t data, size_t data_size)
 
     // now wait for login reply
     client_state_ = wait_for_login_reply;
-
-    // send login message towards system
-    buffer_t buffer(new StringBuffer);
-    Writer<StringBuffer> writer(*buffer);
-    d.Accept(writer);
-
-    on_send(system_, buffer);
-
     break;
   }
   default:
     LOG(WARNING) << "message in wrong state";
     throw runtime_error("message in wrong state");
   }
+  system_->send_to_system(d);
 }
 
 void client::system_disconnected()
 {
   LOG(DEBUG) << "System disconnected";
-  logout();
+  logout_complete();
 }
 
 void client::shutdown()
@@ -314,10 +329,12 @@ void client::shutdown()
   {
     case wait_for_login_reply:
       system_->unset_route(tmp_route_key_);
+      logout();
       break;
       
     case logged_in:
       system_->unset_route(route_key_);
+      logout();
       break;
       
     default:

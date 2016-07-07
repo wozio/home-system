@@ -3,6 +3,7 @@
 
 #include "handler.h"
 #include "system_t.h"
+#include "rapidjson/document.h"
 #include <mutex>
 
 namespace home_system
@@ -17,9 +18,9 @@ public:
   ~client();
   
   void on_read(data_t data, size_t data_size);
-  void send(data_t data, size_t data_size);
-  
   void shutdown();
+  
+  void send_to_client(const rapidjson::Document& d);
   void system_disconnected();
   
 private:
@@ -36,6 +37,7 @@ private:
   std::string route_key_;
   
   void logout();
+  void logout_complete();
   
 };
 

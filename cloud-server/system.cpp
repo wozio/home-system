@@ -39,29 +39,28 @@ void system::unset_route(const std::string& target)
 
 void system::on_read(data_t data, size_t data_size)
 {
+  // unpack message
+  // adding \0 character at the end for JSON parser
+  // it is guaranteed that data size is bigger than data_size
+  (*data)[data_size] = '\0';
+
+  // decode JSON
+  rapidjson::Document d;
+  d.Parse(data->data());
+  if (d.HasParseError())
+  {
+    LOG(DEBUG) << "Parse error: " << d.GetErrorOffset() << ": " << rapidjson::GetParseError_En(d.GetParseError());
+    throw std::runtime_error("JSON parse error");
+  }
+  if (!d.IsObject())
+  {
+    LOG(DEBUG) << "Incorrect message, root element has to be Object";
+    throw std::runtime_error("Incorrect message, root element has to be Object");
+  }
   switch (sys_state_)
   {
     case logged_in:
     {
-      // unpack message
-      // adding \0 character at the end for JSON parser
-      // it is guaranteed that data size is bigger than data_size
-      (*data)[data_size] = '\0';
-
-      // decode JSON
-      rapidjson::Document d;
-      d.Parse(data->data());
-      if (d.HasParseError())
-      {
-        LOG(DEBUG) << "Parse error: " << d.GetErrorOffset() << ": " << rapidjson::GetParseError_En(d.GetParseError());
-        throw std::runtime_error("JSON parse error");
-      }
-      if (!d.IsObject())
-      {
-        LOG(DEBUG) << "Incorrect message, root element has to be Object";
-        throw std::runtime_error("Incorrect message, root element has to be Object");
-      }
-      
       string target;
       auto itr = d.FindMember("target");
       if (itr != d.MemberEnd())
@@ -78,7 +77,7 @@ void system::on_read(data_t data, size_t data_size)
       auto c = route_.find(target);
       if (c != route_.end())
       {
-        on_send(c->second, data, data_size);
+        c->second->send_to_client(d);
       }
       else
       {
@@ -88,25 +87,6 @@ void system::on_read(data_t data, size_t data_size)
     }
     case wait_for_login:
     {
-      // adding \0 character at the end for JSON parser
-      // it is guaranteed that data size is bigger than data_size
-      (*data)[data_size] = '\0';
-
-      // decode JSON
-      rapidjson::Document d;
-      d.Parse(data->data());
-      if (d.HasParseError())
-      {
-        LOG(DEBUG) << "Parse error: " << d.GetErrorOffset() << ": " << rapidjson::GetParseError_En(d.GetParseError());
-        throw std::runtime_error("JSON parse error");
-      }
-
-      if (!d.IsObject())
-      {
-        LOG(DEBUG) << "Incorrect message, root element has to be Object";
-        throw std::runtime_error("Incorrect message, root element has to be Object");
-      }
-
       auto itr = d.FindMember("system");
       if (itr != d.MemberEnd())
       {
@@ -160,10 +140,20 @@ void system::on_read(data_t data, size_t data_size)
       reply.Accept(writer);
       
       on_send(shared_from_this(), buffer);
-
-      //send_internal(buffer.GetString(), buffer.GetSize());
       break;
     }
+  }
+}
+
+void system::send_to_system(const rapidjson::Document& d)
+{
+  if (sys_state_ == logged_in)
+  {
+    buffer_t buffer(new StringBuffer);
+    Writer<StringBuffer> writer(*buffer);
+    d.Accept(writer);
+    
+    on_send(shared_from_this(), buffer);
   }
 }
 
