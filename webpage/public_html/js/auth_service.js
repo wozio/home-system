@@ -9,7 +9,7 @@ angular.module('app.auth',[
   '$cookies', '$rootScope', 'DataSrv',
   function ($cookies, $rootScope, DataSrv) {
     var service = {};
-        
+    
     // check if user is logged in and try to login from cookies if it is not
     service.check = function(callback) {
       console.log("Check user");
@@ -59,7 +59,7 @@ angular.module('app.auth',[
       $cookies.remove('user');
       DataSrv.set_client_id("");
     };
-
+    
     return service;
   }]
 );

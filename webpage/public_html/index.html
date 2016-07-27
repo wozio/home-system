@@ -15,7 +15,6 @@
   <script src="libs/angular-websocket.js"></script>
   <script src="libs/angular-route.min.js"></script>
   <script src="libs/angular-cookies.min.js"></script>
-  <script src="js/indicator.js"></script>
   <script src="js/services_ctrl.js"></script>
   <script src="js/auth_service.js"></script>
   <script src="js/data_service.js"></script>
@@ -25,7 +24,14 @@
 </head>
 <body>
 
-  <indicator></indicator>
+  <div class="indicator-container">
+    <div ng-if='error && !loading' class="alert alert-danger indicator">
+      {{errorSlogan}}
+    </div>
+    <div ng-if='loading' class='alert alert-info indicator'>
+      Loading...
+    </div>
+  </div>
   
   <nav class="navbar navbar-light navbar-fixed-top">
     <div class="container">
