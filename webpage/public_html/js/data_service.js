@@ -36,7 +36,8 @@ angular.module('app.data',[
         queue[recv_msg.sequence_number] !== undefined) {
       if (recv_msg.result !== undefined) {
         if (recv_msg.result === "success") {
-          console.log("Received reply for sequence number: " + recv_msg.sequence_number);
+          console.log("Received reply for sequence number: " + recv_msg.sequence_number +
+            ", RTT: " + (Date.now() - queue[recv_msg.sequence_number].sent_time) + " ms");
           queue[recv_msg.sequence_number].callback({
             success: true,
             data: recv_msg.params
@@ -89,13 +90,15 @@ angular.module('app.data',[
       if (reply_callback) {
         prepared_msg["expect_reply"] = true;
         prepared_msg["sequence_number"] = seq;
+        var n = Date.now();
         queue[seq] = {
           callback: reply_callback,
           timeout: $timeout(
             on_timeout,
             5000,
             true,
-            seq)
+            seq),
+          sent_time: n
         }
         seq++;
       }
