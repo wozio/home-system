@@ -40,7 +40,7 @@ angular.module('app', [
   }
 ]);
 
-var checkUser = function ($q, $rootScope, $location, DataSrv) {
+var checkUser = function ($q, DataSrv) {
   var deferred = $q.defer();
   DataSrv.check(function (result) {
     if (result.success) {
@@ -49,20 +49,21 @@ var checkUser = function ($q, $rootScope, $location, DataSrv) {
     } else {
       console.log("result not success");
       deferred.reject();
+      // DataSrv redirects to login view if logging in is not successful
     }
   });
   return deferred.promise;
 };
 
-var checkUserForLogin = function ($q, $rootScope, $location, DataSrv) {
+var checkUserForLogin = function ($q, $location, DataSrv) {
   var deferred = $q.defer();
   DataSrv.check(function (result) {
     if (result.success) {
-      console.log("result success, redirecting to root page");
+      console.log("result success, redirecting to root view");
       deferred.reject();
       $location.path("/");
     } else {
-      console.log("result not success, staying on login page");
+      console.log("result not success, staying on login view");
       deferred.resolve(true);
     }
   });

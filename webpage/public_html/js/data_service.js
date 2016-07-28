@@ -165,17 +165,19 @@ angular.module('app.data',[
 
   var methods = {
     send: function(target, msg, params, reply_callback) {
-      if (loggedIn){
-        send_internal(target, msg, params, reply_callback);
-      }else{
-        if (reply_callback){
-          reply_callback({
-          success: false,
-          reason: "User not logged in"
-        });
+      // first check if user is logged in, if it is send message, reject otherwise
+      methods.check(function (result) {
+        if (result.success) {
+          send_internal(target, msg, params, reply_callback);
+        } else {
+          if (reply_callback){
+            reply_callback({
+              success: false,
+              reason: "User not logged in"
+            });
+          }
         }
-      }
-      
+      });
     },
     
     // check if user is logged in and try to login from cookies if it is not
@@ -191,6 +193,7 @@ angular.module('app.data',[
             callback(result);
           });
         } else {
+          $location.path("/login");
           callback({ success: false });
         }
       }
