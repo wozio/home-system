@@ -5,21 +5,14 @@ angular.module('app.services',[
 ])
 
 .controller('ServicesCtrl', [
-  '$scope', '$rootScope', 'DataSrv', '$interval',
-  function ($scope, $rootScope, DataSrv, $interval) {
+  '$scope', 'DataSrv', '$interval',
+  function ($scope, DataSrv, $interval) {
     var srv = "io-control-dev";
     var get = function() {
-      $rootScope.error = false;
-      $rootScope.loading = true;
       DataSrv.send(srv, "get_services", null, function(result) {
         if (result.success) {
           $scope.services = result.data.services;
-        } else {
-          console.log("Communication failed with reason: " + result.reason);
-          $rootScope.error = true;
-          $rootScope.errorSlogan = "Communication with Home failed, reason: " + result.reason;
         }
-        $rootScope.loading = false;
       });
     }
     

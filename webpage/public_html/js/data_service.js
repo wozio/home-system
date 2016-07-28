@@ -1,42 +1,64 @@
 'use strict';
 
 angular.module('app.data',[
-  'ngWebSocket'
+  'ngWebSocket',
+  'ngCookies'
 ])
 
-.factory('DataSrv', function($websocket, $timeout) {
+.factory('DataSrv', function($websocket, $cookies, $timeout, $rootScope, $location) {
   
   // firefox WS bug workaround
   $(window).on('beforeunload', function(){
     dataStream.close();
   });
   
-  var loc = window.location, new_uri;
+  var loc = window.location, newUri;
   if (loc.protocol === "https:") {
-    new_uri = "wss:";
+    newUri = "wss:";
   } else {
-    new_uri = "ws:";
+    newUri = "ws:";
   }
-  new_uri += "//" + loc.host;
-  new_uri += "/access/client/";
-  new_uri = "ws://localhost:5000";
-  //console.log(new_uri);
+  newUri += "//" + loc.host;
+  newUri += "/access/client/";
+  //newUri = "ws://localhost:5000";
+  //console.log(newUri);
   
   var dataStream;
   
   // sequence number and queue of callbacks indexed by sequence number
   var seq = 0;
   var queue = {};
-  var on_connect_callback = null;
-  var client_id = "";
+  
+  //connection related variables
+  var clientId = "";
+  var connected = true;
+  
+  // authorization related variables
+  var loggedIn = false;
+  var loggingIn = false;
   
   function connect(){
-    console.log("Connecting to: " + new_uri);
-    dataStream = $websocket(new_uri);
+    console.log("Connecting to: " + newUri);
+    dataStream = $websocket(newUri);
     
     dataStream.onClose(function() {
       console.log("WebSocket connection closed");
+      $rootScope.error = true;
+      $rootScope.errorSlogan = "Disconnected from WebSocket.";
+      connected = false;
+      loggedIn = false;
+      dataStream = null;
       $timeout(connect, 1000);
+      for (var s in queue) {
+        if (queue.hasOwnProperty(s)) {
+          $timeout.cancel(queue[s].timeout);
+          queue[s].callback({
+              success: false,
+              reason: "Dicsonnected from WebSocket"
+            });
+        }
+      }
+      queue = {};
     });
 
     dataStream.onError(function() {
@@ -45,8 +67,12 @@ angular.module('app.data',[
 
     dataStream.onOpen(function() {
       console.log("WebSocket connection opened");
-      if (on_connect_callback !== null) {
-        on_connect_callback();
+      $rootScope.error = false;
+      $rootScope.errorSlogan = "";
+      connected = true;
+      // now we can try to authorize
+      if (!loggedIn && !loggingIn) {
+        methods.check(function(){});
       }
     });
 
@@ -62,12 +88,18 @@ angular.module('app.data',[
           if (recv_msg.result === "success") {
             console.log("Received reply for sequence number: " + recv_msg.sequence_number +
               ", RTT: " + (Date.now() - queue[recv_msg.sequence_number].sent_time) + " ms");
+            $rootScope.error = false;
+            $rootScope.errorSlogan = "";
             queue[recv_msg.sequence_number].callback({
               success: true,
               data: recv_msg.params
             });
           } else {
             console.log("Received failed result for sequence number: " + recv_msg.sequence_number + ": " + recv_msg.reason);
+            if (connected) {
+              $rootScope.error = true;
+              $rootScope.errorSlogan = "Message rejected with '" + recv_msg.reason + "' reason";
+            }
             queue[recv_msg.sequence_number].callback({
               success: false,
               reason: recv_msg.reason
@@ -82,18 +114,22 @@ angular.module('app.data',[
   
   function on_timeout(seq){
       console.log("Sequence " + seq + " timed out");
+      if (connected){
+        $rootScope.error = true;
+        $rootScope.errorSlogan = "Communication timed out.";
+      }
       queue[seq].callback({
         success: false,
         reason: "timed out"
       });
       delete queue[seq];
   }
-
-  var methods = {
-    send: function(target, msg, params, reply_callback) {
+  
+  function send_internal(target, msg, params, reply_callback){
+    if (connected) {
       var prepared_msg = {
           //service: 'control-server',
-        source: client_id,
+        source: clientId,
         target: target,
         message: msg
       }
@@ -117,13 +153,82 @@ angular.module('app.data',[
       }
       console.log("Sending: " + JSON.stringify(prepared_msg));
       dataStream.send(JSON.stringify(prepared_msg));
-    },
-    set_client_id: function(client_id_) {
-      client_id = client_id_;
-    },
-    on_connect: function(on_connect_callback_) {
-      on_connect_callback = on_connect_callback_;
+    } else {
+      if (reply_callback) {
+        reply_callback({
+          success: false,
+          reason: "disconnected"
+        });
+      }
     }
+  }
+
+  var methods = {
+    send: function(target, msg, params, reply_callback) {
+      if (loggedIn){
+        send_internal(target, msg, params, reply_callback);
+      }else{
+        if (reply_callback){
+          reply_callback({
+          success: false,
+          reason: "User not logged in"
+        });
+        }
+      }
+      
+    },
+    
+    // check if user is logged in and try to login from cookies if it is not
+    check: function(callback) {
+      console.log("Check user");
+      if (loggedIn){
+        callback({ success: true });
+      } else {
+        var user = $cookies.getObject('user') || {};
+        if (user.email && user.password) {
+          methods.login(user.email, user.password, function(result){
+            console.log("login callback in check");
+            callback(result);
+          });
+        } else {
+          callback({ success: false });
+        }
+      }
+    },
+    
+    // login the user with credentials provided in arguments
+    login: function(email, password, callback) {
+      console.log("logging in: " + email);
+      loggingIn = true;
+      send_internal("control-server", "login", {
+        email: email,
+        password: password
+      }, function(result) {
+        if (!result.success) {
+          console.log("Failed to login with result: " + result.reason);
+          loggedIn = false;
+          loggingIn = false;
+          clientId = "";
+          $location.path("/login");
+        } else {
+          console.log("successfully logged in with client id: " + result.data.client_id);
+          loggedIn = true;
+          loggingIn = false;
+          $cookies.putObject('user', {
+            email: email,
+            password: password
+          });
+          clientId = result.data.client_id;
+        }
+        callback(result);
+      }, 1000);
+    },
+  
+    logout: function () {
+      loggedIn = false;
+      $cookies.remove('user');
+      clientId = "";
+    },
   };
   
   connect();

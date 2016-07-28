@@ -16,7 +16,6 @@
   <script src="libs/angular-route.min.js"></script>
   <script src="libs/angular-cookies.min.js"></script>
   <script src="js/services_ctrl.js"></script>
-  <script src="js/auth_service.js"></script>
   <script src="js/data_service.js"></script>
   <script src="js/login_ctrl.js"></script>
   <script src="js/app.js"></script>
@@ -24,12 +23,9 @@
 </head>
 <body>
 
-  <div class="indicator-container">
-    <div ng-if='error && !loading' class="alert alert-danger indicator">
-      {{errorSlogan}}
-    </div>
-    <div ng-if='loading' class='alert alert-info indicator'>
-      Loading...
+  <div class="indicator-container" ng-cloak>
+    <div ng-if='error' class="alert alert-danger indicator">
+      <strong>Communication with Home System failed.</strong><br><small>{{errorSlogan}}</small>
     </div>
   </div>
   

@@ -6,7 +6,7 @@ angular.module('app', [
   'ngRoute',
   'app.login',
   'app.services',
-  'app.auth',
+  'app.data',
   'app.epg'
 ])
 
@@ -40,27 +40,26 @@ angular.module('app', [
   }
 ]);
 
-var checkUser = function ($q, $rootScope, $location, AuthSrv) {
+var checkUser = function ($q, $rootScope, $location, DataSrv) {
   var deferred = $q.defer();
-  AuthSrv.check(function (result) {
+  DataSrv.check(function (result) {
     if (result.success) {
       console.log("result success");
       deferred.resolve(true);
     } else {
       console.log("result not success");
       deferred.reject();
-      $location.path("/login");
     }
   });
   return deferred.promise;
 };
 
-var checkUserForLogin = function ($q, $rootScope, $location, AuthSrv) {
+var checkUserForLogin = function ($q, $rootScope, $location, DataSrv) {
   var deferred = $q.defer();
-  AuthSrv.check(function (result) {
+  DataSrv.check(function (result) {
     if (result.success) {
       console.log("result success, redirecting to root page");
-      deferred.resolve(true);
+      deferred.reject();
       $location.path("/");
     } else {
       console.log("result not success, staying on login page");
