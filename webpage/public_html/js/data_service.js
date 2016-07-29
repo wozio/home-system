@@ -20,7 +20,7 @@ angular.module('app.data',[
   }
   newUri += "//" + loc.host;
   newUri += "/access/client/";
-  //newUri = "ws://localhost:5000";
+  newUri = "ws://localhost:5000";
   //console.log(newUri);
   
   var dataStream;
@@ -28,6 +28,9 @@ angular.module('app.data',[
   // sequence number and queue of callbacks indexed by sequence number
   var seq = 0;
   var queue = {};
+  
+  // incoming message subcribers
+  var incoming = {};
   
   //connection related variables
   var clientId = "";
@@ -82,12 +85,14 @@ angular.module('app.data',[
         return;
       }
       var recv_msg = JSON.parse(message.data);
-      if (recv_msg.sequence_number !== undefined &&
-          queue[recv_msg.sequence_number] !== undefined) {
-        if (recv_msg.result !== undefined) {
+      $rootScope.error = false;
+      $rootScope.errorSlogan = "";
+      if (recv_msg.sequence_number !== undefined) {
+        if (queue[recv_msg.sequence_number] !== undefined && recv_msg.result !== undefined) {
+          // this is reply message
+          console.log("Received reply for sequence number: " + recv_msg.sequence_number +
+            ", RTT: " + (Date.now() - queue[recv_msg.sequence_number].sent_time) + " ms");
           if (recv_msg.result === "success") {
-            console.log("Received reply for sequence number: " + recv_msg.sequence_number +
-              ", RTT: " + (Date.now() - queue[recv_msg.sequence_number].sent_time) + " ms");
             $rootScope.error = false;
             $rootScope.errorSlogan = "";
             queue[recv_msg.sequence_number].callback({
@@ -95,7 +100,7 @@ angular.module('app.data',[
               data: recv_msg.params
             });
           } else {
-            console.log("Received failed result for sequence number: " + recv_msg.sequence_number + ": " + recv_msg.reason);
+            console.log("Rejected: " + recv_msg.reason);
             if (connected) {
               $rootScope.error = true;
               $rootScope.errorSlogan = "Message rejected with '" + recv_msg.reason + "' reason";
@@ -105,9 +110,45 @@ angular.module('app.data',[
               reason: recv_msg.reason
             });
           }
+          $timeout.cancel(queue[recv_msg.sequence_number].timeout);
+          delete queue[recv_msg.sequence_number];
+        } else if (recv_msg.message !== undefined) {
+          // this is incoming message expecting reply
+          if (incoming[recv_msg.message] !== undefined) {
+            incoming[recv_msg.message](recv_msg, function(recv_msg, result, paramsOrReason) {
+              if (loggedIn) {
+                if (result.success) {
+                  var prepared_msg = {
+                    source: clientId,
+                    target: recv_msg.source,
+                    sequence_number: recv_msg.sequence_number,
+                    result: "success"
+                  }
+                  if (paramsOrReason) {
+                    prepared_msg["parameters"] = paramsOrReason;
+                  }
+                  console.log("Sending: " + JSON.stringify(prepared_msg));
+                  dataStream.send(JSON.stringify(prepared_msg));
+                } else {
+                  var prepared_msg = {
+                    source: clientId,
+                    target: recv_msg.source,
+                    sequence_number: recv_msg.sequence_number,
+                    result: "failed",
+                    reason: paramsOrReason
+                  }
+                  console.log("Sending: " + JSON.stringify(prepared_msg));
+                  dataStream.send(JSON.stringify(prepared_msg));
+                }
+              }
+            });
+          }
         }
-        $timeout.cancel(queue[recv_msg.sequence_number].timeout);
-        delete queue[recv_msg.sequence_number];
+      } else if (recv_msg.message !== undefined) {
+        // incoming one way message
+        if (incoming[recv_msg.message] !== undefined) {
+          incoming[recv_msg.message](recv_msg);
+        }
       }
     });
   }
@@ -193,7 +234,6 @@ angular.module('app.data',[
             callback(result);
           });
         } else {
-          $location.path("/login");
           callback({ success: false });
         }
       }
@@ -212,7 +252,6 @@ angular.module('app.data',[
           loggedIn = false;
           loggingIn = false;
           clientId = "";
-          $location.path("/login");
         } else {
           console.log("successfully logged in with client id: " + result.data.client_id);
           loggedIn = true;
@@ -232,7 +271,20 @@ angular.module('app.data',[
       $cookies.remove('user');
       clientId = "";
     },
+    
+    register: function(message, callback) {
+      incoming[message] = callback;
+    },
+    
+    unregister: function(message) {
+      delete incoming[message];
+    },
   };
+  
+  methods.register("logout_complete", function() {
+    methods.logout();
+    $location.path("/login");
+  });
   
   connect();
 

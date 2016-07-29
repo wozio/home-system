@@ -134,7 +134,9 @@ void client::send_to_client(const rapidjson::Document& d)
         LOG(DEBUG) << "result in message: " << v;
         if (v != "success")
         {
-          throw std::runtime_error("Result not successful");
+          LOG(DEBUG) << "Result not successfull";
+          client_state_ = wait_for_login;
+          system_->unset_route(tmp_route_key_);
         }
       }
       else
@@ -169,9 +171,6 @@ void client::send_to_client(const rapidjson::Document& d)
       else
         throw std::runtime_error("Wrong params field");
     }
-    else
-      throw std::runtime_error("No params field");
-    
     break;
   }
   default:

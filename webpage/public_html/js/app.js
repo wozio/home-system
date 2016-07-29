@@ -49,7 +49,7 @@ var checkUser = function ($q, DataSrv) {
     } else {
       console.log("result not success");
       deferred.reject();
-      // DataSrv redirects to login view if logging in is not successful
+      $location.path("/login");
     }
   });
   return deferred.promise;
