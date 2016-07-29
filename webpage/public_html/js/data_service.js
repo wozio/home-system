@@ -20,7 +20,7 @@ angular.module('app.data',[
   }
   newUri += "//" + loc.host;
   newUri += "/access/client/";
-  newUri = "ws://localhost:5000";
+  //newUri = "ws://localhost:5000";
   //console.log(newUri);
   
   var dataStream;
@@ -75,7 +75,13 @@ angular.module('app.data',[
       connected = true;
       // now we can try to authorize
       if (!loggedIn && !loggingIn) {
-        methods.check(function(){});
+        methods.check(function(result){
+          if (result.success) {
+            if ($location.path() === "/login"){
+              $location.path("/");
+            }
+          }
+        });
       }
     });
 
