@@ -18,8 +18,5 @@ class Display:
         except KeyError:
             logging.error("Attempt to read from not known io (%s %s)",
                 self.name, self.fromio)
-        except RuntimeError:
-            logging.error("Attempt to read from not ready io (%s %s)",
-                self.name, self.fromio)
-        return None
+            return output.state_unknown, 0
     

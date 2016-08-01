@@ -14,7 +14,7 @@ angular.module('app.services',[
           $scope.services = result.data.services;
         }
       });
-    }
+    };
     
     get();
     

@@ -105,7 +105,7 @@ def on_msg(message):
                     display_params = yami.Parameters()
                     display_params["name"] = d.name
                     display_params["type"] = d.type
-                    display_params["value"] = d.get()
+                    display_params["state"],display_params["value"] = d.get()
                     displays.append(display_params)
                 service_params["displays"] = displays
             

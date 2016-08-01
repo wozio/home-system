@@ -40,7 +40,7 @@ angular.module('app', [
   }
 ]);
 
-var checkUser = function ($q, DataSrv) {
+var checkUser = function ($q, $location, DataSrv) {
   var deferred = $q.defer();
   DataSrv.check(function (result) {
     if (result.success) {
