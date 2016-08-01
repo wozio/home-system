@@ -7,21 +7,31 @@ angular.module('app.services',[
 .controller('ServicesCtrl', [
   '$scope', 'DataSrv', '$interval',
   function ($scope, DataSrv, $interval) {
+    var subscriptionId = -1;
     var srv = "io-control-dev";
     var get = function() {
       DataSrv.send(srv, "get_services", null, function(result) {
         if (result.success) {
-          $scope.services = result.data.services;
+          //$scope.services = result.data.services;
         }
       });
     };
     
-    get();
+    DataSrv.register("services_change", function(message) {
+      $scope.services = message.params.services;
+    });
     
-    var interval = $interval(function(){ get(); }, 5000);
+    DataSrv.send("io-control-dev", "subscribe_services", {"service":DataSrv.getClientId()}, function(result){
+      subscriptionId = parseInt(result.data.id);
+    });
+    
+    //get();
+    
+    //var interval = $interval(function(){ get(); }, 5000);
     
     $scope.$on("$destroy", function(){
-      $interval.cancel(interval);
+      //$interval.cancel(interval);
+      DataSrv.send("io-control-dev", "unsubscribe_services", {"id":subscriptionId});
     });
       
     $scope.updateSetting = function(service, setting, settingValue){
