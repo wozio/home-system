@@ -11,7 +11,8 @@ class Display:
     self.name = name
     self.type = data["type"]
     self.fromio = data["from"]
-    iomap.Iomap[self.fromio].subscribe(self.iochange)
+    self.change_callback = None
+    iomap.Iomap[self.fromio].subscribe(self.on_change)
 
   def get(self):
     try:
@@ -20,14 +21,10 @@ class Display:
       logging.error("Attempt to read from not known io (%s %s)",
         self.name, self.fromio)
       return output.state_unknown, 0
-          
-  def get(self):
-    try:
-      return iomap.Iomap[self.fromio].get()
-    except KeyError:
-      logging.error("Attempt to read from not known io (%s %s)",
-        self.name, self.fromio)
-      return output.state_unknown, 0
     
-  def iochange(self):
-    pass
+  def subscribe(self, callback):
+    self.change_callback = callback
+  
+  def on_change(self):
+    if self.change_callback != None:
+      self.change_callback(self)
