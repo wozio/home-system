@@ -15,16 +15,14 @@ class output:
         self.service = output_service
         self.name = output_name
         self.state = state_unknown
-        self.value = None
+        self.value = 0
         self.wanted_value = None
         self.callbacks = []
 
         logging.info("Created output '%s' with service=%s and id=%d", self.name, output_service, output_id)
 
     def get(self):
-        if self.state != state_ok:
-            raise RuntimeError("Output not OK")
-        return self.value
+        return self.state, self.value
 
     def set(self, value):
         if value != self.wanted_value:
@@ -47,8 +45,6 @@ class output:
         if state != self.state:
             logging.debug("'%s' state changed %d->%d", self.name, self.state, state)
             self.state = state
-            if self.state != state_ok:
-                self.value = None
         if self.state == state_ok and value != self.value:
             logging.debug("'%s' value changed %s->%s", self.name, str(self.value), str(value))
             self.value = value

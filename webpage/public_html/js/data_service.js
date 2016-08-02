@@ -148,12 +148,16 @@ angular.module('app.data',[
                 }
               }
             });
+          } else {
+            console.log("Received message '" + recv_msg.message + "' for which there is no registered receiver");
           }
         }
       } else if (recv_msg.message !== undefined) {
         // incoming one way message
         if (incoming[recv_msg.message] !== undefined) {
           incoming[recv_msg.message](recv_msg);
+        } else {
+          console.log("Received message '" + recv_msg.message + "' for which there is no registered receiver");
         }
       }
     });
@@ -285,6 +289,10 @@ angular.module('app.data',[
     unregister: function(message) {
       delete incoming[message];
     },
+    
+    getClientId: function(){
+      return clientId;
+    }
   };
   
   methods.register("logout_complete", function() {
