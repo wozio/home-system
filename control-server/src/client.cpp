@@ -15,7 +15,7 @@ namespace home_system
 client::client(ws_t ws)
 : handler(ws, true)
 {
-  LOG(DEBUG) << "Client connected";
+  LOGH(DEBUG) << "Client connected";
 }
 
 client::~client()
@@ -24,7 +24,7 @@ client::~client()
 
 void client::shutdown()
 {
-  LOG(DEBUG) << "Shutdown";
+  LOGH(DEBUG) << "Shutdown";
   this->logout(client_id_);
   handler::shutdown();
 }
@@ -50,7 +50,7 @@ void client::handle_login(const yami::parameters& params, long long sequence_num
   string req_email = params.get_string("email");
   string req_password = params.get_string("password");
 
-  LOG(DEBUG) << "Login message for client id:" << req_email;
+  LOGH(DEBUG) << "Login message for client id:" << req_email;
 
   for (auto& v : home_system::app::config().get_child("users"))
   {
@@ -60,12 +60,12 @@ void client::handle_login(const yami::parameters& params, long long sequence_num
       if (v.second.get<string>("password") == req_password)
       {
         string name = v.second.get<string>("name");
-        LOG(DEBUG) << "User " << name << " (" << email << ") is logged in";
+        LOGH(DEBUG) << "User " << name << " (" << email << ") is logged in";
 
         auto client_id = CLIENTS.add(name, shared_from_this());
         this->login(client_id);
 
-        LOG(DEBUG) << "Client assigned: " << client_id;
+        LOGH(DEBUG) << "Client assigned: " << client_id;
 
         yami::parameters rparams;
         rparams.set_string("name", name);
@@ -85,7 +85,7 @@ void client::handle_login(const yami::parameters& params, long long sequence_num
 
 void client::handle_logout(const std::string& source)
 {
-  LOG(DEBUG) << "Logout message for client id:" << source;
+  LOGH(DEBUG) << "Logout message for client id:" << source;
   this->logout(source);
 }
 
@@ -119,7 +119,7 @@ void client::handle_data(data_t data, size_t data_size)
 
     if (!this->is_logged_in(source))
     {
-      LOG(WARNING) << "Message '" << msg << "' from not logged in source '" << source << "' to '" << "'";
+      LOGH(WARNING) << "Message '" << msg << "' from not logged in source '" << source << "' to '" << "'";
       throw runtime_error("Message from not logged in source");
     }
 
@@ -128,7 +128,7 @@ void client::handle_data(data_t data, size_t data_size)
   catch (const exception& e)
   {
     // JSON parsing has failed, ignore such message
-    LOG(WARNING) << "EXCEPTION: " << e.what();
+    LOGH(WARNING) << "EXCEPTION: " << e.what();
   }
 }
 

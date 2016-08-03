@@ -16,7 +16,7 @@ system::system(ws_t ws)
 : handler(ws, false),
   sys_state_(wait_for_login)
 {
-  LOG(DEBUG) << "New system connected";
+  LOGH(DEBUG) << "New system connected";
 }
 
 system::~system()
@@ -25,16 +25,16 @@ system::~system()
 
 void system::set_route(const std::string& target, client_t client)
 {
-  LOG(DEBUG) << "Set route: " << target;
+  LOGH(DEBUG) << "Set route: " << target;
   route_[target] = client;
-  LOG(DEBUG) << "Number of routes: " << route_.size();
+  LOGH(DEBUG) << "Number of routes: " << route_.size();
 }
 
 void system::unset_route(const std::string& target)
 {
-  LOG(DEBUG) << "Unset route: " << target;
+  LOGH(DEBUG) << "Unset route: " << target;
   route_.erase(target);
-  LOG(DEBUG) << "Number of routes: " << route_.size();
+  LOGH(DEBUG) << "Number of routes: " << route_.size();
 }
 
 void system::on_read(data_t data, size_t data_size)
@@ -49,12 +49,12 @@ void system::on_read(data_t data, size_t data_size)
   d.Parse(data->data());
   if (d.HasParseError())
   {
-    LOG(DEBUG) << "Parse error: " << d.GetErrorOffset() << ": " << rapidjson::GetParseError_En(d.GetParseError());
+    LOGH(DEBUG) << "Parse error: " << d.GetErrorOffset() << ": " << rapidjson::GetParseError_En(d.GetParseError());
     throw std::runtime_error("JSON parse error");
   }
   if (!d.IsObject())
   {
-    LOG(DEBUG) << "Incorrect message, root element has to be Object";
+    LOGH(DEBUG) << "Incorrect message, root element has to be Object";
     throw std::runtime_error("Incorrect message, root element has to be Object");
   }
   switch (sys_state_)
@@ -81,7 +81,7 @@ void system::on_read(data_t data, size_t data_size)
       }
       else
       {
-        LOG(WARNING) << "No route for target: " << target;
+        LOGH(WARNING) << "No route for target: " << target;
       }
       break;
     }
@@ -95,7 +95,7 @@ void system::on_read(data_t data, size_t data_size)
           string n(itr->value.GetString());
           if (n.size() > 0)
           {
-            LOG(DEBUG) << "System name: " << n;
+            LOGH(DEBUG) << "System name: " << n;
           }
           else
             throw std::runtime_error("Empty system name");
@@ -118,7 +118,7 @@ void system::on_read(data_t data, size_t data_size)
             case rapidjson::kStringType:
             {
               std::string user(vitr->GetString());
-              LOG(DEBUG) << "Allowed user: " << user;
+              LOGH(DEBUG) << "Allowed user: " << user;
               // adding user to allowed users map
               SYSTEMS.add(user, dynamic_pointer_cast<system>(shared_from_this()));
               break;
@@ -159,7 +159,7 @@ void system::send_to_system(const rapidjson::Document& d)
 
 void system::shutdown()
 {
-  LOG(DEBUG) << "System shutdown";
+  LOGH(DEBUG) << "System shutdown";
   // from shared_from_this shared_ptr<handler> is obtained
   // casting it to shared_ptr<system>
   SYSTEMS.remove(dynamic_pointer_cast<system>(shared_from_this()));

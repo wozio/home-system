@@ -19,7 +19,7 @@ client::client(ws_t ws)
 : handler(ws, true),
   client_state_(wait_for_login)
 {
-  LOG(DEBUG) << "New client connected";
+  LOGH(DEBUG) << "New client connected";
 }
 
 void client::logout_complete()
@@ -27,7 +27,7 @@ void client::logout_complete()
   lock_guard<mutex> lock(client_state_mutex_);
   if (client_state_ != wait_for_login)
   {
-    LOG(DEBUG) << "Logout";
+    LOGH(DEBUG) << "Logout complete";
     Document msg(kObjectType);
     auto& alloc = msg.GetAllocator();
     msg.AddMember("message", "logout_complete", alloc);
@@ -60,7 +60,7 @@ void client::logout()
 {
   if (client_state_ != wait_for_login)
   {
-    LOG(DEBUG) << "Logout";
+    LOGH(DEBUG) << "Logout";
     Document msg(kObjectType);
     auto& alloc = msg.GetAllocator();
     msg.AddMember("message", "logout", alloc);
@@ -111,10 +111,10 @@ void client::send_to_client(const rapidjson::Document& d)
       if (itr->value.IsInt())
       {
         int v = itr->value.GetInt();
-        LOG(DEBUG) << "sequence_number in message: " << v;
+        LOGH(DEBUG) << "sequence_number in message: " << v;
         if (v != seq_num_)
         {
-          LOG(WARNING) << "Sequence number in reply not equal to request";
+          LOGH(WARNING) << "Sequence number in reply not equal to request";
           throw std::runtime_error("Sequence number in reply not equal to request");
         }
       }
@@ -131,10 +131,10 @@ void client::send_to_client(const rapidjson::Document& d)
       if (itr->value.IsString())
       {
         string v = itr->value.GetString();
-        LOG(DEBUG) << "result in message: " << v;
+        LOGH(DEBUG) << "result in message: " << v;
         if (v != "success")
         {
-          LOG(DEBUG) << "Result not successfull";
+          LOGH(DEBUG) << "Result not successfull";
           client_state_ = wait_for_login;
           system_->unset_route(tmp_route_key_);
         }
@@ -155,7 +155,7 @@ void client::send_to_client(const rapidjson::Document& d)
           if (itr2->value.IsString())
           {
             string v = itr2->value.GetString();
-            LOG(DEBUG) << "client_id in message: " << v;
+            LOGH(DEBUG) << "client_id in message: " << v;
             // set up route
             system_->unset_route(tmp_route_key_);
             system_->set_route(v, dynamic_pointer_cast<client>(shared_from_this()));
@@ -196,13 +196,13 @@ void client::on_read(data_t data, size_t data_size)
   d.Parse(data->data());
   if (d.HasParseError())
   {
-    LOG(DEBUG) << "Parse error: " << d.GetErrorOffset() << ": " << rapidjson::GetParseError_En(d.GetParseError());
+    LOGH(DEBUG) << "Parse error: " << d.GetErrorOffset() << ": " << rapidjson::GetParseError_En(d.GetParseError());
     throw std::runtime_error("JSON parse error");
   }
 
   if (!d.IsObject())
   {
-    LOG(DEBUG) << "Incorrect message, root element has to be Object";
+    LOGH(DEBUG) << "Incorrect message, root element has to be Object";
     throw std::runtime_error("Incorrect message, root element has to be Object");
   }
   lock_guard<mutex> lock(client_state_mutex_);
@@ -220,7 +220,7 @@ void client::on_read(data_t data, size_t data_size)
         string v(itr->value.GetString());
         if (v == "login")
         {
-          LOG(DEBUG) << "Login message received";
+          LOGH(DEBUG) << "Login message received";
         }
         else
           throw std::runtime_error("Not a login message");
@@ -237,7 +237,7 @@ void client::on_read(data_t data, size_t data_size)
       if (itr->value.IsInt())
       {
         int v = itr->value.GetInt();
-        LOG(DEBUG) << "sequence_number in message: " << v;
+        LOGH(DEBUG) << "sequence_number in message: " << v;
         // remember this sequence number, it has to be the same in reply
         seq_num_ = v;
       }
@@ -258,7 +258,7 @@ void client::on_read(data_t data, size_t data_size)
           if (itr2->value.IsString())
           {
             string v(itr2->value.GetString());
-            LOG(DEBUG) << "user in message: " << v;
+            LOGH(DEBUG) << "user in message: " << v;
             // get system associated with this user
             // it will throw an exception when user is not found in map
             // what means that system handling such user is not connected
@@ -268,6 +268,7 @@ void client::on_read(data_t data, size_t data_size)
             }
             catch (const std::out_of_range&)
             {
+              LOGH(DEBUG) << "No system connected for such user";
               Document reply(kObjectType);
               reply.AddMember("result", "failed", reply.GetAllocator());
               reply.AddMember("sequence_number", seq_num_, reply.GetAllocator());
@@ -301,7 +302,7 @@ void client::on_read(data_t data, size_t data_size)
     break;
   }
   default:
-    LOG(WARNING) << "message in wrong state";
+    LOGH(WARNING) << "message in wrong state";
     throw runtime_error("message in wrong state");
   }
   system_->send_to_system(d);
@@ -309,13 +310,13 @@ void client::on_read(data_t data, size_t data_size)
 
 void client::system_disconnected()
 {
-  LOG(DEBUG) << "System disconnected";
+  LOGH(DEBUG) << "System disconnected";
   logout_complete();
 }
 
 void client::shutdown()
 {
-  LOG(DEBUG) << "Client shutdown";
+  LOGH(DEBUG) << "Client shutdown";
   lock_guard<mutex> lock(client_state_mutex_);
   handler::shutdown();
   
