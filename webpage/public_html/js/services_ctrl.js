@@ -24,15 +24,23 @@ angular.module('app.services',[
       }
     });
     
-    DataSrv.send("io-control-dev", "subscribe_services", {"service":DataSrv.getClientId()}, function(result){
-      if (result.success) {
-        subscriptionId = parseInt(result.data.id);
-      } else {
-        $scope.viewLoading = false;
+    var serviceAvailabilitySubscrId = DataSrv.registerServiceAvailability(function(service, available){
+      console.log("S:" + service + " A:" + available);
+      if (service === srv) {
+        if (available === true) {
+          DataSrv.send(srv, "subscribe_services", {"service":DataSrv.getClientId()}, function(result){
+            if (result.success) {
+              subscriptionId = parseInt(result.data.id);
+            } else {
+              $scope.viewLoading = false;
+            }
+          });
+        }
       }
     });
     
     $scope.$on("$destroy", function(){
+      DataSrv.unregisterServiceAvailability(serviceAvailabilitySubscrId);
       DataSrv.send("io-control-dev", "unsubscribe_services", {"id":subscriptionId});
     });
       

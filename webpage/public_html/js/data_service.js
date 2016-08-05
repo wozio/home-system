@@ -32,6 +32,9 @@ angular.module('app.data',[
   // incoming message subcribers
   var incoming = {};
   
+  // service availability subscribers
+  var service_callbacks = new Map();
+  
   //connection related variables
   var clientId = "";
   var connected = true;
@@ -292,12 +295,46 @@ angular.module('app.data',[
     
     getClientId: function(){
       return clientId;
+    },
+    
+    registerServiceAvailability: function(callback){
+      var i = 0;
+      while (service_callbacks.get(i) !== undefined){
+        i++;
+      }
+      service_callbacks.set(i, callback);
+      for (let service of available_services){
+        callback(service, true);
+      }
+      return i;
+    },
+    
+    unregisterServiceAvailability: function(SubscriptionId){
+      service_callbacks.delete(SubscriptionId);
     }
   };
   
   methods.register("logout_complete", function() {
     methods.logout();
     $location.path("/login");
+  });
+  
+  var available_services = new Set();
+  
+  methods.register("service_availability", function(message) {
+    if (message.params.available === true) {
+      console.log("Service available: " + message.params.service);
+      available_services.add(message.params.service);
+      for (var i = 0; i < service_callbacks.length; i++) {
+        service_callbacks[i](message.params.service, true);
+      }
+    } else {
+      console.log("Service not available: " + message.params.service);
+      available_services.delete(message.params.service);
+      for (var i = 0; i < service_callbacks.length; i++) {
+        service_callbacks[i](message.params.service, false);
+      }
+    }
   });
   
   connect();
