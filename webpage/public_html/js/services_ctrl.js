@@ -7,17 +7,12 @@ angular.module('app.services',[
 .controller('ServicesCtrl', [
   '$scope', 'DataSrv',
   function ($scope, DataSrv) {
+    $scope.viewLoading = true;
     var subscriptionId = -1;
     var srv = "io-control-dev";
-    var get = function() {
-      DataSrv.send(srv, "get_services", null, function(result) {
-        if (result.success) {
-          //$scope.services = result.data.services;
-        }
-      });
-    };
     
     DataSrv.register("services_full", function(message) {
+      $scope.viewLoading = false;
       $scope.services = message.params.services;
     });
     
@@ -30,8 +25,11 @@ angular.module('app.services',[
     });
     
     DataSrv.send("io-control-dev", "subscribe_services", {"service":DataSrv.getClientId()}, function(result){
-      if (result.success)
+      if (result.success) {
         subscriptionId = parseInt(result.data.id);
+      } else {
+        $scope.viewLoading = false;
+      }
     });
     
     $scope.$on("$destroy", function(){
