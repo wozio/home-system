@@ -59,6 +59,17 @@ void msg_to_json(const std::string& target, const std::string& message,
         long long sequence_number, const yami::parameters& params,
         buffer_t buffer);
 
+/**
+ * Convert YAMI message into JSON string
+ * @param target Target
+ * @param message Message
+ * @param params YAMI parameters
+ * @param buffer Output buffer with JSON string
+ */
+void msg_to_json(const std::string& target, const std::string& message,
+        const yami::parameters& params,
+        buffer_t buffer);
+
 }
 
 #endif	/* JSON_CONVERTER_H */

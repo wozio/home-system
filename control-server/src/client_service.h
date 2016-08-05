@@ -16,6 +16,7 @@ class client_service
 {
 public:
   client_service(const std::string& name, handler_t handler);
+  ~client_service();
 
   void on_msg(yami::incoming_message & im);
   void on_remote_msg(const std::string& source, const std::string& target,
@@ -35,6 +36,8 @@ private:
   // keyed by the same key values as incoming_
   typedef std::map<int, dt_t> timers_map_t;
   timers_map_t timers_;
+  
+  time_t discovery_subscription_id_;
 };
 
 }

@@ -289,4 +289,25 @@ void msg_to_json(const std::string& target, const std::string& message,
   writer.EndObject();  
 }
 
+void msg_to_json(const std::string& target, const std::string& message,
+        const yami::parameters& params,
+        buffer_t buffer)
+{
+  Writer<StringBuffer> writer(*buffer);
+  
+  writer.StartObject();
+  
+  writer.Key("target");
+  writer.String(StringRef(target.c_str()));
+  
+  writer.Key("message");
+  writer.String(StringRef(message.c_str()));
+  
+  writer.Key("params");
+  
+  process_parameters(params, writer);
+  
+  writer.EndObject();  
+}
+
 }

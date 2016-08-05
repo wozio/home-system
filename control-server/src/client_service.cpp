@@ -15,6 +15,19 @@ client_service::client_service(const std::string& name, handler_t handler)
   name_(name),
   handler_(handler)
 {
+  discovery_subscription_id_ = DISCOVERY.subscribe([this](const std::string& service, bool available){
+    yami::parameters params;
+    params.set_string("service", service);
+    params.set_boolean("available", available);
+    buffer_t buffer(new rapidjson::StringBuffer);
+    msg_to_json(name_, "service_availability", params, buffer);
+    handler::on_send(handler_, buffer);
+  });
+}
+
+client_service::~client_service()
+{
+  DISCOVERY.unsubscribe(discovery_subscription_id_);
 }
 
 void client_service::on_msg(yami::incoming_message & im)
