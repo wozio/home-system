@@ -37,8 +37,8 @@
 /**** SPINNERS ****/
 .mk-spinner-ring {
   content: "";
-  width: 50px;
-  height: 50px;
+  width: 30px;
+  height: 30px;
   top: 50%;
   margin-top: 15px;
   margin-bottom: 25px;
