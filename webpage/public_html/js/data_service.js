@@ -89,10 +89,10 @@ angular.module('app.data',[
     });
 
     dataStream.onMessage(function(message) {
-      console.log("Received: " + message.data);
       if (message.data === "ping\0") {
         return;
       }
+      console.log("Received: " + message.data);
       var recv_msg = JSON.parse(message.data);
       $rootScope.error = false;
       $rootScope.errorSlogan = "";
@@ -325,14 +325,14 @@ angular.module('app.data',[
     if (message.params.available === true) {
       console.log("Service available: " + message.params.service);
       available_services.add(message.params.service);
-      for (var i = 0; i < service_callbacks.length; i++) {
-        service_callbacks[i](message.params.service, true);
+      for (let callback of service_callbacks.values()) {
+        callback(message.params.service, true);
       }
     } else {
       console.log("Service not available: " + message.params.service);
       available_services.delete(message.params.service);
-      for (var i = 0; i < service_callbacks.length; i++) {
-        service_callbacks[i](message.params.service, false);
+      for (let callback of service_callbacks.values()) {
+        callback(message.params.service, false);
       }
     }
   });

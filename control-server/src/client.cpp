@@ -74,6 +74,8 @@ void client::handle_login(const yami::parameters& params, long long sequence_num
         buffer_t buffer(new rapidjson::StringBuffer);
         reply_to_json(source, "success", "", sequence_number, rparams, buffer);
         on_send(shared_from_this(), buffer);
+        
+        CLIENTS.get(client_id)->init();
         return;
       }
     }

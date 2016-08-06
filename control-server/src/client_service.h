@@ -17,6 +17,8 @@ class client_service
 public:
   client_service(const std::string& name, handler_t handler);
   ~client_service();
+  
+  void init();
 
   void on_msg(yami::incoming_message & im);
   void on_remote_msg(const std::string& source, const std::string& target,
