@@ -303,7 +303,7 @@ angular.module('app.data',[
         i++;
       }
       service_callbacks.set(i, callback);
-      for (let service of available_services){
+      for (var service of available_services){
         callback(service, true);
       }
       return i;
@@ -325,13 +325,13 @@ angular.module('app.data',[
     if (message.params.available === true) {
       console.log("Service available: " + message.params.service);
       available_services.add(message.params.service);
-      for (let callback of service_callbacks.values()) {
+      for (var callback of service_callbacks.values()) {
         callback(message.params.service, true);
       }
     } else {
       console.log("Service not available: " + message.params.service);
       available_services.delete(message.params.service);
-      for (let callback of service_callbacks.values()) {
+      for (var callback of service_callbacks.values()) {
         callback(message.params.service, false);
       }
     }
