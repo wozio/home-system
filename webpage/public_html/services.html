@@ -5,10 +5,10 @@
     <div class="row">
       <div class="col-xs-4 h4" ng-repeat="display in service.displays track by $index" title="{{display.name}}">
         <div ng-if="display.state==1">
-          <div ng-show="display.type=='temperature'">
+          <div ng-show="display.type=='temperature'" highlighter="display.value.toFixed(1)">
             {{display.value.toFixed(1)}}&#176;C
           </div>
-          <div ng-show="display.type=='state'">
+          <div ng-show="display.type=='state'" highlighter="display.value">
             <span class="{{display.value == 1 && 'glyphicon glyphicon-ok-sign' || 'glyphicon glyphicon-minus-sign'}}"></span>
           </div>
         </div>

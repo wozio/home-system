@@ -7,7 +7,8 @@ angular.module('app', [
   'app.login',
   'app.services',
   'app.data',
-  'app.epg'
+  'app.epg',
+  'app.highlighter'
 ])
 
 .config(['$routeProvider',
