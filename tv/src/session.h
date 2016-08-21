@@ -33,7 +33,7 @@ private:
 class session
 {
 public:
-  session(int id, std::string endpoint, std::string destination);
+  session(int id, std::string destination);
   session(const session& orig) = delete;
   ~session();
   
@@ -45,7 +45,6 @@ public:
 private:
   int id_;
   int channel_;
-  std::string endpoint_;
   std::string destination_;
   
   bool playing_;

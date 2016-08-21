@@ -27,7 +27,7 @@ public:
   
   void not_available();
   
-  int create_session(int channel, const std::string& client_endpoint, const std::string& client);
+  int create_session(int channel, const std::string& client);
   void delete_session(int client_session);
 
   void stream_part(int source_session, const void* buf, size_t len);

@@ -21,8 +21,8 @@ FC=gfortran
 AS=as
 
 # Macros
-CND_PLATFORM=GNU-Linux
-CND_DLIB_EXT=so
+CND_PLATFORM=None-Windows
+CND_DLIB_EXT=dll
 CND_CONF=Release
 CND_DISTDIR=dist
 CND_BUILDDIR=build
@@ -64,11 +64,11 @@ LDLIBSOPTIONS=-L../common/yami4/lib -lPocoData -lPocoFoundation -lPocoSQLite -lP
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
-	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk ../bin/${CND_CONF}/tv
+	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk ../bin/${CND_CONF}/tv.exe
 
-../bin/${CND_CONF}/tv: ../common/common/../bin/Release/libcommon.a
+../bin/${CND_CONF}/tv.exe: ../common/common/../bin/Release/libcommon.a
 
-../bin/${CND_CONF}/tv: ${OBJECTFILES}
+../bin/${CND_CONF}/tv.exe: ${OBJECTFILES}
 	${MKDIR} -p ../bin/${CND_CONF}
 	${LINK.cc} -o ../bin/${CND_CONF}/tv ${OBJECTFILES} ${LDLIBSOPTIONS}
 
@@ -124,7 +124,7 @@ ${OBJECTDIR}/src/tv.o: src/tv.cpp
 # Clean Targets
 .clean-conf: ${CLEAN_SUBPROJECTS}
 	${RM} -r ${CND_BUILDDIR}/${CND_CONF}
-	${RM} ../bin/${CND_CONF}/tv
+	${RM} ../bin/${CND_CONF}/tv.exe
 
 # Subprojects
 .clean-subprojects:

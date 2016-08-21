@@ -30,26 +30,26 @@ void client_service::init()
     params.set_boolean("available", available);
     buffer_t buffer(new rapidjson::StringBuffer);
     msg_to_json(name_, "service_availability", params, buffer);
-    handler::on_send(handler_, buffer);
+    handler_->on_send(buffer);
   });
 }
 
 void client_service::on_msg(yami::incoming_message & im)
 {
-  LOG(TRACE) << "Incoming message '" << im.get_message_name() << "' from '" << im.get_source() << "'";
+  //LOG(TRACE) << "Incoming message '" << im.get_message_name() << "' from '" << im.get_source() << "'";
   int sn = 0;
   while (incoming_.find(sn) != incoming_.end())
   {
     sn++;
   }
-  LOG(TRACE) << "Assigned sequence_number = " << sn;
+  //LOG(TRACE) << "Assigned sequence_number = " << sn;
   
   // convert to json
   buffer_t buffer(new rapidjson::StringBuffer);
   msg_to_json(name_, im.get_message_name(), sn, im.get_parameters(), buffer);
   
   // send to handler
-  handler::on_send(handler_, buffer);
+  handler_->on_send(buffer);
   
   // move incoming message to map with assigned sequence number
   incoming_.emplace(sn, im);
@@ -79,13 +79,13 @@ void client_service::on_remote_msg(const std::string& source, const std::string&
     switch (msg_type)
     {
     case msg_type_t::one_way:
-      LOG(DEBUG) << "One way message: '" << msg << "', from '" << source << "' to '" << target << "'";
+      //LOG(DEBUG) << "One way message: '" << msg << "', from '" << source << "' to '" << target << "'";
       AGENT.send_one_way(ye, target, msg, params);
       break;
 
     case msg_type_t::for_reply:
     {
-      LOG(DEBUG) << "Message expecting reply: '" << msg << "', from '" << source << "' to '" << target << "'";
+      //LOG(DEBUG) << "Message expecting reply: '" << msg << "', from '" << source << "' to '" << target << "'";
       auto_ptr <yami::outgoing_message> message(AGENT.send(ye, target, msg, params));
 
       message->wait_for_completion(1000);
@@ -94,13 +94,13 @@ void client_service::on_remote_msg(const std::string& source, const std::string&
       {
       case yami::replied:
       {
-        LOG(DEBUG) << "Got reply";
+        //LOG(DEBUG) << "Got reply";
         // converting yami output to json
         // yami binary values are not supported
         buffer_t buffer(new rapidjson::StringBuffer);
         reply_to_json(source, "success", "", sequence_number, message->get_reply(), buffer);
 
-        handler::on_send(handler_, buffer);
+        handler_->on_send(buffer);
 
         break;
       }
@@ -116,7 +116,7 @@ void client_service::on_remote_msg(const std::string& source, const std::string&
         LOG(WARNING) << "Rejected: " + message->get_exception_msg();
         buffer_t buffer(new rapidjson::StringBuffer);
         reply_to_json(source, "failed", message->get_exception_msg(), sequence_number, buffer);
-        handler::on_send(handler_, buffer);
+        handler_->on_send(buffer);
         break;
       }
       }
@@ -147,7 +147,7 @@ void client_service::on_remote_msg(const std::string& source, const std::string&
     {
       buffer_t buffer(new rapidjson::StringBuffer);
       reply_to_json(source, "failed", e.what(), sequence_number, buffer);
-      handler::on_send(handler_, buffer);
+      handler_->on_send(buffer);
     }
   }
 }

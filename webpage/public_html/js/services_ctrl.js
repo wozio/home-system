@@ -17,6 +17,7 @@ angular.module('app.services',[
     });
     
     DataSrv.register("services_change", function(message) {
+      $scope.viewLoading = false;
       for (var i = 0; i < $scope.services.length; i++){
         if ($scope.services[i].name === message.params.name){
           $scope.services[i] = message.params;
@@ -25,7 +26,6 @@ angular.module('app.services',[
     });
     
     var serviceAvailabilitySubscrId = DataSrv.registerServiceAvailability(function(service, available){
-      console.log("S:" + service + " A:" + available);
       if (service === srv) {
         if (available === true) {
           DataSrv.send(srv, "subscribe_services", {"service":DataSrv.getClientId()}, function(result){

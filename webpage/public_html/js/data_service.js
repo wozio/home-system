@@ -1,11 +1,10 @@
 'use strict';
 
 angular.module('app.data',[
-  'ngWebSocket',
   'ngCookies'
 ])
 
-.factory('DataSrv', function($websocket, $cookies, $timeout, $rootScope, $location) {
+.factory('DataSrv', function($cookies, $timeout, $rootScope, $location) {
   
   // firefox WS bug workaround
   $(window).on('beforeunload', function(){
@@ -37,7 +36,7 @@ angular.module('app.data',[
   
   //connection related variables
   var clientId = "";
-  var connected = true;
+  var connected = false;
   
   // authorization related variables
   var loggedIn = false;
@@ -45,9 +44,10 @@ angular.module('app.data',[
   
   function connect(){
     console.log("Connecting to: " + newUri);
-    dataStream = $websocket(newUri);
+    dataStream = new WebSocket(newUri);
+    dataStream.binaryType = 'arraybuffer';
     
-    dataStream.onClose(function() {
+    dataStream.onclose = function() {
       console.log("WebSocket connection closed");
       $rootScope.error = true;
       $rootScope.errorSlogan = "Disconnected from WebSocket.";
@@ -65,13 +65,9 @@ angular.module('app.data',[
         }
       }
       queue = {};
-    });
+    };
 
-    dataStream.onError(function() {
-      console.log("WebSocket error");
-    });
-
-    dataStream.onOpen(function() {
+    dataStream.onopen = function() {
       console.log("WebSocket connection opened");
       $rootScope.error = false;
       $rootScope.errorSlogan = "";
@@ -86,14 +82,22 @@ angular.module('app.data',[
           }
         });
       }
-    });
+    };
 
-    dataStream.onMessage(function(message) {
-      if (message.data === "ping\0") {
+    dataStream.onmessage = function(message) {
+      console.log("Received " + message.data.byteLength + " bytes");
+      
+      var dataView = new DataView(message.data);
+      var decoder = new TextDecoder("UTF-8");
+      var data_str = decoder.decode(dataView);
+      
+      if (data_str === "ping\0") {
         return;
       }
-      console.log("Received: " + message.data);
-      var recv_msg = JSON.parse(message.data);
+      
+      //console.log(data_str);
+      
+      var recv_msg = JSON.parse(data_str);
       $rootScope.error = false;
       $rootScope.errorSlogan = "";
       if (recv_msg.sequence_number !== undefined) {
@@ -122,6 +126,7 @@ angular.module('app.data',[
           $timeout.cancel(queue[recv_msg.sequence_number].timeout);
           delete queue[recv_msg.sequence_number];
         } else if (recv_msg.message !== undefined) {
+          console.log("Received message '" + recv_msg.message + "'");
           // this is incoming message expecting reply
           if (incoming[recv_msg.message] !== undefined) {
             incoming[recv_msg.message](recv_msg, function(recv_msg, result, paramsOrReason) {
@@ -156,6 +161,7 @@ angular.module('app.data',[
           }
         }
       } else if (recv_msg.message !== undefined) {
+        console.log("Received message '" + recv_msg.message + "'");
         // incoming one way message
         if (incoming[recv_msg.message] !== undefined) {
           incoming[recv_msg.message](recv_msg);
@@ -163,7 +169,7 @@ angular.module('app.data',[
           console.log("Received message '" + recv_msg.message + "' for which there is no registered receiver");
         }
       }
-    });
+    };
   }
   
   function on_timeout(seq){
@@ -205,7 +211,7 @@ angular.module('app.data',[
         }
         seq++;
       }
-      console.log("Sending: " + JSON.stringify(prepared_msg));
+      console.log("Sending");
       dataStream.send(JSON.stringify(prepared_msg));
     } else {
       if (reply_callback) {

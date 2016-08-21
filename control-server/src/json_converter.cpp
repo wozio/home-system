@@ -4,6 +4,10 @@
 #include "rapidjson/writer.h"
 #include "rapidjson/stringbuffer.h"
 
+#include <boost/archive/iterators/base64_from_binary.hpp>
+#include <boost/archive/iterators/insert_linebreaks.hpp>
+#include <boost/archive/iterators/transform_width.hpp>
+
 namespace home_system
 {
 
@@ -114,6 +118,42 @@ void process_parameters(const yami::parameters& params, Writer<StringBuffer>& wr
 
     switch ((*it).type())
     {
+    case yami::binary:
+    {
+      size_t len;
+      const char* src = static_cast<const char*>((*it).get_binary(len));
+      char* dest = new char[len*2];
+      // encoding binary to string using Base64
+      using namespace boost::archive::iterators;
+      char tail[3] = {0,0,0};
+      typedef base64_from_binary<transform_width<const char *, 6, 8> > base64_enc;
+
+      uint one_third_len = len/3;
+      uint len_rounded_down = one_third_len*3;
+      uint j = len_rounded_down + one_third_len;
+
+      std::copy(base64_enc(src), base64_enc(src + len_rounded_down), dest);
+
+      if (len_rounded_down != len)
+      {
+          uint i=0;
+          for(; i < len - len_rounded_down; ++i)
+          {
+              tail[i] = src[len_rounded_down+i];
+          }
+
+          std::copy(base64_enc(tail), base64_enc(tail + 3), dest + j);
+
+          for(i=len + one_third_len + 1; i < j+4; ++i)
+          {
+              dest[i] = '=';
+          }
+      }
+      dest[j] = 0;
+      writer.String(StringRef(dest));
+      delete [] dest;
+      break;
+    }
     case yami::boolean:
       writer.Bool((*it).get_boolean());
       break;

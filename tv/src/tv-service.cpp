@@ -172,13 +172,12 @@ void tv_service::on_msg(yami::incoming_message& im)
     {
       try
       {
-        int channel = im.get_parameters().get_integer("channel");
-        string endpoint = im.get_parameters().get_string("endpoint");
+        int channel = im.get_parameters().get_long_long("channel");
         string destination = im.get_parameters().get_string("destination");
         
-        LOG(DEBUG) << "Creating session for channel " << channel << "(" << db_.get_channel_name(channel) << ") to " << destination << "(" << endpoint << ")";
+        LOG(DEBUG) << "Creating session for channel " << channel << "(" << db_.get_channel_name(channel) << ") to " << destination;
 
-        int session = sources_.create_session(channel, endpoint, destination);
+        int session = sources_.create_session(channel, destination);
 
         yami::parameters reply;
         reply.set_integer("session", session);

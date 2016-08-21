@@ -1,6 +1,7 @@
 #include "session.h"
 #include "logger.h"
 #include "yamicontainer.h"
+#include "discovery.h"
 #include <memory>
 #include <sstream>
 
@@ -16,9 +17,8 @@ namespace media
 //#define MAX_BUFFER_SIZE 2147483648 // 2GB
 #define MAX_BUFFER_SIZE 20971520 // 20MB
 
-session::session(int id, std::string endpoint, std::string destination)
+session::session(int id, std::string destination)
 : id_(id),
-  endpoint_(endpoint),
   destination_(destination),
   playing_(true),
   readpos_(0),
@@ -28,7 +28,7 @@ session::session(int id, std::string endpoint, std::string destination)
   ostringstream str;
   str << "timeshift_buffer_" << id_ << ".ts";
   buffer_.open(str.str(), ios::trunc | ios::binary | ios::out | ios::in);
-  LOG(DEBUG) << "Create session id=" << id << " endpoint=" << endpoint << " destination=" << destination;
+  LOG(DEBUG) << "Create session id=" << id << " destination=" << destination;
 }
 
 session::~session()
@@ -39,7 +39,7 @@ session::~session()
   {
     yami::parameters params;
     params.set_integer("session", id_);
-    YC.agent().send(endpoint_, destination_, "session_deleted", params);
+    YC.agent().send(DISCOVERY.get(destination_), destination_, "session_deleted", params);
   }
   catch (const std::exception& e)
   {
@@ -125,13 +125,20 @@ void session::pause()
 
 void session::seek(long long pos)
 {
-  LOG(DEBUG) << "Seek for session " << id_ << " to position " << pos;
-  
-  lock_guard<mutex> lock(m_mutex);
-  
-  yami::parameters params;
-  params.set_integer("session", id_);
-  YC.agent().send(endpoint_, destination_, "clear_stream", params);
+  try
+  {
+    LOG(DEBUG) << "Seek for session " << id_ << " to position " << pos;
+
+    lock_guard<mutex> lock(m_mutex);
+
+    yami::parameters params;
+    params.set_integer("session", id_);
+    YC.agent().send(DISCOVERY.get(destination_), destination_, "clear_stream", params);
+  }
+  catch (const std::exception& e)
+  {
+    LOG(ERROR) << "EXCEPTION: " << e.what();
+  }
 }
 
 void session::trigger_send_some()
@@ -214,7 +221,7 @@ void session::send()
       full_ ? size = MAX_BUFFER_SIZE : size = writepos_;
       params.set_integer("buffer_size", size);
 
-      YC.agent().send(endpoint_, destination_, "stream_part", params);
+      YC.agent().send(DISCOVERY.get(destination_), destination_, "stream_part", params);
 
       readpos_ = buffer_.tellg();
 
