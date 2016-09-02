@@ -128,15 +128,15 @@ void process_parameters(const yami::parameters& params, Writer<StringBuffer>& wr
       char tail[3] = {0,0,0};
       typedef base64_from_binary<transform_width<const char *, 6, 8> > base64_enc;
 
-      uint one_third_len = len/3;
-      uint len_rounded_down = one_third_len*3;
-      uint j = len_rounded_down + one_third_len;
+      size_t one_third_len = len/3;
+	  size_t len_rounded_down = one_third_len*3;
+	  size_t j = len_rounded_down + one_third_len;
 
       std::copy(base64_enc(src), base64_enc(src + len_rounded_down), dest);
 
       if (len_rounded_down != len)
       {
-          uint i=0;
+		  size_t i=0;
           for(; i < len - len_rounded_down; ++i)
           {
               tail[i] = src[len_rounded_down+i];
