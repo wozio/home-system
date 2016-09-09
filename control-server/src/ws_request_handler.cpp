@@ -1,8 +1,11 @@
 #include "ws_request_handler.h"
 #include "client.h"
+#include "clients.h"
 #include <Poco/Net/HTTPServerRequest.h>
 #include <Poco/Net/HTTPServerResponse.h>
 #include <Poco/Net/NetException.h>
+#include <Poco/URI.h>
+#include <boost/algorithm/string.hpp>
 
 using namespace Poco::Net;
 using namespace Poco;
@@ -11,7 +14,8 @@ using namespace std;
 namespace home_system
 {
 
-ws_request_handler::ws_request_handler()
+ws_request_handler::ws_request_handler(const std::string& client_id)
+  : client_id_(client_id)
 {
 }
 
@@ -25,6 +29,16 @@ void ws_request_handler::handleRequest(HTTPServerRequest& request, HTTPServerRes
   {
     ws_t ws(new WebSocket(request, response));
 
+	  // get client by client_id
+    try
+    {
+      auto c = CLIENTS.get(client_id_);
+      c->add_ws(ws);
+      return;
+    }
+    catch (const std::out_of_range& e)
+    {
+    }
     shared_ptr<client> h(new client(ws));
     h->init();
   }

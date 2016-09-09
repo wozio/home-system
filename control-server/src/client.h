@@ -17,6 +17,7 @@ public:
   
   void on_read(data_t data, size_t data_size);
   void shutdown();
+  void add(ws_t ws);
 
 protected:
   void handle_data(data_t data, size_t data_size);
