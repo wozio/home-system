@@ -1,11 +1,8 @@
+#include "pch.h"
 #include "client.h"
 #include "json_converter.h"
-#include "logger.h"
 #include "app.h"
 #include "clients.h"
-#include <thread>
-//#include <chrono>
-#include <cstdlib>
 
 using namespace std;
 

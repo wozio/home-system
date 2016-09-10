@@ -5,8 +5,7 @@
 #include "handler_t.h"
 #include "msg_type_t.h"
 #include "ios_wrapper.h"
-#include <yami4-cpp/incoming_message.h>
-#include <map>
+
 
 namespace home_system
 {

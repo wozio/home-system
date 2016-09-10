@@ -1,10 +1,8 @@
+#include "pch.h"
 #include "http.h"
 #include "file_request_handler.h"
 #include "ws_request_handler.h"
 #include "logger.h"
-#include <Poco/Net/HTTPServerResponse.h>
-#include <Poco/URI.h>
-#include <boost/regex.hpp>
 
 using namespace Poco::Net;
 using namespace Poco;

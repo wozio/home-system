@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "http.h"
 #include "control-service.h"
 #include "app.h"
@@ -7,15 +8,6 @@
 #include "cloud_ws.h"
 #include "handlers.h"
 #include "clients.h"
-#ifdef __linux__
-#include <unistd.h>
-#endif
-#include <Poco/Net/HTTPServer.h>
-#include <Poco/Net/HTTPServerParams.h>
-#include <Poco/Net/ServerSocket.h>
-#include <boost/program_options.hpp>
-#include <signal.h>
-#include <iostream>
 
 INITIALIZE_EASYLOGGINGPP
 

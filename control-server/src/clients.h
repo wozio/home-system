@@ -3,8 +3,6 @@
 
 #include "handler_t.h"
 #include "client_service.h"
-#include <map>
-#include <string>
 
 namespace home_system
 {

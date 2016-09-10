@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "client_service.h"
 #include "logger.h"
 #include "yamicontainer.h"
@@ -56,7 +57,7 @@ void client_service::on_msg(yami::incoming_message & im)
   
   // start timer for assigned sequence number
   dt_t dt(new boost::asio::deadline_timer(ios_.io_service()));
-  auto it = timers_.emplace(sn, move(dt)).first;
+  auto it = timers_.emplace(sn, std::move(dt)).first;
   it->second->expires_from_now(boost::posix_time::seconds(5));
   it->second->async_wait([this, sn] (const boost::system::error_code& error)
   {

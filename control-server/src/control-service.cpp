@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "control-service.h"
 #include "discovery.h"
 #include "logger.h"

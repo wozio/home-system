@@ -1,13 +1,6 @@
+#include "pch.h"
 #include "file_request_handler.h"
-
 #include "logger.h"
-#include <Poco/Net/HTTPServerRequest.h>
-#include <Poco/Net/HTTPServerResponse.h>
-#include <Poco/URI.h>
-#include <boost/algorithm/string.hpp>
-#include <map>
-#include <fstream>
-#include <vector>
 
 using namespace Poco::Net;
 using namespace Poco;

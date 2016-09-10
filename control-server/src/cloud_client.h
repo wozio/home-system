@@ -2,7 +2,6 @@
 #define	CLOUD_CLIENT_H
 
 #include "client.h"
-#include <set>
 
 namespace home_system
 {

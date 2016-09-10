@@ -1,11 +1,7 @@
+#include "pch.h"
 #include "ws_request_handler.h"
 #include "client.h"
 #include "clients.h"
-#include <Poco/Net/HTTPServerRequest.h>
-#include <Poco/Net/HTTPServerResponse.h>
-#include <Poco/Net/NetException.h>
-#include <Poco/URI.h>
-#include <boost/algorithm/string.hpp>
 
 using namespace Poco::Net;
 using namespace Poco;
@@ -33,7 +29,7 @@ void ws_request_handler::handleRequest(HTTPServerRequest& request, HTTPServerRes
     try
     {
       auto c = CLIENTS.get(client_id_);
-      c->add_ws(ws);
+//      c->add_ws(ws);
       return;
     }
     catch (const std::out_of_range& e)

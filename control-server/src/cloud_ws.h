@@ -2,8 +2,6 @@
 #define	CLOUD_WS_H
 
 #include "timer.h"
-#include <thread>
-#include <string>
 
 namespace home_system
 {
