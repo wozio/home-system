@@ -35,6 +35,11 @@ void client_service::init()
   });
 }
 
+void client_service::add_binary_connection(ws_t ws)
+{
+
+}
+
 void client_service::on_msg(yami::incoming_message & im)
 {
   //LOG(TRACE) << "Incoming message '" << im.get_message_name() << "' from '" << im.get_source() << "'";

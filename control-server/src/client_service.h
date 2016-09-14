@@ -18,6 +18,7 @@ public:
   ~client_service();
   
   void init();
+  void add_binary_connection(ws_t ws);
 
   void on_msg(yami::incoming_message & im);
   void on_remote_msg(const std::string& source, const std::string& target,

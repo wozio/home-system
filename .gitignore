@@ -19,3 +19,4 @@ dist/
 *.VC.opendb
 /ipch/CLIENT_WIN-34da462a/*.ipch
 /*.db
+*.ipch

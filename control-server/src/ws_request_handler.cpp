@@ -28,8 +28,7 @@ void ws_request_handler::handleRequest(HTTPServerRequest& request, HTTPServerRes
 	  // get client by client_id
     try
     {
-      auto c = CLIENTS.get(client_id_);
-//      c->add_ws(ws);
+      CLIENTS.get(client_id_)->add_binary_connection(ws);
       return;
     }
     catch (const std::out_of_range& e)

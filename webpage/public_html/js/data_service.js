@@ -45,7 +45,7 @@ angular.module('app.data',[
   function connect(){
     console.log("Connecting to: " + newUri);
     dataStream = new WebSocket(newUri);
-    dataStream.binaryType = 'arraybuffer';
+    //dataStream.binaryType = 'arraybuffer';
     
     dataStream.onclose = function() {
       console.log("WebSocket connection closed");
@@ -85,12 +85,14 @@ angular.module('app.data',[
     };
 
     dataStream.onmessage = function(message) {
-      console.log("Received " + message.data.byteLength + " bytes");
+      //console.log("Received " + message.data.byteLength + " bytes");
       
-      var dataView = new DataView(message.data);
-      var decoder = new TextDecoder("UTF-8");
-      var data_str = decoder.decode(dataView);
-      
+      //var dataView = new DataView(message.data);
+      //var decoder = new TextDecoder("UTF-8");
+      //var data_str = decoder.decode(dataView);
+
+      var data_str = message.data;
+
       if (data_str === "ping\0") {
         return;
       }
