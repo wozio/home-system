@@ -166,6 +166,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\binary_connection.cpp" />
     <ClCompile Include="src\client.cpp" />
     <ClCompile Include="src\clients.cpp" />
     <ClCompile Include="src\client_service.cpp" />
@@ -189,6 +190,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\binary_connection.h" />
     <ClInclude Include="src\client.h" />
     <ClInclude Include="src\clients.h" />
     <ClInclude Include="src\client_service.h" />
