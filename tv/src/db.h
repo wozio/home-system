@@ -2,11 +2,6 @@
 #define	DB_H
 
 #include "event_info.h"
-#include <Poco/Data/Session.h>
-#include <stdint.h>
-#include <mutex>
-#include <map>
-#include <stdexcept>
 
 namespace home_system
 {

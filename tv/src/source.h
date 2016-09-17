@@ -3,9 +3,6 @@
 
 #include "db.h"
 #include "session.h"
-#include <string>
-#include <map>
-#include <memory>
 
 namespace home_system
 {

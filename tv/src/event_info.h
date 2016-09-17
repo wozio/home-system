@@ -1,9 +1,6 @@
 #ifndef EVENT_INFO_H
 #define	EVENT_INFO_H
 
-#include <ctime>
-#include <string>
-
 namespace home_system
 {
 namespace media

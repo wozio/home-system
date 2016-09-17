@@ -6,11 +6,6 @@
 #include "db.h"
 #include "epg.h"
 #include "sources.h"
-#include <boost/shared_ptr.hpp>
-#include <vector>
-#include <set>
-#include <string>
-#include <fstream>
 
 namespace home_system
 {

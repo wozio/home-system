@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "source.h"
 #include "yamicontainer.h"
 #include "logger.h"

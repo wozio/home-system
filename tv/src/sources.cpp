@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "sources.h"
 #include "logger.h"
 
@@ -11,7 +12,34 @@ namespace media
 sources::sources(db& db)
 : db_(db)
 {
+  LOG(DEBUG) << "Sending sources wakeup";
+  // sending Wake On Lan message
+  // TODO make it on separate function, maybe move to control-server
+  string strmac("000C7620C5E0");
+  unsigned int mac[6];
+  for (size_t j = 0; j < 6; j++)
+  {
+    std::stringstream s;
+    s << hex << strmac.substr(j * 2, 2);
+    s >> mac[j];
+  }
   
+  uint8_t mp[108];
+  size_t j = 0;
+  for (; j < 6; j++)
+    mp[j] = 0xFF;
+  while (j < 102)
+  {
+    for (size_t i = 0; i < 6; ++i)
+    {
+      mp[j++] = mac[i];
+    }
+  }
+  boost::asio::io_service srv;
+  boost::asio::ip::udp::endpoint endpoint(boost::asio::ip::address::from_string("255.255.255.255"), 8);
+  boost::asio::ip::udp::socket socket(srv, endpoint.protocol());
+  socket.set_option(boost::asio::ip::udp::socket::broadcast(true));
+  socket.send_to(boost::asio::buffer(mp), endpoint);
 }
 
 sources::~sources()

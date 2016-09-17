@@ -91,12 +91,12 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
+      <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -156,6 +156,9 @@
     <ClCompile Include="src\client_sessions.cpp" />
     <ClCompile Include="src\db.cpp" />
     <ClCompile Include="src\epg.cpp" />
+    <ClCompile Include="src\pch.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="src\recordings.cpp" />
     <ClCompile Include="src\session.cpp" />
     <ClCompile Include="src\source.cpp" />
@@ -169,6 +172,7 @@
     <ClInclude Include="src\db.h" />
     <ClInclude Include="src\epg.h" />
     <ClInclude Include="src\event_info.h" />
+    <ClInclude Include="src\pch.h" />
     <ClInclude Include="src\recordings.h" />
     <ClInclude Include="src\session.h" />
     <ClInclude Include="src\source.h" />

@@ -2,9 +2,6 @@
 #define	SESSION_H
 
 #include "ios_wrapper.h"
-#include <string>
-#include <stdexcept>
-#include <fstream>
 
 namespace home_system
 {

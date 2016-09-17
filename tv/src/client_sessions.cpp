@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "client_sessions.h"
 
 namespace home_system

@@ -3,8 +3,6 @@
 
 #include "event_info.h"
 #include "db.h"
-#include <yami4-cpp/incoming_message.h>
-#include <map>
 
 namespace home_system
 {
