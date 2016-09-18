@@ -85,6 +85,10 @@ void epg::handle_get_epg_info(yami::incoming_message& im)
 void epg::handle_get_epg_data(yami::incoming_message& im)
 {
   int gc = im.get_parameters().get_integer("channel");
+  if (channels_.find(gc) == channels_.end())
+  {
+    return;
+  }
   size_t s = channels_[gc].events_.size();
   vector<int> ids;
   ids.reserve(s);

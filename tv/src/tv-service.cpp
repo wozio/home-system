@@ -106,7 +106,6 @@ void tv_service::handle_schedule_event_record(yami::incoming_message& im)
 
 void tv_service::on_msg(yami::incoming_message& im)
 {
-  //LOG("message: " << im.get_message_name());
   try
   {
     if (im.get_message_name() == "stream_part")
