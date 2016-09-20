@@ -178,7 +178,14 @@ void tv_service::on_msg(yami::incoming_message& im)
         
         LOG(DEBUG) << "Creating session for channel " << channel << "(" << db_.get_channel_name(channel) << ") to " << destination << "(" << endpoint << ")";
 
-        int session = sources_.create_session(channel, endpoint, destination);
+        int session = sources_.create_session(channel, [endpoint, destination] (int id, void* buf, size_t len, size_t buf_size) {
+          yami::parameters params;
+          params.set_binary("payload", buf, len);
+          params.set_integer("session", id);
+          params.set_integer("buffer_size", buf_size);
+
+          YC.agent().send(endpoint, destination, "stream_part", params);
+        });
 
         yami::parameters reply;
         reply.set_integer("session", session);

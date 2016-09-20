@@ -15,10 +15,9 @@ namespace media
 //#define MAX_BUFFER_SIZE 2147483648 // 2GB
 #define MAX_BUFFER_SIZE 20971520 // 20MB
 
-session::session(int id, std::string endpoint, std::string destination)
+session::session(int id, stream_callback_t stream_callback)
 : id_(id),
-  endpoint_(endpoint),
-  destination_(destination),
+  stream_callback_(stream_callback),
   playing_(true),
   readpos_(0),
   writepos_(0),
@@ -27,23 +26,12 @@ session::session(int id, std::string endpoint, std::string destination)
   ostringstream str;
   str << "timeshift_buffer_" << id_ << ".ts";
   buffer_.open(str.str(), ios::trunc | ios::binary | ios::out | ios::in);
-  LOG(DEBUG) << "Create session id=" << id << " endpoint=" << endpoint << " destination=" << destination;
+  LOG(DEBUG) << "Create session id=" << id;
 }
 
 session::~session()
 {
   LOG(DEBUG) << "Delete client session id=" << id_;
-
-  try
-  {
-    yami::parameters params;
-    params.set_integer("session", id_);
-    YC.agent().send(endpoint_, destination_, "session_deleted", params);
-  }
-  catch (const std::exception& e)
-  {
-    LOG(WARNING) << "EXCEPTION: " << e.what();
-  }
 }
 
 void session::stream_part(const void* buf, size_t length)
@@ -125,12 +113,6 @@ void session::pause()
 void session::seek(long long pos)
 {
   LOG(DEBUG) << "Seek for session " << id_ << " to position " << pos;
-  
-  lock_guard<mutex> lock(m_mutex);
-  
-  yami::parameters params;
-  params.set_integer("session", id_);
-  YC.agent().send(endpoint_, destination_, "clear_stream", params);
 }
 
 void session::trigger_send_some()
@@ -206,14 +188,10 @@ void session::send()
 
     if (len > 0)
     {
-      yami::parameters params;
-      params.set_binary("payload", buf, len);
-      params.set_integer("session", id_);
       streampos size;
       full_ ? size = MAX_BUFFER_SIZE : size = writepos_;
-      params.set_integer("buffer_size", size);
 
-      YC.agent().send(endpoint_, destination_, "stream_part", params);
+      stream_callback_(id_, buf, len, size);
 
       readpos_ = buffer_.tellg();
 

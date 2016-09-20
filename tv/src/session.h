@@ -8,6 +8,8 @@ namespace home_system
 namespace media
 {
 
+typedef std::function<void(int id, void* buf, size_t len, size_t buf_size)> stream_callback_t;
+
 class session_error
   : public std::runtime_error
 {
@@ -30,7 +32,7 @@ private:
 class session
 {
 public:
-  session(int id, std::string endpoint, std::string destination);
+  session(int id, stream_callback_t stream_callback);
   session(const session& orig) = delete;
   ~session();
   
@@ -41,9 +43,7 @@ public:
   
 private:
   int id_;
-  int channel_;
-  std::string endpoint_;
-  std::string destination_;
+  stream_callback_t stream_callback_;
   
   bool playing_;
   std::streampos readpos_, writepos_;

@@ -46,7 +46,7 @@ std::string source::endpoint()
   return ye_;
 }
 
-int source::create_session(int channel, const std::string& client_endpoint, const std::string& client)
+int source::create_session(int channel, stream_callback_t stream_callback)
 {
   // starting session on source
   long long local = db_.get_local_channel(channel, name_);
@@ -87,7 +87,7 @@ int source::create_session(int channel, const std::string& client_endpoint, cons
   
   LOG(DEBUG) << "Creating client session " << client_session_id_;
   
-  client_session_.reset(new session(client_session_id_, client_endpoint, client));
+  client_session_.reset(new session(client_session_id_, stream_callback));
   
   return client_session_id_;
 }

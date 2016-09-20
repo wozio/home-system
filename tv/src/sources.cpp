@@ -78,7 +78,7 @@ source_t sources::operator[](const std::string& source)
   }
 }
 
-int sources::create_session(int channel, const std::string& client_endpoint, const std::string& client)
+int sources::create_session(int channel, stream_callback_t stream_callback)
 {
   std::vector<std::string> dbsources;
   db_.get_sources_for_channel(channel, dbsources);
@@ -91,7 +91,7 @@ int sources::create_session(int channel, const std::string& client_endpoint, con
     if (sit != sources_names_.end())
     {
       LOG(DEBUG) << "Available source for channel: " << sit->first << "(" << sit->second->endpoint() << ")";
-      return sit->second->create_session(channel, client_endpoint, client);
+      return sit->second->create_session(channel, stream_callback);
     }
   }
   
