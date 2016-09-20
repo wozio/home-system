@@ -32,6 +32,8 @@ session::session(int id, stream_callback_t stream_callback)
 session::~session()
 {
   LOG(DEBUG) << "Delete client session id=" << id_;
+  playing_ = false;
+  ios_.stop_ios();
 }
 
 void session::stream_part(const void* buf, size_t length)
