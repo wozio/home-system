@@ -44,7 +44,7 @@ void session::stream_part(const void* buf, size_t length)
   
   streampos to_write = length;
   
-  //LOG(TRACE)  << "RECEIVED: " << length << " writepos=" << writepos_ << " readpos=" << readpos_;
+  LOG(TRACE)  << "RECEIVED: " << length << " writepos=" << writepos_ << " readpos=" << readpos_;
   
   buffer_.seekp(writepos_);
 
@@ -80,7 +80,7 @@ void session::stream_part(const void* buf, size_t length)
   // so enough bytes is sent to free space
   if (full_)
   {
-    if (writepos_ < readpos_)
+    if (writepos_ <= readpos_)
     {
       // it must not be equal since in such case there is no way to distinguish
       // if read pos should be behind or in front of write pos
@@ -163,6 +163,11 @@ void session::send()
       return;
     }
 
+    if (readpos_ == (streampos)MAX_BUFFER_SIZE)
+    {
+      readpos_ = 0;
+    }
+
     char buf[BUFSIZE];
     streamsize len, end;
 
@@ -197,11 +202,7 @@ void session::send()
 
       readpos_ = buffer_.tellg();
 
-      if (readpos_ == (streampos)MAX_BUFFER_SIZE)
-      {
-        readpos_ = 0;
-      }
-      //LOG(TRACE) << "SENT: len=" << len << " writepos=" << dec << writepos_ << " readpos=" << dec << readpos_;
+      LOG(TRACE) << "SENT: len=" << len << " writepos=" << dec << writepos_ << " readpos=" << dec << readpos_;
     }
   }
   catch (const std::exception& e)

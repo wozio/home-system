@@ -5,8 +5,6 @@
 
 #pragma once
 
-#include "targetver.h"
-
 #include <stdio.h>
 #include <tchar.h>
 
@@ -28,6 +26,10 @@
 #include <fstream>
 #include <vector>
 #include <set>
+#include <array>
+#include <chrono>
+#include <thread>
+#include <atomic>
 
 #include <yami4-cpp/incoming_message.h>
 
