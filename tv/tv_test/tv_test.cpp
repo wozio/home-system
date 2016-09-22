@@ -66,7 +66,6 @@ BOOST_AUTO_TEST_CASE(session_stream_part_4_parts)
 
   home_system::media::session s(0, [&](int id, void* buf, size_t len, size_t buf_size) {
     BOOST_TEST(id == 0);
-    BOOST_TEST(buf_size == BUFFER_SIZE);
     BOOST_TEST(recv_len + len <= BUFFER_SIZE3_FULL);
     if (recv_len + len <= BUFFER_SIZE3_FULL)
     {
@@ -90,10 +89,14 @@ BOOST_AUTO_TEST_CASE(session_stream_part_4_parts)
   s.stream_part(&buf[0], BUFFER_SIZE3);
   s.stream_part(&buf[0], BUFFER_SIZE3);
 
+  std::vector<char> sent_buf;
+  sent_buf.resize(BUFFER_SIZE3_FULL);
+  sent_buf.insert(buf);
+
   using namespace std::chrono_literals;
   std::unique_lock<std::mutex> lk(cv_m);
   BOOST_TEST((cv.wait_for(lk, 100s, [&]() {return recv_len >= BUFFER_SIZE3_FULL; }) == true), "Timed out waiting for all data to receive");
 
   BOOST_TEST(recv_len == BUFFER_SIZE3_FULL, "received size not correct " << recv_len << "!=" << BUFFER_SIZE3_FULL);
-  //BOOST_TEST(recv_buf == buf, "Buffers not equal");
+  BOOST_TEST(recv_buf == buf, "Buffers not equal");
 }

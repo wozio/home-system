@@ -46,7 +46,8 @@ private:
   stream_callback_t stream_callback_;
   
   bool playing_;
-  std::streampos readpos_, writepos_;
+  size_t read_write_diff_; // how much writing is ahead of reading, should never be negative...
+  size_t readpos_, writepos_;
   bool full_;
   std::fstream buffer_;
   
@@ -55,10 +56,6 @@ private:
   void trigger_send_some();
   void send_some();
   void send();
-  
-  std::streampos size();
-  std::streampos read_pos();
-  std::streampos write_pos();
   
   std::mutex m_mutex;
 };
