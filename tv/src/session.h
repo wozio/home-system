@@ -37,9 +37,13 @@ public:
   ~session();
   
   void stream_part(const void* buf, size_t length);
-  void play();
+  // absolute position where 0 oldest position in buffer and current size is
+  // latest position in buffer
+  // returns current position in buffer
+  size_t play();
   void pause();
-  void seek(long long pos);
+  // returns current position in buffer after seek operation
+  size_t seek(size_t pos);
   
 private:
   int id_;

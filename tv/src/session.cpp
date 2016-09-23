@@ -56,7 +56,23 @@ void session::stream_part(const void* buf, size_t length)
   // first ensure that writepos will never pass readpos
   while (to_write > TOTAL_BUFFER_SIZE - read_write_diff_)
   {
-    send();
+    if (playing_)
+    {
+      send();
+    }
+    else
+    {
+      // overwrite
+      read_write_diff_ = TOTAL_BUFFER_SIZE - to_write;
+      if (writepos_ + to_write > TOTAL_BUFFER_SIZE)
+      {
+        readpos_ = to_write - (TOTAL_BUFFER_SIZE - writepos_);
+      }
+      else
+      {
+        readpos_ = writepos_ + to_write;
+      }
+    }
   }
   
   if (writepos_ + to_write >= TOTAL_BUFFER_SIZE)
@@ -88,22 +104,55 @@ void session::stream_part(const void* buf, size_t length)
   trigger_send_some();
 }
 
-void session::play()
+size_t session::play()
 {
+  lock_guard<mutex> lock(m_mutex);
   LOG(DEBUG) << "Play for session " << id_;
   playing_ = true;
+
   trigger_send_some();
+
+  size_t size;
+  full_ ? size = TOTAL_BUFFER_SIZE : size = writepos_;
+
+  return size - read_write_diff_;
 }
 
 void session::pause()
 {
+  lock_guard<mutex> lock(m_mutex);
   LOG(DEBUG) << "Pause for session " << id_;
   playing_ = false;
 }
 
-void session::seek(long long pos)
+size_t session::seek(size_t pos)
 {
   LOG(DEBUG) << "Seek for session " << id_ << " to position " << pos;
+
+  lock_guard<mutex> lock(m_mutex);
+
+  size_t size;
+  full_ ? size = TOTAL_BUFFER_SIZE : size = writepos_;
+
+  if (pos > size)
+  {
+    pos = size;
+  }
+
+  read_write_diff_ = size - pos;
+
+  if (writepos_ >= read_write_diff_)
+  {
+    readpos_ = writepos_ - read_write_diff_;
+  }
+  else
+  {
+    readpos_ = writepos_ + size - read_write_diff_;
+  }
+
+  trigger_send_some();
+
+  return pos;
 }
 
 void session::trigger_send_some()
