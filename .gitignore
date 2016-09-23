@@ -21,3 +21,4 @@ dist/
 /ipch/CONTROL-SERVER-a31e421b/*.ipch
 *.ipch
 *.db
+*.ts
