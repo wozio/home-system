@@ -23,7 +23,7 @@ void test(size_t buf_size, int buf_num)
   std::condition_variable cv;
   std::mutex cv_m;
 
-  home_system::media::session s(0, [&](int id, void* buf, size_t len, size_t buf_size) {
+  home_system::media::session s(0, [&](int id, void* buf, size_t len, size_t buf_size, size_t buf_pos) {
     BOOST_TEST(id == 0);
     BOOST_TEST(recv_len + len <= buf_size_total);
     if (recv_len + len <= buf_size_total)
@@ -89,10 +89,11 @@ BOOST_AUTO_TEST_CASE(session_seeking)
   std::condition_variable cv;
   std::mutex cv_m;
 
-  home_system::media::session s(0, [&](int id, void* buf, size_t len, size_t buf_size) {
+  home_system::media::session s(0, [&](int id, void* buf, size_t len, size_t buf_size, size_t buf_pos) {
     BOOST_TEST(id == 0);
     BOOST_TEST(len == 50);
     BOOST_TEST(buf_size == 100);
+    BOOST_TEST(buf_pos == 100);
     if (len <= 50)
     {
       memcpy(&recv_buf[0], buf, len);
@@ -139,7 +140,7 @@ BOOST_AUTO_TEST_CASE(session_seeking_full_buffer)
   std::condition_variable cv;
   std::mutex cv_m;
 
-  home_system::media::session s(0, [&](int id, void* buf, size_t len, size_t buf_size) {
+  home_system::media::session s(0, [&](int id, void* buf, size_t len, size_t buf_size, size_t buf_pos) {
     BOOST_TEST(id == 0);
     BOOST_TEST(buf_size == BUFFER_SIZE);
     if (recv_len + len <= 150)

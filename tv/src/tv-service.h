@@ -26,9 +26,9 @@ private:
   
   void handle_source_available(yami::incoming_message& im);
   void handle_new_channel(yami::incoming_message& im);
-  void handle_get_epg_data(yami::incoming_message& im);
   void handle_get_channels(yami::incoming_message& im);
   void handle_schedule_event_record(yami::incoming_message& im);
+  void handle_pause_session(yami::incoming_message& im);
   
   db& db_;
   sources sources_;

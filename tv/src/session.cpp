@@ -45,7 +45,7 @@ void session::stream_part(const void* buf, size_t length)
   
   size_t to_write = length;
   
-  //LOG(TRACE)  << "RECEIVED: " << length << " writepos=" << writepos_ << " readpos=" << readpos_ << " diff=" << dec << read_write_diff_;
+  LOG(TRACE)  << "RECEIVED: " << length << " writepos=" << writepos_ << " readpos=" << readpos_ << " diff=" << dec << read_write_diff_;
 
   if (to_write > TOTAL_BUFFER_SIZE)
   {
@@ -99,7 +99,7 @@ void session::stream_part(const void* buf, size_t length)
     read_write_diff_ += to_write;
   }
 
-  //LOG(TRACE) << "RECEIVED: writepos=" << writepos_ << " readpos=" << readpos_ << " diff=" << dec << read_write_diff_;
+  LOG(TRACE) << "RECEIVED: writepos=" << writepos_ << " readpos=" << readpos_ << " diff=" << dec << read_write_diff_;
 
   trigger_send_some();
 }
@@ -127,7 +127,7 @@ void session::pause()
 
 size_t session::seek(size_t pos)
 {
-  LOG(DEBUG) << "Seek for session " << id_ << " to position " << pos;
+  LOG(DEBUG) << "Seek for session " << id_ << " to position " << dec << pos;
 
   lock_guard<mutex> lock(m_mutex);
 
@@ -151,6 +151,8 @@ size_t session::seek(size_t pos)
   }
 
   trigger_send_some();
+
+  LOG(DEBUG) << "After seek: " << " to position " << dec << pos << " writepos=" << dec << writepos_ << " readpos=" << dec << readpos_ << " diff=" << dec << read_write_diff_;
 
   return pos;
 }
@@ -183,7 +185,7 @@ void session::send()
 {
   try
   {
-    //LOG(TRACE) << "SENDING: writepos=" << dec << writepos_ << " readpos=" << dec << readpos_ << " diff=" << dec << read_write_diff_;
+    LOG(TRACE) << "SENDING: writepos=" << dec << writepos_ << " readpos=" << dec << readpos_ << " diff=" << dec << read_write_diff_;
 
     if (read_write_diff_ == 0)
     {
@@ -222,12 +224,12 @@ void session::send()
     size_t size;
     full_ ? size = TOTAL_BUFFER_SIZE : size = writepos_;
 
-    stream_callback_(id_, buf, len, size);
+    stream_callback_(id_, buf, len, size, size - read_write_diff_ + len);
 
     readpos_ += len;
     read_write_diff_ -= len;
 
-    //LOG(TRACE) << "SENT: len=" << len << " writepos=" << dec << writepos_ << " readpos=" << dec << readpos_ << " diff=" << dec << read_write_diff_;
+    LOG(TRACE) << "SENT: len=" << len << " writepos=" << dec << writepos_ << " readpos=" << dec << readpos_ << " diff=" << dec << read_write_diff_;
   }
   catch (const std::exception& e)
   {

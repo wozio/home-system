@@ -8,7 +8,7 @@ namespace home_system
 namespace media
 {
 
-typedef std::function<void(int id, void* buf, size_t len, size_t buf_size)> stream_callback_t;
+typedef std::function<void(int id, void* buf, size_t len, size_t buf_size, size_t buf_pos)> stream_callback_t;
 
 class session_error
   : public std::runtime_error
