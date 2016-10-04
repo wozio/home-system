@@ -12,8 +12,8 @@ namespace home_system
 namespace media
 {
 
-//#define TOTAL_BUFFER_SIZE 2147483648 // 2GB
-#define TOTAL_BUFFER_SIZE 20971520 // 20MB
+#define TOTAL_BUFFER_SIZE 2147483648 // 2GB
+//#define TOTAL_BUFFER_SIZE 20971520 // 20MB
 
 session::session(int id, stream_callback_t stream_callback)
 : id_(id),
@@ -22,19 +22,20 @@ session::session(int id, stream_callback_t stream_callback)
   read_write_diff_(0),
   readpos_(0),
   writepos_(0),
-  full_(false)
+  full_(false),
+  abs_pos_(0),
+  abs_len_(0)
 {
   ostringstream str;
   str << "timeshift_buffer_" << id_ << ".ts";
   buffer_.open(str.str(), ios::trunc | ios::binary | ios::out | ios::in);
-  LOG(DEBUG) << "Create session id=" << id;
+  LOG(DEBUG) << "Create session id=" << id << " buffer size=" << dec << TOTAL_BUFFER_SIZE;
 }
 
 session::~session()
 {
   LOG(DEBUG) << "Delete client session id=" << id_;
   playing_ = false;
-  ios_.stop_ios();
 }
 
 void session::stream_part(const void* buf, size_t length)
@@ -45,7 +46,7 @@ void session::stream_part(const void* buf, size_t length)
   
   size_t to_write = length;
   
-  LOG(TRACE)  << "RECEIVED: " << length << " writepos=" << writepos_ << " readpos=" << readpos_ << " diff=" << dec << read_write_diff_;
+  //LOG(TRACE)  << "RECEIVED: " << length << " writepos=" << writepos_ << " readpos=" << readpos_ << " diff=" << dec << read_write_diff_;
 
   if (to_write > TOTAL_BUFFER_SIZE)
   {
@@ -74,9 +75,13 @@ void session::stream_part(const void* buf, size_t length)
       }
     }
   }
+
+  pos_to_time_[abs_len_] = std::time(nullptr);
   
   if (writepos_ + to_write >= TOTAL_BUFFER_SIZE)
   {
+    LOG(DEBUG) << "Buffer full";
+    log_data();
     // writing is going across end of buffer
     // here write from current pos to end of buffer
     size_t to_write_here = TOTAL_BUFFER_SIZE - writepos_;
@@ -90,6 +95,7 @@ void session::stream_part(const void* buf, size_t length)
     read_write_diff_ += to_write_here;
     full_ = true;
     writepos_ = 0;
+    abs_len_ += to_write_here;
   }
   if (to_write > 0)
   {
@@ -97,47 +103,55 @@ void session::stream_part(const void* buf, size_t length)
     buffer_.write(mybuf, to_write);
     writepos_ += to_write;
     read_write_diff_ += to_write;
+    abs_len_ += to_write;
   }
 
-  LOG(TRACE) << "RECEIVED: writepos=" << writepos_ << " readpos=" << readpos_ << " diff=" << dec << read_write_diff_;
-
-  trigger_send_some();
+  trigger_send();
 }
 
-size_t session::play()
+void session::play()
 {
   lock_guard<mutex> lock(m_mutex);
-  LOG(DEBUG) << "Play for session " << id_;
+  //LOG(DEBUG) << "Play";
+  //log_data();
   playing_ = true;
 
-  trigger_send_some();
-
-  size_t size;
-  full_ ? size = TOTAL_BUFFER_SIZE : size = writepos_;
-
-  return size - read_write_diff_;
+  trigger_send();
 }
 
 void session::pause()
 {
   lock_guard<mutex> lock(m_mutex);
-  LOG(DEBUG) << "Pause for session " << id_;
+  //LOG(DEBUG) << "Pause";
+  //log_data();
   playing_ = false;
+
+  trigger_send();
 }
 
-size_t session::seek(size_t pos)
+void session::seek(long long apos, std::function<void(long long pos, long long time)> callback)
 {
-  LOG(DEBUG) << "Seek for session " << id_ << " to position " << dec << pos;
-
+  LOG(DEBUG) << "Seek for session " << id_ << " to position " << dec << apos;
+  
   lock_guard<mutex> lock(m_mutex);
 
   size_t size;
   full_ ? size = TOTAL_BUFFER_SIZE : size = writepos_;
 
-  if (pos > size)
+  // checking bonduaries of physical buffer
+  if (apos > abs_len_)
   {
-    pos = size;
+    apos = abs_len_;
   }
+  else if (apos < abs_len_ - size)
+  {
+    apos = abs_len_ - size;
+  }
+
+  abs_pos_ = apos;
+
+  // position in the physical buffer corresponding to absolute position
+  long long pos = size - (abs_len_ - apos);
 
   read_write_diff_ = size - pos;
 
@@ -150,92 +164,148 @@ size_t session::seek(size_t pos)
     readpos_ = writepos_ + size - read_write_diff_;
   }
 
-  trigger_send_some();
+  trigger_send();
 
-  LOG(DEBUG) << "After seek: " << " to position " << dec << pos << " writepos=" << dec << writepos_ << " readpos=" << dec << readpos_ << " diff=" << dec << read_write_diff_;
-
-  return pos;
-}
-
-void session::trigger_send_some()
-{
-  if (playing_)
+  long long ct;
+  if (pos_to_time_.size() == 1)
   {
-    ios_.io_service().post([this] () {
-      send_some();
-    });
+    ct = pos_to_time_.begin()->second;
   }
-}
-
-void session::send_some()
-{
-  lock_guard<mutex> lock(m_mutex);
-  if (playing_)
+  else
   {
-    send();
-    
-    if (read_write_diff_ != 0)
+    auto i = pos_to_time_.lower_bound(abs_pos_);
+    if (i == pos_to_time_.end())
     {
-      trigger_send_some();
+      i = --pos_to_time_.end();
+      ct = i->second;
+    }
+    else
+    {
+      ct = i->second;
     }
   }
+
+  log_data();
+
+  callback(apos, ct);
+}
+
+void session::trigger_send()
+{
+  // there is something to send so send immediatelly
+  ios_.io_service().post([this]() {
+    lock_guard<mutex> lock(m_mutex);
+    send();
+  });
+}
+
+long long session::get_data(char* buf, long long len)
+{
+  return 0;
 }
 
 void session::send()
 {
   try
   {
-    LOG(TRACE) << "SENDING: writepos=" << dec << writepos_ << " readpos=" << dec << readpos_ << " diff=" << dec << read_write_diff_;
-
-    if (read_write_diff_ == 0)
-    {
-      return;
-    }
-    
-    if (readpos_ == TOTAL_BUFFER_SIZE)
-    {
-      readpos_ = 0;
-    }
-
     char buf[BUFSIZE];
-    size_t len, end;
+    size_t len = 0, end;
 
-    if (readpos_ + read_write_diff_ > TOTAL_BUFFER_SIZE)
+    // when nothing to send or we are not playing, send only current times
+    if (read_write_diff_ > 0 && playing_)
     {
-      end = TOTAL_BUFFER_SIZE;
-    }
-    else
-    {
-      end = readpos_ + read_write_diff_;
+      if (readpos_ == TOTAL_BUFFER_SIZE)
+      {
+        readpos_ = 0;
+      }
+
+      if (readpos_ + read_write_diff_ > TOTAL_BUFFER_SIZE)
+      {
+        end = TOTAL_BUFFER_SIZE;
+      }
+      else
+      {
+        end = readpos_ + read_write_diff_;
+      }
+
+      if (end - readpos_ < BUFSIZE)
+      {
+        len = end - readpos_;
+      }
+      else
+      {
+        len = BUFSIZE;
+      }
+
+      buffer_.seekg(readpos_);
+      buffer_.read(buf, len);
     }
 
-    if (end - readpos_ < BUFSIZE)
-    {
-      len = end - readpos_;
-    }
-    else
-    {
-      len = BUFSIZE;
-    }
-
-    buffer_.seekg(readpos_);
-    buffer_.read(buf, len);
+    long long bt, ct, et;
+    get_times(bt, ct, et);
     
-    size_t size;
-    full_ ? size = TOTAL_BUFFER_SIZE : size = writepos_;
+    stream_callback_(id_, buf, len, abs_len_, bt, ct, et);
 
-    stream_callback_(id_, buf, len, size, size - read_write_diff_ + len);
-
+    abs_pos_ += len;
     readpos_ += len;
     read_write_diff_ -= len;
 
-    LOG(TRACE) << "SENT: len=" << len << " writepos=" << dec << writepos_ << " readpos=" << dec << readpos_ << " diff=" << dec << read_write_diff_;
+    if (playing_ && read_write_diff_ > 0)
+    {
+      trigger_send();
+    }
   }
   catch (const std::exception& e)
   {
     LOG(WARNING) << "Error sending stream part to client: " << e.what();
-    trigger_send_some();
+    trigger_send();
   }
+  catch (...)
+  {
+    LOG(WARNING) << "Unknown exception while sending stream part to client";
+  }
+}
+
+void session::get_times(long long& bt, long long& ct, long long& et)
+{
+  if (pos_to_time_.size() == 1)
+  {
+    bt = ct = et = pos_to_time_.begin()->second;
+  }
+  else if (pos_to_time_.size() > 1)
+  {
+    bt = pos_to_time_.begin()->second;
+    auto i = --pos_to_time_.end();
+    et = i->second;
+    i = pos_to_time_.lower_bound(abs_pos_);
+    if (i == pos_to_time_.end())
+    {
+      ct = et;
+    }
+    else
+    {
+      ct = i->second;
+    }
+  }
+  else
+  {
+    bt = ct = et = 0;
+  }
+}
+
+void session::log_data()
+{
+  long long bt, ct, et;
+  get_times(bt, ct, et);
+  char btstr[10], ctstr[10], etstr[10];
+  std::strftime(btstr, sizeof(btstr), "%H.%M.%S", std::localtime(&bt));
+  std::strftime(ctstr, sizeof(ctstr), "%H.%M.%S", std::localtime(&ct));
+  std::strftime(etstr, sizeof(etstr), "%H.%M.%S", std::localtime(&et));
+  LOG(TRACE) << "Buffer times " << btstr << " " << ctstr << " " << etstr;
+  LOG(TRACE) << "abs size=" << dec << abs_len_ << " abs pos=" << abs_pos_;
+  size_t size;
+  full_ ? size = TOTAL_BUFFER_SIZE : size = writepos_;
+  LOG(TRACE) << "size=" << dec << size << " writepos=" << writepos_ << " readpos=" << readpos_ << " diff=" << read_write_diff_;
 }
 
 }

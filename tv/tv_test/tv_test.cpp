@@ -19,11 +19,12 @@ void test(size_t buf_size, int buf_num)
   std::vector<char> recv_buf;
   recv_buf.resize(buf_size_total);
   std::atomic<int> recv_len{ 0 };
+  long long recv_total_len = 0;
 
   std::condition_variable cv;
   std::mutex cv_m;
 
-  home_system::media::session s(0, [&](int id, void* buf, size_t len, size_t buf_size, size_t buf_pos) {
+  home_system::media::session s(0, [&](int id, void* buf, size_t len, long long buf_size) {
     BOOST_TEST(id == 0);
     BOOST_TEST(recv_len + len <= buf_size_total);
     if (recv_len + len <= buf_size_total)
@@ -31,6 +32,7 @@ void test(size_t buf_size, int buf_num)
       memcpy(&recv_buf[recv_len], buf, len);
     }
     recv_len += len;
+    recv_total_len = buf_size;
     cv.notify_all();
   });
   std::vector<char> buf;
@@ -50,6 +52,7 @@ void test(size_t buf_size, int buf_num)
   std::unique_lock<std::mutex> lk(cv_m);
   BOOST_TEST((cv.wait_for(lk, 100s, [&]() {return recv_len >= buf_size_total; }) == true), "Timed out waiting for all data to receive");
 
+  BOOST_TEST(recv_total_len == buf_size_total);
   BOOST_TEST(recv_len == buf_size_total);
   BOOST_TEST(recv_buf == sent_buf, "Buffers not equal");
 }
@@ -89,11 +92,10 @@ BOOST_AUTO_TEST_CASE(session_seeking)
   std::condition_variable cv;
   std::mutex cv_m;
 
-  home_system::media::session s(0, [&](int id, void* buf, size_t len, size_t buf_size, size_t buf_pos) {
+  home_system::media::session s(0, [&](int id, void* buf, size_t len, long long buf_size) {
     BOOST_TEST(id == 0);
     BOOST_TEST(len == 50);
     BOOST_TEST(buf_size == 100);
-    BOOST_TEST(buf_pos == 100);
     if (len <= 50)
     {
       memcpy(&recv_buf[0], buf, len);
@@ -117,7 +119,7 @@ BOOST_AUTO_TEST_CASE(session_seeking)
   // now seek to 50 position and run playing
   // in callback we should receive 49 bytes with values from 50 to 99
   BOOST_TEST(s.seek(50) == 50);
-  BOOST_TEST(s.play() == 50);
+  s.play();
 
   // wait for result in abother thread
   using namespace std::chrono_literals;
@@ -134,16 +136,16 @@ BOOST_AUTO_TEST_CASE(session_seeking)
 BOOST_AUTO_TEST_CASE(session_seeking_full_buffer)
 {
   std::vector<char> recv_buf;
-  recv_buf.resize(150);
+  recv_buf.resize(250);
   std::atomic<int> recv_len{ 0 };
 
   std::condition_variable cv;
   std::mutex cv_m;
 
-  home_system::media::session s(0, [&](int id, void* buf, size_t len, size_t buf_size, size_t buf_pos) {
+  home_system::media::session s(0, [&](int id, void* buf, size_t len, long long buf_size) {
     BOOST_TEST(id == 0);
-    BOOST_TEST(buf_size == BUFFER_SIZE);
-    if (recv_len + len <= 150)
+    BOOST_TEST(buf_size == BUFFER_SIZE + 100);
+    if (recv_len + len <= 250)
     {
       memcpy(&recv_buf[recv_len], buf, len);
     }
@@ -162,22 +164,30 @@ BOOST_AUTO_TEST_CASE(session_seeking_full_buffer)
   }
   s.stream_part(&buf[0], BUFFER_SIZE);
   s.stream_part(&buf[0], 100);
-  
-  // now seek to buffer size - 150 position and run playing
-  // in callback we should receive 50 bytes (from position to the end of buffer)
-  // and then 100 bytes (remaining from beginning of buffer till last written data)
+
+  // total size of stream is BUFFER_SIZE + 100
+  // size of physical buffer is BUFFER_SIZE
+  // positions in physical buffer are from 100 to BUFFER_SIZE + 100
+  // now seek to BUFFER_SIZE - 150 position and run playing
+  // in callback we should get 250 bytes
   BOOST_TEST(s.seek(BUFFER_SIZE - 150) == BUFFER_SIZE - 150);
-  BOOST_TEST(s.play() == BUFFER_SIZE - 150);
+  s.play();
 
   // wait for result in abother thread
   using namespace std::chrono_literals;
   std::unique_lock<std::mutex> lk(cv_m);
-  BOOST_TEST((cv.wait_for(lk, 1s, [&]() {return recv_len == 150; }) == true), "Timed out waiting for all data to receive");
+  BOOST_TEST((cv.wait_for(lk, 1s, [&]() {return recv_len == 250; }) == true), "Timed out waiting for all data to receive");
 
   std::vector<char> cmp_buf;
-  cmp_buf.insert(cmp_buf.end(), buf.end() - 50, buf.end());
+  cmp_buf.insert(cmp_buf.end(), buf.end() - 150, buf.end());
   cmp_buf.insert(cmp_buf.end(), buf.begin(), buf.begin() + 100);
 
-  BOOST_TEST(recv_len == 150);
+  BOOST_TEST(recv_len == 250);
   BOOST_TEST(recv_buf == cmp_buf, "Buffers not equal");
+
+  // outside buffer seeking tests
+  BOOST_TEST(s.seek(99) == 100);
+  BOOST_TEST(s.seek(0) == 100);
+  BOOST_TEST(s.seek(BUFFER_SIZE + 101) == BUFFER_SIZE + 100);
+  BOOST_TEST(s.seek(BUFFER_SIZE * 2) == BUFFER_SIZE + 100);
 }
