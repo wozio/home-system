@@ -4,7 +4,7 @@ angular.module('app.services',[
   'app.data'
 ])
 
-.controller('ServicesCtrl', [
+.controller('ServicesCtrl',[
   '$scope', 'DataSrv',
   function ($scope, DataSrv) {
     $scope.viewLoading = true;

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en" ng-app="app">
  <head>
   <meta charset="utf-8">
@@ -31,7 +31,7 @@
     </div>
   </div>
   
-  <nav class="navbar navbar-light navbar-fixed-top">
+  <nav class="navbar navbar-default navbar-fixed-top">
     <div class="container">
       <div class="navbar-header">
         <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
@@ -43,6 +43,7 @@
         <a class="navbar-brand" href="#/">my Home</a>
       </div>
       <div id="navbar" class="collapse navbar-collapse">
+        <p ng-if="loggedIn" class="navbar-text">Logged in as {{name}}</p>
       </div>
     </div>
   </nav>

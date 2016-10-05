@@ -37,9 +37,10 @@ angular.module('app.data',[
   //connection related variables
   var clientId = "";
   var connected = false;
+  var connectionCallback = null;
   
   // authorization related variables
-  var loggedIn = false;
+  $rootScope.loggedIn = false;
   var loggingIn = false;
   
   function connect(){
@@ -49,10 +50,12 @@ angular.module('app.data',[
     
     dataStream.onclose = function() {
       console.log("WebSocket connection closed");
-      $rootScope.error = true;
-      $rootScope.errorSlogan = "Disconnected from WebSocket.";
+      $rootScope.$apply(function () {
+        $rootScope.error = true;
+        $rootScope.errorSlogan = "Disconnected from WebSocket.";
+      });
       connected = false;
-      loggedIn = false;
+      $rootScope.loggedIn = false;
       dataStream = null;
       $timeout(connect, 1000);
       for (var s in queue) {
@@ -60,7 +63,7 @@ angular.module('app.data',[
           $timeout.cancel(queue[s].timeout);
           queue[s].callback({
               success: false,
-              reason: "Dicsonnected from WebSocket"
+              reason: "Disconnected from WebSocket"
             });
         }
       }
@@ -69,17 +72,18 @@ angular.module('app.data',[
 
     dataStream.onopen = function() {
       console.log("WebSocket connection opened");
-      $rootScope.error = false;
-      $rootScope.errorSlogan = "";
+      $rootScope.$apply(function () {
+        $rootScope.error = false;
+        $rootScope.errorSlogan = "";
+      });
       connected = true;
+      if (connectionCallback) {
+        connectionCallback();
+        connectionCallback = null;
+      }
       // now we can try to authorize
-      if (!loggedIn && !loggingIn) {
+      if (!$rootScope.loggedIn && !loggingIn) {
         methods.check(function(result){
-          if (result.success) {
-            if ($location.path() === "/login"){
-              $location.path("/");
-            }
-          }
         });
       }
     };
@@ -132,7 +136,7 @@ angular.module('app.data',[
           // this is incoming message expecting reply
           if (incoming[recv_msg.message] !== undefined) {
             incoming[recv_msg.message](recv_msg, function(recv_msg, result, paramsOrReason) {
-              if (loggedIn) {
+              if ($rootScope.loggedIn) {
                 if (result.success) {
                   var prepared_msg = {
                     source: clientId,
@@ -143,7 +147,7 @@ angular.module('app.data',[
                   if (paramsOrReason) {
                     prepared_msg["parameters"] = paramsOrReason;
                   }
-                  console.log("Sending: " + JSON.stringify(prepared_msg));
+                  console.log("Sending successfull reply for '" + recv_msg.message + "' message with sequence id = " + recv_msg.sequence_number);
                   dataStream.send(JSON.stringify(prepared_msg));
                 } else {
                   var prepared_msg = {
@@ -153,7 +157,7 @@ angular.module('app.data',[
                     result: "failed",
                     reason: paramsOrReason
                   }
-                  console.log("Sending: " + JSON.stringify(prepared_msg));
+                  console.log("Sending failed reply for '" + recv_msg.message + "' message with sequence id = " + recv_msg.sequence_number + " and reason " + paramsOrReason);
                   dataStream.send(JSON.stringify(prepared_msg));
                 }
               }
@@ -163,12 +167,12 @@ angular.module('app.data',[
           }
         }
       } else if (recv_msg.message !== undefined) {
-        console.log("Received message '" + recv_msg.message + "'");
+        console.log("Received one way message '" + recv_msg.message + "'");
         // incoming one way message
         if (incoming[recv_msg.message] !== undefined) {
           incoming[recv_msg.message](recv_msg);
         } else {
-          console.log("Received message '" + recv_msg.message + "' for which there is no registered receiver");
+          console.log("Received one way message '" + recv_msg.message + "' for which there is no registered receiver");
         }
       }
     };
@@ -213,7 +217,7 @@ angular.module('app.data',[
         }
         seq++;
       }
-      console.log("Sending");
+      console.log("Sending '" + msg + "'");
       dataStream.send(JSON.stringify(prepared_msg));
     } else {
       if (reply_callback) {
@@ -245,13 +249,12 @@ angular.module('app.data',[
     // check if user is logged in and try to login from cookies if it is not
     check: function(callback) {
       console.log("Check user");
-      if (loggedIn){
+      if ($rootScope.loggedIn) {
         callback({ success: true });
       } else {
         var user = $cookies.getObject('user') || {};
         if (user.email && user.password) {
           methods.login(user.email, user.password, function(result){
-            console.log("login callback in check");
             callback(result);
           });
         } else {
@@ -264,31 +267,44 @@ angular.module('app.data',[
     login: function(email, password, callback) {
       console.log("logging in: " + email);
       loggingIn = true;
-      send_internal("control-server", "login", {
-        email: email,
-        password: password
-      }, function(result) {
-        if (!result.success) {
-          console.log("Failed to login with result: " + result.reason);
-          loggedIn = false;
-          loggingIn = false;
-          clientId = "";
-        } else {
-          console.log("successfully logged in with client id: " + result.data.client_id);
-          loggedIn = true;
-          loggingIn = false;
-          $cookies.putObject('user', {
-            email: email,
-            password: password
-          });
-          clientId = result.data.client_id;
+
+      function login_int() {
+        send_internal("control-server", "login", {
+          email: email,
+          password: password
+        }, function (result) {
+          if (!result.success) {
+            console.log("Failed to login with result: " + result.reason);
+            $rootScope.loggedIn = false;
+            $rootScope.name = "";
+            loggingIn = false;
+            clientId = "";
+          } else {
+            console.log("successfully logged in with client id: " + result.data.client_id);
+            $rootScope.loggedIn = true;
+            $rootScope.name = result.data.name;
+            loggingIn = false;
+            $cookies.putObject('user', {
+              email: email,
+              password: password
+            });
+            clientId = result.data.client_id;
+          }
+          callback(result);
+        }, 1000);
+      };
+
+      if (connected) {
+        login_int();
+      } else {
+        connectionCallback = function () {
+          login_int();
         }
-        callback(result);
-      }, 1000);
+      }
     },
   
     logout: function () {
-      loggedIn = false;
+      $rootScope.loggedIn = false;
       $cookies.remove('user');
       clientId = "";
     },
