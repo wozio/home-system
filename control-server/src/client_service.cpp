@@ -5,6 +5,7 @@
 #include "discovery.h"
 #include "handler.h"
 #include "json_converter.h"
+#include "binary_connection.h"
 
 using namespace std;
 
@@ -37,7 +38,11 @@ void client_service::init()
 
 void client_service::add_binary_connection(ws_t ws)
 {
-
+  auto bc = new binary_connection(ws, name_);
+  binary_handler_.reset(bc);
+  binary_handler_->init();
+  extra_discovery_data_ = bc->get_endpoint();
+  send_notify();
 }
 
 void client_service::on_msg(yami::incoming_message & im)

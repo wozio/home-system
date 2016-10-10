@@ -14,7 +14,7 @@ public:
   client(const client& orig) = delete;
   ~client();
   
-  void on_read(data_t data, size_t data_size);
+  void on_read(data_t data, size_t data_size, type_t type);
   void shutdown();
 
 protected:

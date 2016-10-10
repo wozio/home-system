@@ -28,6 +28,7 @@ void ws_request_handler::handleRequest(HTTPServerRequest& request, HTTPServerRes
 	  // get client by client_id
     try
     {
+      LOG(DEBUG) << "Check for binary connection request: " << client_id_;
       CLIENTS.get(client_id_)->add_binary_connection(ws);
       return;
     }

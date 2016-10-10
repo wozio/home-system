@@ -26,7 +26,7 @@ void client::shutdown()
   handler::shutdown();
 }
 
-void client::on_read(data_t data, size_t data_size)
+void client::on_read(data_t data, size_t data_size, type_t type)
 {
   try
   {

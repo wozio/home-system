@@ -35,6 +35,8 @@
 #include <Poco/Net/HTTPServer.h>
 #include <Poco/Net/HTTPServerParams.h>
 #include <Poco/Net/ServerSocket.h>
+#include <Poco/Net/NetworkInterface.h>
+#include <yami4-cpp/yami.h>
 #include <boost/program_options.hpp>
 #include <signal.h>
 #include <memory>

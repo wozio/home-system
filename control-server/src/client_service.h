@@ -28,6 +28,7 @@ public:
 private:
   std::string name_;
   handler_t handler_;
+  handler_t binary_handler_;
   
   typedef std::map<int, yami::incoming_message> incoming_map_t;
   incoming_map_t incoming_;
