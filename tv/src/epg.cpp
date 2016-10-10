@@ -1,6 +1,6 @@
+#include "pch.h"
 #include "epg.h"
 #include "logger.h"
-#include <deque>
 
 using namespace std;
 
@@ -85,7 +85,10 @@ void epg::handle_get_epg_info(yami::incoming_message& im)
 void epg::handle_get_epg_data(yami::incoming_message& im)
 {
   int gc = im.get_parameters().get_integer("channel");
-  LOG(TRACE) << "Get EPG data for " << gc;
+  if (channels_.find(gc) == channels_.end())
+  {
+    return;
+  }
   size_t s = channels_[gc].events_.size();
   vector<int> ids;
   ids.reserve(s);
@@ -93,8 +96,6 @@ void epg::handle_get_epg_data(yami::incoming_message& im)
   start_times.reserve(s);
   vector<int> durations;
   durations.reserve(s);
-
-  LOG(TRACE) << "have something " << s;
 
   std::map<int, event_info>::iterator it = channels_[gc].events_.begin();
 

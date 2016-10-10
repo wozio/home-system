@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "recordings.h"
 #include "db.h"
 #include "logger.h"
@@ -91,34 +92,7 @@ void recordings::start(int recording_id)
 //      }
 //    } else
 //    {
-//      LOG("Sending wakeup for recording: recording_id=" << recording_id);
-//      // sending Wake On Lan message
-//      // TODO make it on separate function, maybe move to control-server
-//      string strmac("000C7620C5E0");
-//      unsigned int mac[6];
-//      for (size_t j = 0; j < 6; j++)
-//      {
-//        std::stringstream s;
-//        s << hex << strmac.substr(j * 2, 2);
-//        s >> mac[j];
-//      }
-//
-//      uint8_t mp[108];
-//      size_t j = 0;
-//      for (; j < 6; j++)
-//        mp[j] = 0xFF;
-//      while (j < 102)
-//      {
-//        for (size_t i = 0; i < 6; ++i)
-//        {
-//          mp[j++] = mac[i];
-//        }
-//      }
-//
-//      ip::udp::endpoint endpoint(ip::address::from_string("255.255.255.255"), 8);
-//      ip::udp::socket socket(io_service_, endpoint.protocol());
-//      socket.set_option(ip::udp::socket::broadcast(true));
-//      socket.send_to(buffer(mp), endpoint);
+
 //    }
 //  }
 }

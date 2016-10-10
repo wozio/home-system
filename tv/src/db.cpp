@@ -1,8 +1,8 @@
+#include "pch.h"
 #include "db.h"
 #include "logger.h"
 #include "yamicontainer.h"
 #include "discovery.h"
-#include <Poco/Data/SQLite/Connector.h>
 
 using namespace Poco::Data;
 using namespace Poco::Data::Keywords;

@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "tv-service.h"
 #include "logger.h"
 #include "yamicontainer.h"
@@ -103,9 +104,13 @@ void tv_service::handle_schedule_event_record(yami::incoming_message& im)
 //  im.reply(params);
 }
 
+void tv_service::handle_pause_session(yami::incoming_message& im)
+{
+
+}
+
 void tv_service::on_msg(yami::incoming_message& im)
 {
-  //LOG("message: " << im.get_message_name());
   try
   {
     if (im.get_message_name() == "stream_part")
@@ -129,8 +134,11 @@ void tv_service::on_msg(yami::incoming_message& im)
     else if (im.get_message_name() == "seek_session")
     {
       int s = im.get_parameters().get_integer("session");
-      long long position = im.get_parameters().get_long_long("position");
-      source::source_for_session(s)->get_session(s)->seek(position);
+      auto position = im.get_parameters().get_long_long("position");
+      auto pos = source::source_for_session(s)->get_session(s)->seek(position);
+      yami::parameters reply;
+      reply.set_long_long("position", pos);
+      im.reply(reply);
     }
     else if (im.get_message_name() == "hello")
     {
@@ -172,12 +180,21 @@ void tv_service::on_msg(yami::incoming_message& im)
     {
       try
       {
-        int channel = im.get_parameters().get_long_long("channel");
+        int channel = im.get_parameters().get_integer("channel");
+        string endpoint = im.get_parameters().get_string("endpoint");
         string destination = im.get_parameters().get_string("destination");
         
-        LOG(DEBUG) << "Creating session for channel " << channel << "(" << db_.get_channel_name(channel) << ") to " << destination;
+        LOG(DEBUG) << "Creating session for channel " << channel << "(" << db_.get_channel_name(channel) << ") to " << destination << "(" << endpoint << ")";
 
-        int session = sources_.create_session(channel, destination);
+        int session = sources_.create_session(channel, [endpoint, destination] (int id, void* buf, size_t len, size_t buf_size, size_t buf_pos) {
+          yami::parameters params;
+          params.set_binary("payload", buf, len);
+          params.set_integer("session", id);
+          params.set_long_long("size", buf_size);
+          params.set_long_long("position", buf_pos);
+
+          YC.agent().send(endpoint, destination, "stream_part", params);
+        });
 
         yami::parameters reply;
         reply.set_integer("session", session);

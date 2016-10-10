@@ -2,14 +2,13 @@
 #define	SESSION_H
 
 #include "ios_wrapper.h"
-#include <string>
-#include <stdexcept>
-#include <fstream>
 
 namespace home_system
 {
 namespace media
 {
+
+typedef std::function<void(int id, void* buf, size_t len, size_t buf_size, size_t buf_pos)> stream_callback_t;
 
 class session_error
   : public std::runtime_error
@@ -33,22 +32,26 @@ private:
 class session
 {
 public:
-  session(int id, std::string destination);
+  session(int id, stream_callback_t stream_callback);
   session(const session& orig) = delete;
   ~session();
   
   void stream_part(const void* buf, size_t length);
-  void play();
+  // absolute position where 0 oldest position in buffer and current size is
+  // latest position in buffer
+  // returns current position in buffer
+  size_t play();
   void pause();
-  void seek(long long pos);
+  // returns current position in buffer after seek operation
+  size_t seek(size_t pos);
   
 private:
   int id_;
-  int channel_;
-  std::string destination_;
+  stream_callback_t stream_callback_;
   
   bool playing_;
-  std::streampos readpos_, writepos_;
+  size_t read_write_diff_; // how much writing is ahead of reading, should never be negative...
+  size_t readpos_, writepos_;
   bool full_;
   std::fstream buffer_;
   
@@ -57,10 +60,6 @@ private:
   void trigger_send_some();
   void send_some();
   void send();
-  
-  std::streampos size();
-  std::streampos read_pos();
-  std::streampos write_pos();
   
   std::mutex m_mutex;
 };

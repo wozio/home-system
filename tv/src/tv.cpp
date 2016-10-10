@@ -1,11 +1,10 @@
+#include "pch.h"
 #include "app.h"
 #include "logger_init.h"
 #include "db.h"
 #include "tv-service.h"
 #include "discovery.h"
 #include "yamicontainer.h"
-#include <boost/program_options.hpp>
-#include <vector>
 
 INITIALIZE_EASYLOGGINGPP
 

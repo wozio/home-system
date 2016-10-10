@@ -1,9 +1,6 @@
 #ifndef CLIENTS_H
 #define	CLIENTS_H
 
-#include <cstdint>
-#include <cstddef>
-
 #define CLIENTS home_system::media::clients::instance()
 
 namespace home_system
