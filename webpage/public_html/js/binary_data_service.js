@@ -3,7 +3,7 @@
 angular.module('app.binarydata', [
 ])
 
-.factory('BinaryDataSrv', function ($timeout) {
+.factory('BinaryDataSrv', function ($timeout, $rootScope) {
 
   // firefox WS bug workaround
   $(window).on('beforeunload', function () {
@@ -27,6 +27,17 @@ angular.module('app.binarydata', [
   var clientId = null;
   var dataStream = null;
   var dataCallback = null;
+
+  $rootScope.speed = 0.0;
+  var data_counter = 0.0;
+  function check_data() {
+    $timeout(function () {
+      $rootScope.speed = data_counter / 1048576;
+      data_counter = 0.0;
+      check_data();
+    }, 1000);
+  };
+  check_data();
 
   function connect() {
     if (clientId === null) {
@@ -52,18 +63,13 @@ angular.module('app.binarydata', [
     };
 
     dataStream.onmessage = function (message) {
-      if (message.data === "ping\0") {
-        return;
-      }
-      console.log("Received " + message.data.byteLength + " bytes");
+      if (message.data.byteLength > 0) {
+        //console.log("Received " + message.data.byteLength + " bytes");
+        data_counter += message.data.byteLength;
 
-      var dv = new DataView(message.data);
-      for (var i = 0; i < message.data.byteLength, i++){
-        console.log(dv.getUint8(i));
-      }
-
-      if (dataCallback) {
-        dataCallback(message.data)
+        if (dataCallback) {
+          dataCallback(message.data)
+        }
       }
     };
   }

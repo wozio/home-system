@@ -43,6 +43,9 @@
         </button>
         <a class="navbar-brand" href="#/">my Home</a>
       </div>
+      <div id="navbar" class="navbar-default">
+        <p class="navbar-text" title="Binary transfer rate">{{speed.toFixed(2)}} Mb/s</p>
+      </div>
       <div id="navbar" class="collapse navbar-collapse navbar-right">
         <p ng-if="loggedIn" class="navbar-text">Logged in as {{name}}</p>
       </div>

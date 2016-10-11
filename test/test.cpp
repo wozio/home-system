@@ -508,46 +508,38 @@ void send_dummy()
 {
   try
   {
-    auto ep = DISCOVERY.get("wozio41");
-    LOG(DEBUG) << ep;
+    //yami::parameters param;
+    //param.set_integer("channel", 123);
+    //param.set_integer("id", 321);
+    //unique_ptr<yami::outgoing_message> message(AGENT.send(ep, "wozio41", "update", param));
+    //message->wait_for_completion(1000);
+    //if (message->get_state() == yami::replied)
+    //{
+    //  LOG(DEBUG) << "Replied????";
+    //}
+    //else if (message->get_state() == yami::rejected)
+    //{
+    //  LOG(DEBUG) << "Rejected...";
+    //}
+    //else
+    //{
+    //  LOG(DEBUG) << "Timed out";
+    //}
+
+    t.set_from_now(100, send_dummy);
+
     auto binep = DISCOVERY.get_extra_data("wozio41");
-    LOG(DEBUG) << binep;
 
-    yami::parameters param;
-    param.set_integer("channel", 123);
-    param.set_integer("id", 321);
-    unique_ptr<yami::outgoing_message> message(AGENT.send(ep, "wozio41", "update", param));
-    message->wait_for_completion(1000);
-    if (message->get_state() == yami::replied)
-    {
-      LOG(DEBUG) << "Replied????";
-    }
-    else if (message->get_state() == yami::rejected)
-    {
-      LOG(DEBUG) << "Rejected...";
-    }
-    else
-    {
-      LOG(DEBUG) << "Timed out";
-    }
-
-
-    vector<char> buf1;
-    buf1.push_back(128);
-    buf1.push_back(0xAB);
-    buf1.push_back(0xBA);
-    buf1.push_back(0);
+    vector<char> buf1(18800, 0xF0);
 
     yami::raw_buffer_data_source raw_binary(&buf1[0], buf1.size());
-    AGENT.send_one_way(binep, "wozio41", "bin", raw_binary);
-    
+    for (int i = 0; i < 220; i++)
+      AGENT.send_one_way(binep, "wozio41", "bin", raw_binary);
   }
   catch (const std::exception& e)
   {
     LOG(ERROR) << e.what();
   }
-
-  t.set_from_now(1000, send_dummy);
 }
 
 int main(int argc, char** argv)
@@ -577,6 +569,8 @@ int main(int argc, char** argv)
   
   s.reset();
   ss.reset();
+
+  t.cancel();
 
   _discovery.reset();
   _yc.reset();

@@ -36,7 +36,7 @@ binary_connection::~binary_connection()
 void binary_connection::operator()(yami::incoming_message & im)
 {
   auto indata = im.get_raw_content();
-  LOGH(DEBUG) << "received " << indata.size() << " bytes";
+  //LOGH(DEBUG) << "received " << indata.size() << " bytes";
   auto outdata = create_data();
 
   memcpy(outdata->data(), &indata[0], indata.size());
