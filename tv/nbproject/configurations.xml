@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configurationDescriptor version="95">
+<configurationDescriptor version="97">
   <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
     <logicalFolder name="SourceFiles"
                    displayName="Source Files"
@@ -49,6 +49,7 @@
           <incDir>
             <pElem>../common/common/src</pElem>
             <pElem>../common/yami4/include</pElem>
+            <pElem>../common/easyloggingpp/src</pElem>
           </incDir>
           <preprocessorList>
             <Elem>_DEBUG</Elem>
@@ -63,10 +64,11 @@
           <linkerLibItems>
             <linkerLibLibItem>PocoData</linkerLibLibItem>
             <linkerLibLibItem>PocoFoundation</linkerLibLibItem>
-            <linkerLibLibItem>PocoSQLite</linkerLibLibItem>
             <linkerLibLibItem>PocoNet</linkerLibLibItem>
+            <linkerLibLibItem>PocoDataSQLite</linkerLibLibItem>
             <linkerLibLibItem>boost_program_options</linkerLibLibItem>
             <linkerLibLibItem>boost_system</linkerLibLibItem>
+            <linkerLibLibItem>boost_filesystem</linkerLibLibItem>
             <linkerLibLibItem>boost_thread</linkerLibLibItem>
             <linkerLibLibItem>pthread</linkerLibLibItem>
             <linkerLibProjectItem>

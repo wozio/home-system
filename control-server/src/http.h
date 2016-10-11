@@ -1,11 +1,6 @@
 #ifndef HTTP_H
 #define	HTTP_H
 
-#include <Poco/Net/HTTPRequestHandler.h>
-#include <Poco/Net/HTTPRequestHandlerFactory.h>
-#include <Poco/Net/HTTPServerRequest.h>
-#include <string>
-
 namespace home_system
 {
 

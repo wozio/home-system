@@ -1,11 +1,11 @@
+#include "pch.h"
 #include "http.h"
 #include "file_request_handler.h"
 #include "ws_request_handler.h"
 #include "logger.h"
-#include <Poco/Net/HTTPServerResponse.h>
-#include <Poco/URI.h>
 
 using namespace Poco::Net;
+using namespace Poco;
 
 namespace home_system
 {
@@ -20,9 +20,13 @@ HTTPRequestHandler* request_handler_factory::createRequestHandler(const HTTPServ
 {
   std::string uri = request.getURI();
   LOG(DEBUG) << "Request: " << request.clientAddress().toString() << " URI: " << uri;
-  if (uri == "/access/client/" || uri == "/access/client")
+  std::string path = URI(request.getURI()).getPath();
+  static const boost::regex e("^/access/client(/+(\\w*))*$");
+  boost::smatch  m;
+  if (boost::regex_match(path, m, e))
   {
-    return new ws_request_handler();
+    LOG(DEBUG) << "WebSocket connection request";
+    return new ws_request_handler(m[2]);
   }
   else
   {

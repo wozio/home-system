@@ -2,7 +2,7 @@
 #include "app.h"
 #include "discovery.h"
 #include "yamicontainer.h"
-#include "logger.h"
+#include "logger_init.h"
 #include "timer.h"
 #include <boost/lexical_cast.hpp>
 #include <fstream>
@@ -506,29 +506,45 @@ home_system::timer t;
 
 void send_dummy()
 {
-  LOG(DEBUG) << "Sending dummy message";
-  yami::parameters param;
-  param.set_integer("channel", 123);
-  param.set_integer("id", 321);
-  unique_ptr<yami::outgoing_message> message(AGENT.send(DISCOVERY.get("wozio1681692777"), "wozio1681692777", "update", param));
-  message->wait_for_completion(1000);
-  if (message->get_state() == yami::replied)
+  try
   {
-    LOG(DEBUG) << "Replied????";
+    //yami::parameters param;
+    //param.set_integer("channel", 123);
+    //param.set_integer("id", 321);
+    //unique_ptr<yami::outgoing_message> message(AGENT.send(ep, "wozio41", "update", param));
+    //message->wait_for_completion(1000);
+    //if (message->get_state() == yami::replied)
+    //{
+    //  LOG(DEBUG) << "Replied????";
+    //}
+    //else if (message->get_state() == yami::rejected)
+    //{
+    //  LOG(DEBUG) << "Rejected...";
+    //}
+    //else
+    //{
+    //  LOG(DEBUG) << "Timed out";
+    //}
+
+    t.set_from_now(100, send_dummy);
+
+    auto binep = DISCOVERY.get_extra_data("wozio41");
+
+    vector<char> buf1(18800, 0xF0);
+
+    yami::raw_buffer_data_source raw_binary(&buf1[0], buf1.size());
+    for (int i = 0; i < 220; i++)
+      AGENT.send_one_way(binep, "wozio41", "bin", raw_binary);
   }
-  else if (message->get_state() == yami::rejected)
+  catch (const std::exception& e)
   {
-    LOG(DEBUG) << "Rejected...";
+    LOG(ERROR) << e.what();
   }
-  else
-  {
-    LOG(DEBUG) << "Timed out";
-  }
-  t.set_from_now(1000, send_dummy);
 }
 
 int main(int argc, char** argv)
 {
+  home_system::init_log("test.log", true);
   LOG(DEBUG) << "Started";
 
   _yc = home_system::yami_container::create();
@@ -553,6 +569,8 @@ int main(int argc, char** argv)
   
   s.reset();
   ss.reset();
+
+  t.cancel();
 
   _discovery.reset();
   _yc.reset();

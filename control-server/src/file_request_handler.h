@@ -1,9 +1,6 @@
 #ifndef FILE_REQUEST_HANDLER_H
 #define	FILE_REQUEST_HANDLER_H
 
-#include <Poco/Net/HTTPRequestHandler.h>
-#include <string>
-
 namespace home_system
 {
   

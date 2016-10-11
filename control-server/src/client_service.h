@@ -5,8 +5,7 @@
 #include "handler_t.h"
 #include "msg_type_t.h"
 #include "ios_wrapper.h"
-#include <yami4-cpp/incoming_message.h>
-#include <map>
+
 
 namespace home_system
 {
@@ -19,6 +18,7 @@ public:
   ~client_service();
   
   void init();
+  void add_binary_connection(ws_t ws);
 
   void on_msg(yami::incoming_message & im);
   void on_remote_msg(const std::string& source, const std::string& target,
@@ -28,6 +28,7 @@ public:
 private:
   std::string name_;
   handler_t handler_;
+  handler_t binary_handler_;
   
   typedef std::map<int, yami::incoming_message> incoming_map_t;
   incoming_map_t incoming_;

@@ -1,9 +1,11 @@
+#include "pch.h"
 #include "client_service.h"
 #include "logger.h"
 #include "yamicontainer.h"
 #include "discovery.h"
 #include "handler.h"
 #include "json_converter.h"
+#include "binary_connection.h"
 
 using namespace std;
 
@@ -30,33 +32,42 @@ void client_service::init()
     params.set_boolean("available", available);
     buffer_t buffer(new rapidjson::StringBuffer);
     msg_to_json(name_, "service_availability", params, buffer);
-    handler::on_send(handler_, buffer);
+    handler_->on_send(buffer);
   });
+}
+
+void client_service::add_binary_connection(ws_t ws)
+{
+  auto bc = new binary_connection(ws, name_);
+  binary_handler_.reset(bc);
+  binary_handler_->init();
+  extra_discovery_data_ = bc->get_endpoint();
+  send_notify();
 }
 
 void client_service::on_msg(yami::incoming_message & im)
 {
-  LOG(TRACE) << "Incoming message '" << im.get_message_name() << "' from '" << im.get_source() << "'";
+  //LOG(TRACE) << "Incoming message '" << im.get_message_name() << "' from '" << im.get_source() << "'";
   int sn = 0;
   while (incoming_.find(sn) != incoming_.end())
   {
     sn++;
   }
-  LOG(TRACE) << "Assigned sequence_number = " << sn;
+  //LOG(TRACE) << "Assigned sequence_number = " << sn;
   
   // convert to json
   buffer_t buffer(new rapidjson::StringBuffer);
   msg_to_json(name_, im.get_message_name(), sn, im.get_parameters(), buffer);
   
   // send to handler
-  handler::on_send(handler_, buffer);
+  handler_->on_send(buffer);
   
   // move incoming message to map with assigned sequence number
   incoming_.emplace(sn, im);
   
   // start timer for assigned sequence number
   dt_t dt(new boost::asio::deadline_timer(ios_.io_service()));
-  auto it = timers_.emplace(sn, move(dt)).first;
+  auto it = timers_.emplace(sn, std::move(dt)).first;
   it->second->expires_from_now(boost::posix_time::seconds(5));
   it->second->async_wait([this, sn] (const boost::system::error_code& error)
   {
@@ -79,13 +90,13 @@ void client_service::on_remote_msg(const std::string& source, const std::string&
     switch (msg_type)
     {
     case msg_type_t::one_way:
-      LOG(DEBUG) << "One way message: '" << msg << "', from '" << source << "' to '" << target << "'";
+      //LOG(DEBUG) << "One way message: '" << msg << "', from '" << source << "' to '" << target << "'";
       AGENT.send_one_way(ye, target, msg, params);
       break;
 
     case msg_type_t::for_reply:
     {
-      LOG(DEBUG) << "Message expecting reply: '" << msg << "', from '" << source << "' to '" << target << "'";
+      //LOG(DEBUG) << "Message expecting reply: '" << msg << "', from '" << source << "' to '" << target << "'";
       auto_ptr <yami::outgoing_message> message(AGENT.send(ye, target, msg, params));
 
       message->wait_for_completion(1000);
@@ -94,13 +105,13 @@ void client_service::on_remote_msg(const std::string& source, const std::string&
       {
       case yami::replied:
       {
-        LOG(DEBUG) << "Got reply";
+        //LOG(DEBUG) << "Got reply";
         // converting yami output to json
         // yami binary values are not supported
         buffer_t buffer(new rapidjson::StringBuffer);
         reply_to_json(source, "success", "", sequence_number, message->get_reply(), buffer);
 
-        handler::on_send(handler_, buffer);
+        handler_->on_send(buffer);
 
         break;
       }
@@ -116,7 +127,7 @@ void client_service::on_remote_msg(const std::string& source, const std::string&
         LOG(WARNING) << "Rejected: " + message->get_exception_msg();
         buffer_t buffer(new rapidjson::StringBuffer);
         reply_to_json(source, "failed", message->get_exception_msg(), sequence_number, buffer);
-        handler::on_send(handler_, buffer);
+        handler_->on_send(buffer);
         break;
       }
       }
@@ -147,7 +158,7 @@ void client_service::on_remote_msg(const std::string& source, const std::string&
     {
       buffer_t buffer(new rapidjson::StringBuffer);
       reply_to_json(source, "failed", e.what(), sequence_number, buffer);
-      handler::on_send(handler_, buffer);
+      handler_->on_send(buffer);
     }
   }
 }

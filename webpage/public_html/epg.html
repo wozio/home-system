@@ -1,3 +1,5 @@
-<div ng-repeat="name in names track by $index" ng-cloak>
-  {{name}}
-</div>
+<table>
+  <tr ng-repeat="name in names track by $index">
+    <td>{{channels[$index]}}</td><td>{{name}}</td>
+  </tr>
+</table>

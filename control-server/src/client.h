@@ -2,7 +2,6 @@
 #define	CLIENT_H
 
 #include "handler.h"
-#include <yami4-cpp/parameters.h>
 
 namespace home_system
 {
@@ -15,7 +14,7 @@ public:
   client(const client& orig) = delete;
   ~client();
   
-  void on_read(data_t data, size_t data_size);
+  void on_read(data_t data, size_t data_size, type_t type);
   void shutdown();
 
 protected:

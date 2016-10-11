@@ -1,8 +1,7 @@
+#include "pch.h"
 #include "ws_request_handler.h"
 #include "client.h"
-#include <Poco/Net/HTTPServerRequest.h>
-#include <Poco/Net/HTTPServerResponse.h>
-#include <Poco/Net/NetException.h>
+#include "clients.h"
 
 using namespace Poco::Net;
 using namespace Poco;
@@ -11,7 +10,8 @@ using namespace std;
 namespace home_system
 {
 
-ws_request_handler::ws_request_handler()
+ws_request_handler::ws_request_handler(const std::string& client_id)
+  : client_id_(client_id)
 {
 }
 
@@ -25,6 +25,16 @@ void ws_request_handler::handleRequest(HTTPServerRequest& request, HTTPServerRes
   {
     ws_t ws(new WebSocket(request, response));
 
+	  // get client by client_id
+    try
+    {
+      LOG(DEBUG) << "Check for binary connection request: " << client_id_;
+      CLIENTS.get(client_id_)->add_binary_connection(ws);
+      return;
+    }
+    catch (const std::out_of_range& e)
+    {
+    }
     shared_ptr<client> h(new client(ws));
     h->init();
   }

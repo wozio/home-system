@@ -1,18 +1,7 @@
+#include "pch.h"
 #include "cloud_ws.h"
 #include "logger.h"
 #include "cloud_client.h"
-#include "Poco/Net/HTTPSClientSession.h"
-#include "Poco/Net/HTTPClientSession.h"
-#include "Poco/Net/NetException.h"
-#include "Poco/Net/SSLException.h"
-#include "Poco/Net/SSLManager.h"
-#include "Poco/Net/KeyConsoleHandler.h"
-#include "Poco/Net/PrivateKeyPassphraseHandler.h"
-#include "Poco/Net/InvalidCertificateHandler.h"
-#include "Poco/Net/AcceptCertificateHandler.h"
-#include "Poco/Net/HTTPRequest.h"
-#include "Poco/Net/HTTPResponse.h"
-#include <memory>
 
 using namespace Poco::Net;
 using namespace Poco;

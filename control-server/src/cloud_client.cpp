@@ -1,11 +1,8 @@
+#include "pch.h"
 #include "cloud_client.h"
 #include "logger.h"
 #include "app.h"
 #include "clients.h"
-#include "rapidjson/document.h"
-#include "rapidjson/error/en.h"
-#include "rapidjson/writer.h"
-#include "rapidjson/stringbuffer.h"
 
 using namespace rapidjson;
 using namespace std;

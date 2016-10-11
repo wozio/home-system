@@ -45,10 +45,8 @@ var checkUser = function ($q, $location, DataSrv) {
   var deferred = $q.defer();
   DataSrv.check(function (result) {
     if (result.success) {
-      console.log("result success");
       deferred.resolve(true);
     } else {
-      console.log("result not success");
       deferred.reject();
       $location.path("/login");
     }
@@ -60,11 +58,9 @@ var checkUserForLogin = function ($q, $location, DataSrv) {
   var deferred = $q.defer();
   DataSrv.check(function (result) {
     if (result.success) {
-      console.log("result success, redirecting to root view");
       deferred.reject();
       $location.path("/");
     } else {
-      console.log("result not success, staying on login view");
       deferred.resolve(true);
     }
   });

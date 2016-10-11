@@ -24,12 +24,32 @@ angular.module('app.epg',[
       });
     };
     
-    get();
+    //get();
     
-    var interval = $interval(function(){ get(); }, 5000);
+    //var interval = $interval(function(){ get(); }, 5000);
+    
+    var sessionId = -1;
+    var serviceAvailabilitySubscrId = DataSrv.registerServiceAvailability(function(service, available){
+      console.log("S:" + service + " A:" + available);
+      if (service === "tv") {
+        if (available === true) {
+          DataSrv.send(srv, "create_session", {
+            "destination":DataSrv.getClientId(),
+            "channel":1
+          }, function(result){
+            if (result.success) {
+              sessionId = parseInt(result.data.session);
+            } else {
+              $scope.viewLoading = false;
+            }
+          });
+        }
+      }
+    });
     
     $scope.$on("$destroy", function(){
-      $interval.cancel(interval);
+      //$interval.cancel(interval);
+      DataSrv.unregisterServiceAvailability(serviceAvailabilitySubscrId);
     });
   }
 ]);

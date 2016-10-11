@@ -44,6 +44,12 @@
     <ClCompile Include="src\clients.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\pch.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\binary_connection.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\client.h">
@@ -77,6 +83,12 @@
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="src\clients.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\pch.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\binary_connection.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>

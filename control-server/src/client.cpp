@@ -1,11 +1,8 @@
+#include "pch.h"
 #include "client.h"
 #include "json_converter.h"
-#include "logger.h"
 #include "app.h"
 #include "clients.h"
-#include <thread>
-//#include <chrono>
-#include <cstdlib>
 
 using namespace std;
 
@@ -29,7 +26,7 @@ void client::shutdown()
   handler::shutdown();
 }
 
-void client::on_read(data_t data, size_t data_size)
+void client::on_read(data_t data, size_t data_size, type_t type)
 {
   try
   {
@@ -73,7 +70,7 @@ void client::handle_login(const yami::parameters& params, long long sequence_num
         rparams.set_string("client_id", client_id);
         buffer_t buffer(new rapidjson::StringBuffer);
         reply_to_json(source, "success", "", sequence_number, rparams, buffer);
-        on_send(shared_from_this(), buffer);
+        on_send(buffer);
         
         CLIENTS.get(client_id)->init();
         return;
@@ -82,7 +79,7 @@ void client::handle_login(const yami::parameters& params, long long sequence_num
   }
   buffer_t buffer(new rapidjson::StringBuffer);
   reply_to_json(source, "failed", "Unknown email or wrong password", sequence_number, buffer);
-  on_send(shared_from_this(), buffer);
+  on_send(buffer);
 }
 
 void client::handle_logout(const std::string& source)
