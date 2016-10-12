@@ -1,8 +1,7 @@
 <div>
   <h4>Services</h4>
 </div>
-<div ng-if="viewLoading" class="mk-spinner-centered mk-spinner-ring"></div>
-<div ng-if="!viewLoading" class="row">
+<div ng-if="!loading" class="row">
   <div class="col-sm-6 col-md-4 col-lg-3" ng-repeat="service in services track by $index">
     <h2>{{service.name}}</h2>
     <div class="row">

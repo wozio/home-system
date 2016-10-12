@@ -8,8 +8,6 @@ angular.module('app.epg',[
   '$scope', '$rootScope', 'DataSrv', '$interval',
   function ($scope, $rootScope, DataSrv, $interval) {
 
-    $scope.viewLoading = true;
-
     var srv = "tv";
     var get = function() {
       $rootScope.error = false;

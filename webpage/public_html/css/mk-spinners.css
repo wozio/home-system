@@ -37,14 +37,8 @@
 /**** SPINNERS ****/
 .mk-spinner-ring {
   content: "";
-  width: 30px;
-  height: 30px;
-  top: 50%;
-  margin-top: 15px;
-  margin-bottom: 25px;
-  left: 50%;
-  margin-left: auto;
-  margin-right: auto;
+  width: 25px;
+  height: 25px;
   z-index: 1;
   border-radius: 50%;
   border: 3px solid rgb(51,122,183);

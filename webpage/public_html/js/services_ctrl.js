@@ -7,7 +7,6 @@ angular.module('app.services',[
 .controller('ServicesCtrl',[
   '$scope', 'DataSrv',
   function ($scope, DataSrv) {
-    $scope.viewLoading = true;
     var subscriptionId = -1;
     var srv = "io-control-dev";
     
