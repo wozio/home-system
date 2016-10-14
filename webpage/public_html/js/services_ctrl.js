@@ -7,16 +7,15 @@ angular.module('app.services',[
 .controller('ServicesCtrl',[
   '$scope', 'DataSrv',
   function ($scope, DataSrv) {
+	  console.log("ServicesCtrl");
     var subscriptionId = -1;
     var srv = "io-control-dev";
     
     DataSrv.register("services_full", function(message) {
-      $scope.viewLoading = false;
       $scope.services = message.params.services;
     });
     
     DataSrv.register("services_change", function(message) {
-      $scope.viewLoading = false;
       for (var i = 0; i < $scope.services.length; i++){
         if ($scope.services[i].name === message.params.name){
           $scope.services[i] = message.params;
