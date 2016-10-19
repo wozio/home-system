@@ -5,7 +5,7 @@
 #include "discovery.h"
 #include "handler.h"
 #include "json_converter.h"
-#include "binary_connection.h"
+#include "receiving_session.h"
 
 using namespace std;
 

@@ -47,7 +47,7 @@
     <ClCompile Include="src\pch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\binary_connection.cpp">
+    <ClCompile Include="src\receiving_session.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -88,7 +88,7 @@
     <ClInclude Include="src\pch.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\binary_connection.h">
+    <ClInclude Include="src\receiving_session.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
