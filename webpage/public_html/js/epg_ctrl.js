@@ -5,22 +5,19 @@ angular.module('app.epg',[
 ])
 
 .controller('EpgCtrl', [
-  '$scope', '$rootScope', 'DataSrv', '$interval',
-  function ($scope, $rootScope, DataSrv, $interval) {
+  '$scope', 'DataSrv', '$interval',
+  function ($scope, DataSrv, $interval) {
+	  console.log("EpgCtrl");
+	$scope.viewLoading = false;
     var srv = "tv";
     var get = function() {
-      $rootScope.error = false;
-      $rootScope.loading = true;
       DataSrv.send(srv, "get_channels", null, function(result) {
         if (result.success) {
           $scope.channels = result.data.channel;
           $scope.names = result.data.name;
         } else {
           console.log("Communication failed with reason: " + result.reason);
-          $rootScope.error = true;
-          $rootScope.errorSlogan = "Communication with Home failed, reason: " + result.reason;
         }
-        $rootScope.loading = false;
       });
     };
     
@@ -30,7 +27,6 @@ angular.module('app.epg',[
     
     var sessionId = -1;
     var serviceAvailabilitySubscrId = DataSrv.registerServiceAvailability(function(service, available){
-      console.log("S:" + service + " A:" + available);
       if (service === "tv") {
         if (available === true) {
           DataSrv.send(srv, "create_session", {
@@ -40,7 +36,6 @@ angular.module('app.epg',[
             if (result.success) {
               sessionId = parseInt(result.data.session);
             } else {
-              $scope.viewLoading = false;
             }
           });
         }

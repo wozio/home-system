@@ -1,4 +1,7 @@
-<table>
+<div>
+  <h4>EPG</h4>
+</div>
+<table ng-if="!loading">
   <tr ng-repeat="name in names track by $index">
     <td>{{channels[$index]}}</td><td>{{name}}</td>
   </tr>

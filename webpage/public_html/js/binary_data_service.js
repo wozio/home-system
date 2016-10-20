@@ -35,7 +35,7 @@ angular.module('app.binarydata', [
       $rootScope.speed = data_counter*8 / 1048576;
       data_counter = 0.0;
       check_data();
-    }, 1000);
+    }, 250);
   };
   check_data();
 
