@@ -35,9 +35,9 @@ defined_outputs = [
 
 # rules callbacks
 def heating_auto():
-    if inputs.inputs["Temperatura salon"].get() > 21.5 or inputs.inputs["Temperatura pole"].get() > inputs.inputs["Temperatura salon"].get():
+    if inputs.inputs["Temperatura salon"].get()[1] > 21.5 or inputs.inputs["Temperatura pole"].get()[1] > inputs.inputs["Temperatura salon"].get()[1]:
         outputs.outputs["Kocioł grzanie"].set(0)
-    elif inputs.inputs["Temperatura salon"].get() < 21 and inputs.inputs["Temperatura pole"].get() < 21:
+    elif inputs.inputs["Temperatura salon"].get()[1] < 21 and inputs.inputs["Temperatura pole"].get()[1] < 21:
         outputs.outputs["Kocioł grzanie"].set(1)
 
 def heating_off():

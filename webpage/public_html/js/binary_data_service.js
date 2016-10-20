@@ -32,7 +32,7 @@ angular.module('app.binarydata', [
   var data_counter = 0.0;
   function check_data() {
     $timeout(function () {
-      $rootScope.speed = data_counter / 1048576;
+      $rootScope.speed = data_counter*8 / 1048576;
       data_counter = 0.0;
       check_data();
     }, 1000);
