@@ -1,16 +1,13 @@
 #include "pch.h"
 
-#include "receiving_session.h"
+#include "client_binary_session.h"
 
 namespace home_system
 {
-  receiving_session::receiving_session(const std::string& target, const std::string& target_endpoint, yami::parameters& creation_params,
-    data_callback_t data_callback, event_callback_t event_callback)
+  client_binary_session::client_binary_session(const std::string& target, const std::string& target_endpoint, yami::parameters& creation_params)
   : target_(target),
     target_endpoint_(target_endpoint),
     creation_params_(creation_params),
-    data_callback_(data_callback),
-    event_callback_(event_callback),
     id_(-1),
     agent_([]()->yami::parameters {
       yami::parameters p;
@@ -56,17 +53,17 @@ namespace home_system
     }
   }
 
-  int receiving_session::get_id()
+  int client_binary_session::get_id()
   {
     return id_;
   }
 
-  void receiving_session::operator()(yami::incoming_message & im)
+  void client_binary_session::operator()(yami::incoming_message & im)
   {
     try
     {
       auto indata = im.get_raw_content();
-      data_callback_(id_, indata);
+      data_(id_, indata);
     }
     catch (const std::exception& e)
     {

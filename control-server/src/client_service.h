@@ -5,7 +5,7 @@
 #include "handler_t.h"
 #include "msg_type_t.h"
 #include "ios_wrapper.h"
-
+#include "client_binary_session.h"
 
 namespace home_system
 {
@@ -23,12 +23,13 @@ public:
   void on_msg(yami::incoming_message & im);
   void on_remote_msg(const std::string& source, const std::string& target,
     msg_type_t msg_type, const std::string& msg,
-    int sequence_number, const yami::parameters& params);
+    int sequence_number, yami::parameters& params);
 
 private:
   std::string name_;
   handler_t handler_;
   handler_t binary_handler_;
+  std::unique_ptr<client_binary_session> client_binary_session_;
   
   typedef std::map<int, yami::incoming_message> incoming_map_t;
   incoming_map_t incoming_;

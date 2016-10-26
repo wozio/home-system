@@ -3,9 +3,7 @@
 #include "logger.h"
 #include "yamicontainer.h"
 #include "discovery.h"
-#include "handler.h"
 #include "json_converter.h"
-#include "receiving_session.h"
 
 using namespace std;
 
@@ -38,11 +36,24 @@ void client_service::init()
 
 void client_service::add_binary_connection(ws_t ws)
 {
-  auto bc = new binary_connection(ws, name_);
-  binary_handler_.reset(bc);
+  // check if we have such session id established
+  if (!client_binary_session_)
+  {
+    LOG(ERROR) << "Request for not known binary session establishing";
+    throw runtime_error("Unknown session id for this client_service");
+  }
+  binary_handler_.reset(new handler(ws, true));
   binary_handler_->init();
-  extra_discovery_data_ = bc->get_endpoint();
-  send_notify();
+  // forward data received by binary session towards handler
+  client_binary_session_->data_.connect([this](int id, const std::vector<char>& indata)
+  {
+    if (indata.size() <= DATA_SIZE)
+    {
+      auto outdata = create_data();
+      memcpy(outdata->data(), &indata[0], indata.size());
+      binary_handler_->on_send(outdata, indata.size(), handler::BINARY);
+    }
+  });
 }
 
 void client_service::on_msg(yami::incoming_message & im)
@@ -81,7 +92,7 @@ void client_service::on_msg(yami::incoming_message & im)
 
 void client_service::on_remote_msg(const std::string& source, const std::string& target,
   msg_type_t msg_type, const std::string& msg,
-  int sequence_number, const yami::parameters& params)
+  int sequence_number, yami::parameters& params)
 {
   try
   {
@@ -96,40 +107,67 @@ void client_service::on_remote_msg(const std::string& source, const std::string&
 
     case msg_type_t::for_reply:
     {
-      //LOG(DEBUG) << "Message expecting reply: '" << msg << "', from '" << source << "' to '" << target << "'";
-      auto_ptr <yami::outgoing_message> message(AGENT.send(ye, target, msg, params));
-
-      message->wait_for_completion(1000);
-
-      switch (message->get_state())
+      if (msg == "create_session")
       {
-      case yami::replied:
-      {
-        //LOG(DEBUG) << "Got reply";
-        // converting yami output to json
-        // yami binary values are not supported
-        buffer_t buffer(new rapidjson::StringBuffer);
-        reply_to_json(source, "success", "", sequence_number, message->get_reply(), buffer);
-
-        handler_->on_send(buffer);
-
-        break;
+        // special handling of create_session message
+        // sending of actual message is done in constructor of client_binary_session
+        try
+        {
+          client_binary_session_.reset(new client_binary_session(target, ye, params));
+          // object is created so is session
+          // reply with session id
+          yami::parameters reply;
+          reply.set_long_long("id", client_binary_session_->get_id());
+          buffer_t buffer(new rapidjson::StringBuffer);
+          reply_to_json(source, "success", "", sequence_number, reply, buffer);
+          handler_->on_send(buffer);
+        }
+        catch (const exception& e)
+        {
+          LOG(WARNING) << "Rejecting due to: " << e.what();
+          buffer_t buffer(new rapidjson::StringBuffer);
+          reply_to_json(source, "failed", e.what(), sequence_number, buffer);
+          handler_->on_send(buffer);
+          break;
+        }
       }
-
-      case yami::posted:
-      case yami::transmitted:
-      case yami::abandoned:
-        LOG(WARNING) << "Posted/Transmitted/Abandoned after timeout";
-        break;
-
-      case yami::rejected:
+      else
       {
-        LOG(WARNING) << "Rejected: " + message->get_exception_msg();
-        buffer_t buffer(new rapidjson::StringBuffer);
-        reply_to_json(source, "failed", message->get_exception_msg(), sequence_number, buffer);
-        handler_->on_send(buffer);
-        break;
-      }
+        //LOG(DEBUG) << "Message expecting reply: '" << msg << "', from '" << source << "' to '" << target << "'";
+        auto_ptr <yami::outgoing_message> message(AGENT.send(ye, target, msg, params));
+
+        message->wait_for_completion(1000);
+
+        switch (message->get_state())
+        {
+        case yami::replied:
+        {
+          //LOG(DEBUG) << "Got reply";
+          // converting yami output to json
+          // yami binary values are not supported
+          buffer_t buffer(new rapidjson::StringBuffer);
+          reply_to_json(source, "success", "", sequence_number, message->get_reply(), buffer);
+
+          handler_->on_send(buffer);
+
+          break;
+        }
+
+        case yami::posted:
+        case yami::transmitted:
+        case yami::abandoned:
+          LOG(WARNING) << "Posted/Transmitted/Abandoned after timeout";
+          break;
+
+        case yami::rejected:
+        {
+          LOG(WARNING) << "Rejected: " + message->get_exception_msg();
+          buffer_t buffer(new rapidjson::StringBuffer);
+          reply_to_json(source, "failed", message->get_exception_msg(), sequence_number, buffer);
+          handler_->on_send(buffer);
+          break;
+        }
+        }
       }
       break;
     }

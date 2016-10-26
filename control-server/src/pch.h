@@ -1,4 +1,5 @@
 #pragma once
+#include "handler.h"
 #include <Poco/Net/HTTPServerResponse.h>
 #include <Poco/Net/HTTPServerRequest.h>
 #include <Poco/Net/HTTPRequestHandler.h>
@@ -21,6 +22,7 @@
 #include <boost/archive/iterators/base64_from_binary.hpp>
 #include <boost/archive/iterators/insert_linebreaks.hpp>
 #include <boost/archive/iterators/transform_width.hpp>
+#include <boost/signals2.hpp>
 #include <yami4-cpp/parameters.h>
 #include <yami4-cpp/incoming_message.h>
 #include <yami4-cpp/parameters.h>
