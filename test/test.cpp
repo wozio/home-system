@@ -140,6 +140,7 @@ class source_service
 private:
   string destination;
   string endpoint;
+  home_system::timer t;
   
 public:
   source_service()
@@ -168,19 +169,45 @@ public:
   }
   ~source_service(){};
 
+  void send_data()
+  {
+    try
+    {
+      t.set_from_now(100, [this]()
+      {
+        send_data();
+      });
+
+      vector<char> buf1(18800, 0xF0);
+
+      yami::raw_buffer_data_source raw_binary(&buf1[0], buf1.size());
+      for (int i = 0; i < 100; i++)
+        AGENT.send_one_way(endpoint, "", "", raw_binary);
+    }
+    catch (const std::exception& e)
+    {
+      LOG(ERROR) << e.what();
+    }
+  }
+
   void on_msg(yami::incoming_message & im)
   {
     if (im.get_message_name() == "create_session")
     {
-      long long channel = im.get_parameters().get_long_long("channel");
-      destination = im.get_parameters().get_string("destination");
+      //long long channel = im.get_parameters().get_long_long("channel");
+      //destination = im.get_parameters().get_string("destination");
       endpoint = im.get_parameters().get_string("endpoint");
       
-      LOG(DEBUG) << "[SOURCE] Create source session: " << channel << " " << destination << " " << endpoint;
+      LOG(DEBUG) << "[SOURCE] Create source session: " << endpoint;
       
       yami::parameters params;
-      params.set_integer("session", 4321);
+      params.set_long_long("id", 4321);
       im.reply(params);
+
+      t.set_from_now(1000, [this]()
+      {
+        send_data();
+      });
     }
     else if (im.get_message_name() == "delete_session")
     {
@@ -502,46 +529,6 @@ void cmd_handler(const std::vector<string>& fields)
   }
 }
 
-home_system::timer t;
-
-void send_dummy()
-{
-  try
-  {
-    //yami::parameters param;
-    //param.set_integer("channel", 123);
-    //param.set_integer("id", 321);
-    //unique_ptr<yami::outgoing_message> message(AGENT.send(ep, "wozio41", "update", param));
-    //message->wait_for_completion(1000);
-    //if (message->get_state() == yami::replied)
-    //{
-    //  LOG(DEBUG) << "Replied????";
-    //}
-    //else if (message->get_state() == yami::rejected)
-    //{
-    //  LOG(DEBUG) << "Rejected...";
-    //}
-    //else
-    //{
-    //  LOG(DEBUG) << "Timed out";
-    //}
-
-    t.set_from_now(100, send_dummy);
-
-    auto binep = DISCOVERY.get_extra_data("wozio41");
-
-    vector<char> buf1(18800, 0xF0);
-
-    yami::raw_buffer_data_source raw_binary(&buf1[0], buf1.size());
-    for (int i = 0; i < 220; i++)
-      AGENT.send_one_way(binep, "wozio41", "bin", raw_binary);
-  }
-  catch (const std::exception& e)
-  {
-    LOG(ERROR) << e.what();
-  }
-}
-
 int main(int argc, char** argv)
 {
   home_system::init_log("test.log", true);
@@ -553,8 +540,6 @@ int main(int argc, char** argv)
   unique_ptr<test_service> s(new test_service());
   unique_ptr<source_service> ss(new source_service());
   
-  t.set_from_now(1000, send_dummy);
-
   cout << "Enter q to quit..." << endl;
   std::string input_line;
   while (std::getline(std::cin, input_line))
@@ -569,8 +554,6 @@ int main(int argc, char** argv)
   
   s.reset();
   ss.reset();
-
-  t.cancel();
 
   _discovery.reset();
   _yc.reset();

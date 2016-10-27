@@ -1,7 +1,6 @@
 #include "pch.h"
 #include "client_service.h"
 #include "logger.h"
-#include "yamicontainer.h"
 #include "discovery.h"
 #include "json_converter.h"
 
@@ -36,7 +35,7 @@ void client_service::init()
 
 void client_service::add_binary_connection(ws_t ws)
 {
-  // check if we have such session id established
+  // check if we have such session established
   if (!client_binary_session_)
   {
     LOG(ERROR) << "Request for not known binary session establishing";

@@ -40,6 +40,7 @@ void ws_request_handler::handleRequest(HTTPServerRequest& request, HTTPServerRes
   }
   catch (WebSocketException& exc)
   {
+    LOG(ERROR) << "WebSocket exception: " << exc.displayText();
     switch (exc.code())
     {
     case WebSocket::WS_ERR_HANDSHAKE_UNSUPPORTED_VERSION:
@@ -53,6 +54,13 @@ void ws_request_handler::handleRequest(HTTPServerRequest& request, HTTPServerRes
       response.send();
       break;
     }
+  }
+  catch (const std::exception& e)
+  {
+    LOG(ERROR) << "EXCEPTION: " << e.what();
+    response.setStatusAndReason(HTTPResponse::HTTP_BAD_REQUEST);
+    response.setContentLength(0);
+    response.send();
   }
 }
   

@@ -1,11 +1,10 @@
 'use strict';
 
 angular.module('app.data',[
-  'ngCookies',
-  'app.binarydata'
+  'ngCookies'
 ])
 
-.factory('DataSrv', function ($cookies, $timeout, $rootScope, $location, BinaryDataSrv) {
+.factory('DataSrv', function ($cookies, $timeout, $rootScope, $location) {
   
   // firefox WS bug workaround
   $(window).on('beforeunload', function(){
@@ -58,7 +57,6 @@ angular.module('app.data',[
       connected = false;
       $rootScope.loggedIn = false;
       dataStream = null;
-      BinaryDataSrv.disconnect();
       $timeout(connect, 1000);
       for (var s in queue) {
         if (queue.hasOwnProperty(s)) {
@@ -291,7 +289,6 @@ angular.module('app.data',[
               password: password
             });
             clientId = result.data.client_id;
-            BinaryDataSrv.connect(clientId);
           }
           callback(result);
         }, 1000);

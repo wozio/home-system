@@ -33,8 +33,8 @@ namespace home_system
     agent_.register_object("*", *this);
 
     // creating session in server
-    creation_params_.set_string("enpoint", ep);
-    auto msg = agent_.send(target_, target_endpoint_, "create_session", creation_params);
+    creation_params_.set_string("endpoint", ep);
+    auto msg = AGENT.send(target_endpoint_, target_, "create_session", creation_params_);
 
     msg->wait_for_completion(1000);
 

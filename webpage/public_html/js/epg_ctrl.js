@@ -1,15 +1,16 @@
 'use strict';
 
 angular.module('app.epg',[
-  'app.data'
+  'app.data',
+  'app.binarydata'
 ])
 
 .controller('EpgCtrl', [
-  '$scope', 'DataSrv', '$interval',
-  function ($scope, DataSrv, $interval) {
+  '$scope', 'DataSrv', 'BinaryDataSrv', '$interval',
+  function ($scope, DataSrv, BinaryDataSrv, $interval) {
 	  console.log("EpgCtrl");
 	$scope.viewLoading = false;
-    var srv = "tv";
+    var srv = "test-source";
     var get = function() {
       DataSrv.send(srv, "get_channels", null, function(result) {
         if (result.success) {
@@ -27,14 +28,16 @@ angular.module('app.epg',[
     
     var sessionId = -1;
     var serviceAvailabilitySubscrId = DataSrv.registerServiceAvailability(function(service, available){
-      if (service === "tv") {
+      if (service === srv) {
         if (available === true) {
           DataSrv.send(srv, "create_session", {
-            "destination":DataSrv.getClientId(),
-            "channel":1
-          }, function(result){
+            "destination": DataSrv.getClientId(),
+            "channel": 1
+          }, function (result) {
             if (result.success) {
-              sessionId = parseInt(result.data.session);
+              console.log("Session created with id " + parseInt(result.data.id));
+              sessionId = parseInt(result.data.id);
+              BinaryDataSrv.connect(DataSrv.getClientId());
             } else {
             }
           });
