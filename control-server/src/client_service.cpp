@@ -44,7 +44,7 @@ void client_service::add_binary_connection(ws_t ws)
   binary_handler_.reset(new handler(ws, true));
   binary_handler_->init();
   // forward data received by binary session towards handler
-  client_binary_session_->data_.connect([this](int id, const std::vector<char>& indata)
+  client_binary_session_->data_.connect([this](const std::vector<char>& indata)
   {
     if (indata.size() <= DATA_SIZE)
     {
@@ -109,25 +109,30 @@ void client_service::on_remote_msg(const std::string& source, const std::string&
       if (msg == "create_session")
       {
         // special handling of create_session message
-        // sending of actual message is done in constructor of client_binary_session
-        try
+        client_binary_session_.reset(new client_binary_session());
+
+        // creating session in server
+        params.set_string("data_endpoint", client_binary_session_->get_endpoint());
+        auto msg = AGENT.send(ye, target, "create_session", params);
+
+        msg->wait_for_completion(1000);
+
+        if (msg->get_state() == yami::replied)
         {
-          client_binary_session_.reset(new client_binary_session(target, ye, params));
-          // object is created so is session
-          // reply with session id
-          yami::parameters reply;
-          reply.set_long_long("id", client_binary_session_->get_id());
+          auto reply = msg->get_reply();
           buffer_t buffer(new rapidjson::StringBuffer);
           reply_to_json(source, "success", "", sequence_number, reply, buffer);
           handler_->on_send(buffer);
         }
-        catch (const exception& e)
+        else if (msg->get_state() == yami::rejected)
         {
-          LOG(WARNING) << "Rejecting due to: " << e.what();
-          buffer_t buffer(new rapidjson::StringBuffer);
-          reply_to_json(source, "failed", e.what(), sequence_number, buffer);
-          handler_->on_send(buffer);
-          break;
+          client_binary_session_.reset();
+          throw std::runtime_error("Unable to create session, " + msg->get_exception_msg());
+        }
+        else
+        {
+          client_binary_session_.reset();
+          throw std::runtime_error("Unable to create session, timed out");
         }
       }
       else

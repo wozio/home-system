@@ -4,6 +4,7 @@
 #include "yamicontainer.h"
 #include "logger_init.h"
 #include "timer.h"
+#include "server_binary_session.h"
 #include <boost/lexical_cast.hpp>
 #include <fstream>
 #include <iostream>
@@ -138,9 +139,9 @@ class source_service
   : public home_system::service
 {
 private:
-  string destination;
-  string endpoint;
+  string endpoint, destination, data_endpoint;
   home_system::timer t;
+  std::unique_ptr<home_system::server_binary_session> s;
   
 public:
   source_service()
@@ -173,16 +174,15 @@ public:
   {
     try
     {
-      t.set_from_now(100, [this]()
+      t.set_from_now(10, [this]()
       {
         send_data();
       });
 
       vector<char> buf1(18800, 0xF0);
 
-      yami::raw_buffer_data_source raw_binary(&buf1[0], buf1.size());
-      for (int i = 0; i < 100; i++)
-        AGENT.send_one_way(endpoint, "", "", raw_binary);
+      for (int i = 0; i < 10; i++)
+        s->send(&buf1[0], buf1.size());
     }
     catch (const std::exception& e)
     {
@@ -194,11 +194,12 @@ public:
   {
     if (im.get_message_name() == "create_session")
     {
-      //long long channel = im.get_parameters().get_long_long("channel");
-      //destination = im.get_parameters().get_string("destination");
-      endpoint = im.get_parameters().get_string("endpoint");
+      data_endpoint = im.get_parameters().get_string("data_endpoint");
+      destination = im.get_parameters().get_string("destination");
       
       LOG(DEBUG) << "[SOURCE] Create source session: " << endpoint;
+
+      s.reset(new home_system::server_binary_session(data_endpoint));
       
       yami::parameters params;
       params.set_long_long("id", 4321);
@@ -211,15 +212,17 @@ public:
     }
     else if (im.get_message_name() == "delete_session")
     {
-      int session = im.get_parameters().get_integer("session");
+      auto session = im.get_parameters().get_long_long("id");
       
       LOG(DEBUG) << "[SOURCE] Delete source session: " << session;
+
+      t.cancel();
       
       yami::parameters params;
 
-      params.set_integer("session", session);
+      params.set_long_long("id", session);
 
-      AGENT.send(endpoint, destination, "session_deleted", params);
+      AGENT.send(DISCOVERY.get(destination), destination, "session_deleted", params);
     }
     else
     {
