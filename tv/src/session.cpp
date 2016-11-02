@@ -235,9 +235,6 @@ void session::send()
       buffer_.read(buf, len);
     }
 
-    long long bt, ct, et;
-    get_times(bt, ct, et);
-    
     if (len > 0)
       binary_session_->send(buf, len);
 
@@ -245,15 +242,12 @@ void session::send()
     readpos_ += len;
     read_write_diff_ -= len;
 
-    long long buf_size, long long cur_pos,
-      long long beg_time, long long cur_time, long long end_time
+    long long bt, ct, et;
+    get_times(bt, ct, et);
+
     size_t size;
     full_ ? size = TOTAL_BUFFER_SIZE : size = writepos_;
-    stream_info_(size, )
-
-    abs_pos_ += len;
-    readpos_ += len;
-    read_write_diff_ -= len;
+    stream_info_(size, abs_pos_, bt, ct, et);
 
     if (playing_ && read_write_diff_ > 0)
     {

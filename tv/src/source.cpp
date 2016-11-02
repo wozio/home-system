@@ -89,7 +89,7 @@ int source::create_session(int channel, const std::string& destination, const st
   
   LOG(DEBUG) << "Creating client session " << client_session_id_;
   
-  client_session_.reset(new session(client_session_id_, destination, endpoint));
+  client_session_.reset(new session(client_session_id_, endpoint));
   
   return client_session_id_;
 }

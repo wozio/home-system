@@ -109,18 +109,6 @@ void tv_service::handle_pause_session(yami::incoming_message& im)
 
 }
 
-void tv_service::handle_get_session_data(yami::incoming_message& im)
-{
-  auto s = im.get_parameters().get_integer("session");
-  auto l = im.get_parameters().get_long_long("len");
-  unique_ptr<char[]> buf(new char[l]);
-  l = source::source_for_session(s)->get_session(s)->get_data(buf.get(), l);
-  yami::parameters params;
-  params.set_binary("data", buf.get(), l);
-  params.set_long_long("len", l);
-  im.reply(params);
-}
-
 void tv_service::handle_create_session(yami::incoming_message& im)
 {
   try
@@ -148,17 +136,14 @@ void tv_service::on_msg(yami::incoming_message& im)
 {
   try
   {
-    if (im.get_message_name() == "stream_part")
+    if (im.get_message_name() == "create_session")
     {
-      int source_session = im.get_parameters().get_integer("session");
-      string source = im.get_parameters().get_string("source");
-      size_t length;
-      const void* buf = im.get_parameters().get_binary("payload", length);
-      sources_[source]->stream_part(source_session, buf, length);
+      handle_create_session(im);
     }
-    else if (im.get_message_name() == "get_session_data")
+    else if (im.get_message_name() == "delete_session")
     {
-      handle_get_session_data(im);
+      int session = im.get_parameters().get_integer("session");
+      sources_.delete_session(session);
     }
     else if (im.get_message_name() == "pause_session")
     {
@@ -216,15 +201,6 @@ void tv_service::on_msg(yami::incoming_message& im)
     else if (im.get_message_name() == "epg_data")
     {
       epg_.handle_epg_data(im.get_parameters());
-    }
-    else if (im.get_message_name() == "create_session")
-    {
-      handle_create_session(im);
-    }
-    else if (im.get_message_name() == "delete_session")
-    {
-      int session = im.get_parameters().get_integer("session");
-      sources_.delete_session(session);
     }
     else if (im.get_message_name() == "get_epg_info")
     {
