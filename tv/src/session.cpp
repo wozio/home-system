@@ -15,9 +15,8 @@ namespace media
 #define TOTAL_BUFFER_SIZE 2147483648 // 2GB
 //#define TOTAL_BUFFER_SIZE 20971520 // 20MB
 
-session::session(int id, stream_callback_t stream_callback)
+session::session(int id, const std::string& endpoint)
 : id_(id),
-  stream_callback_(stream_callback),
   playing_(true),
   read_write_diff_(0),
   readpos_(0),
@@ -30,6 +29,7 @@ session::session(int id, stream_callback_t stream_callback)
   str << "timeshift_buffer_" << id_ << ".ts";
   buffer_.open(str.str(), ios::trunc | ios::binary | ios::out | ios::in);
   LOG(DEBUG) << "Create session id=" << id << " buffer size=" << dec << TOTAL_BUFFER_SIZE;
+  binary_session_.reset(new server_binary_session(endpoint));
 }
 
 session::~session()
@@ -192,16 +192,10 @@ void session::seek(long long apos, std::function<void(long long pos, long long t
 
 void session::trigger_send()
 {
-  // there is something to send so send immediatelly
   ios_.io_service().post([this]() {
     lock_guard<mutex> lock(m_mutex);
     send();
   });
-}
-
-long long session::get_data(char* buf, long long len)
-{
-  return 0;
 }
 
 void session::send()
@@ -244,7 +238,18 @@ void session::send()
     long long bt, ct, et;
     get_times(bt, ct, et);
     
-    stream_callback_(id_, buf, len, abs_len_, bt, ct, et);
+    if (len > 0)
+      binary_session_->send(buf, len);
+
+    abs_pos_ += len;
+    readpos_ += len;
+    read_write_diff_ -= len;
+
+    long long buf_size, long long cur_pos,
+      long long beg_time, long long cur_time, long long end_time
+    size_t size;
+    full_ ? size = TOTAL_BUFFER_SIZE : size = writepos_;
+    stream_info_(size, )
 
     abs_pos_ += len;
     readpos_ += len;

@@ -112,7 +112,7 @@ void client_service::on_remote_msg(const std::string& source, const std::string&
         client_binary_session_.reset(new client_binary_session());
 
         // creating session in server
-        params.set_string("data_endpoint", client_binary_session_->get_endpoint());
+        params.set_string("endpoint", client_binary_session_->get_endpoint());
         auto msg = AGENT.send(ye, target, "create_session", params);
 
         msg->wait_for_completion(1000);

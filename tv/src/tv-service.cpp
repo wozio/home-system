@@ -121,6 +121,29 @@ void tv_service::handle_get_session_data(yami::incoming_message& im)
   im.reply(params);
 }
 
+void tv_service::handle_create_session(yami::incoming_message& im)
+{
+  try
+  {
+    int channel = im.get_parameters().get_integer("channel");
+    string endpoint = im.get_parameters().get_string("endpoint");
+    string destination = im.get_parameters().get_string("destination");
+
+    LOG(DEBUG) << "Creating session for channel " << channel << "(" << db_.get_channel_name(channel) << ") to " << destination << "(" << endpoint << ")";
+
+    auto session = sources_.create_session(channel, destination, endpoint);
+
+    yami::parameters reply;
+    reply.set_long_long("session", session);
+    im.reply(reply);
+  }
+  catch (const runtime_error& e)
+  {
+    LOG(WARNING) << "EXCEPTION while creating session: " << e.what();
+    im.reject(e.what());
+  }
+}
+
 void tv_service::on_msg(yami::incoming_message& im)
 {
   try
@@ -196,39 +219,7 @@ void tv_service::on_msg(yami::incoming_message& im)
     }
     else if (im.get_message_name() == "create_session")
     {
-      try
-      {
-        int channel = im.get_parameters().get_integer("channel");
-        string endpoint = im.get_parameters().get_string("endpoint");
-        string destination = im.get_parameters().get_string("destination");
-        
-        LOG(DEBUG) << "Creating session for channel " << channel << "(" << db_.get_channel_name(channel) << ") to " << destination << "(" << endpoint << ")";
-
-        int session = sources_.create_session(channel, [endpoint, destination] (int id, void* buf, size_t len, long long buf_size,
-          long long beg_time, long long cur_time, long long end_time) {
-          yami::parameters params;
-          params.set_binary("payload", buf, len);
-          params.set_integer("session", id);
-          params.set_long_long("size", buf_size);
-          params.set_long_long("begin_time", beg_time);
-          params.set_long_long("current_time", cur_time);
-          params.set_long_long("end_time", end_time);
-
-          YC.agent().send(endpoint, destination, "stream_part", params);
-        });
-
-        yami::parameters reply;
-        reply.set_integer("session", session);
-        im.reply(reply);
-      }
-      catch (const runtime_error& e)
-      {
-        LOG(WARNING) << "EXCEPTION while creating session: " << e.what();
-        yami::parameters reply;
-        reply.set_integer("session", -1);
-        reply.set_string("reason", e.what());
-        im.reply(reply);
-      }
+      handle_create_session(im);
     }
     else if (im.get_message_name() == "delete_session")
     {

@@ -46,18 +46,20 @@ std::string source::endpoint()
   return ye_;
 }
 
-int source::create_session(int channel, stream_callback_t stream_callback)
+int source::create_session(int channel, const std::string& destination, const std::string& endpoint)
 {
   // starting session on source
   long long local = db_.get_local_channel(channel, name_);
+
+  source_session_.reset(new client_binary_session());
   
   yami::parameters params;
   
   params.set_long_long("channel", local);
   params.set_string("destination", "tv");
-  params.set_string("endpoint", YC.endpoint());
+  params.set_string("endpoint", source_session_->get_endpoint());
   
-  LOG(DEBUG) << "Create session " << " channel=" << channel << "(" << hex << local << ")";
+  LOG(DEBUG) << "Create source session " << " channel=" << channel << "(" << hex << local << ") endpoint: " << source_session_->get_endpoint();
   
   unique_ptr<yami::outgoing_message> message(YC.agent().send(ye_, name_, "create_session", params));
   
@@ -65,10 +67,10 @@ int source::create_session(int channel, stream_callback_t stream_callback)
   
   if (message->get_state() != yami::replied)
   {
-    throw runtime_error("Request to create session rejected by source");
+    throw runtime_error("Request to create session rejected by source: " + message->get_exception_msg());
   }
 
-  source_session_id_ = message->get_reply().get_integer("session");
+  source_session_id_ = message->get_reply().get_integer("id");
 
   if (source_session_id_ == -1)
   {
@@ -77,7 +79,7 @@ int source::create_session(int channel, stream_callback_t stream_callback)
     
   LOG(DEBUG) << "Got source session=" << source_session_id_;
   
-  // finding free session id
+  // finding free client session id
   int client_session_id_ = 0;
   while (_client_session_ids.find(client_session_id_) != _client_session_ids.end())
   {
@@ -87,7 +89,7 @@ int source::create_session(int channel, stream_callback_t stream_callback)
   
   LOG(DEBUG) << "Creating client session " << client_session_id_;
   
-  client_session_.reset(new session(client_session_id_, stream_callback));
+  client_session_.reset(new session(client_session_id_, destination, endpoint));
   
   return client_session_id_;
 }

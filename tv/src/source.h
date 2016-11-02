@@ -3,6 +3,7 @@
 
 #include "db.h"
 #include "session.h"
+#include "client_binary_session.h"
 
 namespace home_system
 {
@@ -24,7 +25,8 @@ public:
   
   void not_available();
   
-  int create_session(int channel, stream_callback_t stream_callback);
+  // returns client session id
+  int create_session(int channel, const std::string& destination, const std::string& endpoint);
   void delete_session(int client_session);
 
   void stream_part(int source_session, const void* buf, size_t len);
@@ -41,6 +43,7 @@ private:
   db& db_;
   std::string name_, ye_;
   int source_session_id_;
+  std::unique_ptr<client_binary_session> source_session_;
   int client_session_id_;
   session_t client_session_;
   

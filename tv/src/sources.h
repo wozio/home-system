@@ -21,7 +21,8 @@ public:
   void source_available(const std::string& service, const std::string& ye);
   void source_not_available(const std::string& service);
   
-  int create_session(int channel, stream_callback_t stream_callback);
+  // returns client session id
+  int create_session(int channel, const std::string& destination, const std::string& endpoint);
   void delete_session(int client_session);
   
   source_t operator[](const std::string& source);
