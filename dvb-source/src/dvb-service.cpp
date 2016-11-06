@@ -248,10 +248,7 @@ void dvb_service::on_msg(yami::incoming_message & im)
             break;
         }
       },
-      [this] (size_t size, char* buffer)
-      {
-        on_stream_part(size, buffer);
-      });
+      endpoint_);
 
     LOG(DEBUG) << "Session created " << session_;
 
@@ -266,30 +263,6 @@ void dvb_service::on_msg(yami::incoming_message & im)
   else
   {
     service::on_msg(im);
-  }
-}
-
-void dvb_service::on_stream_part(size_t size, char* buffer)
-{
-  try
-  {
-    yami::parameters params;
-    params.set_binary("payload", static_cast<const void*>(buffer), size);
-    params.set_integer("session", 0);
-    params.set_string("source", name_);
-    
-    YC.agent().send(endpoint_, destination_, "stream_part", params);
-  }
-  catch (const std::exception& e)
-  {
-    if (!exception_handled_)
-    {
-      LOG(WARNING) << "EXCEPTION: " << e.what();
-      
-      exception_handled_ = true;
-      
-      throw dvb::session_error();
-    }
   }
 }
 

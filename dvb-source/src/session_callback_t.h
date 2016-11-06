@@ -36,7 +36,6 @@ enum class session_event_t
 };
 
 typedef std::function<void (session_event_t session_event)> session_callback_t;
-typedef std::function<void (size_t size, char* buffer)> session_stream_part_callback_t;
 
 }
 

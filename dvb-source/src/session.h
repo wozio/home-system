@@ -13,7 +13,7 @@ class session
 {
 public:
   session(home_system::media::channel_t c, dvb::session_callback_t callback,
-    dvb::session_stream_part_callback_t stream_part_callback,
+    const std::string& endpoint,
     home_system::media::frontend& frontend, home_system::media::demux& demux,
     home_system::media::transponders& transponders);
   session(const session& orig) =  delete;
@@ -32,7 +32,7 @@ private:
   home_system::media::channel_t channel_;
   
   dvb::session_callback_t callback_;
-  dvb::session_stream_part_callback_t stream_part_callback_;
+  std::string endpoint_;
 };
 
 }

@@ -12,11 +12,11 @@ namespace home_system
 namespace media
 {
 
-file_reader::file_reader(int adapter, int frontend, dvb::session_stream_part_callback_t callback)
+file_reader::file_reader(int adapter, int frontend, const std::string& endpoint)
 : adapter_(adapter),
   frontend_(frontend),
   continue_(true),
-  callback_(callback)
+  endpoint_(endpoint)
 {
   thread_ = thread([this] () { thread_exec(); });
 }
@@ -55,6 +55,8 @@ void file_reader::thread_exec()
   
   struct timeval timeout;
   
+  session_.reset(new server_binary_session(endpoint_));
+  
   try
   {  
     while (continue_)
@@ -71,9 +73,9 @@ void file_reader::thread_exec()
       {
         char buffer[18800];
         size_t n = ::read(fd, buffer, 18800);
-        if (callback_ != nullptr && n > 0)
+        if (n > 0)
         {
-          callback_(n, buffer);
+          session_->send(buffer, n);
         }
 
         //f.write(buffer, n);

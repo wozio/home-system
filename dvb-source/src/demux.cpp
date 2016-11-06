@@ -53,11 +53,11 @@ void demux::set_ei_callback(ei_callback_t callback)
   ei_callback_ = callback;
 }
 
-void demux::set_channel(channel_t c, dvb::session_stream_part_callback_t callback)
+void demux::set_channel(channel_t c, const std::string& endpoint)
 {
   LOG(DEBUG) << "Channel setting to: " << c->get_name() << " (" << c->service_id() << ")";
   
-  session_callback_ = callback;
+  endpoint_ = endpoint;
   channel_ = c;
   
   set_mux();
@@ -688,7 +688,7 @@ void demux::check_pmt(section* s)
   }
   
   // creating file_reader
-  file_reader_.reset(new file_reader(adapter_, demux_, session_callback_));
+  file_reader_.reset(new file_reader(adapter_, demux_, endpoint_));
   event(demux_event::stream_reader_created);
 }
 
