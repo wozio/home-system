@@ -13,6 +13,7 @@ import discovery
 
 name = "io-control-dev"
 
+services_subscriptions = {}
 service_subscriptions = {}
 
 def init():
@@ -45,12 +46,12 @@ def on_service(new_service, available):
         "subscribe", params);
   else:
     to_remove = []
-    for i, s in service_subscriptions.iteritems():
+    for i, s in services_subscriptions.iteritems():
       if s == new_service:
         to_remove.append(i)
       
     for i in to_remove:
-      service_subscriptions.pop(i, None)
+      services_subscriptions.pop(i, None)
       logging.debug("service subscription notification %d removed", i)
                             
 def prepare_service(service):
@@ -91,7 +92,7 @@ def on_ioservice_change(service):
   
   to_remove = []
 
-  for i, s in service_subscriptions.iteritems():
+  for i, s in services_subscriptions.iteritems():
     logging.debug("sending to '%s'", s)
     try:
       yagent.agent.send(discovery.get(s), s,
@@ -100,7 +101,7 @@ def on_ioservice_change(service):
       to_remove.append(i)
       
   for i in to_remove:
-    service_subscriptions.pop(i, None)
+    services_subscriptions.pop(i, None)
     logging.debug("service subscription notification %d removed", i)
 
 def on_msg(message):
@@ -142,10 +143,10 @@ def on_msg(message):
         
     elif message.get_message_name() == "subscribe_services":
       i = 0
-      while i in service_subscriptions:
+      while i in services_subscriptions:
         i += 1
       service = message.get_parameters()["service"]
-      service_subscriptions[i] = service
+      services_subscriptions[i] = service
       logging.debug("service '%s' subscribed for services change notification with id %d", service, i)
       
       params = yami.Parameters()
@@ -166,13 +167,20 @@ def on_msg(message):
       
     elif message.get_message_name() == "unsubscribe_services":
       i = message.get_parameters()["id"]
-      service_subscriptions.pop(i, None)
+      services_subscriptions.pop(i, None)
       logging.debug("service subscription notification %d removed", i)
 
     elif message.get_message_name() == "get_services":
       message.reply(prepare_services())
 
     elif message.get_message_name() == "set_setting_value":
+        logging.debug("set_setting_value")
+        try:
+            params = message.get_parameters()
+            ioservices.Ioservices[params["service"]].settings[params["setting"]].set(params["value"])
+        except KeyError as e:
+            logging.warn("Something is not found, either in parameters or in system: %s", e.strerror)
+    elif message.get_message_name() == "get_io":
         logging.debug("set_setting_value")
         try:
             params = message.get_parameters()
