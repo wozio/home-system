@@ -2,6 +2,7 @@
 
 import logging
 import iomap
+import yami
 
 class Display:
 
@@ -28,3 +29,11 @@ class Display:
   def on_change(self):
     if self.change_callback != None:
       self.change_callback(self)
+  
+  def prepare(self):
+    params = yami.Parameters()
+    params["name"] = self.name
+    params["type"] = self.type
+    params["state"], params["value"] = self.get()
+
+    return params

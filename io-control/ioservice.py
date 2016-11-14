@@ -4,6 +4,8 @@ import logging
 import setting
 import display
 import service
+import yami
+import discovery
 
 class ioservice:
 
@@ -11,6 +13,7 @@ class ioservice:
     self.name = name
     self.settings = {}
     self.displays = {}
+    self.subscriptions = {}
     self.change_callback = None
 
     logging.info("Created ioservice '%s'", name)
@@ -37,7 +40,56 @@ class ioservice:
   def on_change(self, disp_or_setting):
     if self.change_callback != None:
       self.change_callback(self)
+    self.send()
+
+  def prepare(self):
+    params = yami.Parameters()
+    params["name"] = self.name
+
+    if len(self.settings) > 0:
+      settings_params = []
+      for st in self.settings.itervalues():
+        settings_params.append(st.prepare())
+      params["settings"] = settings_params
+
+    if len(self.displays) > 0:
+      displays_params = []
+      for d in self.displays.itervalues():
+        displays_params.append(d.prepare())
+      params["displays"] = displays_params
+
+    return params
+
+  def send(self):
+    params = self.prepare()
+
+    to_remove = []
+
+    for i, s in self.subscriptions.iteritems():
+      logging.debug("sending to '%s'", s)
+      try:
+        yagent.agent.send(discovery.get(s), s,
+          "service_full", params)
+      except RuntimeError:
+        to_remove.append(i)
+        
+    for i in to_remove:
+      self.subscriptions.pop(i, None)
+      logging.debug("service subscription notification %d removed", i)
 
   def on_msg(self, msg):
-    logging.debug("Received message: %s", msg.get_message_name())
-    pass
+    if msg.get_message_name() == "subscribe":
+      i = 0
+      while i in self.subscriptions:
+        i += 1
+      service = msg.get_parameters()["service"]
+      self.subscriptions[i] = service
+      logging.debug("service '%s' subscribed for service '%s' change notification with id %d", service, self.name, i)
+      
+      params = yami.Parameters()
+      params["id"] = i
+      msg.reply(params)
+
+      self.send()
+  
+  

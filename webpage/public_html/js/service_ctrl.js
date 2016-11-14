@@ -25,7 +25,7 @@ angular.module('app.service',[
       console.log(service + " is " + available);
       if (service === srv) {
         if (available === true) {
-          DataSrv.send(srv, "register_service", {
+          DataSrv.send(srv, "subscribe", {
               "service":DataSrv.getClientId()
             }, function(result){
             if (result.success) {

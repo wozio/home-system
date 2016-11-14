@@ -10,6 +10,7 @@ import outputs
 import output
 import inputs
 import discovery
+import traceback
 
 name = "io-control-dev"
 
@@ -43,7 +44,7 @@ def on_service(new_service, available):
       params["endpoint"] = yagent.endpoint
 
       yagent.agent.send(discovery.get(new_service), new_service,
-        "subscribe", params);
+        "subscribe", params)
   else:
     to_remove = []
     for i, s in services_subscriptions.iteritems():
@@ -53,42 +54,12 @@ def on_service(new_service, available):
     for i in to_remove:
       services_subscriptions.pop(i, None)
       logging.debug("service subscription notification %d removed", i)
-                            
-def prepare_service(service):
-  service_params = yami.Parameters()
-  service_params["name"] = service.name
-
-  if len(service.settings) > 0:
-    settings = []
-    for st in service.settings.itervalues():
-      setting_params = yami.Parameters()
-      setting_params["name"] = st.name
-      setting_params["type"] = st.type
-      setting_params["value"] = st.get()
-      values = []
-      for val in st.values:
-        values.append(val)
-      setting_params["values"] = values
-      settings.append(setting_params)
-    service_params["settings"] = settings
-
-  if len(service.displays) > 0:
-    displays = []
-    for d in service.displays.itervalues():
-      display_params = yami.Parameters()
-      display_params["name"] = d.name
-      display_params["type"] = d.type
-      display_params["state"],display_params["value"] = d.get()
-      displays.append(display_params)
-    service_params["displays"] = displays
-
-  return service_params
 
 def on_ioservice_change(service):
   
   logging.debug("service '%s'changed, sending to subscribers", service.name)
   
-  params = prepare_service(service)
+  params = service.prepare()
   
   to_remove = []
 
@@ -96,7 +67,7 @@ def on_ioservice_change(service):
     logging.debug("sending to '%s'", s)
     try:
       yagent.agent.send(discovery.get(s), s,
-        "services_change", params);
+        "services_change", params)
     except RuntimeError:
       to_remove.append(i)
       
@@ -157,13 +128,18 @@ def on_msg(message):
       services_to_send = []
 
       for ioservice in ioservices.Ioservices.itervalues():
-        services_to_send.append(prepare_service(ioservice))
+        try:
+          print ioservice
+          services_to_send.append(ioservice.prepare())
+        except Exception as e:
+          print traceback.format_exc()
+          raise e
 
       params = yami.Parameters()
       params["services"] = services_to_send
       
       yagent.agent.send(discovery.get(service), service,
-        "services_full", params);
+        "services_full", params)
       
     elif message.get_message_name() == "unsubscribe_services":
       i = message.get_parameters()["id"]
