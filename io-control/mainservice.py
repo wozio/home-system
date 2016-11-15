@@ -76,93 +76,92 @@ def on_ioservice_change(service):
     logging.debug("service subscription notification %d removed", i)
 
 def on_msg(message):
-    global serv
+    try:
+        global serv
 
-    if message.get_message_name() == "state_change":
-        params = message.get_parameters()
-        if params["type"] == 0: # temperature input
-            inputs.on_state_change(params["name"], params["id"], params["state"], params["value"])
-        elif params["type"] == 1: # switch output
-            outputs.on_state_change(params["name"], params["id"], params["state"], params["value"])
+        if message.get_message_name() == "state_change":
+            params = message.get_parameters()
+            if params["type"] == 0: # temperature input
+                inputs.on_state_change(params["name"], params["id"], params["state"], params["value"])
+            elif params["type"] == 1: # switch output
+                outputs.on_state_change(params["name"], params["id"], params["state"], params["value"])
 
-    elif message.get_message_name() == "get_inputs":
-        inputs_list = []
+        elif message.get_message_name() == "get_inputs":
+            inputs_list = []
 
-        for n, i in sorted(inputs.inputs.iteritems()):
-            input_params = yami.Parameters()
-            input_params["name"] = n
-            input_params["value"] = i.get()
-            inputs_list.append(input_params)
+            for n, i in sorted(inputs.inputs.iteritems()):
+                input_params = yami.Parameters()
+                input_params["name"] = n
+                input_params["value"] = i.get()
+                inputs_list.append(input_params)
 
-        params = yami.Parameters()
-        params["inputs"] = inputs_list
-        message.reply(params)
+            params = yami.Parameters()
+            params["inputs"] = inputs_list
+            message.reply(params)
 
-    elif message.get_message_name() == "get_outputs":
-        #preparing lists for sending
-        outputs_list = []
+        elif message.get_message_name() == "get_outputs":
+            #preparing lists for sending
+            outputs_list = []
 
-        for n, o in sorted(outputs.outputs.iteritems()):
-            output_params = yami.Parameters()
-            output_params["name"] = n
-            output_params["value"] = o.get()
-            outputs_list.append(output_params)
+            for n, o in sorted(outputs.outputs.iteritems()):
+                output_params = yami.Parameters()
+                output_params["name"] = n
+                output_params["value"] = o.get()
+                outputs_list.append(output_params)
 
-        params = yami.Parameters()
-        params["outputs"] = outputs_list
-        message.reply(params)
+            params = yami.Parameters()
+            params["outputs"] = outputs_list
+            message.reply(params)
+            
+        elif message.get_message_name() == "subscribe_services":
+            i = 0
+            while i in services_subscriptions:
+                i += 1
+            service = message.get_parameters()["service"]
+            services_subscriptions[i] = service
+            logging.debug("service '%s' subscribed for services change notification with id %d", service, i)
+            
+            params = yami.Parameters()
+            params["id"] = i
+            message.reply(params)
+            
+            # preparing services to send
+            services_to_send = []
+
+            for ioservice in ioservices.Ioservices.itervalues():
+                services_to_send.append(ioservice.prepare())
+
+            params = yami.Parameters()
+            params["services"] = services_to_send
+            
+            yagent.agent.send(discovery.get(service), service,
+                "services_full", params)
         
-    elif message.get_message_name() == "subscribe_services":
-      i = 0
-      while i in services_subscriptions:
-        i += 1
-      service = message.get_parameters()["service"]
-      services_subscriptions[i] = service
-      logging.debug("service '%s' subscribed for services change notification with id %d", service, i)
-      
-      params = yami.Parameters()
-      params["id"] = i
-      message.reply(params)
-      
-      # preparing services to send
-      services_to_send = []
+        elif message.get_message_name() == "unsubscribe_services":
+            i = message.get_parameters()["id"]
+            services_subscriptions.pop(i, None)
+            logging.debug("service subscription notification %d removed", i)
 
-      for ioservice in ioservices.Ioservices.itervalues():
-        try:
-          print ioservice
-          services_to_send.append(ioservice.prepare())
-        except Exception as e:
-          print traceback.format_exc()
-          raise e
+        elif message.get_message_name() == "get_services":
+            message.reply(prepare_services())
 
-      params = yami.Parameters()
-      params["services"] = services_to_send
-      
-      yagent.agent.send(discovery.get(service), service,
-        "services_full", params)
-      
-    elif message.get_message_name() == "unsubscribe_services":
-      i = message.get_parameters()["id"]
-      services_subscriptions.pop(i, None)
-      logging.debug("service subscription notification %d removed", i)
+        elif message.get_message_name() == "set_setting_value":
+            logging.debug("set_setting_value")
+            try:
+                params = message.get_parameters()
+                ioservices.Ioservices[params["service"]].settings[params["setting"]].set(params["value"])
+            except KeyError as e:
+                logging.warn("Something is not found, either in parameters or in system: %s", e.strerror)
+        elif message.get_message_name() == "get_io":
+            logging.debug("set_setting_value")
+            try:
+                params = message.get_parameters()
+                ioservices.Ioservices[params["service"]].settings[params["setting"]].set(params["value"])
+            except KeyError as e:
+                logging.warn("Something is not found, either in parameters or in system: %s", e.strerror)
 
-    elif message.get_message_name() == "get_services":
-      message.reply(prepare_services())
-
-    elif message.get_message_name() == "set_setting_value":
-        logging.debug("set_setting_value")
-        try:
-            params = message.get_parameters()
-            ioservices.Ioservices[params["service"]].settings[params["setting"]].set(params["value"])
-        except KeyError as e:
-            logging.warn("Something is not found, either in parameters or in system: %s", e.strerror)
-    elif message.get_message_name() == "get_io":
-        logging.debug("set_setting_value")
-        try:
-            params = message.get_parameters()
-            ioservices.Ioservices[params["service"]].settings[params["setting"]].set(params["value"])
-        except KeyError as e:
-            logging.warn("Something is not found, either in parameters or in system: %s", e.strerror)
-
-    else:
-        serv.on_msg(message)
+        else:
+            serv.on_msg(message)
+    except Exception as e:
+        print traceback.format_exc()
+        raise e
