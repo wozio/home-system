@@ -7,6 +7,8 @@ import yami
 import yagent
 import discovery
 
+t = None
+
 class test_io:
 
     def __init__(self):
@@ -19,23 +21,27 @@ class test_io:
 
         self.serv = service.service(self.name, self.on_msg)
 
-    def __del__(self):
-        self.serv = None
+    def exit(self):
+        self.serv.exit()
 
     def new_value(self):
         if self.s and self.e:
-            params = yami.Parameters()
-            params["name"] = self.name
-            params["id"] = 1
-            params["type"] = 0 #temperature input
-            params["state"] = 1
-            params["value"] = random.uniform(-20, 30)
-            logging.info("Sending new value to '%s'", self.s)
-            yagent.agent.send(self.e, self.s,
-                "state_change", params)
-            global t
-            t = threading.Timer(1, self.new_value)
-            t.start()
+            try:
+                params = yami.Parameters()
+                params["name"] = self.name
+                params["id"] = 1
+                params["type"] = 0 #temperature input
+                params["state"] = 1
+                params["value"] = random.uniform(-20, 30)
+                logging.info("Sending new value to '%s'", self.s)
+                yagent.agent.send(self.e, self.s,
+                    "state_change", params)
+                global t
+                t = threading.Timer(1, self.new_value)
+                t.start()
+            except yami.YAMIError as e:
+                self.s = None
+                self.e = None
 
     def on_msg(self, msg):
         try:
@@ -68,4 +74,12 @@ while 1:
   if raw_input() == "q":
       break
 
-t.cancel()
+if t is not None:
+    logging.debug("Cancelling timer")
+    t.cancel()
+    logging.debug("Join thread")
+    t.join
+
+tio.exit()
+
+discovery.exit()

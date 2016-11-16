@@ -22,9 +22,6 @@ class service(object):
 
     logging.info("Created service: %s (%s)", self.name, yagent.endpoint)
   
-  def __del__(self):
-    self.exit()
-
   def exit(self):
     logging.info("Deleting service with name=%s", self.name)
 

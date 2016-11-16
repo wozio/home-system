@@ -32,9 +32,8 @@ class ioservice:
 
         self.serv = service.service("io-control.service." + name, self.on_msg)
 
-    def __del__(self):
-        self.serv = None
-        pass
+    def exit(self):
+        self.serv.exit()
 
     def subscribe(self, callback):
         self.change_callback = callback
