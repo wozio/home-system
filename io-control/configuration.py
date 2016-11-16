@@ -16,6 +16,11 @@ defined_inputs = [
         'name': "Temperatura pole",
         'service': "io.1wire",
         'id': 8358689710083321104
+    },
+    {
+        'name': "Test temperature",
+        'service': "io.test",
+        'id': 1
     }
 ]
 
@@ -207,6 +212,20 @@ services = [
                     }
                 }
             }
+        ]
+    },
+    {
+        "name": "Test service",
+        "displays": [
+            {
+                "name": "Testowe wejście temperatury",
+                "data": {
+                    "type": "temperature",
+                    "from": "Test temperature"
+                }
+            }
+        ],
+        "settings": [
         ]
     }
 ]

@@ -1,31 +1,29 @@
 #!/usr/bin/env python
 
 import logging
+import traceback
 import service
 import yami
 import yagent
-import configuration
 import ioservices
 import outputs
-import output
 import inputs
 import discovery
-import traceback
 
-name = "io-control-dev"
+
+NAME = "io-control-dev"
 
 services_subscriptions = {}
-service_subscriptions = {}
 
 def init():
 
     global serv
-    serv = service.service(name, on_msg)
+    serv = service.service(NAME, on_msg)
 
     discovery.register(on_service)
 
     logging.debug("IO Control Service started")
-    
+
     ioservices.subscribe(on_ioservice_change)
 
 def exit():
@@ -34,46 +32,46 @@ def exit():
     logging.debug("IO Control Service exited")
 
 def on_service(new_service, available):
-  if available:
-    if new_service.find("io.", 0, 3) == 0:
-      logging.debug("IO service %s is available", new_service)
+    if available:
+        if new_service.find("io.", 0, 3) == 0:
+            logging.debug("IO service %s is available", new_service)
 
-      # subscribe for io state change notifications
-      params = yami.Parameters()
-      params["name"] = name
-      params["endpoint"] = yagent.endpoint
+            # subscribe for io state change notifications
+            params = yami.Parameters()
+            params["name"] = NAME
+            params["endpoint"] = yagent.endpoint
 
-      yagent.agent.send(discovery.get(new_service), new_service,
-        "subscribe", params)
-  else:
-    to_remove = []
-    for i, s in services_subscriptions.iteritems():
-      if s == new_service:
-        to_remove.append(i)
-      
-    for i in to_remove:
-      services_subscriptions.pop(i, None)
-      logging.debug("service subscription notification %d removed", i)
+            yagent.agent.send(discovery.get(new_service), new_service,
+                              "subscribe", params)
+    else:
+        to_remove = []
+        for i, s in services_subscriptions.iteritems():
+            if s == new_service:
+                to_remove.append(i)
+
+        for i in to_remove:
+            services_subscriptions.pop(i, None)
+            logging.debug("service subscription notification %d removed", i)
 
 def on_ioservice_change(service):
-  
-  logging.debug("service '%s'changed, sending to subscribers", service.name)
-  
-  params = service.prepare()
-  
-  to_remove = []
 
-  for i, s in services_subscriptions.iteritems():
-    logging.debug("sending to '%s'", s)
-    try:
-      yagent.agent.send(discovery.get(s), s,
-        "services_change", params)
-    except RuntimeError:
-      to_remove.append(i)
-      
-  for i in to_remove:
-    services_subscriptions.pop(i, None)
-    logging.debug("service subscription notification %d removed", i)
+    logging.debug("service '%s'changed, sending to subscribers", service.name)
+
+    params = service.prepare()
+
+    to_remove = []
+
+    for i, s in services_subscriptions.iteritems():
+        logging.debug("sending to '%s'", s)
+        try:
+            yagent.agent.send(discovery.get(s), s,
+                              "services_change", params)
+        except RuntimeError:
+            to_remove.append(i)
+
+    for i in to_remove:
+        services_subscriptions.pop(i, None)
+        logging.debug("service subscription notification %d removed", i)
 
 def on_msg(message):
     try:
@@ -117,9 +115,9 @@ def on_msg(message):
             i = 0
             while i in services_subscriptions:
                 i += 1
-            service = message.get_parameters()["service"]
-            services_subscriptions[i] = service
-            logging.debug("service '%s' subscribed for services change notification with id %d", service, i)
+            s = message.get_parameters()["service"]
+            services_subscriptions[i] = s
+            logging.debug("service '%s' subscribed for services change notification with id %d", s, i)
             
             params = yami.Parameters()
             params["id"] = i
@@ -134,16 +132,13 @@ def on_msg(message):
             params = yami.Parameters()
             params["services"] = services_to_send
             
-            yagent.agent.send(discovery.get(service), service,
+            yagent.agent.send(discovery.get(s), s,
                 "services_full", params)
         
         elif message.get_message_name() == "unsubscribe_services":
             i = message.get_parameters()["id"]
             services_subscriptions.pop(i, None)
             logging.debug("service subscription notification %d removed", i)
-
-        elif message.get_message_name() == "get_services":
-            message.reply(prepare_services())
 
         elif message.get_message_name() == "set_setting_value":
             logging.debug("set_setting_value")
@@ -152,6 +147,7 @@ def on_msg(message):
                 ioservices.Ioservices[params["service"]].settings[params["setting"]].set(params["value"])
             except KeyError as e:
                 logging.warn("Something is not found, either in parameters or in system: %s", e.strerror)
+
         elif message.get_message_name() == "get_io":
             logging.debug("set_setting_value")
             try:

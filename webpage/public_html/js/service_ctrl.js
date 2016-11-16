@@ -15,16 +15,13 @@ angular.module('app.service',[
     };
 
     DataSrv.register("service_full", function(message) {
-      $scope.service = message.params.service;
-    });
-    
-    DataSrv.register("service_change", function(message) {
+      $scope.service = message.params;
     });
     
     var serviceAvailabilitySubscrId = DataSrv.registerServiceAvailability(function(service, available){
-      console.log(service + " is " + available);
       if (service === srv) {
         if (available === true) {
+          console.log("Service '" + srv + "' is available, subscribing for service change notification");
           DataSrv.send(srv, "subscribe", {
               "service":DataSrv.getClientId()
             }, function(result){

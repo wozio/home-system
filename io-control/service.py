@@ -31,8 +31,10 @@ class service(object):
     self.timer.cancel()
 
     self.send_bye()
+    yagent.agent.unregister_object(self.name)
 
     logging.info("Deleted service with name=%s", self.name)
+    
 
   def on_msg(self, message):
     logging.warning("[%s] Unknown message: %s", self.name, message.get_message_name())

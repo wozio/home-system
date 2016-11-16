@@ -1,3 +1,29 @@
 <div>
   <h4>{{service.name}}</h4>
 </div>
+<div class="row">
+  <div class="col-xs-4 h4" ng-repeat="display in service.displays track by $index" title="{{display.name}}">
+    <div ng-if="display.state==1">
+      <div ng-show="display.type=='temperature'" highlighter="display.value.toFixed(1)">
+        {{display.value.toFixed(1)}}&#176;C
+      </div>
+      <div ng-show="display.type=='state'" highlighter="display.value">
+        <span class="{{display.value == 1 && 'glyphicon glyphicon-ok-sign' || 'glyphicon glyphicon-minus-sign'}}"></span>
+      </div>
+    </div>
+    <div ng-if="display.state==0">
+      <span class='glyphicon glyphicon-question-sign' style="color:orange"></span>
+    </div>
+    <div ng-if="display.state==2">
+      <span class='glyphicon glyphicon-exclamation-sign' style="color:red"></span>
+    </div>
+  </div>
+</div>
+<div ng-repeat="setting in service.settings track by $index">
+  <select class="form-control" title="{{setting.name}}"
+    ng-model="setting.value"
+    ng-init="setting.value"
+    ng-options="value as value for value in setting.values"
+    ng-change="updateSetting(service.name, setting.name, setting.value)">
+  </select>
+</div>
