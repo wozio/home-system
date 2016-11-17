@@ -7,7 +7,7 @@ import display
 import service
 import yami
 import yagent
-import discovery
+import subscribers
 
 class ioservice:
 
@@ -15,7 +15,7 @@ class ioservice:
         self.name = name
         self.settings = {}
         self.displays = {}
-        self.subscriptions = {}
+        self.subscriptions = subscribers.subscribers()
         self.change_callback = None
 
         logging.info("Created ioservice '%s'", name)
@@ -64,35 +64,26 @@ class ioservice:
     def send(self):
         params = self.prepare()
 
-        to_remove = []
-
-        for i, s in self.subscriptions.iteritems():
-            logging.debug("sending to '%s'", s)
-            try:
-                yagent.agent.send(discovery.get(s), s,
-                  "service_full", params)
-            except yami.YAMIError as e:
-                to_remove.append(i)
-            
-        for i in to_remove:
-            self.subscriptions.pop(i, None)
-            logging.debug("service subscription notification %d removed", i)
+        self.subscriptions.send("service_full", params)
 
     def on_msg(self, msg):
         try:
             if msg.get_message_name() == "subscribe":
-                i = 0
-                while i in self.subscriptions:
-                    i += 1
                 s = msg.get_parameters()["service"]
-                self.subscriptions[i] = s
+                i = self.subscriptions.add(s)
                 logging.debug("service '%s' subscribed for service '%s' change notification with id %d", s, self.name, i)
                 
                 params = yami.Parameters()
                 params["id"] = i
                 msg.reply(params)
 
-                self.send()
+                params = self.prepare()
+
+                self.subscriptions.send_to(i, "service_full", params)
+
+            elif msg.get_message_name() == "unsubscribe":
+                i = msg.get_parameters()["id"]
+                self.subscriptions.remove(i)
 
         except Exception as e:
             logging.error(traceback.format_exc())
