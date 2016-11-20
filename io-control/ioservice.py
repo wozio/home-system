@@ -39,9 +39,13 @@ class ioservice:
         self.change_callback = callback
     
     def on_change(self, disp_or_setting):
+
         if self.change_callback != None:
             self.change_callback(self)
-        self.send()
+
+        # sending change to subscribers
+        params = self.prepare()
+        self.subscriptions.send("service_change", params)
 
     def prepare(self):
         params = yami.Parameters()
@@ -61,11 +65,6 @@ class ioservice:
 
         return params
 
-    def send(self):
-        params = self.prepare()
-
-        self.subscriptions.send("service_full", params)
-
     def on_msg(self, msg):
         try:
             if msg.get_message_name() == "subscribe":
@@ -73,13 +72,17 @@ class ioservice:
                 i = self.subscriptions.add(s)
                 logging.debug("service '%s' subscribed for service '%s' change notification with id %d", s, self.name, i)
                 
+                # reply contains id of the subscription, current service state and history of displays
                 params = yami.Parameters()
                 params["id"] = i
+                params["service"] = self.prepare()
+                if len(self.displays) > 0:
+                    display_history = []
+                    for d in self.displays.itervalues():
+                        display_history.append(d.prepare_history())
+                    params["history"] = display_history
+
                 msg.reply(params)
-
-                params = self.prepare()
-
-                self.subscriptions.send_to(i, "service_full", params)
 
             elif msg.get_message_name() == "unsubscribe":
                 i = msg.get_parameters()["id"]
