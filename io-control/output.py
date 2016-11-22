@@ -5,7 +5,9 @@ import input
 import yami
 import yagent
 
-class output(input):
+# output has the same functionality as input with added possibility to set its value
+
+class output(input.input):
 
     def __init__(self, name, service, id):
         super(output, self).__init__(name, service, id)
@@ -20,7 +22,7 @@ class output(input):
             self.set_value()
 
     def set_value(self):
-        if self.state == state_ok:
+        if self.state == input.state_ok:
             params = yami.Parameters()
             params["id"] = int(self.id)
             params["value"] = int(self.wanted_value)

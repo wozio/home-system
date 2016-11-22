@@ -116,6 +116,7 @@ angular.module('app.data',[
           if (recv_msg.result === "success") {
             $rootScope.error = false;
             $rootScope.errorSlogan = "";
+            //console.log(recv_msg.params)
             queue[recv_msg.sequence_number].callback({
               success: true,
               data: recv_msg.params

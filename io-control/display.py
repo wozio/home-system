@@ -20,7 +20,7 @@ class Display:
 
     def get(self):
         try:
-            return getio().get()
+            return self.getio().get()
         except KeyError:
             logging.error("Attempt to read from not known io (%s %s)",
                 self.name, self.fromio)
@@ -45,7 +45,16 @@ class Display:
         params = yami.Parameters()
         params["name"] = self.name
         try:
-          params["history"] = self.getio().get_history()
+            # io returns list of tuples, we need to convert it to array of yami parameters
+            history = []
+            io_history = self.getio().get_history()
+            for entry in io_history:
+                entry_params = yami.Parameters()
+                entry_params["time"] = long(entry[0])
+                entry_params["state"] = int(entry[1])
+                entry_params["value"] = entry[2]
+                history.append(entry_params)
+            params["history"] = history
         except KeyError:
             logging.error("Attempt to read from not known io (%s %s)",
                 self.name, self.fromio)
