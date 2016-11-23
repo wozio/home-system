@@ -4,6 +4,7 @@ import logging
 import input
 import yami
 import yagent
+import discovery
 
 # output has the same functionality as input with added possibility to set its value
 
