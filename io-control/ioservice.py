@@ -76,13 +76,21 @@ class ioservice:
                 params = yami.Parameters()
                 params["id"] = i
                 params["service"] = self.prepare()
+
+                msg.reply(params)
+
+                # now sending history in separate message
                 if len(self.displays) > 0:
+                    params = yami.Parameters()
+                    params["name"] = self.name
+
                     display_history = []
                     for d in self.displays.itervalues():
                         display_history.append(d.prepare_history())
+                    
                     params["history"] = display_history
 
-                msg.reply(params)
+                    self.subscriptions.send_to(i, "service_history", params)
 
             elif msg.get_message_name() == "unsubscribe":
                 i = msg.get_parameters()["id"]

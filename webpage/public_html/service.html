@@ -25,6 +25,6 @@
     ng-change="updateSetting(service.name, setting.name, setting.value)">
   </select>
 </div>
-<div ng-repeat="display in service.displays track by $index" style="width:100%;height:500px;">
-  <am-chart options="chartData[$index]"></am-chart>
+<div ng-repeat="display in service.displays track by $index">
+  <chart options="chartOptions[$index]" change="chartChange[$index]"></chart>
 </div>

@@ -1,8 +1,7 @@
 'use strict';
 
 angular.module('app.service',[
-  'app.data',
-  'amChartsDirective'
+  'app.data'
 ])
 
 .controller('ServiceCtrl',[
@@ -15,7 +14,8 @@ angular.module('app.service',[
     $scope.service = {
         name: $routeParams.serviceId
     };
-    $scope.chartData = [];
+    $scope.chartOptions = [];
+    $scope.chartChange = [];
 
     var serviceAvailabilitySubscrId = DataSrv.registerServiceAvailability(function(service, available){
       if (service === srv) {
@@ -25,46 +25,25 @@ angular.module('app.service',[
               "service":DataSrv.getClientId()
             }, function(result){
             if (result.success) {
+              
               subscriptionId = parseInt(result.data.id);
               console.log("Subscribed with id="+subscriptionId);
 
-              for (var j = 0; j < result.data.history.length; j++){
+              // creating charts, empty for now, data will be initially written
+              // on service_history and then updated after each service_change
+              var displays = result.data.service.displays;
+              for (var j = 0; j < displays.length; j++){
                 
-                var data = []
-                var max = null;
-                var min = null;
-                
-                for (var i = 0; i < result.data.history[j].history.length; i++){
-                  if (result.data.history[j].history[i].state === 1){
-                    var val = result.data.history[j].history[i].value;
-                    if (max === null){
-                      max = val;
-                      min = val;
-                    } else {
-                      if (min > val)
-                        min = val;
-                      if (max < val)
-                        max = val;
-                    }
-                    var valueDate = new Date(result.data.history[j].history[i].time * 1000);
-                    data.push({
-                      date: valueDate,
-                      value: val
-                    });
-                  }
-                }
-
-                var newChartData = {
-                  "name": result.data.history[j].name,
+                var newChartOptions = {
+                  "name": displays[j].name,
                   "type": "serial",
                   "theme": "light",
                   "marginRight": 40,
                   "autoMarginOffset": 20,
                   "marginTop": 7,
-                  "data": data,
                   "creditsPosition": "top-left",
                   "titles": [{
-                      "text": result.data.history[j].name
+                      "text": displays[j].name
                   }],
                   "valueAxes": [{
                       "axisAlpha": 0.2,
@@ -79,11 +58,6 @@ angular.module('app.service',[
                       "lineThickness": 2,
                       "type": "step"
                   }],
-                  "chartScrollbar": {
-                      "autoGridCount": true,
-                      "graph": "g1",
-                      "scrollbarHeight": 30
-                  },
                   "chartCursor": {
                     "limitToGraph":"g1",
                     "categoryBalloonDateFormat": "JJ:NN:SS, DD MMMM",
@@ -98,18 +72,13 @@ angular.module('app.service',[
                       "minorGridEnabled": true
                   }
                 };
-                console.log("max=" + max + " min=" + min);
-                var diff = max - min;
-                if (diff < 3){
-                  newChartData.valueAxes[0].maximum = Math.ceil(max + (3 - diff)/2);
-                  newChartData.valueAxes[0].minimum = Math.floor(min - (3 - diff)/2);
-                  console.log("max=" + newChartData.valueAxes[0].maximum + " min=" + newChartData.valueAxes[0].minimum);
-                }
-                
-
-                $scope.chartData.push(newChartData);
+                $scope.chartOptions.push(newChartOptions);
+                $scope.chartChange.push(0);
               }
+
               $scope.service = result.data.service;
+              
+              
             } else {
               subscriptionId = null;
               $scope.viewLoading = false;
@@ -119,18 +88,41 @@ angular.module('app.service',[
       }
     });
 
+    DataSrv.register("service_history", function(message) {
+      if (message.params.name === srvName){
+        for (var j = 0; j < message.params.history.length; j++){
+                
+          var data = []
+          for (var i = 0; i < message.params.history[j].history.length; i++){
+            if (message.params.history[j].history[i].state === 1){
+              var val = message.params.history[j].history[i].value;
+              var valueDate = new Date(message.params.history[j].history[i].time * 1000);
+              data.push({
+                date: valueDate,
+                value: val
+              });
+            }
+          }
+
+          $scope.chartOptions[j].dataProvider = data;
+          $scope.chartChange[j]++;
+        }
+      }
+    });
+
     DataSrv.register("service_change", function(message) {
       if (message.params.name === srvName){
         $scope.service = message.params;
 
         for (var j = 0; j < message.params.displays.length; j++){
-          for (var i = 0; i < $scope.chartData.length; i++){
-            if ($scope.chartData[i].name === message.params.displays[j].name){
+          for (var i = 0; i < $scope.chartOptions.length; i++){
+            if ($scope.chartOptions[i].name === message.params.displays[j].name){
               var newDate = new Date();
-              $scope.chartData[i].data.push({
+              $scope.chartOptions[i].dataProvider.push({
                 date: newDate,
                 value:  message.params.displays[j].value
               })
+              $scope.chartChange[i]++;
             }
           }
         }
