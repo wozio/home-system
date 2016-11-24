@@ -75,7 +75,9 @@ angular.module('app.service',[
                   "graphs": [{
                       "id": "g1",
                       "balloonText": "<div style='margin:3px; font-size:11px;'>[[value]]&#176;C</div>",
-                      "valueField": "value"
+                      "valueField": "value",
+                      "lineThickness": 2,
+                      "type": "step"
                   }],
                   "chartScrollbar": {
                       "autoGridCount": true,
