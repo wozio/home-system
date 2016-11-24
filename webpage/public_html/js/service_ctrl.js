@@ -23,7 +23,8 @@ angular.module('app.service',[
           console.log("Service '" + srv + "' is available, subscribing for service change notification");
           DataSrv.send(srv, "subscribe", {
               "service":DataSrv.getClientId()
-            }, function(result){
+          }, function(result){
+            $scope.viewLoading = false;
             if (result.success) {
               
               subscriptionId = parseInt(result.data.id);
@@ -36,27 +37,23 @@ angular.module('app.service',[
                 
                 var newChartOptions = {
                   "name": displays[j].name,
+                  "dataProvider": [],
                   "type": "serial",
                   "theme": "light",
                   "marginRight": 40,
                   "autoMarginOffset": 20,
                   "marginTop": 7,
                   "creditsPosition": "top-left",
-                  "titles": [{
-                      "text": displays[j].name
-                  }],
                   "valueAxes": [{
                       "axisAlpha": 0.2,
                       "dashLength": 1,
                       "position": "left"
                   }],
-                  "mouseWheelZoomEnabled": true,
                   "graphs": [{
                       "id": "g1",
                       "balloonText": "<div style='margin:3px; font-size:11px;'>[[value]]&#176;C</div>",
                       "valueField": "value",
-                      "lineThickness": 2,
-                      "type": "step"
+                      "lineThickness": 2
                   }],
                   "chartCursor": {
                     "limitToGraph":"g1",
@@ -72,40 +69,48 @@ angular.module('app.service',[
                       "minorGridEnabled": true
                   }
                 };
+                if (displays[j].type === "state"){
+                  newChartOptions.graphs[0].type = "step";
+                  newChartOptions.graphs[0].balloonText = "<div style='margin:3px; font-size:11px;'>[[value]]</div>";
+                  newChartOptions.valueAxes[0].integersOnly = true;
+                }
                 $scope.chartOptions.push(newChartOptions);
                 $scope.chartChange.push(0);
               }
 
               $scope.service = result.data.service;
-              
-              
             } else {
               subscriptionId = null;
-              $scope.viewLoading = false;
             }
           });
+        } else {
+          subscriptionId = null;
+          $scope.service = {
+            name: $routeParams.serviceId
+          };
+          $scope.chartOptions = [];
+          $scope.chartChange = [];
         }
       }
     });
 
     DataSrv.register("service_history", function(message) {
-      if (message.params.name === srvName){
-        for (var j = 0; j < message.params.history.length; j++){
-                
-          var data = []
-          for (var i = 0; i < message.params.history[j].history.length; i++){
-            if (message.params.history[j].history[i].state === 1){
-              var val = message.params.history[j].history[i].value;
-              var valueDate = new Date(message.params.history[j].history[i].time * 1000);
-              data.push({
-                date: valueDate,
-                value: val
-              });
+      if (message.params.service_name === srvName){
+        // search for matching display
+        for (var j = 0; j < $scope.chartOptions.length; j++){
+          if ($scope.chartOptions[j].name === message.params.name){
+            for (var i = 0; i < message.params.history.length; i++){
+              if (message.params.history[i].state === 1){
+                var val = message.params.history[i].value;
+                var valueDate = new Date(message.params.history[i].time * 1000);
+                $scope.chartOptions[j].dataProvider.push({
+                  date: valueDate,
+                  value: val
+                });
+              }
             }
+            $scope.chartChange[j]++;
           }
-
-          $scope.chartOptions[j].dataProvider = data;
-          $scope.chartChange[j]++;
         }
       }
     });

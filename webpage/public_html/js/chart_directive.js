@@ -9,7 +9,7 @@
         change: '='
       },
       replace: true,
-      template: '<div class="amchart" style="width:100%;height:500px;"></div>',
+      template: '<div style="width:100%;height:500px;"></div>',
       link: function(scope, element) {
           var guid = function guid() {
             function s4() {
@@ -26,11 +26,9 @@
           scope.chart = AmCharts.makeChart(id, scope.options);
 
         scope.$watch('change', function (nv, ov) {
-            console.log("CHART WATCH!");
+          if (nv !== ov) {
             scope.chart.dataProvider = scope.options.dataProvider;
             scope.chart.validateData();
-            console.log(scope.options);
-          if (nv !== ov) {
           }
         });
       }

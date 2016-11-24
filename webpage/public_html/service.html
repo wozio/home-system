@@ -1,30 +1,23 @@
 <div>
-  <h4>{{service.name}}</h4>
+  <h2 style="width:100%;text-align:center;">{{service.name}}</h2>
 </div>
-<div ng-repeat="display in service.displays track by $index">
-  <div ng-if="display.state==1">
-    <div ng-show="display.type=='temperature'" highlighter="display.value.toFixed(1)">
-      {{display.name}}: {{display.value.toFixed(1)}}&#176;C
-    </div>
-    <div ng-show="display.type=='state'" highlighter="display.value">
-      <span class="{{display.value == 1 && 'glyphicon glyphicon-ok-sign' || 'glyphicon glyphicon-minus-sign'}}"></span>
-    </div>
-  </div>
-  <div ng-if="display.state==0">
-    <span class='glyphicon glyphicon-question-sign' style="color:orange"></span>
-  </div>
-  <div ng-if="display.state==2">
-    <span class='glyphicon glyphicon-exclamation-sign' style="color:red"></span>
-  </div>
-</div>
-<div ng-repeat="setting in service.settings track by $index">
-  <select class="form-control" title="{{setting.name}}"
-    ng-model="setting.value"
-    ng-init="setting.value"
-    ng-options="value as value for value in setting.values"
-    ng-change="updateSetting(service.name, setting.name, setting.value)">
-  </select>
-</div>
-<div ng-repeat="display in service.displays track by $index">
+<div ng-repeat="display in service.displays track by $index" style="width:100%;margin-top:30px;">
+  <span class="h4" style="display: inline-block; width: 50%; padding-left: 15%;">{{display.name}}</span>
+  <span style="display: inline-block; width: 35%; text-align: right;">
+    <span ng-if="display.state==1">
+      <span class="h3" ng-show="display.type=='temperature'" highlighter="display.value.toFixed(1)">
+        {{display.value.toFixed(1)}}&#176;C
+      </span>
+      <span class="h3" ng-show="display.type=='state'" highlighter="display.value">
+        <span class="{{display.value == 1 && 'glyphicon glyphicon-ok-sign' || 'glyphicon glyphicon-minus-sign'}}"></span>
+      </span>
+    </span>
+    <span ng-if="display.state==0">
+      <span class='glyphicon glyphicon-question-sign' style="color:orange"></span>
+    </span>
+    <span ng-if="display.state==2">
+      <span class='glyphicon glyphicon-exclamation-sign' style="color:red"></span>
+    </span>
+  </span>
   <chart options="chartOptions[$index]" change="chartChange[$index]"></chart>
 </div>
