@@ -47,7 +47,7 @@ def on_service(new_service, available):
 
 def on_ioservice_change(service):
 
-    logging.debug("service '%s'changed, sending to subscribers", service.name)
+    #logging.debug("service '%s'changed, sending to subscribers", service.name)
 
     params = service.prepare()
 

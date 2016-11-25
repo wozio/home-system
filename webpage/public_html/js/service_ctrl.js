@@ -118,16 +118,18 @@ angular.module('app.service',[
     DataSrv.register("service_change", function(message) {
       if (message.params.name === srvName){
         $scope.service = message.params;
-
         for (var j = 0; j < message.params.displays.length; j++){
-          for (var i = 0; i < $scope.chartOptions.length; i++){
-            if ($scope.chartOptions[i].name === message.params.displays[j].name){
-              var newDate = new Date();
-              $scope.chartOptions[i].dataProvider.push({
-                date: newDate,
-                value:  message.params.displays[j].value
-              })
-              $scope.chartChange[i]++;
+          if (message.params.displays[j].state == 1){
+            for (var i = 0; i < $scope.chartOptions.length; i++){
+              if ($scope.chartOptions[i].name === message.params.displays[j].name){
+                var newDate = new Date();
+                $scope.chartOptions[i].dataProvider.push({
+                  date: newDate,
+                  value:  message.params.displays[j].value
+                })
+                $scope.chartChange[i]++;
+                break;
+              }
             }
           }
         }

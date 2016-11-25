@@ -31,7 +31,7 @@ class input(object):
     def on_service(self, new_service, available):
         if not available:
             if new_service == self.service:
-                logging.debug("IO service '%s' is not available for IO 's'", new_service, self.name)
+                logging.debug("IO service '%s' is not available for IO '%s'", new_service, self.name)
                 self.on_state_change(state_unknown, 0)
 
     def get(self):

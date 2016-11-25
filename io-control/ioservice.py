@@ -69,21 +69,28 @@ class ioservice:
         try:
             if msg.get_message_name() == "subscribe":
                 s = msg.get_parameters()["service"]
-                i = self.subscriptions.add(s)
-                logging.debug("service '%s' subscribed for service '%s' change notification with id %d", s, self.name, i)
+                id = self.subscriptions.add(s)
+                logging.debug("service '%s' subscribed for service '%s' change notification with id %d", s, self.name, id)
                 
                 # reply contains id of the subscription, current service state and history of displays
                 params = yami.Parameters()
-                params["id"] = i
+                params["id"] = id
                 params["service"] = self.prepare()
 
                 msg.reply(params)
 
                 # now sending history in separate messages
                 for d in self.displays.itervalues():
-                    params = d.prepare_history()
+                    params = yami.Parameters()
                     params["service_name"] = self.name
-                    self.subscriptions.send_to(i, "service_history", params)
+                    params["name"] = d.name
+                    history = d.prepare_history()
+                    # split in chunks per 100
+                    histories = [history[i:i + 100] for i in xrange(0, len(history), 100)]
+                    logging.debug("sending history of '%s' in %d messages", len(histories))
+                    for h in histories:
+                        params["history"] = h
+                        self.subscriptions.send_to(id, "service_history", params)
 
             elif msg.get_message_name() == "unsubscribe":
                 i = msg.get_parameters()["id"]

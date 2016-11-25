@@ -6,6 +6,8 @@ import yami
 
 class Display:
 
+    name = ""
+
     def __init__(self, name, data):
         logging.info("Created display '%s'", name)
 
@@ -42,11 +44,9 @@ class Display:
         return params
 
     def prepare_history(self):
-        params = yami.Parameters()
-        params["name"] = self.name
+        history = []
         try:
             # io returns list of tuples, we need to convert it to array of yami parameters
-            history = []
             io_history = self.getio().get_history()
             for entry in io_history:
                 entry_params = yami.Parameters()
@@ -54,9 +54,8 @@ class Display:
                 entry_params["state"] = int(entry[1])
                 entry_params["value"] = entry[2]
                 history.append(entry_params)
-            params["history"] = history
         except KeyError:
             logging.error("Attempt to read from not known io (%s %s)",
                 self.name, self.fromio)
 
-        return params
+        return history
