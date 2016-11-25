@@ -2,6 +2,7 @@
 #define	FILE_READER_H
 
 #include "session_callback_t.h"
+#include "server_binary_session.h"
 #include <thread>
 
 namespace home_system
@@ -12,7 +13,7 @@ namespace media
 class file_reader
 {
 public:
-  file_reader(int adapter, int frontend, dvb::session_stream_part_callback_t callback);
+  file_reader(int adapter, int frontend, const std::string& endpoint);
   ~file_reader();
   
   bool is_running();
@@ -21,8 +22,8 @@ private:
   int adapter_, frontend_;
   bool continue_, running_;
   std::thread thread_;
-  dvb::session_stream_part_callback_t callback_;
-  
+  std::string endpoint_;
+  std::unique_ptr<server_binary_session> session_;
   
   void thread_exec();
 };

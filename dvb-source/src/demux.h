@@ -65,7 +65,7 @@ public:
   /**
    * Sets channel.
    */
-  void set_channel(channel_t c, dvb::session_stream_part_callback_t callback);
+  void set_channel(channel_t c, const std::string& endpoint);
   
   
   // callback, events etc
@@ -114,8 +114,8 @@ private:
   std::map<int, event_callback_t> event_callbacks_;
   ei_callback_t ei_callback_;
   
-  dvb::session_stream_part_callback_t session_callback_;
   channel_t channel_;
+  std::string endpoint_;
 
   std::deque<int> pid_fds_;
   uint16_t pmt_pid_;

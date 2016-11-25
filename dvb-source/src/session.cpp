@@ -10,7 +10,7 @@ namespace dvb
 {
 
 session::session(home_system::media::channel_t c, dvb::session_callback_t callback,
-    dvb::session_stream_part_callback_t stream_part_callback,
+    const std::string& endpoint,
     home_system::media::frontend& frontend, home_system::media::demux& demux,
     home_system::media::transponders& transponders)
 : frontend_(frontend),
@@ -18,7 +18,7 @@ session::session(home_system::media::channel_t c, dvb::session_callback_t callba
   transponders_(transponders),
   channel_(c),
   callback_(callback),
-  stream_part_callback_(stream_part_callback)
+  endpoint_(endpoint)
 {
   LOG(DEBUG) << "Creating session for channel " << c->get_name();
   demux_callback_id_ = demux_.register_event_callback([this](demux_event state){
@@ -49,7 +49,7 @@ void session::on_frontend_state_change(home_system::media::frontend_state newsta
   LOG(DEBUG) << "Frontend state change to: " << newstate;
   if (newstate == frontend_state::tuned)
   {
-    demux_.set_channel(channel_, stream_part_callback_);
+    demux_.set_channel(channel_, endpoint_);
   }
 }
 

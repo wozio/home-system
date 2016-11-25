@@ -30,8 +30,7 @@ public:
   home_system::media::transponders& transponders();
   
   size_t create_session(home_system::media::channel_t c,
-    session_callback_t session_callback,
-    session_stream_part_callback_t stream_part_callback);
+    session_callback_t session_callback, const std::string& endpoint);
   void delete_session(size_t s);
   
 private:

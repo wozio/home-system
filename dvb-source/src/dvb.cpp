@@ -58,8 +58,7 @@ home_system::media::transponders& dvb::transponders()
 }
 
 size_t dvb::create_session(home_system::media::channel_t c,
-    session_callback_t session_callback,
-    session_stream_part_callback_t stream_part_callback)
+    session_callback_t session_callback, const std::string& endpoint)
 {
   LOG(DEBUG) << "Creating session";
   
@@ -68,7 +67,7 @@ size_t dvb::create_session(home_system::media::channel_t c,
   //lock_guard<mutex> lock(state_mutex_);
 
   state_ = state::busy;
-  session_t s(new session(c, session_callback, stream_part_callback,
+  session_t s(new session(c, session_callback, endpoint,
     frontend_, demux_, transponders_));
   // find free id
   size_t sid = 0;
