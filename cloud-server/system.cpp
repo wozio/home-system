@@ -139,7 +139,7 @@ void system::on_read(data_t data, size_t data_size)
       Writer<StringBuffer> writer(*buffer);
       reply.Accept(writer);
       
-      on_send(shared_from_this(), buffer);
+      on_send(buffer);
       break;
     }
   }
@@ -153,7 +153,7 @@ void system::send_to_system(const rapidjson::Document& d)
     Writer<StringBuffer> writer(*buffer);
     d.Accept(writer);
     
-    on_send(shared_from_this(), buffer);
+    on_send(buffer);
   }
 }
 

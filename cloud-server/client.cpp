@@ -50,7 +50,7 @@ void client::logout_complete()
     Writer<StringBuffer> writer(*buffer);
     msg.Accept(writer);
 
-    on_send(shared_from_this(), buffer);
+    on_send(buffer);
 
     client_state_ = wait_for_login;
   }
@@ -182,7 +182,7 @@ void client::send_to_client(const rapidjson::Document& d)
   Writer<StringBuffer> writer(*buffer);
   d.Accept(writer);
       
-  on_send(shared_from_this(), buffer);
+  on_send(buffer);
 }
 
 void client::on_read(data_t data, size_t data_size)
@@ -277,7 +277,7 @@ void client::on_read(data_t data, size_t data_size)
               Writer<StringBuffer> writer(*buffer);
               reply.Accept(writer);
 
-              on_send(shared_from_this(), buffer);
+              on_send(buffer);
               return;
             }
           }
