@@ -87,7 +87,7 @@ class ioservice:
                     history = d.prepare_history()
                     # split in chunks per 100
                     histories = [history[i:i + 100] for i in xrange(0, len(history), 100)]
-                    logging.debug("sending history of '%s' in %d messages", len(histories))
+                    logging.debug("sending history of '%s' in %d messages", d.name, len(histories))
                     for h in histories:
                         params["history"] = h
                         self.subscriptions.send_to(id, "service_history", params)
