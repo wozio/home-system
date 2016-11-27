@@ -21,19 +21,21 @@ class service(object):
     self.send_hello()
 
     logging.info("Created service: %s (%s)", self.name, yagent.endpoint)
-
+  
   def exit(self):
     logging.info("Deleting service with name=%s", self.name)
 
     self.timer.cancel()
 
     self.send_bye()
+    yagent.agent.unregister_object(self.name)
 
     logging.info("Deleted service with name=%s", self.name)
+    
 
   def on_msg(self, message):
-    logging.warning("Unknown message: " + message.get_message_name())
-    message.reject("Unknown message: " + message.get_message_name())
+    logging.warning("[%s] Unknown message: %s", self.name, message.get_message_name())
+    message.reject("Unknown message (" + message.get_message_name() + ") received by service " + self.name)
 
   def send_hello(self):
     self.send("hello\n" + self.name + "\n" + yagent.endpoint)

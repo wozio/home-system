@@ -15,11 +15,11 @@ def init():
   global cont, thread
   cont = True
   thread = threading.Thread(target=run)
-  thread.start();
+  thread.start()
 
 def run():
   global cont
-  cont = True;
+  cont = True
 
   MCAST_GRP = '239.255.255.255'
   MCAST_PORT = 10001
@@ -46,7 +46,7 @@ def run():
       pass
 
 def store_service(service, endpoint):
-  #logging.debug("Storing service: " + service + " (" + endpoint + ")")
+  logging.debug("Storing service: " + service + " (" + endpoint + ")")
   global known_services, callbacks
   known_services[service] = endpoint
   for c in callbacks:
@@ -54,7 +54,7 @@ def store_service(service, endpoint):
 
 
 def erase_service( service):
-  #logging.debug("Erasing service: " + service)
+  logging.debug("Erasing service: " + service)
   global known_services, callbacks
   del known_services[service]
   for c in callbacks:

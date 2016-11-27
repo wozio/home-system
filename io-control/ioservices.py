@@ -15,7 +15,8 @@ def init():
     Ioservices[s["name"]] = new_service
 
 def exit():
-  pass
+  for s in Ioservices.itervalues():
+    s.exit()
   
 def subscribe(callback):
   callbacks.append(callback)

@@ -3,7 +3,7 @@
 </div>
 <div ng-if="!loading" class="row">
   <div class="col-sm-6 col-md-4 col-lg-3" ng-repeat="service in services track by $index">
-    <h2>{{service.name}}</h2>
+    <a class="h2" href="#/service/{{service.name}}">{{service.name}}</a>
     <div class="row">
       <div class="col-xs-4 h4" ng-repeat="display in service.displays track by $index" title="{{display.name}}">
         <div ng-if="display.state==1">

@@ -116,6 +116,7 @@ angular.module('app.data',[
           if (recv_msg.result === "success") {
             $rootScope.error = false;
             $rootScope.errorSlogan = "";
+            //console.log(recv_msg.params)
             queue[recv_msg.sequence_number].callback({
               success: true,
               data: recv_msg.params
@@ -204,6 +205,7 @@ angular.module('app.data',[
       if (params) {
         prepared_msg["parameters"] = params;
       }
+      var seq_str = "";
       if (reply_callback) {
         prepared_msg["expect_reply"] = true;
         prepared_msg["sequence_number"] = seq;
@@ -217,9 +219,10 @@ angular.module('app.data',[
             seq),
           sent_time: n
         }
+        seq_str = " (Sequence " + seq + ")";
         seq++;
       }
-      console.log("Sending '" + msg + "'");
+      console.log("Sending '" + msg + "' to '" + target + "'" + seq_str);
       dataStream.send(JSON.stringify(prepared_msg));
     } else {
       if (reply_callback) {

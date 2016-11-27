@@ -19,6 +19,9 @@ class timer:
 
     self.ready = True
 
+  def __del__(self):
+    self.exit()
+
   def exit(self):
     self.timer.cancel()
 
