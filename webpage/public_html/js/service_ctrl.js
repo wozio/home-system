@@ -16,6 +16,7 @@ angular.module('app.service',[
     };
     $scope.chartOptions = [];
     $scope.chartChange = [];
+    $scope.chartData = [];
 
     var serviceAvailabilitySubscrId = DataSrv.registerServiceAvailability(function(service, available){
       if (service === srv) {
@@ -37,44 +38,10 @@ angular.module('app.service',[
                 
                 var newChartOptions = {
                   "name": displays[j].name,
-                  "dataProvider": [],
-                  "type": "serial",
-                  "theme": "light",
-                  "marginRight": 40,
-                  "autoMarginOffset": 20,
-                  "marginTop": 7,
-                  "creditsPosition": "top-left",
-                  "valueAxes": [{
-                      "axisAlpha": 0.2,
-                      "dashLength": 1,
-                      "position": "left"
-                  }],
-                  "graphs": [{
-                      "id": "g1",
-                      "balloonText": "<div style='margin:3px; font-size:11px;'>[[value]]&#176;C</div>",
-                      "valueField": "value",
-                      "lineThickness": 2
-                  }],
-                  "chartCursor": {
-                    "limitToGraph":"g1",
-                    "categoryBalloonDateFormat": "JJ:NN:SS, DD MMMM",
-                    "cursorPosition": "mouse"
-                  },
-                  "categoryField": "date",
-                  "categoryAxis": {
-                      "minPeriod": "ss",
-                      "parseDates": true,
-                      "axisColor": "#DADADA",
-                      "dashLength": 1,
-                      "minorGridEnabled": true
-                  }
-                };
-                if (displays[j].type === "state"){
-                  newChartOptions.graphs[0].type = "step";
-                  newChartOptions.graphs[0].balloonText = "<div style='margin:3px; font-size:11px;'>[[value]]</div>";
-                  newChartOptions.valueAxes[0].integersOnly = true;
+                  "type": displays[j].type
                 }
                 $scope.chartOptions.push(newChartOptions);
+                $scope.chartData.push([]);
                 $scope.chartChange.push(0);
               }
 
@@ -90,6 +57,7 @@ angular.module('app.service',[
           };
           $scope.chartOptions = [];
           $scope.chartChange = [];
+          $scope.chartData = [];
         }
       }
     });
@@ -103,7 +71,7 @@ angular.module('app.service',[
               if (message.params.history[i].state === 1){
                 var val = message.params.history[i].value;
                 var valueDate = new Date(message.params.history[i].time * 1000);
-                $scope.chartOptions[j].dataProvider.push({
+                $scope.chartData[j].push({
                   date: valueDate,
                   value: val
                 });
@@ -123,10 +91,10 @@ angular.module('app.service',[
             for (var i = 0; i < $scope.chartOptions.length; i++){
               if ($scope.chartOptions[i].name === message.params.displays[j].name){
                 var newDate = new Date();
-                $scope.chartOptions[i].dataProvider.push({
+                $scope.chartData[i].push({
                   date: newDate,
                   value:  message.params.displays[j].value
-                })
+                });
                 $scope.chartChange[i]++;
                 break;
               }
