@@ -79,15 +79,30 @@ class ioservice:
 
                 msg.reply(params)
 
-                # now sending history in separate messages
+                # prepare history for sending
+                displays_histories = {}
+                msg_number = 0
                 for d in self.displays.itervalues():
-                    params = yami.Parameters()
-                    params["service_name"] = self.name
-                    params["name"] = d.name
                     history = d.prepare_history()
                     # split in chunks per 100
                     histories = [history[i:i + 100] for i in xrange(0, len(history), 100)]
-                    logging.debug("sending history of '%s' in %d messages", d.name, len(histories))
+                    msg_number += len(histories)
+                    displays_histories[d.name] = histories
+
+                logging.debug("sending history of in %d messages", msg_number)
+
+                # send information how many messages it will take
+                params = yami.Parameters()
+                params["name"] = self.name
+                params["msg_number"] = msg_number
+                self.subscriptions.send_to(id, "service_history_info", params)
+
+                # now sending messages
+                j = 0
+                for d, histories in displays_histories.iteritems():
+                    params = yami.Parameters()
+                    params["name"] = self.name
+                    params["display_name"] = d
                     for h in histories:
                         params["history"] = h
                         self.subscriptions.send_to(id, "service_history", params)

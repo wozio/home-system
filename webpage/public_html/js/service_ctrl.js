@@ -62,11 +62,17 @@ angular.module('app.service',[
       }
     });
 
+    DataSrv.register("service_history_info", function(message) {
+      if (message.params.name === srvName){
+        console.log(message.params.msg_number);
+      }
+    });
+
     DataSrv.register("service_history", function(message) {
-      if (message.params.service_name === srvName){
+      if (message.params.name === srvName){
         // search for matching display
         for (var j = 0; j < $scope.chartOptions.length; j++){
-          if ($scope.chartOptions[j].name === message.params.name){
+          if ($scope.chartOptions[j].name === message.params.display_name){
             for (var i = 0; i < message.params.history.length; i++){
               if (message.params.history[i].state === 1){
                 var val = message.params.history[i].value;

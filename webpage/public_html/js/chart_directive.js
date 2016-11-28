@@ -88,7 +88,7 @@
         var chart = AmCharts.makeChart(id, newChartOptions);
 
         chart.addListener("zoomed", function(event) {
-          console.log(event.startDate + "->" + event.endDate);
+          //console.log(event.startDate + "->" + event.endDate);
         });
 
         // watch on change indicator which will be changed when
