@@ -58,6 +58,23 @@
               "axisColor": "#DADADA",
               "dashLength": 1,
               "minorGridEnabled": true
+          },
+          "chartScrollbar": {
+            "graph":"g1",
+            "gridAlpha":0,
+            "color":"#888888",
+            "scrollbarHeight":30,
+            "backgroundAlpha":0,
+            "selectedBackgroundAlpha":0.1,
+            "selectedBackgroundColor":"#888888",
+            "graphFillAlpha":0,
+            "autoGridCount":true,
+            "selectedGraphFillAlpha":0,
+            "graphLineAlpha":0.2,
+            "graphLineColor":"#c2c2c2",
+            "selectedGraphLineColor":"#888888",
+            "selectedGraphLineAlpha":1
+
           }
         };
         if (scope.options.type === "state"){
@@ -68,6 +85,10 @@
 
         // create chart
         var chart = AmCharts.makeChart(id, newChartOptions);
+
+        chart.addListener("zoomed", function(event) {
+          console.log(event.startDate + "->" + event.endDate);
+        });
 
         // watch on change indicator which will be changed when
         // data is changed
