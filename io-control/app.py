@@ -37,7 +37,8 @@ def init(daemonize):
 def exit():
   logging.info("Home System IO Control quitting")
 
-  yagent.agent = None
+  yagent.agent.close()
+  ioservices.exit()
   inputs.exit()
   mainservice.exit()
   discovery.exit()

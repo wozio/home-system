@@ -2,6 +2,7 @@
 
 import logging
 import rules
+import yami
 
 class Setting:
 
@@ -36,3 +37,11 @@ class Setting:
   def subscribe(self, callback):
     self.change_callback = callback
 
+  def prepare(self):
+    params = yami.Parameters()
+    params["name"] = self.name
+    params["type"] = self.type
+    params["value"] = self.get()
+    params["values"] = self.values
+
+    return params
