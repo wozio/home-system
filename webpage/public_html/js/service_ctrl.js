@@ -18,6 +18,11 @@ angular.module('app.service',[
     $scope.chartChange = [];
     $scope.chartData = [];
 
+    $scope.dataLoading = true;
+    $scope.dataProgress = 0;
+    var dataReceived = 0;
+    var dataTotal = 0;
+
     var serviceAvailabilitySubscrId = DataSrv.registerServiceAvailability(function(service, available){
       if (service === srv) {
         if (available === true) {
@@ -65,11 +70,17 @@ angular.module('app.service',[
     DataSrv.register("service_history_info", function(message) {
       if (message.params.name === srvName){
         console.log(message.params.msg_number);
+        dataTotal = message.params.msg_number;
       }
     });
 
     DataSrv.register("service_history", function(message) {
       if (message.params.name === srvName){
+        // update progress bar
+        dataReceived++;
+        if (dataTotal > 0){
+          $scope.dataProgress = dataReceived / dataTotal * 100;
+        }
         // search for matching display
         for (var j = 0; j < $scope.chartOptions.length; j++){
           if ($scope.chartOptions[j].name === message.params.display_name){
@@ -83,6 +94,12 @@ angular.module('app.service',[
                 });
               }
             }
+            //$scope.chartChange[j]++;
+          }
+        }
+        if (dataReceived === dataTotal){
+          $scope.dataLoading = false;
+          for (var j = 0; j < $scope.chartChange.length; j++){
             $scope.chartChange[j]++;
           }
         }
@@ -118,3 +135,4 @@ angular.module('app.service',[
     });
   }
 ]);
+
