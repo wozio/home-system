@@ -31,6 +31,7 @@
           "dataProvider": scope.data,
           "type": "serial",
           "theme": "light",
+//          "processTimeout": 5,
           "marginRight": 40,
           "autoMarginOffset": 20,
           "marginTop": 7,

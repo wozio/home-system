@@ -185,7 +185,7 @@ void client::send_to_client(const rapidjson::Document& d)
   on_send(buffer);
 }
 
-void client::on_read(data_t data, size_t data_size)
+void client::on_read(data_t data, size_t data_size, type_t data_type)
 {
   // adding \0 character at the end for JSON parser
   // it is guaranteed that data size is bigger than data_size

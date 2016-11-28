@@ -37,7 +37,7 @@ void system::unset_route(const std::string& target)
   LOGH(DEBUG) << "Number of routes: " << route_.size();
 }
 
-void system::on_read(data_t data, size_t data_size)
+void system::on_read(data_t data, size_t data_size, type_t data_type)
 {
   // unpack message
   // adding \0 character at the end for JSON parser
