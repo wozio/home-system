@@ -17,7 +17,7 @@ public:
   client(const client& orig) = delete;
   ~client();
   
-  void on_read(data_t data, size_t data_size);
+  void on_read(data_t data, size_t data_size, type_t data_type);
   void shutdown();
   
   void send_to_client(const rapidjson::Document& d);
