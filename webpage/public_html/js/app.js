@@ -7,9 +7,11 @@ angular.module('app', [
   'app.main',
   'app.login',
   'app.services',
+  'app.service',
   'app.data',
   'app.epg',
-  'app.highlighter'
+  'app.highlighter',
+  'app.chart'
 ])
 
 .config(['$routeProvider',
@@ -18,6 +20,13 @@ angular.module('app', [
       when('/', {
         templateUrl: 'services.html',
         controller: 'ServicesCtrl',
+        resolve: {
+          factory: checkUser
+        }
+      }).
+      when('/service/:serviceId', {
+        templateUrl: 'service.html',
+        controller: 'ServiceCtrl',
         resolve: {
           factory: checkUser
         }
