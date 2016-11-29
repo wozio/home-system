@@ -84,11 +84,27 @@
           newChartOptions.valueAxes[0].integersOnly = true;
         }
 
+        var ignoreZoomed = false;
+        var zoomStartDate = null;
+        var zoomEndDate = null;
+
         // create chart
         var chart = AmCharts.makeChart(id, newChartOptions);
 
+        // add listeners
         chart.addListener("zoomed", function(event) {
-          //console.log(event.startDate + "->" + event.endDate);
+          if (ignoreZoomed) {
+            ignoreZoomed = false;
+            return;
+          }
+          zoomStartDate = event.startDate;
+          zoomEndDate = event.endDate;
+        });
+
+        chart.addListener("dataUpdated", function(event) {
+          if (zoomStartDate !== null){
+            chart.zoomToDates(zoomStartDate, zoomEndDate);
+          }
         });
 
         // watch on change indicator which will be changed when
@@ -97,6 +113,7 @@
           if (nv !== ov) {
             chart.dataProvider = scope.data;
             if (scope.data.length > 0){
+              ignoreZoomed = true;
               chart.validateData();
               //element.css("display", "inline");
             } else {
