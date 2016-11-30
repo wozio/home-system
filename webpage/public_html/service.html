@@ -1,4 +1,4 @@
-<div ng-if="dataLoading" class="progress" style="height: 3px; width: 100%; margin-bottom: -3px; margin-top: -20px;">
+<div ng-class="{invisible: !dataLoading}" class="progress" style="height: 3px; width: 100%;  margin-top: -20px;">
   <div class="progress-bar" style="width: {{dataProgress}}%;">
   </div>
 </div>
