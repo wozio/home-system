@@ -10,7 +10,7 @@
         data: "="
       },
       replace: true,
-      template: '<div style="width:100%;height:500px;margin-bottom:30px;"></div>',
+      template: '<div style="width:100%;height:500px;margin-bottom:30px;display:none;"></div>',
       link: function(scope, element) {
         // first generate id for chart
         var guid = function guid() {
@@ -114,8 +114,8 @@
             chart.dataProvider = scope.data;
             if (scope.data.length > 0){
               ignoreZoomed = true;
+              element.css("display", "block");
               chart.validateData();
-              //element.css("display", "inline");
             } else {
               element.css("display", "none");
             }
