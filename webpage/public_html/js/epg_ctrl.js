@@ -8,7 +8,7 @@ angular.module('app.epg',[
   '$scope', 'DataSrv', '$interval',
   function ($scope, DataSrv, $interval) {
 	  console.log("EpgCtrl");
-	$scope.viewLoading = false;
+
     var srv = "tv";
     var get = function() {
       DataSrv.send(srv, "get_channels", null, function(result) {
@@ -33,6 +33,7 @@ angular.module('app.epg',[
             "destination":DataSrv.getClientId(),
             "channel":1
           }, function(result){
+            $scope.viewLoaded();
             if (result.success) {
               sessionId = parseInt(result.data.session);
             } else {

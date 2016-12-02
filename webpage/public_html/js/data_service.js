@@ -10,7 +10,8 @@ angular.module('app.data',[
   $(window).on('beforeunload', function(){
     dataStream.close();
   });
-  
+
+  // creating uri  
   var loc = window.location, newUri;
   if (loc.protocol === "https:") {
     newUri = "wss:";
@@ -46,7 +47,6 @@ angular.module('app.data',[
   function connect(){
     console.log("Connecting to: " + newUri);
     dataStream = new WebSocket(newUri);
-    //dataStream.binaryType = 'arraybuffer';
     
     dataStream.onclose = function() {
       console.log("WebSocket connection closed");
@@ -311,7 +311,7 @@ angular.module('app.data',[
       $rootScope.loggedIn = false;
       $cookies.remove('user');
       clientId = "";
-      BinaryDataSrv.disconnect();
+      //BinaryDataSrv.disconnect();
     },
     
     register: function(message, callback) {

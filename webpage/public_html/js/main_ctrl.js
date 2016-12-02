@@ -4,18 +4,18 @@ angular.module('app.main', [
 ])
 
 .controller('MainCtrl', [
-  '$scope', '$rootScope', 'DataSrv', '$interval',
-  function ($scope, $rootScope, DataSrv, $interval) {
+  '$scope', '$rootScope', 'DataSrv',
+  function ($scope, $rootScope, DataSrv) {
     $scope.viewLoading = true;
-	console.log("MainCtrl");
+	  console.log("MainCtrl");
 
     $rootScope.$on('$routeChangeStart', function () {
-		console.log("routeChangeStart");
+		  console.log("routeChangeStart");
       $scope.viewLoading = true;
     });
-	$rootScope.$on('$routeChangeEnd', function () {
-		console.log("routeChangeEnd");
+
+    $scope.viewLoaded = function(){
       $scope.viewLoading = false;
-    });
+    }
   }
 ]);

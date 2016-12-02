@@ -30,9 +30,8 @@ angular.module('app.service',[
           DataSrv.send(srv, "subscribe", {
               "service":DataSrv.getClientId()
           }, function(result){
-            $scope.viewLoading = false;
+            $scope.viewLoaded();
             if (result.success) {
-              
               subscriptionId = parseInt(result.data.id);
               console.log("Subscribed with id="+subscriptionId);
 

@@ -61,7 +61,7 @@
         <ul class="nav navbar-nav navbar-right">
           <li class="navbar-text" title="Binary transfer rate">{{speed.toFixed(2)}} Mb/s</li>
           <li ng-if="loggedIn" class="navbar-text">Logged in as {{name}}</li>
-          <li class='navbar-text mk-spinner-centered mk-spinner-ring' ng-if='viewLoading'></li>
+          <li ng-class="{invisible: !viewLoading}" class='navbar-text mk-spinner-centered mk-spinner-ring'></li>
         </ul>
       </div>
 
