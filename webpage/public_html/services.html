@@ -1,3 +1,29 @@
+<style>
+    #main {
+        margin: 0px;
+        padding: 0px;
+        display: flex;
+        flex-flow: row;
+    }
+ 
+    .column {
+        margin: 4px;
+        padding: 5px;
+        border: 1px solid;
+        border-radius: 7pt;
+        background: lightblue;
+        flex: 3 1 25%;
+    }
+
+    /* Too narrow to support three columns */
+    @media all and (max-width: 640px) {
+        #main {
+            flex-direction: column;
+        }
+    }
+    </style>
+
+
 <div ng-class="{invisible: !dataLoading}" class="progress" style="height: 3px; width: 100%;  margin-top: -20px;">
   <div class="progress-bar" style="width: {{dataProgress}}%;">
   </div>
@@ -5,8 +31,8 @@
 <div>
   <h2 style="width:100%;text-align:center;">Services</h2>
 </div>
-<div class="row">
-  <div class="col-sm-6 col-md-4 col-lg-3" ng-repeat="service in services track by $index">
+<div id='main'>
+  <div class="column" ng-repeat="service in services track by $index">
     <a class="h4" href="#/service/{{service.name}}">{{service.name}}</a>
     <div class="row">
       <div class="col-xs-4 h4" ng-repeat="display in service.displays track by $index" title="{{display.name}}">
