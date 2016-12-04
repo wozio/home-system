@@ -7,16 +7,13 @@
   
   <title>my Home at Orchard Street</title>
   
-  <link href="css/bootstrap.min.css" rel="stylesheet">
   <link href="css/indicator.css" rel="stylesheet">
-  <link rel="stylesheet" href="css/mk-spinners.css">
   <link rel="stylesheet" href="css/font-awesome.min.css">
-  <link rel="stylesheet" href="css/highlight.css">
+  <link rel="stylesheet" href="css/style.css">
   <script src="libs/jquery.min.js"></script>
   <script src="libs/angular.min.js"></script>
   <script src="libs/angular-route.min.js"></script>
   <script src="libs/angular-cookies.min.js"></script>
-  <script src="libs/bootstrap.min.js"></script>
   <script src="js/main_ctrl.js"></script>
   <script src="js/data_service.js"></script>
   <script src="js/binary_data_service.js"></script>
@@ -25,7 +22,6 @@
   <script src="js/login_ctrl.js"></script>
   <script src="js/app.js"></script>
   <script src="js/epg_ctrl.js"></script>
-  <script src="js/highlighter_directive.js"></script>
   <script src="js/chart_directive.js"></script>
   <script src="https://www.amcharts.com/lib/3/amcharts.js"></script>
   <script src="https://www.amcharts.com/lib/3/serial.js"></script>
@@ -34,46 +30,29 @@
 
 <body ng-controller="MainCtrl" ng-cloak>
 
-  <div class="indicator-container">
-    <div ng-if='error' class="alert alert-danger indicator">
+  <div ng-if='error' class="indicator-container">
+    <div class="alert alert-danger indicator">
       <strong>Communication with Home System failed.</strong><br><small>{{errorSlogan}}</small>
     </div>
   </div>
-  
-  <nav class="navbar navbar-default">
-    <div class="container-fluid">
-      <div class="navbar-header">
-        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#nav-collapse" aria-expanded="false">
-          <span class="sr-only">Toggle navigation</span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-        </button>
-        <a class="navbar-brand" href="#/">my Home</a>
 
-      </div>
-
-      <div class="collapse navbar-collapse" id="nav-collapse">
-        <ul class="nav navbar-nav">
-          <li><a href="#/">Services</a></li>
-          <li><a href="#/epg/">EPG</a></li>
-        </ul>
-        <ul class="nav navbar-nav navbar-right">
-          <li class="navbar-text" title="Binary transfer rate">{{speed.toFixed(2)}} Mb/s</li>
-          <li ng-if="loggedIn" class="navbar-text">Logged in as {{name}}</li>
-          <li ng-class="{invisible: !viewLoading}" class='navbar-text mk-spinner-centered mk-spinner-ring'></li>
-        </ul>
-      </div>
-
+  <div ng-if='error' class="indicator-container">
+    <div class="alert alert-danger indicator">
+      <strong>Communication with Home System failed.</strong><br><small>{{errorSlogan}}</small>
     </div>
-  </nav>
+  </div>
 
-  <div class="container-fluid">
-    <div ng-if="!loading" ng-view></div>
-    <hr>
-    <footer>
-      <p>&copy; Company 2014</p>
-    </footer>
+  <div id="toolbar">
+    <a class="toolbar-item" href="#">Services</a>
+    <a class="toolbar-item" href="#">Media</a>
+  </div>
+  <div class="progress">
+    <div class="progress-bar" style="width: {{dataProgress}}%;">
+    </div>
+  </div>
+  
+  <div>
+    <div ng-view></div>
   </div>
 </body>
 </html>

@@ -10,7 +10,6 @@ angular.module('app', [
   'app.service',
   'app.data',
   'app.epg',
-  'app.highlighter',
   'app.chart'
 ])
 

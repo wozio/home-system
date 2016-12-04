@@ -1,47 +1,60 @@
 <style>
-    #main {
-        margin: 0px;
-        padding: 0px;
+    #services-container {
         display: flex;
-        flex-flow: row;
+        flex-flow: row wrap;
+        padding:15px;
     }
  
-    .column {
-        margin: 4px;
-        padding: 5px;
-        border: 1px solid;
-        border-radius: 7pt;
-        background: lightblue;
-        flex: 3 1 25%;
+    .service-container {
+        padding: 15px;
+        flex: 1 0 25%;
+    }
+    .service-header {
+      text-decoration: none;
+      color:#294E78;
+      font-size:x-large;
     }
 
-    /* Too narrow to support three columns */
-    @media all and (max-width: 640px) {
-        #main {
-            flex-direction: column;
-        }
+    .displays-container {
+        display: flex;
+        flex-direction: column;
+        padding-top: 7px;
     }
+
+    .display-container {
+      margin-top:8px;
+      padding-bottom: 2px;
+        display: flex;
+        flex-direction: row;
+        border-bottom: 1px solid;
+        align-content: flex-end;
+    }
+    .display-name {
+        flex: 3 0 0;
+    }
+    .display-value {
+      text-align: right;
+      flex: 1 0 0;
+    }
+
     </style>
 
 
-<div ng-class="{invisible: !dataLoading}" class="progress" style="height: 3px; width: 100%;  margin-top: -20px;">
-  <div class="progress-bar" style="width: {{dataProgress}}%;">
-  </div>
-</div>
-<div>
-  <h2 style="width:100%;text-align:center;">Services</h2>
-</div>
-<div id='main'>
-  <div class="column" ng-repeat="service in services track by $index">
-    <a class="h4" href="#/service/{{service.name}}">{{service.name}}</a>
-    <div class="row">
-      <div class="col-xs-4 h4" ng-repeat="display in service.displays track by $index" title="{{display.name}}">
-        <div ng-if="display.state==1">
-          <div ng-show="display.type=='temperature'" highlighter="display.value.toFixed(1)">
+
+<div id='services-container'>
+  <div class="service-container" ng-repeat="service in services track by $index">
+    <a class="service-header" href="#/service/{{service.name}}">{{service.name}}</a>
+    <div class="displays-container">
+      <div class="display-container" ng-repeat="display in service.displays track by $index" title="{{display.name}}">
+        <div class="display-name">
+          {{display.name}}
+        </div>
+        <div class="display-value" ng-if="display.state==1">
+          <div ng-show="display.type=='temperature'">
             {{display.value.toFixed(1)}}&#176;C
           </div>
-          <div ng-show="display.type=='state'" highlighter="display.value">
-            <span class="{{display.value == 1 && 'glyphicon glyphicon-ok-sign' || 'glyphicon glyphicon-minus-sign'}}"></span>
+          <div ng-show="display.type=='state'">
+            <span class="{{display.value == 1 && 'fa fa-check-square' || 'fa fa-minus-square'}}"></span>
           </div>
         </div>
         <div ng-if="display.state==0">
@@ -51,14 +64,14 @@
           <span class='glyphicon glyphicon-exclamation-sign' style="color:red"></span>
         </div>
       </div>
-    </div>
-    <div ng-repeat="setting in service.settings track by $index">
-      <select class="form-control" title="{{setting.name}}"
-        ng-model="setting.value"
-        ng-init="setting.value"
-        ng-options="value as value for value in setting.values"
-        ng-change="updateSetting(service.name, setting.name, setting.value)">
-      </select>
+      <div class="display-container" ng-repeat="setting in service.settings track by $index">
+        <select title="{{setting.name}}"
+          ng-model="setting.value"
+          ng-init="setting.value"
+          ng-options="value as value for value in setting.values"
+          ng-change="updateSetting(service.name, setting.name, setting.value)">
+        </select>
+      </div>
     </div>
   </div>
 </div>
