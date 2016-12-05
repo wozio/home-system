@@ -1,0 +1,44 @@
+#services-container {
+  display: flex;
+  flex-flow: row wrap;
+  padding:15px;
+  justify-content: center;
+}
+.service-container {
+  flex: 0 0 320px;
+  padding: 15px;
+}
+@media all and (max-width: 730px) {
+    .service-container {
+        flex: 1 0 60%;
+    }
+}
+.service-header {
+  text-decoration: none;
+  color:#294E78;
+  font-size:x-large;
+}
+.displays-container {
+  display: flex;
+  flex-direction: column;
+  padding-top: 7px;
+}
+.display-container {
+  margin-top: 8px;
+  padding-bottom: 2px;
+  display: flex;
+  flex-direction: row;
+  border-bottom: 1px solid;
+}
+.display-name {
+  flex-grow: 3;
+}
+.display-value {
+  text-align: right;
+  flex-grow: 1;
+  padding-left:10px;
+}
+.display-value select {
+    font-size: 16px;
+    border: 0px;
+}
