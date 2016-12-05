@@ -5,13 +5,17 @@
   justify-content: center;
 }
 .service-container {
-  flex: 0 0 320px;
+  flex: 0 0 301px;
   padding: 15px;
 }
 @media all and (max-width: 730px) {
-    .service-container {
-        flex: 1 0 60%;
-    }
+  .service-container {
+    flex: 1 0 60%;
+  }
+  #services-container {
+    padding:5px;
+    justify-content: center;
+  }
 }
 .service-header {
   text-decoration: none;
@@ -39,6 +43,6 @@
   padding-left:10px;
 }
 .display-value select {
-    font-size: 16px;
-    border: 0px;
+  font-size: 16px;
+  border: 0px;
 }
