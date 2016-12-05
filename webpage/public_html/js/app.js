@@ -23,6 +23,13 @@ angular.module('app', [
           factory: checkUser
         }
       }).
+      when('/services', {
+        templateUrl: 'services.html',
+        controller: 'ServicesCtrl',
+        resolve: {
+          factory: checkUser
+        }
+      }).
       when('/service/:serviceId', {
         templateUrl: 'service.html',
         controller: 'ServiceCtrl',
@@ -30,7 +37,7 @@ angular.module('app', [
           factory: checkUser
         }
       }).
-      when('/epg', {
+      when('/media', {
         templateUrl: 'epg.html',
         controller: 'EpgCtrl',
         resolve: {

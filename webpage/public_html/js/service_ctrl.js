@@ -18,8 +18,6 @@ angular.module('app.service',[
     $scope.chartChange = [];
     $scope.chartData = [];
 
-    $scope.dataLoading = true;
-    $scope.dataProgress = 0;
     var dataReceived = 0;
     var dataTotal = 0;
 
@@ -30,7 +28,6 @@ angular.module('app.service',[
           DataSrv.send(srv, "subscribe", {
               "service":DataSrv.getClientId()
           }, function(result){
-            $scope.viewLoaded();
             if (result.success) {
               subscriptionId = parseInt(result.data.id);
               console.log("Subscribed with id="+subscriptionId);
@@ -78,7 +75,7 @@ angular.module('app.service',[
         // update progress bar
         dataReceived++;
         if (dataTotal > 0){
-          $scope.dataProgress = dataReceived / dataTotal * 100;
+          $scope.viewDataProgress(dataReceived / dataTotal * 100);
         }
         // search for matching display
         for (var j = 0; j < $scope.chartOptions.length; j++){
@@ -97,7 +94,7 @@ angular.module('app.service',[
           }
         }
         if (dataReceived === dataTotal){
-          $scope.dataLoading = false;
+          $scope.viewLoaded();
           for (var j = 0; j < $scope.chartChange.length; j++){
             $scope.chartChange[j]++;
           }

@@ -6,16 +6,20 @@ angular.module('app.main', [
 .controller('MainCtrl', [
   '$scope', '$rootScope', 'DataSrv',
   function ($scope, $rootScope, DataSrv) {
-    $scope.viewLoading = true;
+    $scope.dataProgress = 0;
 	  console.log("MainCtrl");
 
     $rootScope.$on('$routeChangeStart', function () {
 		  console.log("routeChangeStart");
-      $scope.viewLoading = true;
+      $scope.dataProgress = 0;
     });
 
     $scope.viewLoaded = function(){
-      $scope.viewLoading = false;
+      $scope.dataProgress = 100;
+    }
+
+    $scope.viewDataProgress = function(progress){
+      $scope.dataProgress = progress;
     }
   }
 ]);
