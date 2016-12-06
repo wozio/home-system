@@ -1,8 +1,7 @@
 #services-container {
   display: flex;
   flex-flow: row wrap;
-  padding:15px;
-  justify-content: center;
+  padding:0px 15px 0px 15px;
 }
 .service-container {
   flex: 0 0 301px;
@@ -13,7 +12,7 @@
     flex: 1 0 60%;
   }
   #services-container {
-    padding:5px;
+    padding:0px;
     justify-content: center;
   }
 }

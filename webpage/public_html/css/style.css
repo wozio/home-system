@@ -6,11 +6,16 @@ body {
 }
 #toolbar {
   margin: 0px;
-  padding: 0px;
+  padding-left: 30px;
   display: flex;
   flex-direction: row;
-  justify-content: center;
   background: #294E78;
+}
+
+@media all and (max-width: 730px) {
+  #toolbar {
+    padding-left:15px;
+  }
 }
 
 .toolbar-item {
