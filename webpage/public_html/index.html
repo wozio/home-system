@@ -31,15 +31,10 @@
 
 <body ng-controller="MainCtrl" ng-cloak>
 
-  <div ng-if='error' class="indicator-container">
-    <div class="alert alert-danger indicator">
-      <strong>Communication with Home System failed.</strong><br><small>{{errorSlogan}}</small>
-    </div>
-  </div>
-
-  <div ng-if='error' class="indicator-container">
-    <div class="alert alert-danger indicator">
-      <strong>Communication with Home System failed.</strong><br><small>{{errorSlogan}}</small>
+  <div ng-if='!connected' class="modal_bkg">
+    <div class="dialog_bkg">
+      <span class="error-icon"><i class="fa fa-plug"></i></span><br>
+      Disconnected
     </div>
   </div>
 

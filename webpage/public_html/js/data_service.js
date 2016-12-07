@@ -5,9 +5,13 @@ angular.module('app.data',[
 ])
 
 .factory('DataSrv', function ($cookies, $timeout, $rootScope, $location) {
+
+  // to detect when do not try to reconnect and not display any error messages
+  var unloading = false;
   
   // firefox WS bug workaround
   $(window).on('beforeunload', function(){
+    unloading = true;
     dataStream.close();
   });
 
@@ -37,6 +41,8 @@ angular.module('app.data',[
   
   //connection related variables
   var clientId = "";
+  // this is initially set to true to avoid showing dialog when loading page
+  $rootScope.connected = true;
   var connected = false;
   var connectionCallback = null;
   
@@ -50,32 +56,29 @@ angular.module('app.data',[
     
     dataStream.onclose = function() {
       console.log("WebSocket connection closed");
-      $rootScope.$apply(function () {
-        $rootScope.error = true;
-        $rootScope.errorSlogan = "Disconnected from WebSocket.";
-      });
-      connected = false;
-      $rootScope.loggedIn = false;
-      dataStream = null;
-      $timeout(connect, 1000);
-      for (var s in queue) {
-        if (queue.hasOwnProperty(s)) {
-          $timeout.cancel(queue[s].timeout);
-          queue[s].callback({
-              success: false,
-              reason: "Disconnected from WebSocket"
-            });
+      if (!unloading){
+        connected = false;
+        $rootScope.connected = false;
+        $rootScope.loggedIn = false;
+        dataStream = null;
+        $timeout(connect, 1000);
+        for (var s in queue) {
+          if (queue.hasOwnProperty(s)) {
+            $timeout.cancel(queue[s].timeout);
+            queue[s].callback({
+                success: false,
+                reason: "Disconnected from WebSocket"
+              });
+          }
         }
+        queue = {};
+        $rootScope.$digest();
       }
-      queue = {};
     };
 
     dataStream.onopen = function() {
       console.log("WebSocket connection opened");
-      $rootScope.$apply(function () {
-        $rootScope.error = false;
-        $rootScope.errorSlogan = "";
-      });
+      $rootScope.connected = true;
       connected = true;
       if (connectionCallback) {
         connectionCallback();
@@ -86,15 +89,10 @@ angular.module('app.data',[
         methods.check(function(result){
         });
       }
+      $rootScope.$digest();
     };
 
     dataStream.onmessage = function(message) {
-      //console.log("Received " + message.data.byteLength + " bytes");
-      
-      //var dataView = new DataView(message.data);
-      //var decoder = new TextDecoder("UTF-8");
-      //var data_str = decoder.decode(dataView);
-
       var data_str = message.data;
 
       if (data_str === "ping\0") {
@@ -104,16 +102,12 @@ angular.module('app.data',[
       //console.log(data_str);
       
       var recv_msg = JSON.parse(data_str);
-      $rootScope.error = false;
-      $rootScope.errorSlogan = "";
       if (recv_msg.sequence_number !== undefined) {
         if (queue[recv_msg.sequence_number] !== undefined && recv_msg.result !== undefined) {
           // this is reply message
           console.log("Received reply for sequence number: " + recv_msg.sequence_number +
             ", RTT: " + (Date.now() - queue[recv_msg.sequence_number].sent_time) + " ms");
           if (recv_msg.result === "success") {
-            $rootScope.error = false;
-            $rootScope.errorSlogan = "";
             //console.log(recv_msg.params)
             queue[recv_msg.sequence_number].callback({
               success: true,
@@ -122,8 +116,6 @@ angular.module('app.data',[
           } else {
             console.log("Rejected: " + recv_msg.reason);
             if (connected) {
-              $rootScope.error = true;
-              $rootScope.errorSlogan = "Message rejected with '" + recv_msg.reason + "' reason";
             }
             queue[recv_msg.sequence_number].callback({
               success: false,
@@ -183,8 +175,6 @@ angular.module('app.data',[
   function on_timeout(seq){
       console.log("Sequence " + seq + " timed out");
       if (connected){
-        $rootScope.error = true;
-        $rootScope.errorSlogan = "Communication timed out.";
       }
       queue[seq].callback({
         success: false,
