@@ -11,6 +11,7 @@
   <link rel="stylesheet" href="css/font-awesome.min.css">
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/services-style.css">
+  <link rel="stylesheet" href="css/spinner.css">
   <script src="libs/jquery.min.js"></script>
   <script src="libs/angular.min.js"></script>
   <script src="libs/angular-route.min.js"></script>
@@ -31,16 +32,11 @@
 
 <body ng-controller="MainCtrl" ng-cloak>
 
-  <div ng-if='!connected' class="modal_bkg">
-    <div class="dialog_bkg">
-      <span class="error-icon"><i class="fa fa-plug"></i></span><br>
-      Disconnected
-    </div>
-  </div>
-
   <div id="toolbar">
     <a class="toolbar-item" href="#/services">Services</a>
     <a class="toolbar-item" href="#/media">Media</a>
+    <div class="toolbar-item-user"><div ng-if="connected && loggedIn">{{user.name}}</div></div>
+    <div class="toolbar-item-loader"><div ng-if="loading" class="loader"></div></div>
   </div>
   <div class="progress">
     <div class="progress-bar" style="width: {{dataProgress}}%;">
@@ -49,6 +45,24 @@
   
   <div>
     <div ng-view></div>
+  </div>
+
+  <div ng-if='!connected' class="modal_bkg">
+    <div class="dialog_bkg">
+      <span class="error-icon"><i class="fa fa-plug"></i></span><br>
+      Disconnected
+    </div>
+  </div>
+
+  <div ng-if='connected && !loggedIn && !loggingIn' class="modal_bkg">
+    <div class="dialog_bkg">
+      <div class="dialog-header">Sign in</div>
+      <form novalidate>
+        <input class="dialog-input" type="email" ng-model="data.email" />
+        <input class="dialog-input" type="password" ng-model="data.password" />
+        <input class="dialog-button-ok" type="submit" ng-click="requestLogin(data)" value="OK" />
+      </form>
+    </div>
   </div>
 </body>
 </html>
