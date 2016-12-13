@@ -82,6 +82,9 @@ angular.module('app.data',[
       // now we can try to authorize
       if (!loggedIn && !loggingIn){
         methods.check(function(result){
+          if (!result.success){
+            $rootScope.$emit("user:loggedOut");
+          }
         });
       }
       $rootScope.$digest();
@@ -256,16 +259,15 @@ angular.module('app.data',[
           email: email,
           password: password
         }, function (result) {
+          loggingIn = false;
           if (!result.success) {
             console.log("Failed to login with result: " + result.reason);
             loggedIn = false;
-            loggingIn = false;
             clientId = "";
             $rootScope.$emit("user:loggedOut");
           } else {
             console.log("successfully logged in with client id: " + result.data.client_id);
             loggedIn = true;
-            loggingIn = false;
             $cookies.putObject('user', {
               email: email,
               password: password
