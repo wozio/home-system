@@ -3,7 +3,12 @@ import unittest
 import string
 import random
 import sys
+import threading
+import time
 from websocket import create_connection
+
+threads = []
+sendThreads = []
 
 def connectAndLogin():
     # web sockets creating
@@ -23,16 +28,45 @@ def connectAndLogin():
     result = json.loads(ws.recv())
     if result[u"result"] != u"success":
         raise Exception("Unable to login: " + result[u"reason"])
+    print "logged in " + result[u"params"][u"client_id"]
+    thread = threading.Thread(target=receiveThreadExec, args=[ws])
+    thread.start()
+    threads.append(thread)
     return ws, result[u"params"][u"client_id"]
+
+def receiveThreadExec(ws):
+    while(True):
+        s = ws.recv()
+        #print sys.getsizeof(s)
+        recv_msg = json.loads(s)
+        print "Received ->" + recv_msg[u"target"] + " " + recv_msg[u"message"]
+        if recv_msg[u"message"] == u"test_msg_999":
+            break
+    print "Receive thread ended"
 
 def randomString(size=6, chars=string.ascii_uppercase + string.digits + string.ascii_lowercase):
     return ''.join(random.choice(chars) for _ in range(size))
+
+def sendThreadExec(ws, fromId, toId):
+    print "Send " + fromId + "->" + toId
+    s = randomString(2000)
+    for i in range(0, 1000):
+        msg = json.dumps({
+            'message': 'test_msg_'+str(i),
+            'source': fromId,
+            'target': toId,
+            'parameters':{
+                'test_string': s
+            }
+        })
+        ws.send(msg)
+    print "End of " + fromId + "->" + toId
 
 class TestStringMethods(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.ws1, cls.id1 = connectAndLogin()
-        #cls.ws2, cls.id2 = connectAndLogin()
+        cls.ws2, cls.id2 = connectAndLogin()
 
     @classmethod
     def tearDownClass(cls):
@@ -40,31 +74,18 @@ class TestStringMethods(unittest.TestCase):
         cls.ws2.close()
 
     def test_big_string(self):
-        msg = json.dumps({
-            'message': 'test_msg',
-            'source': self.id1,
-            #'target': self.id2,
-            'parameters':{
-                'test_string': randomString(5000)
-            }
-        })
-        self.ws1.send(msg)
-        #while(True):
-            #recv_msg = json.loads(self.ws2.recv())
-            #print recv_msg
-
-        self.assertEqual('foo'.upper(), 'FOO')
-
-    def test_isupper(self):
-        self.assertTrue('FOO'.isupper())
-        self.assertFalse('Foo'.isupper())
-
-    def test_split(self):
-        s = 'hello world'
-        self.assertEqual(s.split(), ['hello', 'world'])
-        # check that s.split fails when the separator is not a string
-        with self.assertRaises(TypeError):
-            s.split(2)
+        thread = threading.Thread(target=sendThreadExec, args=[self.ws1, self.id1, self.id2])
+        thread.start()
+        sendThreads.append(thread)
+        thread = threading.Thread(target=sendThreadExec, args=[self.ws2, self.id2, self.id1])
+        thread.start()
+        sendThreads.append(thread)
+        for t in sendThreads:
+            t.join()
+        print "Send threads ended"
+        for t in threads:
+            t.join()
+        print "Receive threads ended"
 
 if __name__ == '__main__':
     unittest.main()

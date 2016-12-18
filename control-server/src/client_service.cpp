@@ -16,12 +16,19 @@ client_service::client_service(const std::string& name, handler_t handler)
 : service(name),
   name_(name),
   handler_(handler)
-{ 
+{
+  LOG(DEBUG) << "Created client service: " << name;
+  set_timer();
 }
 
 client_service::~client_service()
 {
+  LOG(DEBUG) << "Destroing client service: " << name_;
   DISCOVERY.unsubscribe(discovery_subscription_id_);
+  timer_.cancel();
+  std::lock_guard<std::mutex> guard(incoming_map_mutex_);
+  incoming_.clear();
+  incoming_timeouts_.clear();
 }
 
 void client_service::init()
@@ -41,13 +48,12 @@ void client_service::add_binary_connection(ws_t ws)
   auto bc = new binary_connection(ws, name_);
   binary_handler_.reset(bc);
   binary_handler_->init();
-  extra_discovery_data_ = bc->get_endpoint();
-  send_notify();
 }
 
 void client_service::on_msg(yami::incoming_message & im)
 {
-  //LOG(TRACE) << "Incoming message '" << im.get_message_name() << "' from '" << im.get_source() << "'";
+  std::lock_guard<std::mutex> guard(incoming_map_mutex_);
+  LOG(TRACE) << "[" << name_ << "] Incoming message " << im.get_message_name();
   int sn = 0;
   while (incoming_.find(sn) != incoming_.end())
   {
@@ -66,17 +72,34 @@ void client_service::on_msg(yami::incoming_message & im)
   incoming_.emplace(sn, im);
   
   // start timer for assigned sequence number
-  dt_t dt(new boost::asio::deadline_timer(ios_.io_service()));
-  auto it = timers_.emplace(sn, std::move(dt)).first;
-  it->second->expires_from_now(boost::posix_time::seconds(5));
-  it->second->async_wait([this, sn] (const boost::system::error_code& error)
-  {
-    if (!error)
-    {
-      incoming_.erase(sn);
-      timers_.erase(sn);
-    }
+  incoming_timeouts_[sn] = 5;
+}
+
+void client_service::set_timer()
+{
+  timer_.set_from_now(1, [this]() {
+    this->on_timeout();
   });
+}
+
+void client_service::on_timeout()
+{
+  set_timer();
+  std::lock_guard<std::mutex> guard(incoming_map_mutex_);
+  std::list<int> timed_out;
+  for (auto t : incoming_timeouts_)
+  {
+    t.second--;
+    if (t.second == 0)
+    {
+      timed_out.push_back(t.first);
+    }
+  }
+  for (auto sn : timed_out)
+  {
+    incoming_timeouts_.erase(sn);
+    incoming_.erase(sn);
+  }
 }
 
 void client_service::on_remote_msg(const std::string& source, const std::string& target,
@@ -136,10 +159,11 @@ void client_service::on_remote_msg(const std::string& source, const std::string&
 
     case msg_type_t::reply:
     {
+      std::lock_guard<std::mutex> guard(incoming_map_mutex_);
       auto in = incoming_.find(sequence_number);
       if (in != incoming_.end())
       {
-        timers_.erase(sequence_number);
+        incoming_timeouts_.erase(sequence_number);
         in->second.reply(params);
         incoming_.erase(in);
       }

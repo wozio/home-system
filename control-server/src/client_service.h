@@ -4,8 +4,7 @@
 #include "service.h"
 #include "handler_t.h"
 #include "msg_type_t.h"
-#include "ios_wrapper.h"
-
+#include "timer.h"
 
 namespace home_system
 {
@@ -29,16 +28,17 @@ private:
   std::string name_;
   handler_t handler_;
   handler_t binary_handler_;
+
+  std::mutex incoming_map_mutex_;
   
   typedef std::map<int, yami::incoming_message> incoming_map_t;
   incoming_map_t incoming_;
   
-  ios_wrapper ios_;
-  
-  typedef std::unique_ptr<boost::asio::deadline_timer> dt_t;
-  // keyed by the same key values as incoming_
-  typedef std::map<int, dt_t> timers_map_t;
-  timers_map_t timers_;
+  timer timer_;
+  typedef std::map<int, int> incoming_timeouts_t;
+  incoming_timeouts_t incoming_timeouts_;
+  void set_timer();
+  void on_timeout();
   
   time_t discovery_subscription_id_;
 };
