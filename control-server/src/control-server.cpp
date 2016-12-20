@@ -97,8 +97,8 @@ int main(int argc, char** argv)
     LOG(ERROR) << "Unknown Exception";
   }
   
-  _clients.reset();
   _handlers.reset();
+  _clients.reset();
   _discovery.reset();
   _yc.reset();
   

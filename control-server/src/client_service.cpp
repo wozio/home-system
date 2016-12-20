@@ -53,7 +53,7 @@ void client_service::add_binary_connection(ws_t ws)
 void client_service::on_msg(yami::incoming_message & im)
 {
   std::lock_guard<std::mutex> guard(incoming_map_mutex_);
-  LOG(TRACE) << "[" << name_ << "] Incoming message " << im.get_message_name();
+  //LOG(TRACE) << "[" << name_ << "] Incoming message " << im.get_message_name();
   int sn = 0;
   while (incoming_.find(sn) != incoming_.end())
   {
