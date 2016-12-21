@@ -30,6 +30,8 @@ private:
   void handle_logout(const std::string& source);
 
   std::string client_id_;
+
+  ios_wrapper ios_;
 };
 
 }

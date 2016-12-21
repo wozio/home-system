@@ -27,10 +27,9 @@ angular.module('app.services',[
       if (service === srv) {
         if (available === true) {
           DataSrv.send(srv, "subscribe_services", {"service":DataSrv.getClientId()}, function(result){
+            $scope.viewLoaded();
             if (result.success) {
               subscriptionId = parseInt(result.data.id);
-            } else {
-              $scope.viewLoading = false;
             }
           });
         }

@@ -1,0 +1,22 @@
+rootScope events
+
+data:connected
+
+    WebSocket data connection is established
+
+data:disconnected
+
+    WebSocket data connection is terminated
+
+user:loggingIn
+
+    user is being logged in, loggedIn or loggedOut is emitted later
+
+user:loggedIn
+
+    user has been logged in either from manual action or automatically
+
+user:loggedOut
+
+    user has been logged out either manually or by the system
+    not fired after disconnected event even though user is actually logged out

@@ -18,6 +18,9 @@ angular.module('app.service',[
     $scope.chartChange = [];
     $scope.chartData = [];
 
+    var dataReceived = 0;
+    var dataTotal = 0;
+
     var serviceAvailabilitySubscrId = DataSrv.registerServiceAvailability(function(service, available){
       if (service === srv) {
         if (available === true) {
@@ -25,9 +28,7 @@ angular.module('app.service',[
           DataSrv.send(srv, "subscribe", {
               "service":DataSrv.getClientId()
           }, function(result){
-            $scope.viewLoading = false;
             if (result.success) {
-              
               subscriptionId = parseInt(result.data.id);
               console.log("Subscribed with id="+subscriptionId);
 
@@ -62,11 +63,23 @@ angular.module('app.service',[
       }
     });
 
+    DataSrv.register("service_history_info", function(message) {
+      if (message.params.name === srvName){
+        console.log(message.params.msg_number);
+        dataTotal = message.params.msg_number;
+      }
+    });
+
     DataSrv.register("service_history", function(message) {
-      if (message.params.service_name === srvName){
+      if (message.params.name === srvName){
+        // update progress bar
+        dataReceived++;
+        if (dataTotal > 0){
+          $scope.viewDataProgress(dataReceived / dataTotal * 100);
+        }
         // search for matching display
         for (var j = 0; j < $scope.chartOptions.length; j++){
-          if ($scope.chartOptions[j].name === message.params.name){
+          if ($scope.chartOptions[j].name === message.params.display_name){
             for (var i = 0; i < message.params.history.length; i++){
               if (message.params.history[i].state === 1){
                 var val = message.params.history[i].value;
@@ -77,6 +90,12 @@ angular.module('app.service',[
                 });
               }
             }
+            //$scope.chartChange[j]++;
+          }
+        }
+        if (dataReceived === dataTotal){
+          $scope.viewLoaded();
+          for (var j = 0; j < $scope.chartChange.length; j++){
             $scope.chartChange[j]++;
           }
         }
@@ -112,3 +131,4 @@ angular.module('app.service',[
     });
   }
 ]);
+
