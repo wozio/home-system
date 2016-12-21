@@ -86,19 +86,22 @@ void client_service::on_timeout()
 {
   set_timer();
   std::lock_guard<std::mutex> guard(incoming_map_mutex_);
-  std::list<int> timed_out;
-  for (auto t : incoming_timeouts_)
+  if (!incoming_timeouts_.empty())
   {
-    t.second--;
-    if (t.second == 0)
+    std::list<int> timed_out;
+    for (auto t : incoming_timeouts_)
     {
-      timed_out.push_back(t.first);
+      t.second--;
+      if (t.second == 0)
+      {
+        timed_out.push_back(t.first);
+      }
     }
-  }
-  for (auto sn : timed_out)
-  {
-    incoming_timeouts_.erase(sn);
-    incoming_.erase(sn);
+    for (auto sn : timed_out)
+    {
+      incoming_timeouts_.erase(sn);
+      incoming_.erase(sn);
+    }
   }
 }
 

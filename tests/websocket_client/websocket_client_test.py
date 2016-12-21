@@ -10,12 +10,12 @@ from websocket import create_connection
 threads = []
 sendThreads = []
 
-numOfMessages = 10
-sizeOfString = 100
+numOfMessages = 1000
+sizeOfString = 10
 
 def connectAndLogin():
     # web sockets creating
-    ws = create_connection("ws://localhost:8080/access/client")
+    ws = create_connection("ws://localhost:5000/access/client")
     # logging in
     login_msg = json.dumps({
         'message': 'login',
