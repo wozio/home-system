@@ -1,0 +1,94 @@
+body {
+  background: white;
+  margin: 0px;
+  padding: 0px;
+  font-family: proxima-nova,"Helvetica Neue",Helvetica,Arial,sans-serif;
+}
+#toolbar {
+  margin: 0px;
+  padding-left: 30px;
+  padding-right: 30px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  background: #294E78;
+}
+
+@media all and (max-width: 730px) {
+  #toolbar {
+    padding-left:15px;
+    padding-right:15px;
+  }
+}
+
+.toolbar-item {
+  padding-top: 2px;
+  flex: 0 0 70px;
+  color:rgb(163,192,224);
+  text-align: center;
+  box-sizing: border-box;
+  text-decoration: none;
+}
+
+.toolbar-item-user {
+  padding-top: 2px;
+  flex: 1 0 70px;
+  color:rgb(163,192,224);
+  text-align: right;
+  box-sizing: border-box;
+}
+
+.toolbar-item-loader {
+  width: 38px;
+  height: 38px;
+  display:flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.toolbar-item:hover {
+  color:#FFFFFF;
+}
+
+.toolbar-item-active{
+  background: #690c1e;
+}
+
+.progress{
+  width:100%;
+  height: 4px;
+  background: #294E78;
+}
+
+.progress-bar{
+  height: 100%;
+  background: #690c1e;
+}
+
+.modal_bkg{
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  display:flex;
+  justify-content: center;
+  align-items: center;
+  padding: 30px;
+}
+
+.dialog_bkg{
+  flex: 0 1 200px;
+  box-shadow: 0 0 15px;
+  background-color: #FFFFFF;
+  padding: 20px;
+  border: 1px solid;
+  text-align: center;
+  font-size: 1em;
+  font-weight: bold;
+}
+
+.error-icon{
+  font-size: 2em;
+}

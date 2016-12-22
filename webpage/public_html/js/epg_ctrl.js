@@ -9,7 +9,7 @@ angular.module('app.epg',[
   '$scope', 'DataSrv', 'BinaryDataSrv', '$interval',
   function ($scope, DataSrv, BinaryDataSrv, $interval) {
 	  console.log("EpgCtrl");
-	$scope.viewLoading = false;
+
     var srv = "test-source";
     var get = function() {
       DataSrv.send(srv, "get_channels", null, function(result) {
@@ -34,6 +34,7 @@ angular.module('app.epg',[
             "destination": DataSrv.getClientId(),
             "channel": 1
           }, function (result) {
+            $scope.viewLoaded();
             if (result.success) {
               console.log("Session created with id " + parseInt(result.data.id));
               sessionId = parseInt(result.data.id);

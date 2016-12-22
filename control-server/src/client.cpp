@@ -22,22 +22,16 @@ client::~client()
 void client::shutdown()
 {
   LOGH(DEBUG) << "Shutdown";
-  this->logout(client_id_);
   handler::shutdown();
+  ios_.stop_ios();
+  logout(client_id_);
 }
 
 void client::on_read(data_t data, size_t data_size, type_t type)
 {
-  try
-  {
-    thread t([this](data_t data, size_t data_size) {
-      this->handle_data(data, data_size);
-    }, data, data_size);
-    t.detach();
-  }
-  catch (...)
-  {
-  }
+  ios_.io_service().post([this, data, data_size]() {
+    this->handle_data(data, data_size);
+  });
 }
 
 void client::handle_login(const yami::parameters& params, long long sequence_number,

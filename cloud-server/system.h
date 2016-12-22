@@ -16,7 +16,7 @@ public:
   system(const system& orig) = delete;
   ~system();
   
-  void on_read(data_t data, size_t data_size);
+  void on_read(data_t data, size_t data_size, type_t data_type = TEXT);
   void shutdown();
   
   void set_route(const std::string& target, client_t client);

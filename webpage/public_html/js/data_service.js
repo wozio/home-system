@@ -5,12 +5,16 @@ angular.module('app.data',[
 ])
 
 .factory('DataSrv', function ($cookies, $timeout, $rootScope, $location) {
+
+  // to detect when do not try to reconnect and not display any error messages
+  var unloading = false;
   
-  // firefox WS bug workaround
   $(window).on('beforeunload', function(){
+    unloading = true;
     dataStream.close();
   });
-  
+
+  // creating uri  
   var loc = window.location, newUri;
   if (loc.protocol === "https:") {
     newUri = "wss:";
@@ -35,66 +39,58 @@ angular.module('app.data',[
   var service_callbacks = new Map();
   
   //connection related variables
-  var clientId = "";
   var connected = false;
-  var connectionCallback = null;
   
   // authorization related variables
-  $rootScope.loggedIn = false;
+  var clientId = "";
+  var loggedIn = false;
   var loggingIn = false;
   
+  // connect function which tries to establish WebSocket connection
+  // and register to events
   function connect(){
     console.log("Connecting to: " + newUri);
     dataStream = new WebSocket(newUri);
-    //dataStream.binaryType = 'arraybuffer';
     
     dataStream.onclose = function() {
       console.log("WebSocket connection closed");
-      $rootScope.$apply(function () {
-        $rootScope.error = true;
-        $rootScope.errorSlogan = "Disconnected from WebSocket.";
-      });
-      connected = false;
-      $rootScope.loggedIn = false;
-      dataStream = null;
-      $timeout(connect, 1000);
-      for (var s in queue) {
-        if (queue.hasOwnProperty(s)) {
-          $timeout.cancel(queue[s].timeout);
-          queue[s].callback({
-              success: false,
-              reason: "Disconnected from WebSocket"
-            });
+      if (!unloading){
+        connected = false;
+        loggedIn = false;
+        dataStream = null;
+        $rootScope.$emit("data:disconnected");
+        $timeout(connect, 1000);
+        // remove all messages in queue waiting for answer
+        for (var s in queue) {
+          if (queue.hasOwnProperty(s)) {
+            $timeout.cancel(queue[s].timeout);
+            queue[s].callback({
+                success: false,
+                reason: "Disconnected from WebSocket"
+              });
+          }
         }
+        queue = {};
+        $rootScope.$digest();
       }
-      queue = {};
     };
 
-    dataStream.onopen = function() {
+    dataStream.onopen = function(){
       console.log("WebSocket connection opened");
-      $rootScope.$apply(function () {
-        $rootScope.error = false;
-        $rootScope.errorSlogan = "";
-      });
       connected = true;
-      if (connectionCallback) {
-        connectionCallback();
-        connectionCallback = null;
-      }
+      $rootScope.$emit("data:connected");
       // now we can try to authorize
-      if (!$rootScope.loggedIn && !loggingIn) {
+      if (!loggedIn && !loggingIn){
         methods.check(function(result){
+          if (!result.success){
+            $rootScope.$emit("user:loggedOut");
+          }
         });
       }
+      $rootScope.$digest();
     };
 
     dataStream.onmessage = function(message) {
-      //console.log("Received " + message.data.byteLength + " bytes");
-      
-      //var dataView = new DataView(message.data);
-      //var decoder = new TextDecoder("UTF-8");
-      //var data_str = decoder.decode(dataView);
-
       var data_str = message.data;
 
       if (data_str === "ping\0") {
@@ -104,16 +100,12 @@ angular.module('app.data',[
       //console.log(data_str);
       
       var recv_msg = JSON.parse(data_str);
-      $rootScope.error = false;
-      $rootScope.errorSlogan = "";
       if (recv_msg.sequence_number !== undefined) {
         if (queue[recv_msg.sequence_number] !== undefined && recv_msg.result !== undefined) {
-          // this is reply message
-          console.log("Received reply for sequence number: " + recv_msg.sequence_number +
-            ", RTT: " + (Date.now() - queue[recv_msg.sequence_number].sent_time) + " ms");
+          // there is sequence number and result so this is reply message
+          console.log("(Sequence " + recv_msg.sequence_number + ") received reply, RTT: " +
+            (Date.now() - queue[recv_msg.sequence_number].sent_time) + " ms");
           if (recv_msg.result === "success") {
-            $rootScope.error = false;
-            $rootScope.errorSlogan = "";
             //console.log(recv_msg.params)
             queue[recv_msg.sequence_number].callback({
               success: true,
@@ -121,10 +113,6 @@ angular.module('app.data',[
             });
           } else {
             console.log("Rejected: " + recv_msg.reason);
-            if (connected) {
-              $rootScope.error = true;
-              $rootScope.errorSlogan = "Message rejected with '" + recv_msg.reason + "' reason";
-            }
             queue[recv_msg.sequence_number].callback({
               success: false,
               reason: recv_msg.reason
@@ -134,7 +122,7 @@ angular.module('app.data',[
           delete queue[recv_msg.sequence_number];
         } else if (recv_msg.message !== undefined) {
           console.log("Received message '" + recv_msg.message + "'");
-          // this is incoming message expecting reply
+          // there is message name and sequence number so this is incoming message expecting reply
           if (incoming[recv_msg.message] !== undefined) {
             incoming[recv_msg.message](recv_msg, function(recv_msg, result, paramsOrReason) {
               if ($rootScope.loggedIn) {
@@ -176,15 +164,12 @@ angular.module('app.data',[
           console.log("Received one way message '" + recv_msg.message + "' for which there is no registered receiver");
         }
       }
+      $rootScope.$digest();
     };
   }
   
   function on_timeout(seq){
       console.log("Sequence " + seq + " timed out");
-      if (connected){
-        $rootScope.error = true;
-        $rootScope.errorSlogan = "Communication timed out.";
-      }
       queue[seq].callback({
         success: false,
         reason: "timed out"
@@ -235,24 +220,22 @@ angular.module('app.data',[
   var methods = {
     send: function(target, msg, params, reply_callback) {
       // first check if user is logged in, if it is send message, reject otherwise
-      methods.check(function (result) {
-        if (result.success) {
-          send_internal(target, msg, params, reply_callback);
-        } else {
-          if (reply_callback){
-            reply_callback({
-              success: false,
-              reason: "User not logged in"
-            });
-          }
+      if (loggedIn) {
+        send_internal(target, msg, params, reply_callback);
+      } else {
+        if (reply_callback){
+          reply_callback({
+            success: false,
+            reason: "User not logged in"
+          });
         }
-      });
+      }
     },
     
     // check if user is logged in and try to login from cookies if it is not
     check: function(callback) {
       console.log("Check user");
-      if ($rootScope.loggedIn) {
+      if (loggedIn) {
         callback({ success: true });
       } else {
         var user = $cookies.getObject('user') || {};
@@ -268,49 +251,42 @@ angular.module('app.data',[
     
     // login the user with credentials provided in arguments
     login: function(email, password, callback) {
-      console.log("logging in: " + email);
-      loggingIn = true;
-
-      function login_int() {
+      if (connected) {
+        console.log("logging in: " + email);
+        loggingIn = true;
+        $rootScope.$emit("user:loggingIn");
         send_internal("control-server", "login", {
           email: email,
           password: password
         }, function (result) {
+          loggingIn = false;
           if (!result.success) {
             console.log("Failed to login with result: " + result.reason);
-            $rootScope.loggedIn = false;
-            $rootScope.name = "";
-            loggingIn = false;
+            loggedIn = false;
             clientId = "";
+            $rootScope.$emit("user:loggedOut");
           } else {
             console.log("successfully logged in with client id: " + result.data.client_id);
-            $rootScope.loggedIn = true;
-            $rootScope.name = result.data.name;
-            loggingIn = false;
+            loggedIn = true;
             $cookies.putObject('user', {
               email: email,
               password: password
             });
+            name = result.data.name;
             clientId = result.data.client_id;
+            $rootScope.$emit("user:loggedIn", {name: name, clientId: clientId});
           }
-          callback(result);
+          if (callback)
+            callback(result);
         }, 1000);
       };
-
-      if (connected) {
-        login_int();
-      } else {
-        connectionCallback = function () {
-          login_int();
-        }
-      }
     },
   
     logout: function () {
-      $rootScope.loggedIn = false;
+      loggedIn = false;
       $cookies.remove('user');
       clientId = "";
-      BinaryDataSrv.disconnect();
+      $rootScope.$emit("user:loggedOut");
     },
     
     register: function(message, callback) {
@@ -339,12 +315,12 @@ angular.module('app.data',[
     
     unregisterServiceAvailability: function(SubscriptionId){
       service_callbacks.delete(SubscriptionId);
-    }
+    },
+
   };
   
   methods.register("logout_complete", function() {
     methods.logout();
-    $location.path("/login");
   });
   
   var available_services = new Set();

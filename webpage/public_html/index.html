@@ -7,12 +7,11 @@
   
   <title>my Home at Orchard Street</title>
   
-  <link href="css/bootstrap.min.css" rel="stylesheet">
-  <link href="css/jumbotron.css" rel="stylesheet">
   <link href="css/indicator.css" rel="stylesheet">
-  <link rel="stylesheet" href="css/mk-spinners.css">
   <link rel="stylesheet" href="css/font-awesome.min.css">
-  <link rel="stylesheet" href="css/highlight.css">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/services-style.css">
+  <link rel="stylesheet" href="css/spinner.css">
   <script src="libs/jquery.min.js"></script>
   <script src="libs/angular.min.js"></script>
   <script src="libs/angular-route.min.js"></script>
@@ -25,47 +24,45 @@
   <script src="js/login_ctrl.js"></script>
   <script src="js/app.js"></script>
   <script src="js/epg_ctrl.js"></script>
-  <script src="js/highlighter_directive.js"></script>
   <script src="js/chart_directive.js"></script>
   <script src="https://www.amcharts.com/lib/3/amcharts.js"></script>
   <script src="https://www.amcharts.com/lib/3/serial.js"></script>
   <script src="https://www.amcharts.com/lib/3/themes/light.js"></script>
 </head>
-<body ng-controller="MainCtrl">
 
-  <div class="indicator-container" ng-cloak>
-    <div ng-if='error' class="alert alert-danger indicator">
-      <strong>Communication with Home System failed.</strong><br><small>{{errorSlogan}}</small>
+<body ng-controller="MainCtrl" ng-cloak>
+
+  <div id="toolbar">
+    <a class="toolbar-item" href="#/services">Services</a>
+    <a class="toolbar-item" href="#/media">Media</a>
+    <div class="toolbar-item-user"><div ng-if="connected && loggedIn">{{user.name}}</div></div>
+    <div class="toolbar-item-loader"><div ng-if="loading" class="loader"></div></div>
+  </div>
+  <div class="progress">
+    <div class="progress-bar" style="width: {{dataProgress}}%;">
     </div>
   </div>
   
-  <nav class="navbar navbar-default navbar-fixed-top">
-    <div class="container">
-      <div class="navbar-header pull-left">
-        <a class="navbar-brand" href="#/">my Home</a>
-		<ul class="nav navbar-nav">
-          <li><a href="#/">Services</a></li>
-          <li><a href="#/epg/">EPG</a></li>
-        </ul>
-      </div>
+  <div>
+    <div ng-view></div>
+  </div>
 
-      <div class="pull-right">
-        <ul class="nav pull-left">
-          <li class="navbar-text" title="Binary transfer rate" ng-cloak>{{speed.toFixed(2)}} Mb/s</li>
-          <li ng-if="loggedIn" class="navbar-text" ng-cloak>Logged in as {{name}}</li>
-          <li class='navbar-text mk-spinner-centered mk-spinner-ring' ng-if='viewLoading'></li>
-        </ul>
-      </div>
-
+  <div ng-if='!connected' class="modal_bkg">
+    <div class="dialog_bkg">
+      <span class="error-icon"><i class="fa fa-plug"></i></span><br>
+      Disconnected
     </div>
-  </nav>
+  </div>
 
-  <div class="container" ng-cloak>
-    <div ng-if="!loading" ng-view></div>
-    <hr>
-	  <footer>
-	    <p>&copy; Company 2014</p>
-	  </footer>
+  <div ng-if='connected && !loggedIn && !loggingIn' class="modal_bkg">
+    <div class="dialog_bkg">
+      <div class="dialog-header">Sign in</div>
+      <form novalidate>
+        <input class="dialog-input" type="email" ng-model="data.email" />
+        <input class="dialog-input" type="password" ng-model="data.password" />
+        <input class="dialog-button-ok" type="submit" ng-click="requestLogin(data)" value="OK" />
+      </form>
+    </div>
   </div>
 </body>
 </html>
