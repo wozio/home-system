@@ -45,7 +45,8 @@ OBJECTFILES= \
 	${OBJECTDIR}/src/file_request_handler.o \
 	${OBJECTDIR}/src/http.o \
 	${OBJECTDIR}/src/json_converter.o \
-	${OBJECTDIR}/src/ws_request_handler.o
+	${OBJECTDIR}/src/ws_request_handler.o \
+	${OBJECTDIR}/src/binary_connection.o
 
 
 # C Compiler Flags
@@ -62,7 +63,7 @@ FFLAGS=
 ASFLAGS=
 
 # Link Libraries and Options
-LDLIBSOPTIONS=-L../common/yami4/lib -lboost_program_options -lboost_system -lboost_thread ../common/wshandling/../bin/Debug/libwshandling.a ../common/common/../bin/Debug/libcommon.a -lyamicpp -lyamicore -lpthread -lPocoFoundation -lPocoNet -lPocoNetSSL -lboost_filesystem
+LDLIBSOPTIONS=-L../common/yami4/lib -lboost_program_options -lboost_system -lboost_thread ../common/wshandling/../bin/Debug/libwshandling.a ../common/common/../bin/Debug/libcommon.a -lyamicpp -lyamicore -lpthread -lPocoFoundation -lPocoNet -lPocoNetSSL -lboost_filesystem -lboost_regex
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
@@ -130,6 +131,11 @@ ${OBJECTDIR}/src/ws_request_handler.o: src/ws_request_handler.cpp
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} "$@.d"
 	$(COMPILE.cc) -g -Wall -D_DEBUG -I../common/common/src -I../common/yami4/include -I../rapidjson/include -I../common/wshandling -I../common/easyloggingpp/src -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/ws_request_handler.o src/ws_request_handler.cpp
+
+${OBJECTDIR}/src/binary_connection.o: src/binary_connection.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -Wall -D_DEBUG -I../common/common/src -I../common/yami4/include -I../rapidjson/include -I../common/wshandling -I../common/easyloggingpp/src -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/binary_connection.o src/binary_connection.cpp
 
 # Subprojects
 .build-subprojects:
