@@ -77,7 +77,7 @@ void client_service::on_msg(yami::incoming_message & im)
 
 void client_service::set_timer()
 {
-  timer_.set_from_now(1, [this]() {
+  timer_.set_from_now(1000, [this]() {
     this->on_timeout();
   });
 }
