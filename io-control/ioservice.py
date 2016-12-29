@@ -2,12 +2,50 @@
 
 import logging
 import traceback
+import threading
 import setting
 import display
 import service
+import discovery
 import yami
 import yagent
 import subscribers
+
+class history_thread(threading.Thread):
+    def __init__(self, target, displays):
+        self.target = target
+        self.displays = displays
+
+    def run(self):
+        # prepare history for sending
+        displays_histories = {}
+        msg_number = 0
+        for d in self.displays.itervalues():
+            history = d.prepare_history()
+            # split in chunks per 100
+            histories = [history[i:i + 100] for i in xrange(0, len(history), 100)]
+            msg_number += len(histories)
+            displays_histories[d.name] = histories
+
+        logging.debug("sending history in %d messages", msg_number)
+
+        # send information how many messages it will take
+        params = yami.Parameters()
+        params["name"] = self.name
+        params["msg_number"] = msg_number
+        yagent.agent.send(discovery.get(self.target), self.target,
+            "service_history_info", params)
+
+        # now sending messages
+        j = 0
+        for d, histories in displays_histories.iteritems():
+            params = yami.Parameters()
+            params["name"] = self.name
+            params["display_name"] = d
+            for h in histories:
+                params["history"] = h
+                yagent.agent.send(discovery.get(self.target), self.target,
+                    "service_history", params)
 
 class ioservice:
 
@@ -17,6 +55,7 @@ class ioservice:
         self.displays = {}
         self.subscriptions = subscribers.subscribers()
         self.change_callback = None
+        self.history_threads = []
 
         logging.info("Created ioservice '%s'", name)
 
@@ -33,6 +72,8 @@ class ioservice:
         self.serv = service.service("io-control.service." + name, self.on_msg)
 
     def exit(self):
+        if self.history_thread is not None:
+
         self.serv.exit()
 
     def subscribe(self, callback):
@@ -78,34 +119,6 @@ class ioservice:
                 params["service"] = self.prepare()
 
                 msg.reply(params)
-
-                # prepare history for sending
-                displays_histories = {}
-                msg_number = 0
-                for d in self.displays.itervalues():
-                    history = d.prepare_history()
-                    # split in chunks per 100
-                    histories = [history[i:i + 100] for i in xrange(0, len(history), 100)]
-                    msg_number += len(histories)
-                    displays_histories[d.name] = histories
-
-                logging.debug("sending history of in %d messages", msg_number)
-
-                # send information how many messages it will take
-                params = yami.Parameters()
-                params["name"] = self.name
-                params["msg_number"] = msg_number
-                self.subscriptions.send_to(id, "service_history_info", params)
-
-                # now sending messages
-                j = 0
-                for d, histories in displays_histories.iteritems():
-                    params = yami.Parameters()
-                    params["name"] = self.name
-                    params["display_name"] = d
-                    for h in histories:
-                        params["history"] = h
-                        self.subscriptions.send_to(id, "service_history", params)
 
             elif msg.get_message_name() == "unsubscribe":
                 i = msg.get_parameters()["id"]
