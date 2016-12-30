@@ -1,30 +1,28 @@
-import logging
 import traceback
+import unittest
+import time
 import random
 import threading
 import service
 import yami
 import yagent
+import subprocess
 import discovery
-
-t = None
 
 class test_io:
 
     def __init__(self):
-        self.name = "io.test"
-
-        logging.info("Created io test service '%s'", self.name)
-
+        self.name = "test.client"
         self.s = None
         self.e = None
+        self.subscribed = threading.Condition()
 
         self.serv = service.service(self.name, self.on_msg)
 
     def exit(self):
         self.serv.exit()
 
-    def new_value(self):
+    def send_value(self, v):
         if self.s and self.e:
             try:
                 params = yami.Parameters()
@@ -32,13 +30,9 @@ class test_io:
                 params["id"] = 1
                 params["type"] = 0 #temperature input
                 params["state"] = 1
-                params["value"] = random.uniform(-20, 30)
-                logging.info("Sending new value to '%s'", self.s)
+                params["value"] = v
                 yagent.agent.send(self.e, self.s,
                     "state_change", params)
-                global t
-                t = threading.Timer(1, self.new_value)
-                t.start()
             except yami.YAMIError as e:
                 self.s = None
                 self.e = None
@@ -48,38 +42,77 @@ class test_io:
             if msg.get_message_name() == "subscribe":
                 self.s = msg.get_parameters()["name"]
                 self.e = msg.get_parameters()["endpoint"]
-                logging.debug("service '%s (%s)' subscribed", self.s, self.e)
-
-                self.new_value()
+                with self.subscribed:
+                    self.subscribed.notifyAll()
                 
         except Exception as e:
             logging.error(traceback.format_exc())
             raise e
 
-logger = logging.getLogger()
-logger.setLevel(logging.DEBUG)
-formatter = logging.Formatter('[%(asctime)s] [%(levelname)s] [%(thread)d] [%(filename)s:%(lineno)d] %(message)s')
+class test_client:
 
-ch = logging.StreamHandler()
-ch.setFormatter(formatter)
-logger.addHandler(ch)
+    def __init__(self):
+        self.name = "io.test"
+        self.s = None
+        self.e = None
+        self.service_found = threading.Condition()
+        
+        self.serv = service.service(self.name, self.on_msg)
 
-logging.info("Starting Home System IO Test")
+        discovery.register(self.on_service_availability)
 
-discovery.init()
-  
-tio = test_io()
+    def exit(self):
+        self.serv.exit()
 
-while 1:
-  if raw_input() == "q":
-      break
+    def on_msg(self, msg):
+        pass
 
-if t is not None:
-    logging.debug("Cancelling timer")
-    t.cancel()
-    logging.debug("Join thread")
-    t.join
+    def on_service_availability(self, s, available):
+        if s == "io-control-dev" and available == True:
+            with self.service_found:
+                self.service_found.notifyAll()
 
-tio.exit()
+class TestStringMethods(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        discovery.init()
+        # create test io object
+        cls.input = test_io()
+        # create test client object
+        cls.client = test_client()
+        # run process under test
+        args = ['python', 'iocontrol.py']
+        cls.p = subprocess.Popen(args=args, stdin=subprocess.PIPE)
+        #wait for iocontrol to subscribe for io_test
+        with cls.input.subscribed:
+            cls.input.subscribed.wait()
+        with cls.client.service_found:
+            cls.client.service_found.wait()
 
-discovery.exit()
+    @classmethod
+    def tearDownClass(cls):
+        cls.input.exit()
+        cls.client.exit()
+        discovery.exit()
+
+        def quit_thread():
+            print "requesting process to quit"
+            cls.p.communicate("q")
+        qt = threading.Thread(target=quit_thread)
+        qt.start()
+        qt.join(2)
+        if qt.is_alive():
+            cls.p.terminate()
+            qt.join()
+            raise
+
+    def test_history(self):
+        # send 1000 updates
+        sent_values = []
+        for i in range(1000):
+            v = random.uniform(-30, 30)
+            sent_values.append(v)
+            self.input.send_value(v)
+
+if __name__ == '__main__':
+    unittest.main()
