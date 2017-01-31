@@ -3,6 +3,7 @@ import unittest
 import time
 import random
 import threading
+import signal
 import service
 import yami
 import yagent
@@ -12,10 +13,10 @@ import discovery
 class test_io:
 
     def __init__(self):
-        self.name = "test.client"
+        self.name = "io.test"
         self.s = None
         self.e = None
-        self.subscribed = threading.Condition()
+        self.subscribed = False
 
         self.serv = service.service(self.name, self.on_msg)
 
@@ -42,8 +43,8 @@ class test_io:
             if msg.get_message_name() == "subscribe":
                 self.s = msg.get_parameters()["name"]
                 self.e = msg.get_parameters()["endpoint"]
-                with self.subscribed:
-                    self.subscribed.notifyAll()
+                self.subscribed = True
+                print "SUBSCRIBED"
                 
         except Exception as e:
             logging.error(traceback.format_exc())
@@ -52,10 +53,10 @@ class test_io:
 class test_client:
 
     def __init__(self):
-        self.name = "io.test"
+        self.name = "test.client"
         self.s = None
         self.e = None
-        self.service_found = threading.Condition()
+        self.service_found = False
         
         self.serv = service.service(self.name, self.on_msg)
 
@@ -69,8 +70,24 @@ class test_client:
 
     def on_service_availability(self, s, available):
         if s == "io-control-dev" and available == True:
-            with self.service_found:
-                self.service_found.notifyAll()
+            print "SERVICE FOUND"
+            self.service_found = True
+
+def myTearDown(cls):
+    cls.input.exit()
+    cls.client.exit()
+    discovery.exit()
+
+    def quit_thread():
+        print "requesting process to quit"
+        cls.p.communicate("q\n")
+    qt = threading.Thread(target=quit_thread)
+    qt.start()
+    qt.join(2)
+    if qt.is_alive():
+        cls.p.kill()
+        qt.join()
+        raise Exception("Had to kill process under test")
 
 class TestStringMethods(unittest.TestCase):
     @classmethod
@@ -84,27 +101,22 @@ class TestStringMethods(unittest.TestCase):
         args = ['python', 'iocontrol.py']
         cls.p = subprocess.Popen(args=args, stdin=subprocess.PIPE)
         #wait for iocontrol to subscribe for io_test
-        with cls.input.subscribed:
-            cls.input.subscribed.wait()
-        with cls.client.service_found:
-            cls.client.service_found.wait()
+        for i in range(10):
+            if cls.input.subscribed and cls.client.service_found:
+                break
+            print "WAITING..."
+            time.sleep(1)
+            if i == 9:
+                try:
+                    myTearDown(cls)
+                except:
+                    pass
+                raise Exception("Timeout waiting for environment setup")
+
 
     @classmethod
     def tearDownClass(cls):
-        cls.input.exit()
-        cls.client.exit()
-        discovery.exit()
-
-        def quit_thread():
-            print "requesting process to quit"
-            cls.p.communicate("q")
-        qt = threading.Thread(target=quit_thread)
-        qt.start()
-        qt.join(2)
-        if qt.is_alive():
-            cls.p.terminate()
-            qt.join()
-            raise
+        myTearDown(cls)
 
     def test_history(self):
         # send 1000 updates
