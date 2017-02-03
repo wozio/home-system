@@ -4,6 +4,7 @@
 #include "logger_init.h"
 #include "config.h"
 #include "app.h"
+#include "ios.h"
 
 INITIALIZE_EASYLOGGINGPP
 
@@ -13,6 +14,7 @@ namespace po = boost::program_options;
 home_system::config_t _config;
 home_system::yc_t _yc;
 home_system::discovery_t _discovery;
+home_system::ios_t _ios;
 
 int main(int argc, char** argv)
 {
@@ -37,6 +39,7 @@ int main(int argc, char** argv)
 
 		_yc = home_system::yami_container::create();
 		_discovery = home_system::discovery::create();
+		_ios = home_system::ios::create();
 
 		home_system::app::run(vm.count("daemonize"));
 	}
@@ -49,6 +52,7 @@ int main(int argc, char** argv)
 		LOG(ERROR) << "UNKNOWN EXCEPTION";
 	}
 
+	_ios.reset();
 	_discovery.reset();
 	_yc.reset();
 	_config.reset();
@@ -57,4 +61,3 @@ int main(int argc, char** argv)
 
     return 0;
 }
-
