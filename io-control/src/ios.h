@@ -15,6 +15,7 @@ public:
     }
     ios();
     ~ios();
+private:
 };
 
 }
