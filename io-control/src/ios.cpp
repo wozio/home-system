@@ -11,9 +11,9 @@ namespace home_system
         LOG(INFO) << "IOS: Reading configuration";
         auto& conf = CONFIG.get();
         // first create known (written in configuration) ioses
-        if (conf.HasMember("inputs"))
+        if (conf.HasMember("ios"))
         {
-            auto& a = conf["inputs"];
+            auto& a = conf["ios"];
             for (auto itr = a.Begin(); itr != a.End(); ++itr)
             {
                 if (itr->IsObject())
@@ -61,10 +61,7 @@ namespace home_system
 					}
 					if (name.length() > 0 && type.length() > 0 && service.length() > 0)
 					{
-						if (type == "temp")
-						{
-							LOG(DEBUG) << "IOS: Creating input: " << name;
-						}
+						
 					}
                 }
             }
