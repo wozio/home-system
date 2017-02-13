@@ -20,11 +20,11 @@ public:
     // 'value' field in proper type will be written into params
     virtual void write_value_state(yami::parameters& params) = 0;
 
-    enum class state
+    enum class state_t
     {
-        unknown, // there is no communication with remote service
-        ok,
-        failed // remote service reports io as failed
+        unknown = 0, // there is no communication with remote service
+        ok = 1,
+        failed = -1 // remote service reports io as failed
     };
 private:
 
@@ -32,7 +32,7 @@ private:
     const std::string name_;
     const std::string service_;
     const long long id_;
-    state state_;
+    state_t state_;
 };
 
 }

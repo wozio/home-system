@@ -145,10 +145,14 @@
     <ClInclude Include="src/stdafx.h" />
     <ClInclude Include="src/targetver.h" />
     <ClInclude Include="src/ios.h" />
+    <ClInclude Include="src/io.h" />
+    <ClInclude Include="src/io_in_float.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src/io-control.cpp" />
     <ClCompile Include="src/ios.cpp" />
+    <ClCompile Include="src/io.cpp" />
+    <ClCompile Include="src/io_in_float.cpp" />
     <ClCompile Include="src/stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

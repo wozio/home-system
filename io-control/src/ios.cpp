@@ -3,6 +3,7 @@
 #include "service.h"
 #include "logger.h"
 #include "ios.h"
+#include "io.h"
 
 namespace home_system
 {
@@ -61,7 +62,7 @@ namespace home_system
 					}
 					if (name.length() > 0 && type.length() > 0 && service.length() > 0)
 					{
-						
+						io::create(type, name, service, id);
 					}
                 }
             }

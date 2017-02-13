@@ -24,9 +24,21 @@
     <ClInclude Include="src/ios.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src/io.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src/io_in_float.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src/ios.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src/io.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src/io_in_float.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src/stdafx.cpp">
