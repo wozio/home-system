@@ -30,7 +30,7 @@ namespace home_system
 						if (v.IsString())
 						{
 							name = v.GetString();
-						}                        
+						}
                     }
 					if (itr->HasMember("type"))
 					{
@@ -62,7 +62,14 @@ namespace home_system
 					}
 					if (name.length() > 0 && type.length() > 0 && service.length() > 0)
 					{
-						io::create(type, name, service, id);
+						try
+						{
+							io::create(type, name, service, id);
+						}
+						catch (const std::runtime_error& e)
+						{
+							LOG(ERROR) << "Error while creating IO: " << e.what();
+						}
 					}
                 }
             }
