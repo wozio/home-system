@@ -54,7 +54,7 @@
   <div ng-if='connected && !loggedIn && !loggingIn' class="modal_bkg">
     <div class="dialog_bkg">
       <div class="dialog-header">Sign in</div>
-      <form novalidate>
+      <form class="dialog-content" novalidate>
         <input class="dialog-input" type="email" ng-model="data.email" />
         <input class="dialog-input" type="password" ng-model="data.password" />
         <input class="dialog-button-ok" type="submit" ng-click="requestLogin(data)" value="OK" />
