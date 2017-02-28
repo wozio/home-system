@@ -54,6 +54,7 @@ class subscribers:
           except yami.YAMIError as e:
               logging.error("error while sending '%s' to '%s[%d]': %s", msg, s, i, traceback.format_exc())
               self.remove(id)
+              raise
 
     def on_service_availability(self, s, available):
         if not available:

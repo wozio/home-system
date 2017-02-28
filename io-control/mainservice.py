@@ -33,17 +33,20 @@ def exit():
     logging.debug("IO Control Service exited")
 
 def on_service(new_service, available):
-    if available:
-        if new_service.find("io.", 0, 3) == 0:
-            logging.debug("IO service %s is available", new_service)
+    try:
+        if available:
+            if new_service.find("io.", 0, 3) == 0:
+                logging.debug("IO service %s is available", new_service)
 
-            # subscribe for io state change notifications
-            params = yami.Parameters()
-            params["name"] = NAME
-            params["endpoint"] = yagent.endpoint
+                # subscribe for io state change notifications
+                params = yami.Parameters()
+                params["name"] = NAME
+                params["endpoint"] = yagent.endpoint
 
-            yagent.agent.send(discovery.get(new_service), new_service,
-                              "subscribe", params)
+                yagent.agent.send(discovery.get(new_service), new_service,
+                                "subscribe", params)
+    except Exception as e:
+        logging.error(traceback.format_exc())
 
 def on_ioservice_change(service):
 
