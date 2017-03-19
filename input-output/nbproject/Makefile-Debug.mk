@@ -48,7 +48,8 @@ OBJECTFILES= \
 	${OBJECTDIR}/src/input-output.o \
 	${OBJECTDIR}/src/io-service.o \
 	${OBJECTDIR}/src/ownetwork.o \
-	${OBJECTDIR}/src/owtemp.o
+	${OBJECTDIR}/src/owtemp.o \
+	${OBJECTDIR}/src/device.o
 
 
 # C Compiler Flags
@@ -146,6 +147,11 @@ ${OBJECTDIR}/src/owtemp.o: src/owtemp.cpp
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} "$@.d"
 	$(COMPILE.cc) -g -Wall -D_DEBUG -Isrc/1wire/common -I../common/common/src -I../common/yami4/include -I../common/easyloggingpp/src -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/owtemp.o src/owtemp.cpp
+
+${OBJECTDIR}/src/device.o: src/device.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -Wall -D_DEBUG -Isrc/1wire/common -I../common/common/src -I../common/yami4/include -I../common/easyloggingpp/src -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/device.o src/device.cpp
 
 # Subprojects
 .build-subprojects:

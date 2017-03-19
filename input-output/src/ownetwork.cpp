@@ -138,6 +138,10 @@ void net::send_request()
   catch (const std::runtime_error& e)
   {
     LOG(ERROR) << "Error while sending requests: " << e.what();
+    for (auto& device : devices_)
+    {
+      device.second.set_state(device::faulty);
+    }
     close();
     open();
   }
@@ -159,6 +163,10 @@ void net::read_temp()
   catch (const std::runtime_error& e)
   {
     LOG(ERROR) << "Error while reading temperature: " << e.what();
+    for (auto& device : devices_)
+    {
+      device.second.set_state(device::faulty);
+    }
     close();
     open();
   }
