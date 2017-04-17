@@ -1,8 +1,8 @@
-#ifndef OWNETWORK_H
-#define	OWNETWORK_H
+#pragma once
 
 #include "timer.h"
-#include "owtemp.h"
+#include "owdevice.h"
+#include "io/io_service.h"
 #include <map>
 #include <string>
 #include <memory>
@@ -11,26 +11,19 @@
 namespace home_system
 {
 
-namespace input_output
-{
-namespace ow
-{
-
-class net
+class ownet
 {
 public:
-  net(const std::string &port, std::function<void(uint64_t)> state_change_callback);
-  net(const net&) = delete;
-  ~net();
-  
-  void get_inputs(std::vector<long long>& ids);
-  // TODO: other devices than temperature
-  temp& get_input(uint64_t id);
+  ownet(const std::string &port);
+  ownet(const ownet&) = delete;
+  ~ownet();
   
 private:
   std::string port_;
-  
-  std::function<void(uint64_t)> state_change_callback_;
+
+  io_service ioservice_;
+
+  //TODO io service instance
   
   timer timer_;
   
@@ -38,18 +31,12 @@ private:
   int portnum_;
   void open();
   void search();
-  void send_request();
-  void read_temp();
+  void process();
   void close();
+
+  typedef std::shared_ptr<owdevice> owdevice_t;
   
-  // TODO: other devices than temperature
-  std::map<uint64_t, temp> devices_;
+  std::map<uint64_t, owdevice_t> devices_;
 };
 
 }
-}
-}
-
-
-#endif	/* OWNETWORK_H */
-

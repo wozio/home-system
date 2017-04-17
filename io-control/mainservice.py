@@ -57,7 +57,14 @@ def on_msg(message):
     try:
         global serv
 
-        if message.get_message_name() == "state_change":
+        if message.get_message_name() == "io_change":
+            params = message.get_parameters()
+            if params["type"] == 0: # temperature input
+                inputs.on_state_change(params["name"], params["id"], params["state"], params["value"])
+            elif params["type"] == 1: # switch output
+                outputs.on_state_change(params["name"], params["id"], params["state"], params["value"])
+
+        elif message.get_message_name() == "state_change":
             params = message.get_parameters()
             if params["type"] == 0: # temperature input
                 inputs.on_state_change(params["name"], params["id"], params["state"], params["value"])

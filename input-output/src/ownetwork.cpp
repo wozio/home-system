@@ -1,6 +1,6 @@
 #include "ownetwork.h"
+#include "owtemp.h"
 #include "utils.h"
-#include "service.h"
 #include "logger.h"
 
 extern "C"
@@ -12,14 +12,10 @@ using namespace std;
 
 namespace home_system
 {
-namespace input_output
-{
-namespace ow
-{
 
-net::net(const std::string &port, std::function<void(uint64_t)> state_change_callback)
+ownet::ownet(const std::string &port)
 : port_(port),
-  state_change_callback_(state_change_callback),
+  ioservice_("io.1wire"),
   opened_(false),
   open_fault_logged_(false),
   search_fault_logged_(false)
@@ -27,24 +23,12 @@ net::net(const std::string &port, std::function<void(uint64_t)> state_change_cal
   open();
 }
 
-net::~net()
+ownet::~ownet()
 {
+  close();
 }
 
-void net::get_inputs(std::vector<long long>& ids)
-{
-  for (auto const & device : devices_)
-  {
-    ids.push_back(device.first);
-  }
-}
-
-temp& net::get_input(uint64_t id)
-{
-  return devices_.at(id);
-}
-
-void net::open()
+void ownet::open()
 {
   if (!open_fault_logged_)
     LOG(INFO)  << "Opening One Wire port " << port_;
@@ -66,7 +50,7 @@ void net::open()
   }
 }
 
-void net::search()
+void ownet::search()
 {
   if (!search_fault_logged_)
     LOG(DEBUG) << "Searching for devices";
@@ -87,7 +71,9 @@ void net::search()
     {
     case 0x10: // DS1920
       {
-        devices_.emplace(serial_num, temp(portnum_, serial_num, state_change_callback_));
+        owdevice_t d(new temp(ioservice_, portnum_, serial_num));
+        ioservice_.add_device(d);
+        devices_[serial_num] = d;
       }
       break;
     default:
@@ -97,8 +83,8 @@ void net::search()
   
   if (devices_.size())
   {
-    // start reading from devices
-    send_request();
+    // start processing loop
+    process();
   }
   else
   {
@@ -112,7 +98,7 @@ void net::search()
   }
 }
 
-void net::close()
+void ownet::close()
 {
   if (portnum_ > -1)
   {
@@ -122,56 +108,30 @@ void net::close()
   }
 }
 
-void net::send_request()
+void ownet::process()
 {
-  LOG(DEBUG) << "Sending requests";
-  
   try
   {
     for (auto& device : devices_)
     {
-      device.second.send_convert();
+      device.second->process();
     }
 
-    timer_.set_from_now(2000, [this](){ read_temp(); });
+    timer_.set_from_now(1000, [this]()
+    {
+      process();
+    });
   }
   catch (const std::runtime_error& e)
   {
-    LOG(ERROR) << "Error while sending requests: " << e.what();
+    LOG(ERROR) << "Error while processing: " << e.what();
     for (auto& device : devices_)
     {
-      device.second.set_state(device::faulty);
+      device.second->set_state(io_state_t::faulty);
     }
     close();
     open();
   }
 }
 
-void net::read_temp()
-{
-  LOG(DEBUG) << "Reading temperature";
-  
-  try
-  {
-    for (auto& device : devices_)
-    {
-      device.second.read_temp();
-    }
-    
-    timer_.set_from_now(13000, [this](){ send_request(); });
-  }
-  catch (const std::runtime_error& e)
-  {
-    LOG(ERROR) << "Error while reading temperature: " << e.what();
-    for (auto& device : devices_)
-    {
-      device.second.set_state(device::faulty);
-    }
-    close();
-    open();
-  }
-}
-
-}
-}
 }

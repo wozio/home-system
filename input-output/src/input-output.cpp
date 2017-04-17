@@ -1,7 +1,8 @@
-#include "io-service.h"
+#include "ownetwork.h"
 #include "app.h"
 #include "logger_init.h"
 #include "yamicontainer.h"
+#include "discovery.h"
 #include <boost/program_options.hpp>
 #include <chrono>
 #include <thread>
@@ -13,6 +14,7 @@ using namespace std;
 namespace po = boost::program_options;
 
 home_system::yc_t _yc;
+home_system::discovery_t _discovery;
 
 int main(int argc, char** argv)
 {
@@ -50,8 +52,11 @@ int main(int argc, char** argv)
     try
     {
       _yc = home_system::yami_container::create();
+      _discovery = home_system::discovery::create();
       
-      home_system::input_output::io_service service;
+      // TODO configurable device name
+      // TODO configurable service name
+      home_system::ownet net("DS2490-1");
 
       exit_init_loop = true;
 
@@ -80,6 +85,7 @@ int main(int argc, char** argv)
   }
   while (!exit_init_loop);
   
+  _discovery.reset();
   _yc.reset();
 
   LOG(INFO) << "1 wire input output quitting";

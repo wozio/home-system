@@ -1,28 +1,23 @@
 #pragma once
 
-#include "device.h"
+#include "owdevice.h"
 #include <cstdint>
 
 namespace home_system
 {
-namespace input_output
-{
-namespace ow
-{
-
 class temp
-: public device
+: public owdevice
 {
 public:
-  temp(int portnum, uint64_t serial_num, std::function<void(uint64_t)> state_change_callback);
-  void send_convert();
-  bool read_temp();
-
+  temp(io_service& ios, int port_num, uint64_t serial_num);
+  ~temp();
   void process();
   
 private:
+  int process_cnt_;
+
+  void send_convert();
+  bool read_temp();
 };
 
-}
-}
 }

@@ -9,11 +9,6 @@ typedef unsigned char uchar;
 
 namespace home_system
 {
-namespace input_output
-{
-namespace ow
-{
-
 template<class T>
 std::string serial_num_to_string(const T serial_num)
 {
@@ -24,8 +19,6 @@ std::string serial_num_to_string(const T serial_num)
   return o.str();
 }
 
-}
-}
 }
 
 #endif	/* UTILS_H */
