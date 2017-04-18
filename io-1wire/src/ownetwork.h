@@ -23,8 +23,6 @@ private:
 
   io_service ioservice_;
 
-  //TODO io service instance
-  
   timer timer_;
   
   bool opened_, open_fault_logged_, search_fault_logged_;

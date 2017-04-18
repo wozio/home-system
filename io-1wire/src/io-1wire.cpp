@@ -39,7 +39,7 @@ int main(int argc, char** argv)
     return 1;
   }
 
-  home_system::init_log("input-output.log", !vm.count("daemonize"));
+  home_system::init_log("io-1wire.log", !vm.count("daemonize"));
 
   LOG(INFO) << "Started";
 
@@ -88,7 +88,7 @@ int main(int argc, char** argv)
   _discovery.reset();
   _yc.reset();
 
-  LOG(INFO) << "1 wire input output quitting";
+  LOG(INFO) << "IO 1 wire quitting";
 
   return 0;
 }

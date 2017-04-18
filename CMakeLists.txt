@@ -23,4 +23,6 @@ set(LIBS
     )
 
 add_subdirectory(${CMAKE_SOURCE_DIR}/common/common)
-add_subdirectory(${CMAKE_SOURCE_DIR}/input-output)
+add_subdirectory(${CMAKE_SOURCE_DIR}/libs/io)
+add_subdirectory(${CMAKE_SOURCE_DIR}/io-1wire)
+add_subdirectory(${CMAKE_SOURCE_DIR}/io-relay-board)
