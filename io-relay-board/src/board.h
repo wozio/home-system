@@ -1,40 +1,25 @@
-#ifndef RBPORT_H
-#define	RBPORT_H
+#pragma once
 
+#include "io/io_service.h"
+#include "relay.h"
 #include "timer.h"
 #include <string>
 
 namespace home_system
 {
 
-class service;
+typedef std::shared_ptr<relay> relay_t;
 
-namespace input_output
-{
-
-class iorb_service;
-
-namespace rb
-{
-
-class port
+class board
 {
 public:
-  port(const std::string& port, iorb_service* service);
-  ~port();
-
-  void enable_relay(unsigned int relay);
-  void disable_relay(unsigned int relay);
-  void disable_all();
-  int get_relay_state(unsigned int relay);
-  
-  
+  board(const std::string& port);
+  ~board();
 
 private:
   std::string port_;
-  int state_[8];
-  int wanted_state_[8];
-  iorb_service* service_;
+  io_service ioservice_;
+  std::vector<relay_t> relays_;
   
   ios_wrapper ios_;
   boost::asio::serial_port serial_port_;
@@ -48,15 +33,10 @@ private:
   
   void open_port();
   void setup_read();
-  void check_state(int bitmap);
-  void exec_state_change();
+  void check_values(int bitmap);
+  void exec_value_change();
   void close_port();
 };
 
 }
-}
-}
-
-
-#endif
 

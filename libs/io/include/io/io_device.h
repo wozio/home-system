@@ -41,7 +41,7 @@ public:
   boost::any& get_value();
 
 protected:
-  void set_value(boost::any& value);
+  void set_value_int(boost::any& value);
 
 private:
   io_service& ios_;

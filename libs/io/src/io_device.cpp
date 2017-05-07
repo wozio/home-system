@@ -49,7 +49,7 @@ boost::any& io_device::get_value()
     return value_;
 }
 
-void io_device::set_value(boost::any& value)
+void io_device::set_value_int(boost::any& value)
 {
     value_ = value;
     ios_.on_device_change(id_);

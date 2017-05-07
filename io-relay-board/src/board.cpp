@@ -1,5 +1,4 @@
-#include "rbport.h"
-#include "iorb-service.h"
+#include "board.h"
 #include "logger.h"
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <thread>
@@ -12,33 +11,29 @@ using namespace boost::asio;
 
 namespace home_system
 {
-namespace input_output
-{
-namespace rb
-{
 
-port::port(const std::string& port, iorb_service* service)
+board::board(const std::string& port)
 : port_(port),
-  service_(service),
+  ioservice_("io.relay-board"),
   serial_port_(ios_.io_service()),
   timer_(ios_),
   write_timer_(ios_)
 {
   for (size_t i = 0; i < 8; ++i)
   {
-    state_[i] = -1;
-    wanted_state_[i] = 0;
+    relay_t r(new relay(ioservice_, i));
+    relays_.push_back(r);
   }
-  
-  open_port();
+
+  // all operations on port are done on io_service thread
+  // to avoid locking
+  ios_.io_service().post([this] ()
+  {
+    open_port();
+  });
 }
 
-class port_error
-: public std::exception
-{
-};
-
-void port::open_port()
+void board::open_port()
 {
   static bool logged = false;
   if (!logged)
@@ -62,11 +57,14 @@ void port::open_port()
         ", keep trying...";
       logged = true;
     }
-    timer_.set_from_now(1000, [this] () { open_port(); });
+    timer_.set_from_now(1000, [this] ()
+    {
+      open_port();
+    });
   }
 }
 
-void port::setup_read()
+void board::setup_read()
 {
   serial_port_.async_read_some(buffer(buf_, 10),
     [&] (const boost::system::error_code& error, std::size_t bytes_transferred) { read_handler(error, bytes_transferred); } );
@@ -79,7 +77,7 @@ void port::setup_read()
   });
 }
 
-void port::read_handler(const boost::system::error_code& error,
+void board::read_handler(const boost::system::error_code& error,
   std::size_t bytes_transferred)
 {
   if (!error)
@@ -102,8 +100,8 @@ void port::read_handler(const boost::system::error_code& error,
             bitmap &= 0xFF;
             //LOG("BITMAP: " << bitmap);
             value.clear();
-            check_state(bitmap);
-            exec_state_change();
+            check_values(bitmap);
+            exec_value_change();
           }
         default:
           if ((buf_[i] > 0x1F) && crfound)
@@ -121,12 +119,15 @@ void port::read_handler(const boost::system::error_code& error,
   }
 }
 
-void port::write_handler(const boost::system::error_code& error,
+void board::write_handler(const boost::system::error_code& error,
   std::size_t bytes_transferred)
 {
   if (!error)
   {
-    write_timer_.set_from_now(1000, [this] (){ exec_state_change(); });
+    write_timer_.set_from_now(1000, [this] ()
+    {
+      exec_value_change();
+    });
   }
   else if (error != error::operation_aborted)
   {
@@ -136,23 +137,16 @@ void port::write_handler(const boost::system::error_code& error,
   }
 }
 
-void port::check_state(int bitmap)
+void board::check_values(int bitmap)
 {
   for (size_t i = 0; i < 8; ++i)
   {
-    int state = bitmap & 1;
-    if (state != state_[i])
-    {
-      LOG(DEBUG) << "Relay " << i << " state: " << state_[i] <<
-        "->" << state;
-      service_->on_output_state_change(i, state);
-      state_[i] = state;
-    }
-    bitmap >>= 1;
+    int value = (bitmap >> i) & 1;
+    relays_[i]->check_value(value);
   }
 }
 
-void port::exec_state_change()
+void board::exec_value_change()
 {
   write_timer_.cancel();
   try
@@ -185,7 +179,7 @@ void port::exec_state_change()
   }
 }
 
-void port::close_port()
+void board::close_port()
 {
   if (serial_port_.is_open())
   {
@@ -202,7 +196,7 @@ void port::close_port()
   }
 }
 
-port::~port()
+board::~board()
 {
   if (serial_port_.is_open())
   {
@@ -213,34 +207,6 @@ port::~port()
   timer_.cancel();
 }
 
-void port::enable_relay(unsigned int relay)
-{
-  wanted_state_[relay] = 1;
-  exec_state_change();
-}
-
-void port::disable_relay(unsigned int relay)
-{
-  wanted_state_[relay] = 0;
-  exec_state_change();
-}
-
-void port::disable_all()
-{
-  for (int i = 0; i < 8; ++i)
-    wanted_state_[i] = 0;
-  exec_state_change();
-}
-
-int port::get_relay_state(unsigned int relay)
-{
-  if (relay < 8)
-    return state_[relay];
-  else
-    return -1;
-}
-
-}
 }
 }
 

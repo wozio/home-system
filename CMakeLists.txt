@@ -7,6 +7,11 @@ include_directories(${CMAKE_SOURCE_DIR}/common/easyloggingpp/src)
 include_directories(${CMAKE_SOURCE_DIR}/common/yami4/include)
 include_directories(${CMAKE_SOURCE_DIR}/common/common/src)
 
+# common compiler flags
+SET(GXX_COMPILE_FLAGS "-Wno-deprecated-declarations")
+
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${GXX_COMPILE_FLAGS}")
+
 # common link directories
 link_directories(${CMAKE_SOURCE_DIR}/common/yami4/lib)
 
@@ -26,3 +31,4 @@ add_subdirectory(${CMAKE_SOURCE_DIR}/common/common)
 add_subdirectory(${CMAKE_SOURCE_DIR}/libs/io)
 add_subdirectory(${CMAKE_SOURCE_DIR}/io-1wire)
 add_subdirectory(${CMAKE_SOURCE_DIR}/io-relay-board)
+
