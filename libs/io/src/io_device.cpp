@@ -7,9 +7,9 @@ using namespace std;
 namespace home_system
 {
 
-io_device::io_device(io_service& ios, io_id_t id, io_type_t type)
-: ios_(ios),
-  id_(id),
+io_device::io_device(io_id_t id, io_data_type_t data_type, const std::string& type)
+: id_(id),
+  data_type_(data_type),
   type_(type),
   state_(io_state_t::unknown)
 {
@@ -24,7 +24,12 @@ io_id_t io_device::get_id()
   return id_;
 }
 
-io_type_t io_device::get_type()
+io_data_type_t io_device::get_data_type()
+{
+    return data_type_;
+}
+
+std::string io_device::get_type()
 {
     return type_;
 }
@@ -37,7 +42,7 @@ io_state_t io_device::get_state()
 void io_device::set_state(io_state_t state)
 {
     state_ = state;
-    ios_.on_device_change(id_);
+    on_state_change(id_);
 }
 
 boost::any& io_device::get_value()
@@ -49,10 +54,15 @@ boost::any& io_device::get_value()
     return value_;
 }
 
-void io_device::set_value_int(boost::any& value)
+void io_device::set_wanted_value(const boost::any& v)
+{
+    wanted_value_ = v;
+}
+
+void io_device::set_value(boost::any& value)
 {
     value_ = value;
-    ios_.on_device_change(id_);
+    on_state_change(id_);
 }
 
 }

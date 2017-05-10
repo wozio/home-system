@@ -9,7 +9,7 @@ class owdevice
 : public io_device
 {
 public:
-  owdevice(io_service& ios, int port_num, uint64_t serial_num, io_type_t type);
+  owdevice(int port_num, uint64_t serial_num, io_data_type_t data_type, const std::string& type);
   ~owdevice();
 
   // called every second

@@ -2,7 +2,6 @@
 
 #include "io/io_service.h"
 #include "relay.h"
-#include "timer.h"
 #include <string>
 
 namespace home_system
@@ -13,7 +12,7 @@ typedef std::shared_ptr<relay> relay_t;
 class board
 {
 public:
-  board(const std::string& port);
+  board(const std::string& name, const std::string& port);
   ~board();
 
 private:

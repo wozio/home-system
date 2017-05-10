@@ -12,16 +12,17 @@ using namespace boost::asio;
 namespace home_system
 {
 
-board::board(const std::string& port)
+board::board(const std::string& name, const std::string& port)
 : port_(port),
-  ioservice_("io.relay-board"),
+  ioservice_(name),
   serial_port_(ios_.io_service()),
   timer_(ios_),
   write_timer_(ios_)
 {
   for (size_t i = 0; i < 8; ++i)
   {
-    relay_t r(new relay(ioservice_, i));
+    relay_t r(new relay(i, serial_port_));
+    ioservice_.add_device(r);
     relays_.push_back(r);
   }
 
@@ -188,6 +189,7 @@ void board::close_port()
     serial_port_.close();
   }
   timer_.cancel();
+  ios_.stop();
   for (size_t i = 0; i < 8; ++i)
   {
     if (state_[i] != -1)

@@ -13,8 +13,8 @@ using namespace std;
 namespace home_system
 {
 
-temp::temp(io_service& ios, int port_num, uint64_t serial_num)
-: owdevice(ios, port_num, serial_num, io_type_t::temperature_input),
+temp::temp(int port_num, uint64_t serial_num)
+: owdevice(port_num, serial_num, io_data_type_t::double_float, "temperature_input"),
   process_cnt_(12)
 {
   LOG(DEBUG) << "Created temperature device (DS1920): " << serial_num_to_string(serial_num_);

@@ -30,6 +30,10 @@ void io_service::add_device(io_device_t device)
     throw runtime_error("attempt to add device which is already added (same ID)");
   }
   devices_[id] = device;
+  device->on_state_change.connect([this](io_id_t id)
+  {
+    this->on_device_change(id);
+  });
 }
 
 void io_service::remove_device(io_id_t id)
@@ -56,6 +60,30 @@ void io_service::on_msg(incoming_message & im)
     
     send_current_state();
   }
+  else if (im.get_message_name() == "set_io_value")
+  {
+  	auto params = im.get_parameters();
+    auto id = params.get_long_long("id");
+    auto it = devices_.find(id);
+    if (it != devices_.end())
+    {
+      auto d = it->second;
+      boost::any v;
+      switch (d->get_data_type())
+      {
+      case io_data_type_t::double_float:
+        v = params.get_double_float("value");
+        break;
+      case io_data_type_t::integer:
+        v = params.get_long_long("value");
+        break;
+      default:
+        throw std::runtime_error("Unsupported IO data type");
+      }
+      d->set_wanted_value(v);
+    }
+
+  }
   else
   {
     service::on_msg(im);
@@ -73,6 +101,12 @@ void io_service::send_current_state()
 
 void io_service::on_device_change(io_id_t id)
 {
+  if (devices_.find(id) == devices_.end())
+  {
+    // it may happen when device object is removed from io_service but not destroyed
+    return;
+  }
+
   lock_guard<mutex> lock(subscription_mutex_);
 
   yami::parameters params;
@@ -80,19 +114,26 @@ void io_service::on_device_change(io_id_t id)
   params.set_long_long("id", id);
   
   auto d = devices_[id];
-  params.set_long_long("type", static_cast<int>(d->get_type()));
+  params.set_long_long("data_type", static_cast<int>(d->get_data_type()));
+  params.set_string("type", d->get_type());
   params.set_long_long("state", static_cast<int>(d->get_state()));
 
   if (d->get_state() == io_state_t::ok)
   {
     auto& v = d->get_value();
 
-    switch (d->get_type())
+    switch (d->get_data_type())
     {
-    case io_type_t::temperature_input:
+    case io_data_type_t::double_float:
     {
       auto cv =  boost::any_cast<double>(v);
       params.set_double_float("value", cv);
+      break;
+    }
+    case io_data_type_t::integer:
+    {
+      auto cv =  boost::any_cast<long long>(v);
+      params.set_long_long("value", cv);
       break;
     }
     default:

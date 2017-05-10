@@ -71,7 +71,7 @@ void ownet::search()
     {
     case 0x10: // DS1920
       {
-        owdevice_t d(new temp(ioservice_, portnum_, serial_num));
+        owdevice_t d(new temp(portnum_, serial_num));
         ioservice_.add_device(d);
         devices_[serial_num] = d;
       }

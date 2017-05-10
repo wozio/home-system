@@ -9,7 +9,7 @@ class temp
 : public owdevice
 {
 public:
-  temp(io_service& ios, int port_num, uint64_t serial_num);
+  temp(int port_num, uint64_t serial_num);
   ~temp();
   void process();
   
