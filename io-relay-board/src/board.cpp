@@ -1,5 +1,5 @@
 #include "board.h"
-#include "logger.h"
+#include "utils/logger.h"
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <thread>
 #include <iostream>
@@ -8,9 +8,6 @@ using namespace std;
 using namespace boost;
 using namespace boost::posix_time;
 using namespace boost::asio;
-
-namespace home_system
-{
 
 board::board(const std::string& name, const std::string& port)
 : port_(port),
@@ -189,7 +186,7 @@ void board::close_port()
     serial_port_.close();
   }
   timer_.cancel();
-  ios_.stop();
+  ios_.stop_ios();
   for (size_t i = 0; i < 8; ++i)
   {
     if (state_[i] != -1)
@@ -208,7 +205,3 @@ board::~board()
   }
   timer_.cancel();
 }
-
-}
-}
-

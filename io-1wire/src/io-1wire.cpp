@@ -1,8 +1,8 @@
 #include "ownetwork.h"
-#include "app.h"
-#include "logger_init.h"
-#include "yamicontainer.h"
-#include "discovery.h"
+#include "utils/app.h"
+#include "utils/logger_init.h"
+#include "com/yamicontainer.h"
+#include "com/discovery.h"
 #include <boost/program_options.hpp>
 #include <chrono>
 #include <thread>
@@ -13,8 +13,8 @@ INITIALIZE_EASYLOGGINGPP
 using namespace std;
 namespace po = boost::program_options;
 
-home_system::yc_t _yc;
-home_system::discovery_t _discovery;
+home_system::com::yc_t _yc;
+home_system::com::discovery_t _discovery;
 
 int main(int argc, char** argv)
 {
@@ -39,11 +39,11 @@ int main(int argc, char** argv)
     return 1;
   }
 
-  home_system::init_log("io-1wire.log", !vm.count("daemonize"));
+  home_system::utils::init_log("io-1wire.log", !vm.count("daemonize"));
 
   LOG(INFO) << "Started";
 
-  home_system::app app(vm.count("daemonize"));
+  home_system::utils::app app(vm.count("daemonize"));
     
   bool exit_init_loop = false;
   int init_try = 0;
@@ -51,12 +51,12 @@ int main(int argc, char** argv)
   {
     try
     {
-      _yc = home_system::yami_container::create();
-      _discovery = home_system::discovery::create();
+      _yc = home_system::com::yami_container::create();
+      _discovery = home_system::com::discovery::create();
       
       // TODO configurable device name
       // TODO configurable service name
-      home_system::ownet net("DS2490-1");
+      ownet net("DS2490-1");
 
       exit_init_loop = true;
 

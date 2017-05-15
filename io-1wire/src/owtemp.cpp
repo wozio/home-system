@@ -1,5 +1,5 @@
 
-#include "logger.h"
+#include "utils/logger.h"
 #include "owtemp.h"
 #include "utils.h"
 
@@ -10,11 +10,8 @@ extern "C"
 
 using namespace std;
 
-namespace home_system
-{
-
 temp::temp(int port_num, uint64_t serial_num)
-: owdevice(port_num, serial_num, io_data_type_t::double_float, "temperature_input"),
+: owdevice(port_num, serial_num, home_system::io::io_data_type_t::double_float, "temperature_input"),
   process_cnt_(12)
 {
   LOG(DEBUG) << "Created temperature device (DS1920): " << serial_num_to_string(serial_num_);
@@ -133,6 +130,3 @@ bool temp::read_temp()
   }
   throw std::runtime_error("Accessing device failed");
 }
-
-}
-

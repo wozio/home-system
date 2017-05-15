@@ -1,5 +1,4 @@
-#ifndef UTILS_H
-#define	UTILS_H
+#pragma once
 
 #include <string>
 #include <vector>
@@ -7,8 +6,6 @@
 
 typedef unsigned char uchar;
 
-namespace home_system
-{
 template<class T>
 std::string serial_num_to_string(const T serial_num)
 {
@@ -18,8 +15,3 @@ std::string serial_num_to_string(const T serial_num)
   o << std::hex << std::uppercase << serial_num;
   return o.str();
 }
-
-}
-
-#endif	/* UTILS_H */
-

@@ -1,11 +1,8 @@
 #pragma once
 
-#include "io/io_service.h"
+#include "io/service.h"
 #include "relay.h"
 #include <string>
-
-namespace home_system
-{
 
 typedef std::shared_ptr<relay> relay_t;
 
@@ -17,12 +14,12 @@ public:
 
 private:
   std::string port_;
-  io_service ioservice_;
+  home_system::io::service ioservice_;
   std::vector<relay_t> relays_;
   
-  ios_wrapper ios_;
+  home_system::utils::ios_wrapper ios_;
   boost::asio::serial_port serial_port_;
-  home_system::timer timer_, write_timer_;
+  home_system::utils::timer timer_, write_timer_;
   
   char buf_[10];
   void read_handler(const boost::system::error_code& error,
@@ -36,6 +33,3 @@ private:
   void exec_value_change();
   void close_port();
 };
-
-}
-

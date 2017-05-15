@@ -1,7 +1,7 @@
 #include "ownetwork.h"
 #include "owtemp.h"
 #include "utils.h"
-#include "logger.h"
+#include "utils/logger.h"
 
 extern "C"
 {
@@ -9,9 +9,6 @@ extern "C"
 }
 
 using namespace std;
-
-namespace home_system
-{
 
 ownet::ownet(const std::string &port)
 : port_(port),
@@ -127,11 +124,9 @@ void ownet::process()
     LOG(ERROR) << "Error while processing: " << e.what();
     for (auto& device : devices_)
     {
-      device.second->set_state(io_state_t::faulty);
+      device.second->set_state(home_system::io::io_state_t::faulty);
     }
     close();
     open();
   }
-}
-
 }

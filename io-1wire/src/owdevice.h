@@ -1,15 +1,12 @@
 #pragma once
 
-#include "io/io_device.h"
-
-namespace home_system
-{
+#include "io/device.h"
 
 class owdevice
-: public io_device
+: public home_system::io::device
 {
 public:
-  owdevice(int port_num, uint64_t serial_num, io_data_type_t data_type, const std::string& type);
+  owdevice(int port_num, uint64_t serial_num, home_system::io::io_data_type_t data_type, const std::string& type);
   ~owdevice();
 
   // called every second
@@ -21,5 +18,3 @@ protected:
 
 private:
 };
-
-}

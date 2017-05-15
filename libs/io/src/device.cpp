@@ -1,17 +1,19 @@
-#include "logger.h"
-#include "io/device.h"
-#include "io/service.h"
+#include "utils/logger.h"
+#include "device.h"
+#include "service.h"
 
 using namespace std;
 
 namespace home_system
 {
+namespace io
+{
 
-device::device(io_id_t id, io_data_type_t data_type, const std::string& type)
-: id_(id),
-  data_type_(data_type),
-  type_(type),
-  state_(io_state_t::unknown)
+device::device(io_id_t id, io_data_type_t data_type, const std::string &type)
+    : id_(id),
+      data_type_(data_type),
+      type_(type),
+      state_(io_state_t::unknown)
 {
 }
 
@@ -21,7 +23,7 @@ device::~device()
 
 io_id_t device::get_id()
 {
-  return id_;
+    return id_;
 }
 
 io_data_type_t device::get_data_type()
@@ -45,7 +47,7 @@ void device::set_state(io_state_t state)
     on_state_change(id_);
 }
 
-boost::any& device::get_value()
+boost::any &device::get_value()
 {
     if (state_ != io_state_t::ok)
     {
@@ -54,15 +56,15 @@ boost::any& device::get_value()
     return value_;
 }
 
-void device::set_wanted_value(const boost::any& v)
+void device::set_wanted_value(const boost::any &v)
 {
     wanted_value_ = v;
 }
 
-void device::set_value(boost::any& value)
+void device::set_value(boost::any &value)
 {
     value_ = value;
     on_state_change(id_);
 }
-
+}
 }

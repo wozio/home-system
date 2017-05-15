@@ -1,7 +1,7 @@
 #pragma once
 
-#include "io/device.h"
-#include "service.h"
+#include "device.h"
+#include "com/service.h"
 #include <mutex>
 #include <set>
 
@@ -11,7 +11,7 @@ namespace io
 {
     
   class service
-  : public home_system::service
+  : public home_system::com::service
   {
   public:
     service(const std::string& name);

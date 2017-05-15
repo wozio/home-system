@@ -3,8 +3,6 @@
 #include "owdevice.h"
 #include <cstdint>
 
-namespace home_system
-{
 class temp
 : public owdevice
 {
@@ -19,5 +17,3 @@ private:
   void send_convert();
   bool read_temp();
 };
-
-}

@@ -1,15 +1,12 @@
 #pragma once
 
-#include "timer.h"
+#include "utils/timer.h"
 #include "owdevice.h"
-#include "io/io_service.h"
+#include "io/service.h"
 #include <map>
 #include <string>
 #include <memory>
 #include <functional>
-
-namespace home_system
-{
 
 class ownet
 {
@@ -21,9 +18,9 @@ public:
 private:
   std::string port_;
 
-  io_service ioservice_;
+  home_system::io::service ioservice_;
 
-  timer timer_;
+  home_system::utils::timer timer_;
   
   bool opened_, open_fault_logged_, search_fault_logged_;
   int portnum_;
@@ -36,5 +33,3 @@ private:
   
   std::map<uint64_t, owdevice_t> devices_;
 };
-
-}
