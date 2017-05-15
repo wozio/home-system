@@ -1,23 +1,25 @@
 #pragma once
 
-#include "io/io_device.h"
+#include "io/device.h"
 #include "service.h"
 #include <mutex>
 #include <set>
 
 namespace home_system
 {
+namespace io
+{
     
-  class io_service
+  class service
   : public home_system::service
   {
   public:
-    io_service(const std::string& name);
-    ~io_service();
+    service(const std::string& name);
+    ~service();
 
     void on_msg(yami::incoming_message & im);
 
-    void add_device(io_device_t device);
+    void add_device(device_t device);
     void remove_device(io_id_t id);
     void clear_devices();
 
@@ -26,11 +28,12 @@ namespace home_system
   private:
     std::mutex subscription_mutex_;
 
-    std::map<io_id_t, io_device_t> devices_;
+    std::map<io_id_t, device_t> devices_;
 
     // service name
     std::set<std::string> subscriptions_;
     void send_current_state();
   };
 
+}
 }

@@ -1,13 +1,13 @@
 #include "logger.h"
-#include "io/io_device.h"
-#include "io/io_service.h"
+#include "io/device.h"
+#include "io/service.h"
 
 using namespace std;
 
 namespace home_system
 {
 
-io_device::io_device(io_id_t id, io_data_type_t data_type, const std::string& type)
+device::device(io_id_t id, io_data_type_t data_type, const std::string& type)
 : id_(id),
   data_type_(data_type),
   type_(type),
@@ -15,37 +15,37 @@ io_device::io_device(io_id_t id, io_data_type_t data_type, const std::string& ty
 {
 }
 
-io_device::~io_device()
+device::~device()
 {
 }
 
-io_id_t io_device::get_id()
+io_id_t device::get_id()
 {
   return id_;
 }
 
-io_data_type_t io_device::get_data_type()
+io_data_type_t device::get_data_type()
 {
     return data_type_;
 }
 
-std::string io_device::get_type()
+std::string device::get_type()
 {
     return type_;
 }
 
-io_state_t io_device::get_state()
+io_state_t device::get_state()
 {
     return state_;
 }
 
-void io_device::set_state(io_state_t state)
+void device::set_state(io_state_t state)
 {
     state_ = state;
     on_state_change(id_);
 }
 
-boost::any& io_device::get_value()
+boost::any& device::get_value()
 {
     if (state_ != io_state_t::ok)
     {
@@ -54,12 +54,12 @@ boost::any& io_device::get_value()
     return value_;
 }
 
-void io_device::set_wanted_value(const boost::any& v)
+void device::set_wanted_value(const boost::any& v)
 {
     wanted_value_ = v;
 }
 
-void io_device::set_value(boost::any& value)
+void device::set_value(boost::any& value)
 {
     value_ = value;
     on_state_change(id_);

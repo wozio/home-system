@@ -1,7 +1,7 @@
 #include <algorithm>
 #include <map>
 
-#include "io/io_service.h"
+#include "io/service.h"
 #include "logger.h"
 #include "discovery.h"
 #include "yamicontainer.h"
@@ -11,18 +11,20 @@ using namespace yami;
 
 namespace home_system
 {
+namespace io
+{
 
-io_service::io_service(const std::string& name)
+service::service(const std::string& name)
 : service(name, false)
 {
   init();
 }
 
-io_service::~io_service()
+service::~service()
 {
 }
 
-void io_service::add_device(io_device_t device)
+void service::add_device(device_t device)
 {
   auto id = device->get_id();
   if (devices_.find(id) != devices_.end())
@@ -36,17 +38,17 @@ void io_service::add_device(io_device_t device)
   });
 }
 
-void io_service::remove_device(io_id_t id)
+void service::remove_device(io_id_t id)
 {
   devices_.erase(id);
 }
 
-void io_service::clear_devices()
+void service::clear_devices()
 {
   devices_.clear();
 }
 
-void io_service::on_msg(incoming_message & im)
+void service::on_msg(incoming_message & im)
 {
   if (im.get_message_name() == "subscribe")
   {
@@ -90,7 +92,7 @@ void io_service::on_msg(incoming_message & im)
   }
 }
 
-void io_service::send_current_state()
+void service::send_current_state()
 {
   for (auto it : devices_)
   {
@@ -99,11 +101,11 @@ void io_service::send_current_state()
   }
 }
 
-void io_service::on_device_change(io_id_t id)
+void service::on_device_change(io_id_t id)
 {
   if (devices_.find(id) == devices_.end())
   {
-    // it may happen when device object is removed from io_service but not destroyed
+    // it may happen when device object is removed from service but not destroyed
     return;
   }
 
@@ -159,4 +161,5 @@ void io_service::on_device_change(io_id_t id)
   }
 }
 
+}
 }

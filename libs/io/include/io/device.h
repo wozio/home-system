@@ -6,6 +6,8 @@
 
 namespace home_system
 {
+namespace io
+{
 
 enum class io_data_type_t
 {
@@ -22,14 +24,14 @@ enum class io_state_t
 
 typedef long long io_id_t;
 
-class io_device;
-typedef std::shared_ptr<io_device> io_device_t;
+class device;
+typedef std::shared_ptr<device> device_t;
 
-class io_device
+class device
 {
 public:
-  io_device(io_id_t id, io_data_type_t data_type, const std::string& type);
-  virtual ~io_device();
+  device(io_id_t id, io_data_type_t data_type, const std::string& type);
+  virtual ~device();
 
   io_id_t get_id();
   io_data_type_t get_data_type();
@@ -55,4 +57,5 @@ private:
   boost::any wanted_value_;
 };
 
+}
 }
