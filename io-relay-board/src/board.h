@@ -2,6 +2,7 @@
 
 #include "io/service.h"
 #include "relay.h"
+#include "utils/timer.h"
 #include <string>
 
 typedef std::shared_ptr<relay> relay_t;
@@ -29,7 +30,7 @@ private:
   
   void open_port();
   void setup_read();
-  void check_values(int bitmap);
+  void set_values(int bitmap);
   void exec_value_change();
   void close_port();
 };

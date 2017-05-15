@@ -1,7 +1,6 @@
 #pragma once
 
 #include "io/device.h"
-#include "utils/timer.h"
 
 class relay : public home_system::io::device
 {
@@ -15,6 +14,4 @@ class relay : public home_system::io::device
     int get_wanted_value();
 
   private:
-
-    int wanted_value_;
 };

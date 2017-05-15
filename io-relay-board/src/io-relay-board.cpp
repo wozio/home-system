@@ -1,7 +1,7 @@
 #include "board.h"
-#include "app.h"
-#include "logger_init.h"
-#include "yamicontainer.h"
+#include "utils/app.h"
+#include "utils/logger_init.h"
+#include "com/yamicontainer.h"
 
 #include <boost/program_options.hpp>
 #include <iostream>
@@ -15,7 +15,7 @@ INITIALIZE_EASYLOGGINGPP
 using namespace std;
 namespace po = boost::program_options;
 
-home_system::yc_t _yc;
+home_system::com::yc_t _yc;
 
 int main(int argc, char** argv)
 {
@@ -49,11 +49,11 @@ int main(int argc, char** argv)
     return 1;
   }
   
-  home_system::init_log("io-relay-board.log", !vm.count("daemonize"));
+  home_system::utils::init_log("io-relay-board.log", !vm.count("daemonize"));
   
   LOG(INFO) << "Started";
 
-  home_system::app app(vm.count("daemonize"));
+  home_system::utils::app app(vm.count("daemonize"));
 
   bool exit_init_loop = false;
   int init_try = 0;
@@ -61,9 +61,9 @@ int main(int argc, char** argv)
   {
     try
     {
-      _yc = home_system::yami_container::create();
+      _yc = home_system::com::yami_container::create();
         
-      home_system::board service(vm["name"].as<string>(),
+      board service(vm["name"].as<string>(),
         vm["port"].as<string>());
 
       exit_init_loop = true;

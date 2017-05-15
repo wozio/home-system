@@ -28,3 +28,5 @@ dist/
 GPATH
 GRTAGS
 GTAGS
+.settings/
+.vscode/

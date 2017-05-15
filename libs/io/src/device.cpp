@@ -61,13 +61,15 @@ void device::set_wanted_value(const boost::any &v)
     wanted_value_ = v;
 }
 
+boost::any& device::get_wanted_value()
+{
+    return wanted_value_;
+}
+
 void device::set_value(boost::any &value)
 {
-    if (value_ != value)
-    {
-        value_ = value;
-        on_state_change(id_);
-    }
+    value_ = value;
+    on_state_change(id_);
 }
 }
 }

@@ -42,6 +42,7 @@ public:
 
   boost::any& get_value();
   virtual void set_wanted_value(const boost::any& v);
+  boost::any& get_wanted_value();
 
   boost::signals2::signal<void (io_id_t id)> on_state_change;
 
