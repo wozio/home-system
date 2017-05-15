@@ -98,7 +98,7 @@ void board::read_handler(const boost::system::error_code& error,
             bitmap &= 0xFF;
             //LOG("BITMAP: " << bitmap);
             value.clear();
-            check_values(bitmap);
+            set_values(bitmap);
             exec_value_change();
           }
         default:
