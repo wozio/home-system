@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.7)
 
+enable_testing()
+
 project(home-system)
 
 # common include directories
@@ -35,3 +37,5 @@ add_subdirectory(${CMAKE_SOURCE_DIR}/libs/io)
 add_subdirectory(${CMAKE_SOURCE_DIR}/io-1wire)
 add_subdirectory(${CMAKE_SOURCE_DIR}/io-relay-board)
 
+# 3rd party libraries
+add_subdirectory(${CMAKE_SOURCE_DIR}/libs/3rdparty/googletest)
