@@ -2,7 +2,7 @@
 #include "utils/app.h"
 #include "utils/logger_init.h"
 #include "com/yamicontainer.h"
-
+#include "com/discovery.h"
 #include <boost/program_options.hpp>
 #include <iostream>
 
@@ -16,6 +16,7 @@ using namespace std;
 namespace po = boost::program_options;
 
 home_system::com::yc_t _yc;
+home_system::com::discovery_t _discovery;
 
 int main(int argc, char** argv)
 {
@@ -62,6 +63,7 @@ int main(int argc, char** argv)
     try
     {
       _yc = home_system::com::yami_container::create();
+      _discovery = home_system::com::discovery::create();
         
       board service(vm["name"].as<string>(),
         vm["port"].as<string>());
@@ -93,8 +95,9 @@ int main(int argc, char** argv)
   }
   while (!exit_init_loop);
 
+  _discovery.reset();
   _yc.reset();
 
-  LOG(INFO) << "Relay Board quitting";
+  LOG(INFO) << "IO Relay Board quitting";
   return 0;
 }
