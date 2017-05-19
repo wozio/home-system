@@ -59,15 +59,15 @@ FFLAGS=
 ASFLAGS=
 
 # Link Libraries and Options
-LDLIBSOPTIONS=-lPocoFoundation -lPocoNet -lpthread -lboost_program_options -lboost_filesystem -lboost_system ../common/wshandling/../bin/Debug/libwshandling.a ../common/common/../bin/Debug/libcommon.a -lboost_date_time
+LDLIBSOPTIONS=-lPocoFoundation -lPocoNet -lpthread -lboost_system ../common/wshandling/../bin/Debug/libwshandling.a ../common/common/../bin/Debug/libcommon.a -lboost_program_options -lboost_filesystem
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
 	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk ../bin/${CND_CONF}/cloud-server.exe
 
-../bin/${CND_CONF}/cloud-server.exe: ../common/wshandling/../bin/Debug/libwshandling.a
+../bin/${CND_CONF}/cloud-server.exe: ../common/wshandling/../bin/${CND_CONF}/libwshandling.a
 
-../bin/${CND_CONF}/cloud-server.exe: ../common/common/../bin/Debug/libcommon.a
+../bin/${CND_CONF}/cloud-server.exe: ../common/common/../bin/${CND_CONF}/libcommon.a
 
 ../bin/${CND_CONF}/cloud-server.exe: ${OBJECTFILES}
 	${MKDIR} -p ../bin/${CND_CONF}
@@ -115,8 +115,8 @@ ${OBJECTDIR}/systems.o: systems.cpp
 
 # Subprojects
 .build-subprojects:
-	cd ../common/wshandling && ${MAKE}  -f Makefile CONF=Debug
-	cd ../common/common && ${MAKE}  -f Makefile CONF=Debug
+	cd ../common/wshandling && ${MAKE}  -f Makefile CONF=${CND_CONF}
+	cd ../common/common && ${MAKE}  -f Makefile CONF=${CND_CONF}
 
 # Clean Targets
 .clean-conf: ${CLEAN_SUBPROJECTS}
@@ -125,8 +125,8 @@ ${OBJECTDIR}/systems.o: systems.cpp
 
 # Subprojects
 .clean-subprojects:
-	cd ../common/wshandling && ${MAKE}  -f Makefile CONF=Debug clean
-	cd ../common/common && ${MAKE}  -f Makefile CONF=Debug clean
+	cd ../common/wshandling && ${MAKE}  -f Makefile CONF=${CND_CONF} clean
+	cd ../common/common && ${MAKE}  -f Makefile CONF=${CND_CONF} clean
 
 # Enable dependency checking
 .dep.inc: .depcheck-impl

@@ -25,3 +25,8 @@ dist/
 *.db
 *.ts
 *.obj
+GPATH
+GRTAGS
+GTAGS
+.settings/
+.vscode/

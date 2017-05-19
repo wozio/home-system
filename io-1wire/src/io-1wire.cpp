@@ -1,14 +1,12 @@
-#include "board.h"
+#include "ownetwork.h"
 #include "utils/app.h"
 #include "utils/logger_init.h"
 #include "com/yamicontainer.h"
 #include "com/discovery.h"
 #include <boost/program_options.hpp>
+#include <chrono>
+#include <thread>
 #include <iostream>
-
-#ifdef __linux__
-#include <signal.h>
-#endif
 
 INITIALIZE_EASYLOGGINGPP
 
@@ -20,7 +18,7 @@ home_system::com::discovery_t _discovery;
 
 int main(int argc, char** argv)
 {
-  cout << "Home System IO relay board" << endl;
+  cout << "Home System IO 1 wire" << endl;
   
   // Declare the supported options.
   po::options_description desc("Allowed options");
@@ -29,9 +27,7 @@ int main(int argc, char** argv)
 #ifdef __linux__
     ("daemonize,d", "run as daemon")
 #endif
-    ("name,n", po::value<string>()->default_value("relay-board"), "service name")
-    ("port,p", po::value<string>(), "COM port")
-  ;
+    ;
 
   po::variables_map vm;
   po::store(po::parse_command_line(argc, argv, desc), vm);
@@ -42,20 +38,13 @@ int main(int argc, char** argv)
     cout << desc << endl;
     return 1;
   }
-  
-  if (!vm.count("port"))
-  {
-    cout << "Port must be specified" << endl;
-    cout << desc << endl;
-    return 1;
-  }
-  
-  home_system::utils::init_log("io-relay-board.log", !vm.count("daemonize"));
-  
+
+  home_system::utils::init_log("io-1wire.log", !vm.count("daemonize"));
+
   LOG(INFO) << "Started";
 
   home_system::utils::app app(vm.count("daemonize"));
-
+    
   bool exit_init_loop = false;
   int init_try = 0;
   do
@@ -64,9 +53,10 @@ int main(int argc, char** argv)
     {
       _yc = home_system::com::yami_container::create();
       _discovery = home_system::com::discovery::create();
-        
-      board service(vm["name"].as<string>(),
-        vm["port"].as<string>());
+      
+      // TODO configurable device name
+      // TODO configurable service name
+      ownet net("DS2490-1");
 
       exit_init_loop = true;
 
@@ -94,10 +84,11 @@ int main(int argc, char** argv)
     }
   }
   while (!exit_init_loop);
-
+  
   _discovery.reset();
   _yc.reset();
 
-  LOG(INFO) << "IO Relay Board quitting";
+  LOG(INFO) << "IO 1 wire quitting";
+
   return 0;
 }

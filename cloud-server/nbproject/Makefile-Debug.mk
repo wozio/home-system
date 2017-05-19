@@ -59,7 +59,7 @@ FFLAGS=
 ASFLAGS=
 
 # Link Libraries and Options
-LDLIBSOPTIONS=-lpthread -lboost_program_options -lboost_system ../common/wshandling/../bin/Debug/libwshandling.a ../common/common/../bin/Debug/libcommon.a -lboost_date_time -lPocoFoundation -lPocoNet -lboost_filesystem
+LDLIBSOPTIONS=-lPocoFoundation -lPocoNet -lpthread -lboost_system ../common/wshandling/../bin/Debug/libwshandling.a ../common/common/../bin/Debug/libcommon.a -lboost_program_options -lboost_filesystem
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
