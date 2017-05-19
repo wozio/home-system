@@ -9,6 +9,7 @@ include_directories(${CMAKE_SOURCE_DIR}/common/easyloggingpp/src)
 include_directories(${CMAKE_SOURCE_DIR}/common/yami4/include)
 include_directories(${CMAKE_SOURCE_DIR}/libs/utils/include)
 include_directories(${CMAKE_SOURCE_DIR}/libs/com/include)
+include_directories(${CMAKE_SOURCE_DIR}/libs/3rdparty/rapidjson/include)
 
 # common compiler flags
 SET(GXX_COMPILE_FLAGS "-Wno-deprecated-declarations")
@@ -36,6 +37,7 @@ add_subdirectory(${CMAKE_SOURCE_DIR}/libs/com)
 add_subdirectory(${CMAKE_SOURCE_DIR}/libs/io)
 add_subdirectory(${CMAKE_SOURCE_DIR}/io-1wire)
 add_subdirectory(${CMAKE_SOURCE_DIR}/io-relay-board)
+add_subdirectory(${CMAKE_SOURCE_DIR}/io-control)
 
 # 3rd party libraries
 add_subdirectory(${CMAKE_SOURCE_DIR}/libs/3rdparty/googletest)

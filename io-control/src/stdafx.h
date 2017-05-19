@@ -5,11 +5,7 @@
 
 #pragma once
 
-#include "targetver.h"
-
 #include <stdio.h>
-#include <tchar.h>
-
 
 
 // TODO: reference additional headers your program requires here
@@ -65,6 +61,6 @@
 #include <string>
 //#include <chrono>
 #include <cstdlib>
-#include "logger.h"
-#include "yamicontainer.h"
+#include "utils/logger.h"
+#include "com/yamicontainer.h"
 

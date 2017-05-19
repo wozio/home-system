@@ -4,3 +4,6 @@
 [submodule "libs/3rdparty/googletest"]
 	path = libs/3rdparty/googletest
 	url = https://github.com/google/googletest.git
+[submodule "libs/3rdparty/rapidjson"]
+	path = libs/3rdparty/rapidjson
+	url = https://github.com/miloyip/rapidjson.git
