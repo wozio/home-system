@@ -5,10 +5,8 @@
 
 namespace home_system
 {
-namespace utils
-{
 
-void init_log(const char *file, bool console_log)
+void init_log(const char* file, bool console_log)
 {
 #ifndef DISABLE_LOGS
   std::string to_file("false");
@@ -24,7 +22,7 @@ void init_log(const char *file, bool console_log)
     to_file = "false";
   }
 #endif
-
+  
   el::Configurations defaultConf;
   defaultConf.setToDefault();
   defaultConf.setGlobally(el::ConfigurationType::Filename, path + file);
@@ -37,5 +35,5 @@ void init_log(const char *file, bool console_log)
   el::Loggers::addFlag(el::LoggingFlag::StrictLogFileSizeCheck);
 #endif
 }
-}
+
 }

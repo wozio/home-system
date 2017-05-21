@@ -5,8 +5,8 @@ enable_testing()
 project(home-system)
 
 # common include directories
-include_directories(${CMAKE_SOURCE_DIR}/common/easyloggingpp/src)
-include_directories(${CMAKE_SOURCE_DIR}/common/yami4/include)
+include_directories(${CMAKE_SOURCE_DIR}/libs/3rdparty/easyloggingpp/src)
+include_directories(${CMAKE_SOURCE_DIR}/libs/3rdparty/yami4/include)
 include_directories(${CMAKE_SOURCE_DIR}/libs/utils/include)
 include_directories(${CMAKE_SOURCE_DIR}/libs/com/include)
 include_directories(${CMAKE_SOURCE_DIR}/libs/3rdparty/rapidjson/include)
@@ -17,7 +17,7 @@ SET(GXX_COMPILE_FLAGS "-Wno-deprecated-declarations")
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${GXX_COMPILE_FLAGS}")
 
 # common link directories
-link_directories(${CMAKE_SOURCE_DIR}/common/yami4/lib)
+link_directories(${CMAKE_SOURCE_DIR}/libs/3rdparty/yami4/lib)
 
 # common link libraries
 set(LIBS

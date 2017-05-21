@@ -5,8 +5,6 @@ using namespace boost::asio;
 
 namespace home_system
 {
-namespace utils
-{
 
 ios_wrapper::ios_wrapper()
 {
@@ -20,7 +18,7 @@ ios_wrapper::~ios_wrapper()
 
 void ios_wrapper::start_ios()
 {
-  io_thread_ = thread([this]() { thread_exec(); });
+  io_thread_ = thread([this] () {thread_exec();});
 }
 
 void ios_wrapper::stop_ios()
@@ -33,7 +31,7 @@ void ios_wrapper::stop_ios()
   }
 }
 
-boost::asio::io_service &ios_wrapper::io_service()
+boost::asio::io_service& ios_wrapper::io_service()
 {
   return io_service_;
 }
@@ -45,9 +43,9 @@ void ios_wrapper::thread_exec()
     work_.reset(new io_service::work(io_service_));
     io_service_.run();
   }
-  catch (const std::exception &e)
+  catch (const std::exception& e)
   {
   }
 }
-}
+
 }
