@@ -1,8 +1,8 @@
 #include "stdafx.h"
 #include "com/discovery.h"
 #include "utils/logger_init.h"
-#include "config.h"
-#include "app.h"
+#include "utils/config.h"
+#include "utils/app.h"
 #include "ios.h"
 
 INITIALIZE_EASYLOGGINGPP

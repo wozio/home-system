@@ -2,16 +2,18 @@
 
 namespace home_system
 {
+namespace utils
+{
 
 timer::timer()
-: timer(my_ios_)
+    : timer(my_ios_)
 {
 }
 
-timer::timer(ios_wrapper& ios)
-: ios_(ios),
-  dt_(ios_.io_service()),
-  set_(false)
+timer::timer(ios_wrapper &ios)
+    : ios_(ios),
+      dt_(ios_.io_service()),
+      set_(false)
 {
 }
 
@@ -24,7 +26,7 @@ void timer::set_from_now(unsigned int duration, std::function<void()> handler)
 {
   cancel();
   dt_.expires_from_now(boost::posix_time::milliseconds(duration));
-  dt_.async_wait([handler, this] (const boost::system::error_code& error){
+  dt_.async_wait([handler, this](const boost::system::error_code &error) {
     set_ = false;
     if (error)
     {
@@ -48,5 +50,5 @@ void timer::cancel()
     dt_.cancel();
   }
 }
-
+}
 }

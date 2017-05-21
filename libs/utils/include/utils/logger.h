@@ -1,5 +1,4 @@
-#ifndef LOGGER_H
-#define	LOGGER_H
+#pragma once
 
 #ifndef DISABLE_LOGS
 #define ELPP_THREAD_SAFE
@@ -11,6 +10,3 @@
 
 #include "easylogging++.h"
 #endif
-
-#endif	/* LOGGER_H */
-

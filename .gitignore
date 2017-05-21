@@ -29,4 +29,10 @@ GPATH
 GRTAGS
 GTAGS
 .settings/
+.vscode/*.o
+*.o
+*.a
+libs/3rdparty/yami4/lib/
+.vscode
 .vscode/
+.vscode/*

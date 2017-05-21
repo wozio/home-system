@@ -7,9 +7,9 @@ project(home-system)
 # common include directories
 include_directories(${CMAKE_SOURCE_DIR}/libs/3rdparty/easyloggingpp/src)
 include_directories(${CMAKE_SOURCE_DIR}/libs/3rdparty/yami4/include)
+include_directories(${CMAKE_SOURCE_DIR}/libs/3rdparty/rapidjson/include)
 include_directories(${CMAKE_SOURCE_DIR}/libs/utils/include)
 include_directories(${CMAKE_SOURCE_DIR}/libs/com/include)
-include_directories(${CMAKE_SOURCE_DIR}/libs/3rdparty/rapidjson/include)
 
 # common compiler flags
 SET(GXX_COMPILE_FLAGS "-Wno-deprecated-declarations")
