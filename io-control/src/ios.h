@@ -1,7 +1,5 @@
 #pragma once
 
-namespace home_system
-{
 class ios;
 
 typedef std::unique_ptr<ios> ios_t;
@@ -17,5 +15,3 @@ public:
     ~ios();
 private:
 };
-
-}

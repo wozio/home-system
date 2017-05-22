@@ -15,6 +15,7 @@ public:
   virtual ~app();
 
   int run();
+  int run(std::function<void()> init_callback, std::function<void()> cleanup_callback);
 
   static boost::property_tree::ptree &config();
 

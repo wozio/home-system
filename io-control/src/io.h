@@ -1,7 +1,5 @@
 #pragma once
 
-namespace home_system
-{
 class io;
 
 typedef std::shared_ptr<io> io_t;
@@ -34,5 +32,3 @@ private:
     const long long id_;
     state_t state_;
 };
-
-}

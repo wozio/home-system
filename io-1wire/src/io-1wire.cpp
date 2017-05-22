@@ -41,54 +41,27 @@ int main(int argc, char** argv)
 
   home_system::utils::init_log("io-1wire.log", !vm.count("daemonize"));
 
-  LOG(INFO) << "Started";
+  LOG(INFO) << "Home System IO 1wire started";
 
   home_system::utils::app app(vm.count("daemonize"));
+
+  std::unique_ptr<ownet> net;
+
+  app.run([&] () {
+		_yc = home_system::com::yami_container::create();
+    _discovery = home_system::com::discovery::create();
     
-  bool exit_init_loop = false;
-  int init_try = 0;
-  do
-  {
-    try
-    {
-      _yc = home_system::com::yami_container::create();
-      _discovery = home_system::com::discovery::create();
-      
-      // TODO configurable device name
-      // TODO configurable service name
-      ownet net("DS2490-1");
+    // TODO configurable device name
+    // TODO configurable service name
+    net.reset(new ownet("DS2490-1"));
+	},
+	[&] () {
+    net.reset();
+		_discovery.reset();
+    _yc.reset();
+	});
 
-      exit_init_loop = true;
-
-      app.run();
-    }
-    catch (const std::exception & e)
-    {
-      LOG(ERROR) << "Exception: " << e.what();
-    }
-    catch (...)
-    {
-      LOG(ERROR) << "Unknown Exception";
-    }
-    if (!exit_init_loop)
-    {
-      if (++init_try < 60)
-      {
-        LOG(ERROR) << "Initialization not done, waiting 1 second before next try...";
-        this_thread::sleep_for(chrono::seconds(1));
-      }
-      else
-      {
-        exit_init_loop = true;
-      }
-    }
-  }
-  while (!exit_init_loop);
-  
-  _discovery.reset();
-  _yc.reset();
-
-  LOG(INFO) << "IO 1 wire quitting";
+  LOG(INFO) << "Home System IO 1wire quitting";
 
   return 0;
 }

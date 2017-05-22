@@ -51,53 +51,26 @@ int main(int argc, char** argv)
   }
   
   home_system::utils::init_log("io-relay-board.log", !vm.count("daemonize"));
-  
-  LOG(INFO) << "Started";
 
-  home_system::utils::app app(vm.count("daemonize"));
+  LOG(INFO) << "Home System IO relay board started";
 
-  bool exit_init_loop = false;
-  int init_try = 0;
-  do
-  {
-    try
-    {
-      _yc = home_system::com::yami_container::create();
-      _discovery = home_system::com::discovery::create();
-        
-      board service(vm["name"].as<string>(),
-        vm["port"].as<string>());
+	home_system::utils::app app(vm.count("daemonize"));
 
-      exit_init_loop = true;
+  std::unique_ptr<board> service;
 
-      app.run();
-    }
-    catch (const std::exception & e)
-    {
-      LOG(ERROR) << "Exception: " << e.what();
-    }
-    catch (...)
-    {
-      LOG(ERROR) << "Unknown Exception";
-    }
-    if (!exit_init_loop)
-    {
-      if (++init_try < 60)
-      {
-        LOG(ERROR) << "Initialization not done, waiting 1 second before next try...";
-        this_thread::sleep_for(chrono::seconds(1));
-      }
-      else
-      {
-        exit_init_loop = true;
-      }
-    }
-  }
-  while (!exit_init_loop);
+	app.run([&] () {
+		_yc = home_system::com::yami_container::create();
+    _discovery = home_system::com::discovery::create();
+      
+    service.reset(new board(vm["name"].as<string>(),
+      vm["port"].as<string>()));
+	},
+	[&] () {
+    service.reset();
+		_discovery.reset();
+		_yc.reset();
+	});
 
-  _discovery.reset();
-  _yc.reset();
-
-  LOG(INFO) << "IO Relay Board quitting";
+  LOG(INFO) << "Home System IO Relay Board quitting";
   return 0;
 }

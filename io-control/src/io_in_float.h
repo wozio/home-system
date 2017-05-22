@@ -1,8 +1,6 @@
 #pragma once
 #include "io.h"
 
-namespace home_system
-{
 class io_in_float
     : public io
 {
@@ -15,5 +13,3 @@ public:
 private:
     double value_;
 };
-
-}

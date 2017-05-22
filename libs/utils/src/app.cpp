@@ -98,5 +98,47 @@ int app::run()
   }
   return 0;
 }
+
+int app::run(std::function<void()> init_callback, std::function<void()> cleanup_callback)
+{
+  bool exit_init_loop = false;
+  int init_try = 0;
+  do
+  {
+    try
+    {
+      init_callback();
+
+      exit_init_loop = true;
+
+      run();
+    }
+    catch (const std::exception & e)
+    {
+      LOG(ERROR) << "Exception: " << e.what();
+    }
+    catch (...)
+    {
+      LOG(ERROR) << "Unknown Exception";
+    }
+
+    cleanup_callback();
+
+    if (!exit_init_loop)
+    {
+      if (++init_try < 60)
+      {
+        LOG(ERROR) << "Initialization not done, waiting 1 second before next try...";
+        this_thread::sleep_for(chrono::seconds(1));
+      }
+      else
+      {
+        exit_init_loop = true;
+      }
+    }
+  }
+  while (!exit_init_loop);
+}
+
 }
 }
