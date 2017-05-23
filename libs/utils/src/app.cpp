@@ -1,7 +1,6 @@
 #include "app.h"
 
 #include "logger.h"
-#include <boost/property_tree/json_parser.hpp>
 #ifdef __linux__
 #include <signal.h>
 #include <sys/stat.h>
@@ -9,6 +8,8 @@
 #include <cstdlib>
 #include <cstdio>
 #include <iostream>
+#include <chrono>
+#include <thread>
 
 using namespace std;
 
@@ -16,19 +17,6 @@ namespace home_system
 {
 namespace utils
 {
-
-boost::property_tree::ptree app::config_;
-
-boost::property_tree::ptree &app::config()
-{
-  return config_;
-}
-
-app::app(const char *conf_file, bool daemonize)
-    : app(daemonize)
-{
-  boost::property_tree::read_json(conf_file, config_);
-}
 
 app::app(bool daemonize)
     : daemonize_(daemonize)
@@ -129,7 +117,7 @@ int app::run(std::function<void()> init_callback, std::function<void()> cleanup_
       if (++init_try < 60)
       {
         LOG(ERROR) << "Initialization not done, waiting 1 second before next try...";
-        this_thread::sleep_for(chrono::seconds(1));
+        std::this_thread::sleep_for(std::chrono::seconds(1));
       }
       else
       {

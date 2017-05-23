@@ -5,7 +5,6 @@ enable_testing()
 project(home-system)
 
 # common include directories
-include_directories(${CMAKE_SOURCE_DIR}/libs/3rdparty/easyloggingpp/src)
 include_directories(${CMAKE_SOURCE_DIR}/libs/3rdparty/yami4/include)
 include_directories(${CMAKE_SOURCE_DIR}/libs/3rdparty/rapidjson/include)
 include_directories(${CMAKE_SOURCE_DIR}/libs/utils/include)
@@ -16,6 +15,8 @@ SET(GXX_COMPILE_FLAGS "-Wno-deprecated-declarations")
 
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${GXX_COMPILE_FLAGS}")
 
+add_definitions(-DBOOST_ALL_DYN_LINK)
+
 # common link directories
 link_directories(${CMAKE_SOURCE_DIR}/libs/3rdparty/yami4/lib)
 
@@ -24,6 +25,7 @@ set(LIBS
     boost_system
     boost_filesystem
     boost_program_options
+    boost_log
     com
     utils
     pthread

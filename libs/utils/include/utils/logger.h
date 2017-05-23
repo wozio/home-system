@@ -1,12 +1,12 @@
 #pragma once
 
-#ifndef DISABLE_LOGS
-#define ELPP_THREAD_SAFE
-#ifdef __GNUC__
-#define ELPP_STACKTRACE_ON_CRASH
-#endif
-#define ELPP_NO_DEFAULT_LOG_FILE
-#define ELPP_WINSOCK2
+#include <boost/log/trivial.hpp>
 
-#include "easylogging++.h"
-#endif
+#define LOG(level) BOOST_LOG_TRIVIAL(level)
+
+#define TRACE trace
+#define DEBUG debug
+#define INFO info
+#define WARNING warning
+#define ERROR error
+#define FATAL fatal

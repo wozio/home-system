@@ -4,6 +4,3 @@
 [submodule "libs/3rdparty/rapidjson"]
 	path = libs/3rdparty/rapidjson
 	url = https://github.com/miloyip/rapidjson.git
-[submodule "libs/3rdparty/easyloggingpp"]
-	path = libs/3rdparty/easyloggingpp
-	url = https://github.com/muflihun/easyloggingpp.git

@@ -5,8 +5,6 @@
 #include "utils/app.h"
 #include "ios.h"
 
-INITIALIZE_EASYLOGGINGPP
-
 using namespace std;
 namespace po = boost::program_options;
 
