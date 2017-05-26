@@ -1,3 +1,4 @@
+include_directories(${CMAKE_SOURCE_DIR}/libs/io/include)
 
 set(PROGRAM io-control)
 

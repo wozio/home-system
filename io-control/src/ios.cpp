@@ -2,6 +2,7 @@
 #include "utils/config.h"
 #include "com/service.h"
 #include "utils/logger.h"
+#include "io/device_types.h"
 #include "ios.h"
 #include "io.h"
 
@@ -9,7 +10,7 @@ ios::ios()
 {
 	LOG(INFO) << "IOS: Reading configuration";
 	auto &conf = CONFIG.get();
-	// first create known (written in configuration) ioses
+	// first create known (written in configuration) io devices
 	if (conf.HasMember("ios"))
 	{
 		auto &a = conf["ios"];
@@ -17,10 +18,39 @@ ios::ios()
 		{
 			if (itr->IsObject())
 			{
+				home_system::io::io_data_type_t data_type;
 				std::string name;
 				std::string type;
 				std::string service;
 				long long id;
+				home_system::io::io_mode_t mode;
+
+				if (itr->HasMember("data_type"))
+				{
+					auto &v = (*itr)["data_type"];
+					if (v.IsInt())
+					{
+						data_type = static_cast<home_system::io::io_data_type_t>(v.GetInt());
+					}
+				}
+				else
+				{
+					LOG(WARNING) << "IO definition without mandatory field 'data_type', ignoring...";
+					continue;
+				}
+
+				if (itr->HasMember("mode"))
+				{
+					auto &v = (*itr)["mode"];
+					if (v.IsInt())
+					{
+						mode = static_cast<home_system::io::io_mode_t>(v.GetInt());
+					}
+				}
+				else
+				{
+					mode = home_system::io::io_mode_t::input;
+				}
 
 				if (itr->HasMember("name"))
 				{
@@ -30,6 +60,7 @@ ios::ios()
 						name = v.GetString();
 					}
 				}
+
 				if (itr->HasMember("type"))
 				{
 					auto &v = (*itr)["type"];
@@ -56,18 +87,23 @@ ios::ios()
 				}
 				else
 				{
+					LOG(WARNING) << "IO definition without mandatory field 'id', ignoring...";
 					continue;
 				}
 				if (name.length() > 0 && type.length() > 0 && service.length() > 0)
 				{
 					try
 					{
-						io::create(type, name, service, id);
+						io::create(data_type, type, mode, name, service, id);
 					}
 					catch (const std::runtime_error &e)
 					{
 						LOG(ERROR) << "Error while creating IO: " << e.what();
 					}
+				}
+				else
+				{
+					LOG(WARNING) << "IO definition without mandatory field, ignoring...";
 				}
 			}
 		}

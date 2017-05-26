@@ -1,5 +1,6 @@
 #pragma once
 
+#include "device_types.h"
 #include <boost/any.hpp>
 #include <boost/signals2.hpp>
 #include <memory>
@@ -8,21 +9,6 @@ namespace home_system
 {
 namespace io
 {
-
-enum class io_data_type_t
-{
-    double_float, // 32 bit double float
-    integer       // 32 bit signed integer
-};
-
-enum class io_state_t
-{
-    unknown = 0,
-    ok,
-    faulty
-};
-
-typedef long long io_id_t;
 
 class device;
 typedef std::shared_ptr<device> device_t;
