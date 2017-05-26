@@ -11,9 +11,8 @@ include_directories(${CMAKE_SOURCE_DIR}/libs/utils/include)
 include_directories(${CMAKE_SOURCE_DIR}/libs/com/include)
 
 # common compiler flags
-SET(GXX_COMPILE_FLAGS "-Wno-deprecated-declarations")
-
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${GXX_COMPILE_FLAGS}")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-declarations")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D__FILENAME__='\"$(subst ${CMAKE_SOURCE_DIR}/,,$(abspath $<))\"'")
 
 add_definitions(-DBOOST_ALL_DYN_LINK)
 
@@ -25,6 +24,8 @@ set(LIBS
     boost_system
     boost_filesystem
     boost_program_options
+    boost_thread
+    boost_log_setup
     boost_log
     com
     utils

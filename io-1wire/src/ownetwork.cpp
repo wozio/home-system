@@ -28,7 +28,9 @@ ownet::~ownet()
 void ownet::open()
 {
   if (!open_fault_logged_)
+  {
     LOG(INFO)  << "Opening One Wire port " << port_;
+  }
   // attempt to acquire the 1-Wire Net
   if ((portnum_ = owAcquireEx(port_.c_str())) < 0)
   {

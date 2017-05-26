@@ -6,12 +6,6 @@
 #include <boost/program_options.hpp>
 #include <iostream>
 
-#ifdef __linux__
-#include <signal.h>
-#endif
-
-INITIALIZE_EASYLOGGINGPP
-
 using namespace std;
 namespace po = boost::program_options;
 
@@ -50,11 +44,11 @@ int main(int argc, char** argv)
     return 1;
   }
   
+	home_system::utils::app app(vm.count("daemonize"));
+
   home_system::utils::init_log("io-relay-board.log", !vm.count("daemonize"));
 
   LOG(INFO) << "Home System IO relay board started";
-
-	home_system::utils::app app(vm.count("daemonize"));
 
   std::unique_ptr<board> service;
 

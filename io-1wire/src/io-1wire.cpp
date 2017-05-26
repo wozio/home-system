@@ -4,11 +4,7 @@
 #include "com/yamicontainer.h"
 #include "com/discovery.h"
 #include <boost/program_options.hpp>
-#include <chrono>
-#include <thread>
 #include <iostream>
-
-INITIALIZE_EASYLOGGINGPP
 
 using namespace std;
 namespace po = boost::program_options;
@@ -18,7 +14,7 @@ home_system::com::discovery_t _discovery;
 
 int main(int argc, char** argv)
 {
-  cout << "Home System IO 1 wire" << endl;
+  cout << "Home System IO 1wire" << endl;
   
   // Declare the supported options.
   po::options_description desc("Allowed options");
@@ -39,11 +35,11 @@ int main(int argc, char** argv)
     return 1;
   }
 
+  home_system::utils::app app(vm.count("daemonize"));
+
   home_system::utils::init_log("io-1wire.log", !vm.count("daemonize"));
 
   LOG(INFO) << "Home System IO 1wire started";
-
-  home_system::utils::app app(vm.count("daemonize"));
 
   std::unique_ptr<ownet> net;
 

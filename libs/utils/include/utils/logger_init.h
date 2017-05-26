@@ -7,6 +7,6 @@ namespace home_system
 namespace utils
 {
 
-void init_log(const char *file, bool console_log);
+void init_log(const std::string& file, bool console_log);
 }
 }

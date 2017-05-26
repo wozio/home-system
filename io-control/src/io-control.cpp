@@ -15,6 +15,8 @@ ios_t _ios;
 
 int main(int argc, char** argv)
 {
+	cout << "Home System IO Control" << endl;
+
 	po::options_description desc("Allowed options");
 	desc.add_options()
 	("help,h", "produce help message")
@@ -25,11 +27,11 @@ int main(int argc, char** argv)
 	po::store(po::parse_command_line(argc, argv, desc), vm);
 	po::notify(vm);
 
-	home_system::utils::init_log("io-control.log", !vm.count("daemonize"));
+	home_system::utils::app app(vm.count("daemonize"));
+
+	home_system::utils::init_log("io-control", !vm.count("daemonize"));
 
 	LOG(INFO) << "Home System IO Control started";
-
-	home_system::utils::app app(vm.count("daemonize"));
 
 	app.run([&] () {
 		_config = home_system::utils::config::create(vm["config-file"].as<std::string>());
