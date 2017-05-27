@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "utils/config.h"
 #include "com/service.h"
 #include "utils/logger.h"

@@ -1,6 +1,8 @@
 #pragma once
 
 #include "io/device_types.h"
+#include <yami4-cpp/parameters.h>
+#include <memory>
 
 class io;
 

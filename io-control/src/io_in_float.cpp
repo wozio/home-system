@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "io_in_float.h"
 
 io_in_float::io_in_float(const std::string &type, const std::string &name, const std::string &service, long long id)

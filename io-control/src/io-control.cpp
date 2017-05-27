@@ -1,9 +1,11 @@
-#include "stdafx.h"
+#include "ios.h"
 #include "com/discovery.h"
+#include "com/yamicontainer.h"
 #include "utils/logger_init.h"
 #include "utils/config.h"
 #include "utils/app.h"
-#include "ios.h"
+#include <boost/program_options.hpp>
+#include <iostream>
 
 using namespace std;
 namespace po = boost::program_options;
