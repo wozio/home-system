@@ -1,5 +1,8 @@
 #pragma once
 
+#include "io.h"
+#include "io/device_types.h"
+#include <map>
 #include <memory>
 
 class ios;
@@ -16,4 +19,6 @@ public:
     ios();
     ~ios();
 private:
+
+    std::map<home_system::io::io_id_t, io_t> io_devices_;
 };
