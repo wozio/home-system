@@ -18,6 +18,8 @@ public:
     }
     ios();
     ~ios();
+
+    io_t get(const std::string& name);
 private:
 
     std::map<home_system::io::io_id_t, io_t> io_devices_;

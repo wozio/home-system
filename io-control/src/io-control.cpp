@@ -1,4 +1,6 @@
 #include "ios.h"
+#include "rules.h"
+#include "services.h"
 #include "com/discovery.h"
 #include "com/yamicontainer.h"
 #include "utils/logger_init.h"
@@ -14,6 +16,8 @@ home_system::utils::config_t _config;
 home_system::com::yc_t _yc;
 home_system::com::discovery_t _discovery;
 ios_t _ios;
+rules_t _rules;
+services_t _services;
 
 int main(int argc, char** argv)
 {
@@ -40,8 +44,12 @@ int main(int argc, char** argv)
 		_yc = home_system::com::yami_container::create();
 		_discovery = home_system::com::discovery::create();
 		_ios = ::ios::create();
+        _rules = ::rules::create();
+        _services = ::services::create();
 	},
 	[&] () {
+        _services.reset();
+        _rules.reset();
 		_ios.reset();
 		_discovery.reset();
 		_yc.reset();

@@ -3,6 +3,7 @@
 #include "io/device_types.h"
 #include <yami4-cpp/parameters.h>
 #include <boost/any.hpp>
+#include <boost/signals2.hpp>
 #include <memory>
 
 class io;
@@ -26,6 +27,9 @@ class io
 
     // 'value' field in proper type will be written into params
     void write_value_state(yami::parameters &params);
+
+    // called every time when value is changed
+    boost::signals2::signal<void ()> on_value_change;
 
   private:
     home_system::io::io_data_type_t data_type_;

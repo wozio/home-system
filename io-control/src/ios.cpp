@@ -113,3 +113,8 @@ ios::ios()
 ios::~ios()
 {
 }
+
+io_t ios::get(const std::string& name)
+{
+    return ios_.at(name);
+}
