@@ -22,5 +22,5 @@ public:
     io_t get(const std::string& name);
 private:
 
-    std::map<home_system::io::io_id_t, io_t> io_devices_;
+    std::map<std::string, io_t> io_devices_;
 };

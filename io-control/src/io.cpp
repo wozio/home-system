@@ -8,7 +8,7 @@ io::io(home_system::io::io_data_type_t data_type,
     home_system::io::io_mode_t mode,
     const std::string &name,
     const std::string &service,
-    long long id)
+    home_system::io::io_id_t id)
     : data_type_(data_type),
       type_(type),
       name_(name),
@@ -25,16 +25,22 @@ io::~io()
 void io::on_value_state_change(const yami::parameters &params)
 {
     state_ = static_cast<io_state_t>(params.get_long_long("state"));
-    
+
     switch (data_type_)
     {
-        case io::io_data_type_t::double_float:
-
+        case home_system::io::io_data_type_t::integer:
+        {
+            auto nv = params.get_long_long("value");
+            check_value(nv);
             break;
-        case io::io_data_type_t::integer:
+        }
+        case home_system::io::io_data_type_t::double_float:
+        {
+            auto nv = params.get_double_float("value");
+            check_value(nv);
             break;
+        }
     }
-    value_
 }
 
 void io::write_value_state(yami::parameters &params)

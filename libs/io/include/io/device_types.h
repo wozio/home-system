@@ -10,11 +10,11 @@ namespace io
 enum class io_data_type_t
 {
     double_float = 0, // 32 bit double float
-    integer           // 32 bit signed integer
+    integer           // 64 bit signed integer
 };
 
 template<typename T>
-void convert_to(const boost:any& from, T& to)
+void convert(const boost::any& from, T& to)
 {
     to = boost::any_cast<T>(from);
 }

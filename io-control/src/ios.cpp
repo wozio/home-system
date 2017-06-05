@@ -94,7 +94,7 @@ ios::ios()
                     {
                         LOG(DEBUG) << "Creating IO: " << static_cast<int>(data_type) << " " << type << " \"" << name << "\" " << service << ":" << id;
                         auto new_io = std::make_shared<io>(data_type, type, mode, name, service, id);
-                        io_devices_[id] = new_io;
+                        io_devices_[name] = new_io;
                     }
                     catch (const std::runtime_error &e)
                     {
@@ -116,5 +116,5 @@ ios::~ios()
 
 io_t ios::get(const std::string& name)
 {
-    return ios_.at(name);
+    return io_devices_.at(name);
 }
