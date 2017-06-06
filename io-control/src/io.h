@@ -44,8 +44,7 @@ class io
     template <typename T>
     void check_value(T& nv)
     {
-        T ov;
-        home_system::io::convert(value_, ov);
+        T ov = boost::any_cast<T>(value_);
         if (nv != ov)
         {
             value_ = nv;

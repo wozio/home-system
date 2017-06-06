@@ -1,10 +1,12 @@
+#include "com/discovery.h"
+#include "com/yamicontainer.h"
 #include "utils/config.h"
-#include "com/service.h"
 #include "utils/logger.h"
 #include "io/device_types.h"
 #include "ios.h"
 
 ios::ios()
+    : home_system::com::service("io-control.devices", false)
 {
     LOG(INFO) << "Reading configuration";
     auto &conf = CONFIG.get();
@@ -108,13 +110,51 @@ ios::ios()
             }
         }
     }
+
+    // initialize service
+    init();
+
+    DISCOVERY.subscribe([this](const std::string &name, bool available) {
+        if (available)
+        {
+            // if name begins with 'io.' it means it is IO device
+            // driver
+            // TODO: will be changed when discovery mechanism will
+            // be changed
+            if (name.substr(0, 3) == "io.")
+            {
+                LOG(INFO) << "IO device driver service discovered, subscribing";
+                yami::parameters params;
+                params.set_string("name", service::name());
+                auto ep = DISCOVERY.get(name);
+                AGENT.send_one_way(ep, name,
+                                   "subscribe", params);
+            }
+        }
+        else
+        {
+            // TODO setting state of all IO objects belonging to this
+            // driver as unknown
+        }
+    });
 }
 
 ios::~ios()
 {
 }
 
-io_t ios::get(const std::string& name)
+void ios::on_msg(yami::incoming_message &im)
+{
+    if (im.get_message_name() == "io_change")
+    {
+        auto params = im.get_parameters();
+
+        LOG(DEBUG) << params.get_string("name") << " subscribed";
+
+    }
+}
+
+io_t ios::get(const std::string &name)
 {
     return io_devices_.at(name);
 }

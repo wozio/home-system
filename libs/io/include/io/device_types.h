@@ -13,12 +13,6 @@ enum class io_data_type_t
     integer           // 64 bit signed integer
 };
 
-template<typename T>
-void convert(const boost::any& from, T& to)
-{
-    to = boost::any_cast<T>(from);
-}
-
 enum class io_state_t
 {
     unknown = 0,

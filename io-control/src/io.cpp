@@ -46,4 +46,20 @@ void io::on_value_state_change(const yami::parameters &params)
 void io::write_value_state(yami::parameters &params)
 {
     params.set_long_long("state", static_cast<long long>(state_));
+
+    switch (data_type_)
+    {
+        case home_system::io::io_data_type_t::integer:
+        {
+            auto v = boost::any_cast<long long>(value_);
+            params.set_long_long("value", v);
+            break;
+        }
+        case home_system::io::io_data_type_t::double_float:
+        {
+            auto v = boost::any_cast<double>(value_);
+            params.set_double_float("value", v);
+            break;
+        }
+    }
 }
