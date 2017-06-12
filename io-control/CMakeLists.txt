@@ -8,4 +8,4 @@ add_executable(${PROGRAM}
                 ${SRCS}
             )
 
-TARGET_LINK_LIBRARIES(${PROGRAM} ${LIBS})
+TARGET_LINK_LIBRARIES(${PROGRAM} ${LIBS} io)

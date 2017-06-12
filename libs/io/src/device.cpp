@@ -71,5 +71,19 @@ void device::set_value(boost::any &value)
     value_ = value;
     on_state_change(id_);
 }
+
+const char* io_state_to_string(io_state_t s)
+{
+    switch (s)
+    {
+    case io_state_t::unknown:
+        return "unknown";
+    case io_state_t::ok:
+        return "ok";
+    case io_state_t::faulty:
+        return "faulty";
+    }
+}
+
 }
 }

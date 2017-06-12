@@ -18,7 +18,10 @@ enum class io_state_t
     unknown = 0,
     ok,
     faulty
+    
 };
+
+const char* io_state_to_string(io_state_t s);
 
 typedef long long io_id_t;
 

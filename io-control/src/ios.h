@@ -28,8 +28,15 @@ public:
 
     io_t get(const std::string& name);
 private:
-
+    // IO devices keyed by its local name
     std::map<std::string, io_t> io_devices_;
+
+    // IO devices keyed by string composed from
+    // service name and remote id, it should be unique
+    std::map<std::string, io_t> io_devices_by_id_;
+
+    // IO devices belonging to specific service
+    
 
     void on_msg(yami::incoming_message &im);
 };

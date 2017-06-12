@@ -1,6 +1,7 @@
 #pragma once
 
 #include "io/device_types.h"
+#include "utils/logger.h"
 #include <yami4-cpp/parameters.h>
 #include <boost/any.hpp>
 #include <boost/signals2.hpp>
@@ -22,6 +23,10 @@ class io
 
     ~io();
 
+    const std::string& get_name();
+    home_system::io::io_state_t get_state();
+    void set_state(home_system::io::io_state_t s);
+
     // in params 'value' field in proper type must be present
     void on_value_state_change(const yami::parameters &params);
 
@@ -30,6 +35,8 @@ class io
 
     // called every time when value is changed
     boost::signals2::signal<void (home_system::io::io_id_t)> on_value_change;
+    // called every time when state is changed
+    boost::signals2::signal<void (home_system::io::io_id_t)> on_state_change;
 
   private:
     home_system::io::io_data_type_t data_type_;
@@ -47,6 +54,7 @@ class io
         T ov = boost::any_cast<T>(value_);
         if (nv != ov)
         {
+            LOG(DEBUG) << "IO \"" << name_ << "\" value changed to: " << nv;
             value_ = nv;
             on_value_change(id_);
         }

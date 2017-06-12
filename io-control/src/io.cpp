@@ -1,5 +1,4 @@
 #include "io.h"
-#include "utils/logger.h"
 
 using namespace home_system::io;
 
@@ -22,25 +21,52 @@ io::~io()
 {
 }
 
+const std::string& io::get_name()
+{
+    return name_;
+}
+
+home_system::io::io_state_t io::get_state()
+{
+    return state_;
+}
+
+void io::set_state(home_system::io::io_state_t s)
+{
+    if (state_ != s)
+    {
+        LOG(DEBUG) << "IO \"" << name_ << "\" state changed to: " << io_state_to_string(state_);
+        on_state_change(id_);
+    }
+}
+
 void io::on_value_state_change(const yami::parameters &params)
 {
-    state_ = static_cast<io_state_t>(params.get_long_long("state"));
-
-    switch (data_type_)
+    // state extract
+    auto ns = static_cast<io_state_t>(params.get_long_long("state"));
+    
+    // value extract
+    if (ns == io_state_t::ok)
     {
-        case home_system::io::io_data_type_t::integer:
+        switch (data_type_)
         {
-            auto nv = params.get_long_long("value");
-            check_value(nv);
-            break;
-        }
-        case home_system::io::io_data_type_t::double_float:
-        {
-            auto nv = params.get_double_float("value");
-            check_value(nv);
-            break;
+            case home_system::io::io_data_type_t::integer:
+            {
+                auto nv = params.get_long_long("value");
+                check_value(nv);
+                break;
+            }
+            case home_system::io::io_data_type_t::double_float:
+            {
+                auto nv = params.get_double_float("value");
+                check_value(nv);
+                break;
+            }
         }
     }
+
+    // send state change notification after value extract
+    set_state(ns);
 }
 
 void io::write_value_state(yami::parameters &params)

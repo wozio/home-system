@@ -97,6 +97,8 @@ ios::ios()
                         LOG(DEBUG) << "Creating IO: " << static_cast<int>(data_type) << " " << type << " \"" << name << "\" " << service << ":" << id;
                         auto new_io = std::make_shared<io>(data_type, type, mode, name, service, id);
                         io_devices_[name] = new_io;
+                        auto id_string = service + std::to_string(id);
+                        io_devices_by_id_[id_string] = new_io;
                     }
                     catch (const std::runtime_error &e)
                     {
@@ -149,8 +151,22 @@ void ios::on_msg(yami::incoming_message &im)
     {
         auto params = im.get_parameters();
 
-        LOG(DEBUG) << params.get_string("name") << " subscribed";
+        auto remote_id = params.get_long_long("id");
+        auto service_name = params.get_string("name");
+        auto id_string = service_name + std::to_string(remote_id);
 
+        auto it = io_devices_by_id_.find(id_string);
+        if (it != io_devices_by_id_.end())
+        {
+            LOG(DEBUG) << "IO \"" << it->second->get_name() << "\" updated";
+
+            // IO object will extract value and state from parameters
+            it->second->on_value_state_change(params);
+        }
+        else
+        {
+            LOG(TRACE) << "Update from unknown IO device, ignoring (" << service_name << ":" << remote_id << ")";
+        }
     }
 }
 
