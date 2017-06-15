@@ -8,4 +8,7 @@ add_executable(${PROGRAM}
                 ${SRCS}
             )
 
-TARGET_LINK_LIBRARIES(${PROGRAM} ${LIBS} io)
+target_link_libraries(${PROGRAM} ${LIBS} io)
+
+# configuration file copy
+configure_file(io-control.conf ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/io-control.conf COPYONLY)

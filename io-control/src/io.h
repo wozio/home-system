@@ -12,6 +12,7 @@ class io;
 typedef std::shared_ptr<io> io_t;
 
 class io
+    : public std::enable_shared_from_this<io>
 {
   public:
     io(home_system::io::io_data_type_t data_type,
@@ -28,15 +29,13 @@ class io
     void set_state(home_system::io::io_state_t s);
 
     // in params 'value' field in proper type must be present
-    void on_value_state_change(const yami::parameters &params);
+    void extract_value_state(const yami::parameters &params);
 
     // 'value' field in proper type will be written into params
     void write_value_state(yami::parameters &params);
 
-    // called every time when value is changed
-    boost::signals2::signal<void (home_system::io::io_id_t)> on_value_change;
-    // called every time when state is changed
-    boost::signals2::signal<void (home_system::io::io_id_t)> on_state_change;
+    // called every time when value or state is updated
+    boost::signals2::signal<void (io_t)> on_value_state_change;
 
   private:
     home_system::io::io_data_type_t data_type_;
@@ -56,7 +55,6 @@ class io
         {
             LOG(DEBUG) << "IO \"" << name_ << "\" value changed to: " << nv;
             value_ = nv;
-            on_value_change(id_);
         }
     }
 };

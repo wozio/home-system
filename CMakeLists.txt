@@ -4,6 +4,11 @@ enable_testing()
 
 project(home-system)
 
+# output paths
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+
 # common include directories
 include_directories(${CMAKE_SOURCE_DIR}/libs/3rdparty/yami4/include)
 include_directories(${CMAKE_SOURCE_DIR}/libs/3rdparty/rapidjson/include)

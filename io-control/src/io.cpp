@@ -1,5 +1,6 @@
 #include "io.h"
 
+using namespace std;
 using namespace home_system::io;
 
 io::io(home_system::io::io_data_type_t data_type,
@@ -35,18 +36,19 @@ void io::set_state(home_system::io::io_state_t s)
 {
     if (state_ != s)
     {
-        LOG(DEBUG) << "IO \"" << name_ << "\" state changed to: " << io_state_to_string(state_);
-        on_state_change(id_);
+        LOG(DEBUG) << "IO \"" << name_ << "\" state changed: " << io_state_to_string(state_) << " >> " << io_state_to_string(s);
+        state_ = s;
     }
+    on_value_state_change(shared_from_this());
 }
 
-void io::on_value_state_change(const yami::parameters &params)
+void io::extract_value_state(const yami::parameters &params)
 {
     // state extract
-    auto ns = static_cast<io_state_t>(params.get_long_long("state"));
+    auto s = static_cast<io_state_t>(params.get_long_long("state"));
     
     // value extract
-    if (ns == io_state_t::ok)
+    if (s == io_state_t::ok)
     {
         switch (data_type_)
         {
@@ -65,8 +67,7 @@ void io::on_value_state_change(const yami::parameters &params)
         }
     }
 
-    // send state change notification after value extract
-    set_state(ns);
+    set_state(s);
 }
 
 void io::write_value_state(yami::parameters &params)

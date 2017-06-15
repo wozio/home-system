@@ -158,11 +158,14 @@ void ios::on_msg(yami::incoming_message &im)
 {
     if (im.get_message_name() == "io_change")
     {
+        // message from IO driver service, meaning that state or value
+        // has changed
+        // it is also sent in series after subscription
         auto params = im.get_parameters();
 
         auto remote_id = params.get_long_long("id");
         auto service_name = params.get_string("name");
-        auto id_string = service_name + std::to_string(remote_id);
+        auto id_string = service_name + ":" + std::to_string(remote_id);
 
         auto it = io_devices_by_id_.find(id_string);
         if (it != io_devices_by_id_.end())
@@ -170,11 +173,11 @@ void ios::on_msg(yami::incoming_message &im)
             LOG(DEBUG) << "IO \"" << it->second->get_name() << "\" updated";
 
             // IO object will extract value and state from parameters
-            it->second->on_value_state_change(params);
+            it->second->extract_value_state(params);
         }
         else
         {
-            LOG(TRACE) << "Update from unknown IO device, ignoring (" << service_name << ":" << remote_id << ")";
+            LOG(TRACE) << "Update from unknown IO device, ignoring (" << id_string << ")";
         }
     }
 }
