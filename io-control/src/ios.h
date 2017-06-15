@@ -36,7 +36,8 @@ private:
     std::map<std::string, io_t> io_devices_by_id_;
 
     // IO devices belonging to specific service
-    
+    typedef std::multimap<std::string, io_t> io_devices_by_service_t;
+    io_devices_by_service_t io_devices_by_service_;
 
     void on_msg(yami::incoming_message &im);
 };

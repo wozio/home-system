@@ -99,6 +99,7 @@ ios::ios()
                         io_devices_[name] = new_io;
                         auto id_string = service + std::to_string(id);
                         io_devices_by_id_[id_string] = new_io;
+                        io_devices_by_service_.insert(io_devices_by_service_t::value_type(service, new_io));
                     }
                     catch (const std::runtime_error &e)
                     {
@@ -135,8 +136,16 @@ ios::ios()
         }
         else
         {
-            // TODO setting state of all IO objects belonging to this
-            // driver as unknown
+            if (name.substr(0, 3) == "io.")
+            {
+                // setting state of all IO objects belonging to this
+                // service driver as unknown
+                auto r = io_devices_by_service_.equal_range(name);
+                for (auto i = r.first; i != r.second; ++i)
+                {
+                    i->second->set_state(home_system::io::io_state_t::unknown);
+                }
+            }
         }
     });
 }
