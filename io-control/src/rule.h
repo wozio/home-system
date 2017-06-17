@@ -6,6 +6,7 @@ extern "C" {
 #include <lua5.1/lualib.h>
 }
 
+#include <boost/signals2.hpp>
 #include <memory>
 #include <string>
 #include <vector>
@@ -32,5 +33,6 @@ private:
     bool enabled_;
     lua_State *lua_;
     std::vector<char> chunk_;
+    std::vector<boost::signals2::connection> trigger_connections_;
 
 };

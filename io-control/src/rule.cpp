@@ -17,12 +17,12 @@ rule::rule(const std::string& name,
     {
         try
         {
-            // TODO: conection management
             auto t = _ios->get(trigger);
-            t->on_value_state_change.connect([this] (io_t io){
+            boost::signals2::connection c = t->on_value_state_change.connect([this] (io_t io){
                 LOG(DEBUG) << "Triggered from \"" << io->get_name() << '"';
                 exec();
             });
+            trigger_connections_.push_back(c);
         }
         catch (const std::out_of_range& e)
         {
@@ -150,6 +150,10 @@ rule::rule(const std::string& name,
 rule::~rule()
 {
     LOG(DEBUG) << "Destroying rule \"" << name_ << "\"";
+    for (auto& c : trigger_connections_)
+    {
+        c.disconnect();
+    }
     lua_close(lua_);
 }
 
