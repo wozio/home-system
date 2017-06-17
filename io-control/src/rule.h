@@ -1,5 +1,11 @@
 #pragma once
 
+extern "C" {
+#include <lua5.1/lua.h>
+#include <lua5.1/lauxlib.h>
+#include <lua5.1/lualib.h>
+}
+
 #include <memory>
 #include <string>
 #include <vector>
@@ -15,8 +21,16 @@ public:
         const std::string& script,
         const std::vector<std::string>& triggers);
     ~rule();
+
+    void enable();
+    void disable();
 private:
 
     void exec();
+
+    std::string name_;
+    bool enabled_;
+    lua_State *lua_;
+    std::vector<char> chunk_;
 
 };

@@ -54,8 +54,14 @@ rules::rules()
                         }
                     }
                 }
-
-                rule_t r = std::make_shared<rule>(name, rule_script, triggers);
+                try
+                {
+                    rule_t r = std::make_shared<rule>(name, rule_script, triggers);
+                }
+                catch (const std::exception e)
+                {
+                    LOG(ERROR) << "Error creating rule";
+                }
             }
         }
     }

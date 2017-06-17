@@ -27,6 +27,11 @@ const std::string& io::get_name()
     return name_;
 }
 
+const home_system::io::io_data_type_t io::get_data_type()
+{
+    return data_type_;
+}
+
 home_system::io::io_state_t io::get_state()
 {
     return state_;
@@ -40,6 +45,11 @@ void io::set_state(home_system::io::io_state_t s)
         state_ = s;
     }
     on_value_state_change(shared_from_this());
+}
+
+boost::any io::get_value()
+{
+    return value_;
 }
 
 void io::extract_value_state(const yami::parameters &params)
