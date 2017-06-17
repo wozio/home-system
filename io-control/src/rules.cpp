@@ -37,7 +37,7 @@ rules::rules()
                 }
                 else
                 {
-                    LOG(WARNING) << "Rule script not found or incorrect, ignoring";
+                    LOG(WARNING) << "Rule script not found or incorrect, ignoring rule";
                     continue;
                 }
 

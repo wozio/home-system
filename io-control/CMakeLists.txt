@@ -8,7 +8,7 @@ add_executable(${PROGRAM}
                 ${SRCS}
             )
 
-target_link_libraries(${PROGRAM} ${LIBS} io)
+target_link_libraries(${PROGRAM} ${LIBS} io lua5.1-c++)
 
 # configuration file copy
 configure_file(io-control.conf ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/io-control.conf COPYONLY)
