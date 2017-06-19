@@ -56,7 +56,7 @@ rules::rules()
                 }
                 try
                 {
-                    rule_t r = std::make_shared<rule>(name, rule_script, triggers);
+                    rules_[name] = std::make_shared<rule>(name, rule_script, triggers);
                 }
                 catch (const std::exception e)
                 {
