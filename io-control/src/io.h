@@ -1,18 +1,17 @@
 #pragma once
 
+#include "io_base.h"
 #include "io/device_types.h"
 #include "utils/logger.h"
 #include <yami4-cpp/parameters.h>
-#include <boost/any.hpp>
-#include <boost/signals2.hpp>
-#include <memory>
 
 class io;
 
 typedef std::shared_ptr<io> io_t;
 
 class io
-    : public std::enable_shared_from_this<io>
+    : public std::enable_shared_from_this<io>,
+      public io_base
 {
   public:
     io(home_system::io::io_data_type_t data_type,
@@ -45,14 +44,13 @@ class io
     // 'value' field in proper type will be written into params
     void write_value_state(yami::parameters &params);
 
-    // called every time when value or state is updated
-    boost::signals2::signal<void (io_t)> on_value_state_change;
+    
 
   private:
     home_system::io::io_data_type_t data_type_;
     const std::string type_;
     home_system::io::io_mode_t mode_;
-    const std::string name_;
+    
     const std::string service_;
     const home_system::io::io_id_t id_;
     home_system::io::io_state_t state_;

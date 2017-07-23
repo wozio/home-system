@@ -83,7 +83,7 @@ rule::rule(const std::string& name,
                     case home_system::io::io_data_type_t::integer:
                     {
                         auto cv = boost::any_cast<long long>(v);
-                        lua_pushnumber(L, cv);
+                        lua_pushinteger(L, cv);
                         break;
                     }
                     case home_system::io::io_data_type_t::double_float:
