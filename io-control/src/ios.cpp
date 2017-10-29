@@ -4,6 +4,8 @@
 #include "utils/logger.h"
 #include "io/device_types.h"
 #include "ios.h"
+#include "io_remote.h"
+#include "weekly_schedule.h"
 
 ios::ios()
     : home_system::com::service("io-control.devices", false)
@@ -25,6 +27,20 @@ ios::ios()
                 long long id;
                 home_system::io::io_mode_t mode;
 
+                if (itr->HasMember("type"))
+                {
+                    auto &v = (*itr)["type"];
+                    if (v.IsString())
+                    {
+                        type = v.GetString();
+                    }
+                }
+                else
+                {
+                    LOG(WARNING) << "IO definition without mandatory field 'type', ignoring...";
+                    continue;
+                }
+
                 if (itr->HasMember("data_type"))
                 {
                     auto &v = (*itr)["data_type"];
@@ -39,19 +55,6 @@ ios::ios()
                     continue;
                 }
 
-                if (itr->HasMember("mode"))
-                {
-                    auto &v = (*itr)["mode"];
-                    if (v.IsInt())
-                    {
-                        mode = static_cast<home_system::io::io_mode_t>(v.GetInt());
-                    }
-                }
-                else
-                {
-                    mode = home_system::io::io_mode_t::input;
-                }
-
                 if (itr->HasMember("name"))
                 {
                     auto &v = (*itr)["name"];
@@ -60,55 +63,82 @@ ios::ios()
                         name = v.GetString();
                     }
                 }
-
-                if (itr->HasMember("type"))
-                {
-                    auto &v = (*itr)["type"];
-                    if (v.IsString())
-                    {
-                        type = v.GetString();
-                    }
-                }
-                if (itr->HasMember("service"))
-                {
-                    auto &v = (*itr)["service"];
-                    if (v.IsString())
-                    {
-                        service = v.GetString();
-                    }
-                }
-                if (itr->HasMember("id"))
-                {
-                    auto &v = (*itr)["id"];
-                    if (v.IsInt64())
-                    {
-                        id = v.GetInt64();
-                    }
-                }
                 else
                 {
-                    LOG(WARNING) << "IO definition without mandatory field 'id', ignoring...";
+                    LOG(WARNING) << "IO definition without mandatory field 'name', ignoring...";
                     continue;
                 }
-                if (name.length() > 0 && type.length() > 0 && service.length() > 0)
+
+                if (type == "weekly_schedule")
                 {
-                    try
+                    if (itr->HasMember("triggers"))
                     {
-                        LOG(DEBUG) << "Creating IO: " << static_cast<int>(data_type) << " " << type << " \"" << name << "\" " << service << ":" << id;
-                        auto new_io = std::make_shared<io>(data_type, type, mode, name, service, id);
-                        io_devices_[name] = new_io;
-                        auto id_string = service + std::to_string(id);
-                        io_devices_by_id_[id_string] = new_io;
-                        io_devices_by_service_.insert(io_devices_by_service_t::value_type(service, new_io));
+                        rapidjson::Value& triggers = (*itr)["triggers"];
+                        try
+                        {
+                            LOG(DEBUG) << "Creating schedule: " << static_cast<int>(data_type) << " \"" << name << "\"";
+                            auto new_io = std::make_shared<weekly_schedule>(data_type, name, triggers);
+                            io_devices_[name] = new_io;
+                        }
+                        catch (const std::runtime_error &e)
+                        {
+                            LOG(ERROR) << "Error while creating Remote IO: " << e.what();
+                        }
                     }
-                    catch (const std::runtime_error &e)
-                    {
-                        LOG(ERROR) << "Error while creating IO: " << e.what();
-                    }
+                    
                 }
                 else
                 {
-                    LOG(WARNING) << "IO definition without mandatory field, ignoring...";
+                    if (itr->HasMember("mode"))
+                    {
+                        auto &v = (*itr)["mode"];
+                        if (v.IsInt())
+                        {
+                            mode = static_cast<home_system::io::io_mode_t>(v.GetInt());
+                        }
+                    }
+                    else
+                    {
+                        mode = home_system::io::io_mode_t::input;
+                    }
+                    
+                    if (itr->HasMember("service"))
+                    {
+                        auto &v = (*itr)["service"];
+                        if (v.IsString())
+                        {
+                            service = v.GetString();
+                        }
+                    }
+
+                    if (itr->HasMember("id"))
+                    {
+                        auto &v = (*itr)["id"];
+                        if (v.IsInt64())
+                        {
+                            id = v.GetInt64();
+                        }
+                    }
+                    if (name.length() > 0 && type.length() > 0 && service.length() > 0)
+                    {
+                        try
+                        {
+                            LOG(DEBUG) << "Creating Remote IO: " << static_cast<int>(data_type) << " " << type << " \"" << name << "\" " << service << ":" << id;
+                            auto new_io = std::make_shared<io_remote>(data_type, type, mode, name, service, id);
+                            io_devices_[name] = new_io;
+                            auto id_string = service + std::to_string(id);
+                            io_devices_by_id_[id_string] = new_io;
+                            io_devices_by_service_.insert(io_devices_by_service_t::value_type(service, new_io));
+                        }
+                        catch (const std::runtime_error &e)
+                        {
+                            LOG(ERROR) << "Error while creating Remote IO: " << e.what();
+                        }
+                    }
+                    else
+                    {
+                        LOG(WARNING) << "Remote IO definition without mandatory field, ignoring...";
+                    }
                 }
             }
         }
@@ -170,10 +200,14 @@ void ios::on_msg(yami::incoming_message &im)
         auto it = io_devices_by_id_.find(id_string);
         if (it != io_devices_by_id_.end())
         {
-            LOG(DEBUG) << "IO \"" << it->second->get_name() << "\" updated";
+            auto rio = std::dynamic_pointer_cast<io_remote>(it->second);
+            if (rio)
+            {
+                LOG(DEBUG) << "IO \"" << rio->get_name() << "\" updated";
 
-            // IO object will extract value and state from parameters
-            it->second->extract_value_state(params);
+                // IO object will extract value and state from parameters
+                rio->extract_value_state(params);
+            }
         }
         else
         {

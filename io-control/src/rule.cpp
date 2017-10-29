@@ -18,7 +18,7 @@ rule::rule(const std::string& name,
         try
         {
             auto t = _ios->get(trigger);
-            boost::signals2::connection c = t->on_value_state_change.connect([this] (io_t io){
+            boost::signals2::connection c = t->on_value_change.connect([this] (io_t io){
                 LOG(DEBUG) << "Triggered from \"" << io->get_name() << '"';
                 exec();
             });

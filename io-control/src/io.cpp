@@ -1,20 +1,15 @@
 #include "io.h"
 
-using namespace std;
 using namespace home_system::io;
 
 io::io(home_system::io::io_data_type_t data_type,
     const std::string &type,
     home_system::io::io_mode_t mode,
-    const std::string &name,
-    const std::string &service,
-    home_system::io::io_id_t id)
+    const std::string &name)
     : data_type_(data_type),
-      type_(type),
-      name_(name),
-      service_(service),
-      id_(id),
-      state_(io_state_t::unknown)
+        type_(type),
+        name_(name),
+        state_(io_state_t::unknown)
 {
 }
 
@@ -44,7 +39,11 @@ void io::set_state(home_system::io::io_state_t s)
         LOG(DEBUG) << "IO \"" << name_ << "\" state changed: " << io_state_to_string(state_) << " >> " << io_state_to_string(s);
         state_ = s;
     }
-    on_value_state_change(shared_from_this());
+    on_state_change(shared_from_this());
+    if (state_ == home_system::io::io_state_t::ok)
+    {
+        on_value_change(shared_from_this());
+    }
 }
 
 boost::any io::get_value()
@@ -52,34 +51,12 @@ boost::any io::get_value()
     return value_;
 }
 
-void io::extract_value_state(const yami::parameters &params)
+void io::set_wanted_value(boost::any v)
 {
-    // state extract
-    auto s = static_cast<io_state_t>(params.get_long_long("state"));
-    
-    // value extract
-    if (s == io_state_t::ok)
-    {
-        switch (data_type_)
-        {
-            case home_system::io::io_data_type_t::integer:
-            {
-                auto nv = params.get_long_long("value");
-                check_value(nv);
-                break;
-            }
-            case home_system::io::io_data_type_t::double_float:
-            {
-                auto nv = params.get_double_float("value");
-                check_value(nv);
-                break;
-            }
-        }
-    }
-
-    set_state(s);
+    wanted_value_ = v;
 }
 
+// 'value' field in proper type will be written into params
 void io::write_value_state(yami::parameters &params)
 {
     params.set_long_long("state", static_cast<long long>(state_));
