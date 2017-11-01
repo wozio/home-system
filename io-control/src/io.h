@@ -13,12 +13,6 @@ class io
     : public std::enable_shared_from_this<io>
 {
   public:
-    io(
-        home_system::io::io_data_type_t data_type,
-        const std::string &type,
-        home_system::io::io_mode_t mode,
-        const std::string &name);
-
     virtual ~io();
 
     const std::string& get_name();
@@ -38,38 +32,80 @@ class io
     boost::signals2::signal<void (io_t)> on_state_change;
     boost::signals2::signal<void (io_t)> on_value_change;
 
+    virtual void kickoff();
+
 protected:
 
+    io(home_system::io::io_data_type_t data_type,
+       const std::string &type,
+       home_system::io::io_mode_t mode,
+       const std::string &name);
+
     template <typename T>
-    void check_value(T& nv)
+    void check_value(const T& nv)
     {
-        T ov = boost::any_cast<T>(value_);
-        if (nv != ov)
+        if (value_.empty())
         {
-            LOG(DEBUG) << "IO \"" << name_ << "\" value changed to: " << nv;
+            // first write of value
+            LOG(DEBUG) << "IO \"" << name_ << "\" value written to: " << nv;
             value_ = nv;
             if (state_ == home_system::io::io_state_t::ok)
             {
                 on_value_change(shared_from_this());
             }
         }
-    }
-    void check_value(boost::any nv)
-    {
-        switch (data_type_)
+        else
         {
-            case home_system::io::io_data_type_t::integer:
+            try
             {
-                auto v = boost::any_cast<long long>(nv);
-                check_value(v);
-                break;
+                T ov = boost::any_cast<T>(value_);
+                if (nv != ov)
+                {
+                    LOG(DEBUG) << "IO \"" << name_ << "\" value changed to: " << nv;
+                    value_ = nv;
+                    if (state_ == home_system::io::io_state_t::ok)
+                    {
+                        on_value_change(shared_from_this());
+                    }
+                }
             }
-            case home_system::io::io_data_type_t::double_float:
+            catch (const boost::bad_any_cast &)
             {
-                auto v = boost::any_cast<double>(nv);
-                check_value(v);
-                break;
+                LOG(ERROR) << "Wrong type of new value";
             }
+        }
+    }
+    void check_value(const boost::any& nv)
+    {
+        if (!value_.empty())
+        {
+            if (nv.type() != value_.type())
+            {
+                LOG(ERROR) << "Wrong type of new value";
+                return;
+            }
+        }
+        try
+        {
+            switch (data_type_)
+            {
+                case home_system::io::io_data_type_t::integer:
+                {
+                    auto v = boost::any_cast<long long>(nv);
+                    check_value(v);
+                    break;
+                }
+                case home_system::io::io_data_type_t::double_float:
+                {
+                    auto v = boost::any_cast<double>(nv);
+                    check_value(v);
+                    break;
+                }
+            }
+        }
+        catch (const boost::bad_any_cast &)
+        {
+            LOG(ERROR) << "Wrong type of new value";
         }
     }
     home_system::io::io_data_type_t data_type_;

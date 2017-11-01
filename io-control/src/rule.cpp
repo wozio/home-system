@@ -8,7 +8,7 @@ rule::rule(const std::string& name,
     const std::string& script,
     const std::vector<std::string>& triggers)
     : name_(name),
-      enabled_(false)
+      enabled_(true)
 {
     LOG(INFO) << "Creating '" << name << "' rule";
 
@@ -168,13 +168,19 @@ void rule::exec()
             lua_pop(lua_, 1);
             throw std::runtime_error("Error loading rule script");
         }
-
-        // execute
         if (lua_pcall(lua_, 0, 0, 0))
         {
-            LOG(ERROR) << "Error running rule script: " << lua_tostring(lua_, -1);
+            LOG(ERROR) << "Error running rule function: " << lua_tostring(lua_, -1);
+            lua_pop(lua_, 1);
+            throw std::runtime_error("Error running rule script");
+        }
+        lua_getglobal(lua_, "exec");
+        if (lua_pcall(lua_, 0, 0, 0))
+        {
+            LOG(ERROR) << "Error running rule function: " << lua_tostring(lua_, -1);
             lua_pop(lua_, 1);
             throw std::runtime_error("Error running rule script");
         }
     }
 }
+

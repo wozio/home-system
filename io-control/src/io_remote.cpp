@@ -1,4 +1,5 @@
 #include "io_remote.h"
+#include <yami4-cpp/errors.h>
 
 using namespace std;
 using namespace home_system::io;
@@ -27,20 +28,27 @@ void io_remote::extract_value_state(const yami::parameters &params)
     // value extract
     if (s == io_state_t::ok)
     {
-        switch (data_type_)
+        try
         {
-            case home_system::io::io_data_type_t::integer:
+            switch (data_type_)
             {
-                auto nv = params.get_long_long("value");
-                check_value(nv);
-                break;
+                case home_system::io::io_data_type_t::integer:
+                {
+                    auto nv = params.get_long_long("value");
+                    check_value(nv);
+                    break;
+                }
+                case home_system::io::io_data_type_t::double_float:
+                {
+                    auto nv = params.get_double_float("value");
+                    check_value(nv);
+                    break;
+                }
             }
-            case home_system::io::io_data_type_t::double_float:
-            {
-                auto nv = params.get_double_float("value");
-                check_value(nv);
-                break;
-            }
+        }
+        catch (const yami::yami_logic_error&)
+        {
+            LOG(ERROR) << "Received value with wrong type";
         }
     }
 

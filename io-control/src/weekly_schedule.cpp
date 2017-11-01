@@ -32,9 +32,25 @@ weekly_schedule::weekly_schedule(
                 if (itr->HasMember("value"))
                 {
                     auto &v = (*itr)["value"];
-                    if (v.IsInt())
+                    switch (data_type_)
                     {
-                        value = v.GetInt();
+                        case home_system::io::io_data_type_t::integer:
+                            if (v.IsInt64())
+                            {
+                                value = (long long) v.GetInt64();
+                            }
+                            break;
+                        case home_system::io::io_data_type_t::double_float:
+                            if (v.IsDouble())
+                            {
+                                value = v.GetDouble();
+                            }
+                            break;
+                    }
+                    if (value.empty())
+                    {
+                        LOG(WARNING) << "Incorrect value type for data_type";
+                        continue;
                     }
                 }
                 else
@@ -44,22 +60,36 @@ weekly_schedule::weekly_schedule(
                 }
                 triggers_[time_of_week] = value;
             }
+            else
+            {
+                LOG(WARNING) << "Trigger not an object";
+            }
         }
     }
-    set_state(home_system::io::io_state_t::ok);
-    set_timer();
+    else
+    {
+        LOG(WARNING) << "Triggers not an array";
+    }
+    if (triggers_.size() == 0)
+    {
+        LOG(WARNING) << "Trigger list empty";
+    }
 }
 
-void weekly_schedule::set_timer()
+void weekly_schedule::kickoff()
 {
-    timer_.set_from_now(100, [this] (){
-        on_timer();
-    });
+    // this will write first value
+    on_timer();
+    // when state changes to OK, IO sends current value
+    set_state(home_system::io::io_state_t::ok);
 }
 
 void weekly_schedule::on_timer()
 {
-    set_timer();
+    static int previous_time = -1;
+    timer_.set_from_now(100, [this] (){
+        on_timer();
+    });
 
     if (triggers_.size() > 0)
     {
@@ -75,6 +105,10 @@ void weekly_schedule::on_timer()
             t = triggers_.end();
         }
         t--;
-        check_value(t->second);
+        if (ct != previous_time)
+        {
+            previous_time = ct;
+            check_value(t->second);
+        }
     }
 }

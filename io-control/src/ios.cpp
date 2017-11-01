@@ -220,3 +220,11 @@ io_t ios::get(const std::string &name)
 {
     return io_devices_.at(name);
 }
+
+void ios::kickoff()
+{
+    for (auto it : io_devices_)
+    {
+        it.second->kickoff();
+    }
+}

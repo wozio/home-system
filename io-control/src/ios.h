@@ -27,6 +27,8 @@ public:
     ~ios();
 
     io_t get(const std::string& name);
+
+    void kickoff();
 private:
     // IO devices keyed by its local name
     std::map<std::string, io_t> io_devices_;

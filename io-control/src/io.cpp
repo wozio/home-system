@@ -7,9 +7,9 @@ io::io(home_system::io::io_data_type_t data_type,
     home_system::io::io_mode_t mode,
     const std::string &name)
     : data_type_(data_type),
-        type_(type),
-        name_(name),
-        state_(io_state_t::unknown)
+      type_(type),
+      name_(name),
+      state_(io_state_t::unknown)
 {
 }
 
@@ -38,11 +38,11 @@ void io::set_state(home_system::io::io_state_t s)
     {
         LOG(DEBUG) << "IO \"" << name_ << "\" state changed: " << io_state_to_string(state_) << " >> " << io_state_to_string(s);
         state_ = s;
-    }
-    on_state_change(shared_from_this());
-    if (state_ == home_system::io::io_state_t::ok)
-    {
-        on_value_change(shared_from_this());
+        on_state_change(shared_from_this());
+        if (state_ == home_system::io::io_state_t::ok)
+        {
+            on_value_change(shared_from_this());
+        }
     }
 }
 
@@ -54,6 +54,15 @@ boost::any io::get_value()
 void io::set_wanted_value(boost::any v)
 {
     wanted_value_ = v;
+}
+
+void io::kickoff()
+{
+    on_state_change(shared_from_this());
+    if (state_ == home_system::io::io_state_t::ok)
+    {
+        on_value_change(shared_from_this());
+    }
 }
 
 // 'value' field in proper type will be written into params

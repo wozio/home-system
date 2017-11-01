@@ -46,6 +46,11 @@ int main(int argc, char** argv)
 		_ios = ::ios::create();
         _rules = ::rules::create();
         _services = ::services::create();
+
+        // now everything is created and connected its time to kickoff
+        // it means that all IOs that are ready will dispatch its value
+        // to all connected rules and services
+        _ios->kickoff();
 	},
 	[&] () {
         _services.reset();
