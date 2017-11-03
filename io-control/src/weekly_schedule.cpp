@@ -1,4 +1,5 @@
 #include "weekly_schedule.h"
+#include <stdio.h>
 
 weekly_schedule::weekly_schedule(
     home_system::io::io_data_type_t data_type,
@@ -12,57 +13,88 @@ weekly_schedule::weekly_schedule(
     {
         for (auto itr = triggers.Begin(); itr != triggers.End(); ++itr)
         {
-            if (itr->IsObject())
+            try
             {
-                int time_of_week;
-                if (itr->HasMember("time_of_week"))
+                if (itr->IsObject())
                 {
-                    auto &v = (*itr)["time_of_week"];
-                    if (v.IsInt())
+                    int day;
+                    if (itr->HasMember("day"))
                     {
-                        time_of_week = v.GetInt();
+                        auto &v = (*itr)["day"];
+                        if (v.IsInt64())
+                        {
+                            day = v.GetInt();
+                        }
+                        else
+                        {
+                            throw std::runtime_error("Day should be int");
+                        }
                     }
+                    else
+                    {
+                        throw std::runtime_error("Incomplete trigger, no time");
+                    }
+                    int time;
+                    if (itr->HasMember("time"))
+                    {
+                        auto &v = (*itr)["time"];
+                        if (v.IsString())
+                        {
+                            int hh, mm, ss;
+                            sscanf(v.GetString(), "%d:%d:%d", &hh, &mm, &ss);
+                            if (hh < 0 || hh > 23 || mm < 0 || mm > 59 || ss < 0 || ss > 59)
+                            {
+                                throw std::runtime_error("Incorrect time format");
+                            }
+                            time = hh * 3600 + mm * 60 + ss;
+                        }
+                        else
+                        {
+                            throw std::runtime_error("Time should be string");
+                        }
+                    }
+                    else
+                    {
+                        throw std::runtime_error("Incomplete trigger, no time");
+                    }
+                    boost::any value;
+                    if (itr->HasMember("value"))
+                    {
+                        auto &v = (*itr)["value"];
+                        switch (data_type_)
+                        {
+                            case home_system::io::io_data_type_t::integer:
+                                if (v.IsInt64())
+                                {
+                                    value = (long long) v.GetInt64();
+                                }
+                                break;
+                            case home_system::io::io_data_type_t::double_float:
+                                if (v.IsDouble())
+                                {
+                                    value = v.GetDouble();
+                                }
+                                break;
+                        }
+                        if (value.empty())
+                        {
+                            throw std::runtime_error("Incorrect value type for data_type");
+                        }
+                    }
+                    else
+                    {
+                        throw std::runtime_error("Incomplete trigger, no value");
+                    }
+                    triggers_[day * 24 * 3600 + time] = value;
                 }
                 else
                 {
-                    LOG(WARNING) << "Incomplete trigger, no time of week";
-                    continue;
+                    throw std::runtime_error("Trigger not an object");
                 }
-                boost::any value;
-                if (itr->HasMember("value"))
-                {
-                    auto &v = (*itr)["value"];
-                    switch (data_type_)
-                    {
-                        case home_system::io::io_data_type_t::integer:
-                            if (v.IsInt64())
-                            {
-                                value = (long long) v.GetInt64();
-                            }
-                            break;
-                        case home_system::io::io_data_type_t::double_float:
-                            if (v.IsDouble())
-                            {
-                                value = v.GetDouble();
-                            }
-                            break;
-                    }
-                    if (value.empty())
-                    {
-                        LOG(WARNING) << "Incorrect value type for data_type";
-                        continue;
-                    }
-                }
-                else
-                {
-                    LOG(WARNING) << "Incomplete trigger, no value";
-                    continue;
-                }
-                triggers_[time_of_week] = value;
             }
-            else
+            catch (const std::runtime_error& e)
             {
-                LOG(WARNING) << "Trigger not an object";
+                LOG(WARNING) << "Error processing trigger in configuration file: " << e.what();
             }
         }
     }

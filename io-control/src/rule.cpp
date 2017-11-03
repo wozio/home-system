@@ -19,7 +19,7 @@ rule::rule(const std::string& name,
         {
             auto t = _ios->get(trigger);
             boost::signals2::connection c = t->on_value_change.connect([this] (io_t io){
-                LOG(DEBUG) << "Triggered from \"" << io->get_name() << '"';
+                LOG(DEBUG) << "Rule '" << name_ << "' triggered from \"" << io->get_name() << '"';
                 exec();
             });
             trigger_connections_.push_back(c);
@@ -43,22 +43,6 @@ rule::rule(const std::string& name,
         throw std::runtime_error("Error loading rule script");
     }
 
-    // get compiled chunk and save for further use
-    // it is not possible to convert lambda to function pointer
-    // if it captures something so passing chunk as a user data pointer
-    if (lua_dump(lua_, [] (lua_State *L, const void* p,
-        size_t sz, void* ud) -> int{
-            auto chunk = (std::vector<char>*)ud;
-            chunk->insert(chunk->end(), (const char*)p, (const char*)p + sz);
-            return 0;
-        }, (void *)&chunk_))
-    {
-        LOG(ERROR) << "Error while loading compiled chunk: " << lua_tostring(lua_, -1);
-        lua_pop(lua_, 1);
-        lua_close(lua_);
-        throw std::runtime_error("Error loading rule script");
-    }
-    
     // push callbacks
     // get_io_state_value
     lua_pushcfunction(lua_, [](lua_State *L)->int{
@@ -145,6 +129,14 @@ rule::rule(const std::string& name,
         return 0;
     });
     lua_setglobal(lua_, "set_io_value");
+
+    // priming run
+    if (lua_pcall(lua_, 0, 0, 0))
+    {
+        LOG(ERROR) << "Error in priming call: " << lua_tostring(lua_, -1);
+        lua_pop(lua_, 1);
+        throw std::runtime_error("Error in priming call");
+    }
 }
 
 rule::~rule()
@@ -161,19 +153,6 @@ void rule::exec()
 {
     if (enabled_)
     {
-        // load compiled chunk
-        if (luaL_loadbuffer(lua_, chunk_.data(), chunk_.size(), name_.c_str()))
-        {
-            LOG(ERROR) << "Error while loading rule script: " << lua_tostring(lua_, -1);
-            lua_pop(lua_, 1);
-            throw std::runtime_error("Error loading rule script");
-        }
-        if (lua_pcall(lua_, 0, 0, 0))
-        {
-            LOG(ERROR) << "Error running rule function: " << lua_tostring(lua_, -1);
-            lua_pop(lua_, 1);
-            throw std::runtime_error("Error running rule script");
-        }
         lua_getglobal(lua_, "exec");
         if (lua_pcall(lua_, 0, 0, 0))
         {
