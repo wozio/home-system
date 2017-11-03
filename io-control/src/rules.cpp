@@ -27,18 +27,26 @@ rules::rules()
                     continue;
                 }
 
-                // getting rule script, for now in string
-                /// TODO: file based rule script
+                // getting rule script
+                std::string rule_script_file;
                 std::string rule_script;
-                const auto& vs = j->FindMember("rule");
+                const auto& vs = j->FindMember("rule_file");
                 if (vs != j->MemberEnd() && vs->value.IsString())
                 {
-                    rule_script = vs->value.GetString();
+                    rule_script_file = vs->value.GetString();
                 }
                 else
                 {
-                    LOG(WARNING) << "Rule script not found or incorrect, ignoring rule";
-                    continue;
+                    const auto& vs = j->FindMember("rule");
+                    if (vs != j->MemberEnd() && vs->value.IsString())
+                    {
+                        rule_script = vs->value.GetString();
+                    }
+                    else
+                    {
+                        LOG(WARNING) << "Rule script not found or incorrect, ignoring rule";
+                        continue;
+                    }
                 }
 
                 // getting triggers
@@ -56,7 +64,7 @@ rules::rules()
                 }
                 try
                 {
-                    rules_[name] = std::make_shared<rule>(name, rule_script, triggers);
+                    rules_[name] = std::make_shared<rule>(name, rule_script_file, rule_script, triggers);
                 }
                 catch (const std::exception e)
                 {

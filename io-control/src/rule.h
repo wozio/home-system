@@ -19,6 +19,7 @@ class rule
 {
 public:
     rule(const std::string& name,
+        const std::string& script_file,
         const std::string& script,
         const std::vector<std::string>& triggers);
     ~rule();

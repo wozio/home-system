@@ -5,6 +5,7 @@
 extern ios_t _ios;
 
 rule::rule(const std::string& name,
+    const std::string& script_file,
     const std::string& script,
     const std::vector<std::string>& triggers)
     : name_(name),
@@ -35,7 +36,17 @@ rule::rule(const std::string& name,
     luaL_openlibs(lua_);
 
     // loading script
-    if (luaL_loadbuffer(lua_, script.c_str(), script.length(), name.c_str()))
+    if (!script_file.empty())
+    {
+        if (luaL_loadfile(lua_, script_file.c_str()))
+        {
+            LOG(ERROR) << "Error while loading rule script file: " << script_file << ": " << lua_tostring(lua_, -1);
+            lua_pop(lua_, 1);
+            lua_close(lua_);
+            throw std::runtime_error("Error loading rule script");
+        }
+    }
+    else if (luaL_loadbuffer(lua_, script.c_str(), script.length(), name.c_str()))
     {
         LOG(ERROR) << "Error while loading rule script: " << lua_tostring(lua_, -1);
         lua_pop(lua_, 1);
