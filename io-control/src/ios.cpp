@@ -127,8 +127,7 @@ ios::ios()
                             auto new_io = std::make_shared<io_remote>(data_type, type, mode, name, service, id);
                             io_devices_[name] = new_io;
                             auto id_string = service + std::to_string(id);
-                            io_devices_by_id_[id_string] = new_io;
-                            io_devices_by_service_.insert(io_devices_by_service_t::value_type(service, new_io));
+                            io_devices_by_service_[service][id] = new_io;
                         }
                         catch (const std::runtime_error &e)
                         {
@@ -170,10 +169,14 @@ ios::ios()
             {
                 // setting state of all IO objects belonging to this
                 // service driver as unknown
-                auto r = io_devices_by_service_.equal_range(name);
-                for (auto i = r.first; i != r.second; ++i)
+                auto s = io_devices_by_service_.find(name);
+                if (s != io_devices_by_service_.end())
                 {
-                    i->second->set_state(home_system::io::io_state_t::unknown);
+                    auto& im = s->second;
+                    for (auto i : im)
+                    {
+                        i.second->set_state(home_system::io::io_state_t::unknown);
+                    }
                 }
             }
         }
@@ -195,23 +198,23 @@ void ios::on_msg(yami::incoming_message &im)
 
         auto remote_id = params.get_long_long("id");
         auto service_name = params.get_string("name");
-        auto id_string = service_name + ":" + std::to_string(remote_id);
 
-        auto it = io_devices_by_id_.find(id_string);
-        if (it != io_devices_by_id_.end())
+        auto it = io_devices_by_service_.find(service_name);
+        if (it != io_devices_by_service_.end())
         {
-            auto rio = std::dynamic_pointer_cast<io_remote>(it->second);
-            if (rio)
+            auto& ios_in_service_map = it->second;
+            auto it2 = ios_in_service_map.find(remote_id);
+            if (it2 != ios_in_service_map.end())
             {
-                LOG(DEBUG) << "IO \"" << rio->get_name() << "\" updated";
+                auto rio = std::dynamic_pointer_cast<io_remote>(it2->second);
+                if (rio)
+                {
+                    LOG(DEBUG) << "IO \"" << rio->get_name() << "\" updated";
 
-                // IO object will extract value and state from parameters
-                rio->extract_value_state(params);
+                    // IO object will extract value and state from parameters
+                    rio->extract_value_state(params);
+                }
             }
-        }
-        else
-        {
-            LOG(TRACE) << "Update from unknown IO device, ignoring (" << id_string << ")";
         }
     }
 }
