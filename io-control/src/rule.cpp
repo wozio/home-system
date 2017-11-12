@@ -7,13 +7,16 @@ extern ios_t _ios;
 rule::rule(const std::string& name,
     const std::string& script_file,
     const std::string& script,
-    const std::vector<std::string>& triggers)
+    const std::vector<std::string>& triggers,
+    home_system::utils::ios_wrapper& ios)
     : name_(name),
-      enabled_(true)
+      enabled_(true),
+      ios_(ios)
 {
     LOG(INFO) << "Creating '" << name << "' rule";
 
     // registering for callbacks in triggers
+    // each time trigger changes its value it calls this callback
     for (const auto& trigger : triggers)
     {
         try
@@ -21,7 +24,11 @@ rule::rule(const std::string& name,
             auto t = _ios->get(trigger);
             boost::signals2::connection c = t->on_value_change.connect([this] (io_t io){
                 LOG(DEBUG) << "Rule '" << name_ << "' triggered from \"" << io->get_name() << '"';
-                exec();
+                // rule is executing in separate thread
+                ios_.io_service().post([this]()
+                {
+                    exec();
+                });
             });
             trigger_connections_.push_back(c);
         }
@@ -173,4 +180,3 @@ void rule::exec()
         }
     }
 }
-

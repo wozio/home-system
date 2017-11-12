@@ -4,6 +4,7 @@
 #include <functional>
 #include <memory>
 #include <map>
+#include <mutex>
 #include <set>
 
 namespace home_system

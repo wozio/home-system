@@ -3,6 +3,7 @@
 #include "rules.h"
 
 rules::rules()
+: ios_(4)
 {
     LOG(INFO) << "Reading configuration";
     auto &conf = CONFIG.get();
@@ -64,7 +65,7 @@ rules::rules()
                 }
                 try
                 {
-                    rules_[name] = std::make_shared<rule>(name, rule_script_file, rule_script, triggers);
+                    rules_[name] = std::make_shared<rule>(name, rule_script_file, rule_script, triggers, ios_);
                 }
                 catch (const std::exception e)
                 {

@@ -23,7 +23,7 @@ int main(int argc, char** argv)
 #ifdef __linux__
     ("daemonize,d", "run as daemon")
 #endif
-    ("name,n", po::value<string>()->default_value("relay-board"), "service name")
+    ("name,n", po::value<string>()->default_value("io.relay-board"), "service name")
     ("port,p", po::value<string>(), "COM port")
   ;
 
