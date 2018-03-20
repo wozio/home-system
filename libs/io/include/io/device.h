@@ -1,6 +1,7 @@
 #pragma once
 
 #include "device_types.h"
+#include "yami4-cpp/parameters.h"
 #include <boost/any.hpp>
 #include <boost/signals2.hpp>
 #include <memory>
@@ -9,9 +10,6 @@ namespace home_system
 {
 namespace io
 {
-
-class device;
-typedef std::shared_ptr<device> device_t;
 
 class device
 {
@@ -25,24 +23,24 @@ public:
 
   io_state_t get_state();
   void set_state(io_state_t state);
-
-  boost::any& get_value();
-  virtual void set_wanted_value(const boost::any& v);
-  boost::any& get_wanted_value();
+  void set_state(long long state);
 
   boost::signals2::signal<void (io_id_t id)> on_state_change;
+  boost::signals2::signal<void (io_id_t id)> on_value_change;
+  boost::signals2::signal<void (io_id_t id)> on_wanted_value_change;
 
-protected:
-  void set_value(boost::any& value);
+  virtual void extract_value(const yami::parameters& params) = 0;
+  virtual void extract_wanted_value(const yami::parameters& params) = 0;
+  virtual void write_value(yami::parameters& params) = 0;
 
 private:
   const io_id_t id_;
   const io_data_type_t data_type_;
   const std::string type_;
   io_state_t state_;
-  boost::any value_;
-  boost::any wanted_value_;
 };
+
+typedef std::shared_ptr<device> device_t;
 
 }
 }

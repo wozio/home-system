@@ -23,12 +23,14 @@ namespace io
     void remove_device(io_id_t id);
     void clear_devices();
 
-    void on_device_change(io_id_t device_id);
+    void set_state_for_all(io_state_t state);
 
   private:
     std::mutex subscription_mutex_;
 
     std::map<io_id_t, device_t> devices_;
+    void on_device_state_change(io_id_t device_id);
+    void on_device_value_change(io_id_t device_id);
 
     // service name
     std::set<std::string> subscriptions_;

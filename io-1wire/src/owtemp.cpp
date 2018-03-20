@@ -11,7 +11,9 @@ extern "C"
 using namespace std;
 
 temp::temp(int port_num, uint64_t serial_num)
-: owdevice(port_num, serial_num, home_system::io::io_data_type_t::double_float, "temperature_input"),
+: owdevice(port_num, serial_num),
+  home_system::io::device_float(serial_num, "temperature_input"), // serial num may be set as id, it is unique per network
+                                                                  // in fact in 1wire it is unique everywhere
   process_cnt_(12)
 {
   LOG(DEBUG) << "Created temperature device (DS1920): " << serial_num_to_string(serial_num_);
@@ -117,8 +119,7 @@ bool temp::read_temp()
           tmp = tmp - (float)0.25 + (cpc - cr)/cpc;
         
         LOG(DEBUG) << serial_num_to_string(serial_num_) << ": " << tmp;
-        boost::any v(tmp);
-        set_value(v);
+        set_value(tmp);
         return true;
       }
       else

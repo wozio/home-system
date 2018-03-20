@@ -19,9 +19,10 @@ board::board(const std::string &name, const std::string &port)
 {
   for (size_t i = 0; i < 8; ++i)
   {
-    relay_t r(new relay(i));
+    relay_t r(new home_system::io::device_int(i, "binary_switch"));
     ioservice_.add_device(r);
     relays_.push_back(r);
+    r->set_wanted_value(0);
   }
 
   // all operations on port are done on io_service thread
@@ -45,6 +46,12 @@ void board::open_port()
     serial_port_.set_option(serial_port::baud_rate(2400));
     LOG(INFO) << "Opened COM port " << port_;
     logged = false;
+
+    for (auto& r : relays_)
+    {
+      r->set_state(home_system::io::io_state_t::ok);
+    }
+
     setup_read();
   }
   catch (const boost::system::system_error &e)
@@ -62,12 +69,19 @@ void board::open_port()
 
 void board::setup_read()
 {
-  serial_port_.async_read_some(buffer(buf_, 10),
-                               [&](const boost::system::error_code &error, std::size_t bytes_transferred) { read_handler(error, bytes_transferred); });
+  auto read_handler_func = [&](const boost::system::error_code &error, std::size_t bytes_transferred)
+  {
+      read_handler(error, bytes_transferred);
+  };
+  serial_port_.async_read_some(buffer(buf_, 10), read_handler_func);
 
   timer_.cancel();
   timer_.set_from_now(2000, [this]() {
     LOG(WARNING) << "Timeout on port read";
+    for (auto& r : relays_)
+    {
+      r->set_state(home_system::io::io_state_t::faulty);
+    }
     close_port();
     open_port();
   });
@@ -78,6 +92,7 @@ void board::read_handler(const boost::system::error_code &error,
 {
   if (!error)
   {
+    LOG(TRACE) << "Read " << bytes_transferred << " bytes";
     static bool crfound = false;
     static vector<char> value; // between cr(0xA) and endl(0xD);
     for (size_t i = 0; i < bytes_transferred; ++i)
@@ -94,7 +109,7 @@ void board::read_handler(const boost::system::error_code &error,
           value.push_back(0);
           int bitmap = atoi(&value[0]);
           bitmap &= 0xFF;
-          //LOG("BITMAP: " << bitmap);
+          LOG(TRACE) << "BITMAP: " << std::hex << bitmap;
           value.clear();
           set_values(bitmap);
           exec_value_change();

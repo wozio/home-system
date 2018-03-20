@@ -1,6 +1,8 @@
 #include "utils/logger.h"
 #include "rule.h"
 #include "ios.h"
+#include "io/device_int.h"
+#include "io/device_float.h"
 
 extern ios_t _ios;
 
@@ -19,23 +21,25 @@ rule::rule(const std::string& name,
     // each time trigger changes its value it calls this callback
     for (const auto& trigger : triggers)
     {
-        try
+      LOG(TRACE) << "Rule '" << name_ << "' registering for trigger '" << trigger << "'";
+      try
+      {
+        auto t = _ios->get(trigger);
+        boost::signals2::connection c = t->on_value_change.connect([this] (home_system::io::io_id_t io)
         {
-            auto t = _ios->get(trigger);
-            boost::signals2::connection c = t->on_value_change.connect([this] (io_t io){
-                LOG(DEBUG) << "Rule '" << name_ << "' triggered from \"" << io->get_name() << '"';
-                // rule is executing in separate thread
-                ios_.io_service().post([this]()
-                {
-                    exec();
-                });
-            });
-            trigger_connections_.push_back(c);
-        }
-        catch (const std::out_of_range& e)
-        {
-            LOG(ERROR) << "Trigger is not defined: " << trigger;
-        }
+          LOG(TRACE) << "Rule '" << name_ << "' triggered from " << io;
+          // rule is executing in separate thread
+          ios_.io_service().post([this]()
+          {
+            exec();
+          });
+        });
+        trigger_connections_.push_back(c);
+      }
+      catch (const std::out_of_range& e)
+      {
+        LOG(ERROR) << "Trigger is not defined: " << trigger;
+      }
     }
 
     // initializing LUA
@@ -78,19 +82,18 @@ rule::rule(const std::string& name,
             /// value is returned only when state is OK
             if (s == home_system::io::io_state_t::ok)
             {
-                auto v = io->get_value();
                 // converting to proper type
                 switch (io->get_data_type())
                 {
                     case home_system::io::io_data_type_t::integer:
                     {
-                        auto cv = boost::any_cast<long long>(v);
+                        auto cv = (std::dynamic_pointer_cast<home_system::io::device_int>(io))->get_value();
                         lua_pushinteger(L, cv);
                         break;
                     }
                     case home_system::io::io_data_type_t::double_float:
                     {
-                        auto cv = boost::any_cast<double>(v);
+                        auto cv = (std::dynamic_pointer_cast<home_system::io::device_float>(io))->get_value();
                         lua_pushnumber(L, cv);
                         break;
                     }
@@ -113,38 +116,38 @@ rule::rule(const std::string& name,
     lua_setglobal(lua_, "get_io_state_value");
 
     // set_io_value
-    lua_pushcfunction(lua_, [](lua_State *L)->int{
-
-        // get IO name
-        std::string io_name = lua_tostring(L, 1);
+    lua_pushcfunction(lua_, [](lua_State *L)->int
+    {
+      // get IO name
+      std::string io_name = lua_tostring(L, 1);
+      
+      try
+      {
+        auto io = _ios->get(io_name);
         
-        try
+        // converting from proper type
+        switch (io->get_data_type())
         {
-            auto io = _ios->get(io_name);
-            
-            // converting from proper type
-            switch (io->get_data_type())
-            {
-                case home_system::io::io_data_type_t::integer:
-                {
-                    auto v = static_cast<long long>(lua_tonumber(L, 2));
-                    io->set_wanted_value(v);
-                    break;
-                }
-                case home_system::io::io_data_type_t::double_float:
-                {
-                    auto v = static_cast<double>(lua_tonumber(L, 2));
-                    io->set_wanted_value(v);
-                    break;
-                }
-            }
-            
+          case home_system::io::io_data_type_t::integer:
+          {
+            auto v = static_cast<long long>(lua_tonumber(L, 2));
+            (std::dynamic_pointer_cast<home_system::io::device_int>(io))->set_wanted_value(v);
+            break;
+          }
+          case home_system::io::io_data_type_t::double_float:
+          {
+            auto v = static_cast<double>(lua_tonumber(L, 2));
+            (std::dynamic_pointer_cast<home_system::io::device_float>(io))->set_wanted_value(v);
+            break;
+          }
         }
-        catch (std::out_of_range)
-        {
-            LOG(ERROR) << "Rule tried to set value of unknown IO device: " << io_name;
-        }
-        return 0;
+          
+      }
+      catch (std::out_of_range)
+      {
+        LOG(ERROR) << "Rule tried to set value of unknown IO device: " << io_name;
+      }
+      return 0;
     });
     lua_setglobal(lua_, "set_io_value");
 

@@ -1,10 +1,11 @@
 #pragma once
 
 #include "owdevice.h"
-#include <cstdint>
+#include "io/device_float.h"
 
 class temp
-: public owdevice
+: public owdevice,
+  public home_system::io::device_float
 {
 public:
   temp(int port_num, uint64_t serial_num);

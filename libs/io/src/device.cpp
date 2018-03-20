@@ -1,4 +1,3 @@
-#include "utils/logger.h"
 #include "device.h"
 #include "service.h"
 
@@ -43,33 +42,14 @@ io_state_t device::get_state()
 
 void device::set_state(io_state_t state)
 {
-    state_ = state;
-    on_state_change(id_);
+  state_ = state;
+  on_state_change(id_);
 }
 
-boost::any &device::get_value()
+void device::set_state(long long state)
 {
-    if (state_ != io_state_t::ok)
-    {
-        throw runtime_error("Attempt to read value while state not ok");
-    }
-    return value_;
-}
-
-void device::set_wanted_value(const boost::any &v)
-{
-    wanted_value_ = v;
-}
-
-boost::any& device::get_wanted_value()
-{
-    return wanted_value_;
-}
-
-void device::set_value(boost::any &value)
-{
-    value_ = value;
-    on_state_change(id_);
+  state_ = static_cast<io_state_t>(state);
+  on_state_change(id_);
 }
 
 const char* io_state_to_string(io_state_t s)

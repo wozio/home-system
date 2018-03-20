@@ -1,12 +1,11 @@
 #pragma once
 
-#include "io/device.h"
+#include <cstdint>
 
 class owdevice
-: public home_system::io::device
 {
 public:
-  owdevice(int port_num, uint64_t serial_num, home_system::io::io_data_type_t data_type, const std::string& type);
+  owdevice(int port_num, uint64_t serial_num);
   ~owdevice();
 
   // called every second

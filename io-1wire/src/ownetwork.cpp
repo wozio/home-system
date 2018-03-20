@@ -70,7 +70,7 @@ void ownet::search()
     {
     case 0x10: // DS1920
       {
-        owdevice_t d(new temp(portnum_, serial_num));
+        std::shared_ptr<temp> d(new temp(portnum_, serial_num));
         ioservice_.add_device(d);
         devices_[serial_num] = d;
       }
@@ -124,10 +124,8 @@ void ownet::process()
   catch (const std::runtime_error& e)
   {
     LOG(ERROR) << "Error while processing: " << e.what();
-    for (auto& device : devices_)
-    {
-      device.second->set_state(home_system::io::io_state_t::faulty);
-    }
+    ioservice_.set_state_for_all(home_system::io::io_state_t::faulty);
+    
     close();
     open();
   }

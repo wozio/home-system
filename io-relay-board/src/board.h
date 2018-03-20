@@ -1,11 +1,11 @@
 #pragma once
 
 #include "io/service.h"
-#include "relay.h"
+#include "io/device_int.h"
 #include "utils/timer.h"
 #include <string>
 
-typedef std::shared_ptr<relay> relay_t;
+typedef std::shared_ptr<home_system::io::device_int> relay_t;
 
 class board
 {
