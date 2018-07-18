@@ -76,7 +76,7 @@ ios::ios()
           {
             auto& triggers = (*itr)["triggers"];
             std::map<std::string, long long> triggers_map;
-            for (auto iitr = a.Begin(); iitr != a.End(); ++iitr)
+            for (auto iitr = triggers.Begin(); iitr != triggers.End(); ++iitr)
             {
               if (iitr->IsObject())
               {
@@ -112,6 +112,14 @@ ios::ios()
                 LOG(ERROR) << "Error while creating Weekly Schedule: " << e.what();
               }
             }
+            else
+            {
+              LOG(WARNING) << "Weekly schedule definition without any valid trigger, ignoring";
+            }
+          }
+          else
+          {
+            LOG(WARNING) << "Weekly schedule definition without triggers object, ignoring";
           }
         }
         else

@@ -27,6 +27,13 @@ public:
 
   void cancel();
 
+  /**
+   * Return internal ios_wrapper object.
+   * Multiple timers may be created sharing the same ios_wrapper object
+   * thus all working on in one thread
+   */
+  ios_wrapper &get_ios();
+
 private:
   ios_wrapper my_ios_;
   ios_wrapper &ios_;

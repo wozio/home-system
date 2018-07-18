@@ -22,6 +22,11 @@ timer::~timer()
   cancel();
 }
 
+ios_wrapper& timer::get_ios()
+{
+  return ios_;
+}
+
 void timer::set_from_now(unsigned int duration, std::function<void()> handler)
 {
   cancel();
