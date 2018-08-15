@@ -159,7 +159,7 @@ ios::ios()
             try
             {
               LOG(DEBUG) << "Creating Remote IO: " << static_cast<int>(data_type) <<
-                " " << type << " \"" << name << "\" " << service << ":" << id;
+                " \"" << name << "\" " << service << ":" << id;
               home_system::io::device_t new_io;
               if (data_type == home_system::io::io_data_type_t::integer)
               {
@@ -254,8 +254,8 @@ void ios::on_msg(yami::incoming_message &im)
         auto rio = it2->second;
         if (rio)
         {
-          // IO object will extract value and state from parameters
-          rio->extract_value(params);
+          // IO object will extract value from parameters
+          rio->extract_value(params); 
         }
       }
     }

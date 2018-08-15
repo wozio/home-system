@@ -119,7 +119,7 @@ void service::on_device_state_change(io_id_t id)
 
   for (auto it = subscriptions_.begin(); it != subscriptions_.end();)
   {
-    LOG(DEBUG) << "Sending io state change to subscription " << *it << " for: " << hex << id;
+    LOG(DEBUG) << "Sending io state change to subscription " << *it << " for: " << id;
     try
     {
       auto ep = DISCOVERY.get(*it);

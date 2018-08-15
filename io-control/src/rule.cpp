@@ -38,7 +38,7 @@ rule::rule(const std::string& name,
       }
       catch (const std::out_of_range& e)
       {
-        LOG(ERROR) << "Trigger is not defined: " << trigger;
+        LOG(ERROR) << "In rule '" << name_ << "' trigger is not defined: " << trigger;
       }
     }
 
@@ -51,7 +51,7 @@ rule::rule(const std::string& name,
     {
         if (luaL_loadfile(lua_, script_file.c_str()))
         {
-            LOG(ERROR) << "Error while loading rule script file: " << script_file << ": " << lua_tostring(lua_, -1);
+            LOG(ERROR) << "In rule '" << name_ << "' error while loading rule script file: " << script_file << ": " << lua_tostring(lua_, -1);
             lua_pop(lua_, 1);
             lua_close(lua_);
             throw std::runtime_error("Error loading rule script");
@@ -59,7 +59,7 @@ rule::rule(const std::string& name,
     }
     else if (luaL_loadbuffer(lua_, script.c_str(), script.length(), name.c_str()))
     {
-        LOG(ERROR) << "Error while loading rule script: " << lua_tostring(lua_, -1);
+        LOG(ERROR) << "In rule '" << name_ << "' error while loading rule script: " << lua_tostring(lua_, -1);
         lua_pop(lua_, 1);
         lua_close(lua_);
         throw std::runtime_error("Error loading rule script");
@@ -154,7 +154,7 @@ rule::rule(const std::string& name,
     // priming run
     if (lua_pcall(lua_, 0, 0, 0))
     {
-        LOG(ERROR) << "Error in priming call: " << lua_tostring(lua_, -1);
+        LOG(ERROR) << "In rule '"<< name_ << "' error in priming call: " << lua_tostring(lua_, -1);
         lua_pop(lua_, 1);
         throw std::runtime_error("Error in priming call");
     }
@@ -162,7 +162,7 @@ rule::rule(const std::string& name,
 
 rule::~rule()
 {
-    LOG(DEBUG) << "Destroying rule \"" << name_ << "\"";
+    LOG(DEBUG) << "Destroying rule '"<< name_ << "'";
     for (auto& c : trigger_connections_)
     {
         c.disconnect();
@@ -177,7 +177,7 @@ void rule::exec()
         lua_getglobal(lua_, "exec");
         if (lua_pcall(lua_, 0, 0, 0))
         {
-            LOG(ERROR) << "Error running rule function: " << lua_tostring(lua_, -1);
+            LOG(ERROR) << "In rule '" << name_ << "' error running exec function: " << lua_tostring(lua_, -1);
             lua_pop(lua_, 1);
             throw std::runtime_error("Error running rule script");
         }

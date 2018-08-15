@@ -9,6 +9,7 @@ temp::temp(uint64_t serial_num, boost::filesystem::path dev_path)
   process_cnt_(14)
 {
   LOG(DEBUG) << "Created temperature device (DS1920): " << serial_num_;
+  set_state(home_system::io::io_state_t::ok);
 }
 
 temp::~temp()

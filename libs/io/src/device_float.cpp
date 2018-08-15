@@ -49,7 +49,9 @@ void device_float::extract_value(const yami::parameters& params)
 {
   try
   {
-    auto v = params.get_double_float("value");
+    yami::parameter_type t = params.type("value");
+    LOG(DEBUG) << "value entry type: " << t;
+    double v = params.get_double_float("value");
     set_value(v);
   }
   catch (const std::exception& e)
