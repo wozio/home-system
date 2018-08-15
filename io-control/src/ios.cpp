@@ -186,45 +186,6 @@ ios::ios()
       }
     }
   }
-
-  // initialize service
-  init();
-
-  DISCOVERY.subscribe([this](const std::string &name, bool available)
-  {
-    if (available)
-    {
-      // if name begins with 'io.' it means it is IO device
-      // driver
-      // TODO: will be changed when discovery mechanism will
-      // be changed
-      if (name.substr(0, 3) == "io.")
-      {
-        LOG(INFO) << "IO device driver service '" << name << "' discovered, subscribing";
-        yami::parameters params;
-        params.set_string("name", service::name());
-        auto ep = DISCOVERY.get(name);
-        AGENT.send_one_way(ep, name, "subscribe", params);
-      }
-    }
-    else
-    {
-      if (name.substr(0, 3) == "io.")
-      {
-        // setting state of all IO objects belonging to this
-        // service driver as unknown
-        auto s = io_devices_by_service_.find(name);
-        if (s != io_devices_by_service_.end())
-        {
-          auto& im = s->second;
-          for (auto i : im)
-          {
-            i.second->set_state(home_system::io::io_state_t::unknown);
-          }
-        }
-      }
-    }
-  });
 }
 
 ios::~ios()
@@ -297,8 +258,42 @@ home_system::io::device_t ios::get(const std::string &name)
 
 void ios::kickoff()
 {
-  for (auto it : io_devices_)
+  // initialize service
+  init();
+
+  DISCOVERY.subscribe([this](const std::string &name, bool available)
   {
-    //it.second->kickoff();
-  }
+    if (available)
+    {
+      // if name begins with 'io.' it means it is IO device
+      // driver
+      // TODO: will be changed when discovery mechanism will
+      // be changed
+      if (name.substr(0, 3) == "io.")
+      {
+        LOG(INFO) << "IO device driver service '" << name << "' discovered, subscribing";
+        yami::parameters params;
+        params.set_string("name", service::name());
+        auto ep = DISCOVERY.get(name);
+        AGENT.send_one_way(ep, name, "subscribe", params);
+      }
+    }
+    else
+    {
+      if (name.substr(0, 3) == "io.")
+      {
+        // setting state of all IO objects belonging to this
+        // service driver as unknown
+        auto s = io_devices_by_service_.find(name);
+        if (s != io_devices_by_service_.end())
+        {
+          auto& im = s->second;
+          for (auto i : im)
+          {
+            i.second->set_state(home_system::io::io_state_t::unknown);
+          }
+        }
+      }
+    }
+  });
 }

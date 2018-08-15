@@ -44,13 +44,13 @@ int main(int argc, char** argv)
 		_yc = home_system::com::yami_container::create();
 		_discovery = home_system::com::discovery::create();
 		_ios = ::ios::create();
-        _rules = ::rules::create();
-        _services = ::services::create();
+    _rules = ::rules::create();
+    _services = ::services::create();
 
-        // now everything is created and connected its time to kickoff
-        // it means that all IOs that are ready will dispatch its value
-        // to all connected rules and services
-        _ios->kickoff();
+    // now everything is created and connected its time to kickoff
+    // it means that ios object will subscribe in IO remote drivers
+    // to receive state and value
+    _ios->kickoff();
 	},
 	[&] () {
         _services.reset();

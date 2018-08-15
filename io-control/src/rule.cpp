@@ -21,17 +21,25 @@ rule::rule(const std::string& name,
     // each time trigger changes its value it calls this callback
     for (const auto& trigger : triggers)
     {
-      LOG(TRACE) << "Rule '" << name_ << "' registering for trigger '" << trigger << "'";
+      
       try
       {
         auto t = _ios->get(trigger);
+        LOG(TRACE) << "Rule '" << name_ << "' registering for trigger '" << trigger << "':" << t->get_id();
         boost::signals2::connection c = t->on_value_change.connect([this] (home_system::io::io_id_t io)
         {
           LOG(TRACE) << "Rule '" << name_ << "' triggered from " << io;
           // rule is executing in separate thread
           ios_.io_service().post([this]()
           {
-            exec();
+            try
+            {
+              exec();
+            }
+            catch (const std::exception& e)
+            {
+              LOG(WARNING) << "EXCEPTION thrown while running exec function: " << e.what();
+            }
           });
         });
         trigger_connections_.push_back(c);
