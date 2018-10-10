@@ -33,6 +33,9 @@ public:
   virtual void extract_wanted_value(const yami::parameters& params) = 0;
   virtual void write_value(yami::parameters& params) = 0;
 
+protected:
+  virtual void exec_value_change();
+
 private:
   const io_id_t id_;
   const io_data_type_t data_type_;

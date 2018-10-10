@@ -149,7 +149,6 @@ rule::rule(const std::string& name,
             break;
           }
         }
-          
       }
       catch (std::out_of_range)
       {

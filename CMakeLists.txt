@@ -43,10 +43,11 @@ set(LIBS
 add_subdirectory(${CMAKE_SOURCE_DIR}/libs/utils)
 add_subdirectory(${CMAKE_SOURCE_DIR}/libs/com)
 add_subdirectory(${CMAKE_SOURCE_DIR}/libs/io)
-add_subdirectory(${CMAKE_SOURCE_DIR}/io-1wire)
+#add_subdirectory(${CMAKE_SOURCE_DIR}/io-1wire)
 add_subdirectory(${CMAKE_SOURCE_DIR}/io-1wire-sysfs)
-add_subdirectory(${CMAKE_SOURCE_DIR}/io-relay-board)
+#add_subdirectory(${CMAKE_SOURCE_DIR}/io-relay-board)
 add_subdirectory(${CMAKE_SOURCE_DIR}/io-control)
+add_subdirectory(${CMAKE_SOURCE_DIR}/io-gpio)
 
 # 3rd party libraries
 add_subdirectory(${CMAKE_SOURCE_DIR}/libs/3rdparty/googletest)

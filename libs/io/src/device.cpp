@@ -65,5 +65,9 @@ const char* io_state_to_string(io_state_t s)
     }
 }
 
+void device::exec_value_change()
+{
+}
+
 }
 }
