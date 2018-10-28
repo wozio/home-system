@@ -1,6 +1,8 @@
 #include "gpio.h"
 #include "utils/logger.h"
 #include <fstream>
+#include <chrono>
+#include <thread>
 
 gpio::gpio(int port, gpio_mode mode)
 : home_system::io::device_int(port, "binary_switch"),
@@ -9,46 +11,82 @@ gpio::gpio(int port, gpio_mode mode)
 {
   LOG(INFO) << "GPIO driver for GPIO port " << port << " and mode " << static_cast<int>(mode);
   // export GPIO file
-  std::stringstream fp;
-  fp.str("/sys/class/gpio/export");
-  std::ofstream f(fp.str());
+  std::string fp("/sys/class/gpio/export");
+  std::ofstream f(fp);
   if (!f.is_open())
   {
-    LOG(ERROR) << "Unable to open GPIO export file: " << fp.str();
+    LOG(ERROR) << "Unable to open GPIO export file: " << fp;
     throw std::runtime_error("Unable to open GPIO export file");
   }
   f << port;
   f.close();
 
   // set GPIO mode (direction)
-  fp.str("");
-  fp << "/sys/class/gpio/gpio" << port << "/direction";
-  f.open(fp.str());
-  if (!f.is_open())
+  int tries = 0;
+  fp = "/sys/class/gpio/gpio" + std::to_string(port) + "/direction";
+  f.open(fp);
+  while (!f.is_open())
   {
-    LOG(ERROR) << "Unable to open GPIO direction file: " << fp.str();
-    throw std::runtime_error("Unable to open GPIO direction file");
+    LOG(DEBUG) << "Unable to open GPIO direction file: " << fp;
+    if (++tries >= 5)
+    {
+      LOG(ERROR) << "Unable to open GPIO direction file: " << fp;
+      throw std::runtime_error("Unable to open GPIO direction file");
+    }
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    f.open(fp);
   }
   f << (mode == gpio_mode::input ? "in" : "out");
   f.close();
+
+  read();
 }
 
 gpio::~gpio()
 {
+  LOG(INFO) << "Destroing GPIO driver for GPIO port " << port_;
+  // unexport GPIO file
+  std::string fp("/sys/class/gpio/unexport");
+  std::ofstream f(fp);
+  if (f.is_open())
+  {
+    f << port_;
+    f.close();
+  }
+  else
+  {
+    LOG(ERROR) << "Unable to open GPIO unexport file: " << fp;
+  }
+}
+
+void gpio::read()
+{
+  std::string fp;
+  fp = "/sys/class/gpio/gpio" + std::to_string(port_) + "/value";
+  std::ifstream f(fp);
+  if (!f.is_open())
+  {
+    LOG(ERROR) << "Unable to open GPIO value file: " << fp;
+    throw std::runtime_error("Unable to open GPIO value file");
+  }
+  int v;
+  f >> v;
+  set_value(v);
+  f.close();
 }
 
 void gpio::exec_value_change()
 {
   if (mode_ == gpio_mode::output)
   {
+    LOG(INFO) << "Executing GPIO GPIO port state change " << port_;
     // set GPIO value
-    std::stringstream fp;
-    fp.str("/sys/class/gpio/gpio");
-    fp << port_ << "/value";
-    std::ofstream f(fp.str());
+    std::string fp;
+    fp = "/sys/class/gpio/gpio" + std::to_string(port_) + "/value";
+    std::ofstream f(fp);
     if (!f.is_open())
     {
-      LOG(ERROR) << "Unable to open GPIO value file: " << fp.str();
+      LOG(ERROR) << "Unable to open GPIO value file: " << fp;
       throw std::runtime_error("Unable to open GPIO value file");
     }
     f << (get_wanted_value() == 0 ? "0" : "1");

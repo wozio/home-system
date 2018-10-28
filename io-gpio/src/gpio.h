@@ -22,4 +22,6 @@ private:
   int port_;
   gpio_mode mode_;
   int fd_;
+
+  void read();
 };
