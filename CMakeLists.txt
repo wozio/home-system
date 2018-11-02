@@ -25,11 +25,13 @@ add_definitions(-DBOOST_ALL_DYN_LINK)
 file(MAKE_DIRECTORY ${CMAKE_SOURCE_DIR}/libs/3rdparty/yami4/lib)
 
 add_custom_target(yami4core
-                  COMMAND make
+                  COMMENT "Building YAMI4 CORE using COMPILER=${CMAKE_CXX_COMPILER}"
+                  COMMAND make COMPILER=${CMAKE_CXX_COMPILER}
                   WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/libs/3rdparty/yami4/src/core/)
 
 add_custom_target(yami4cpp
-                  COMMAND make
+                  COMMENT "Building YAMI4 CPP using COMPILER=${CMAKE_CXX_COMPILER}"
+                  COMMAND make COMPILER=${CMAKE_CXX_COMPILER}
                   WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/libs/3rdparty/yami4/src/cpp/)
 add_dependencies(yami4cpp yami4core)
 
