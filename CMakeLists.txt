@@ -33,7 +33,7 @@ add_custom_target(yami4cpp
                   WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/libs/3rdparty/yami4/src/cpp/)
 add_dependencies(yami4cpp yami4core)
 
-set(DEPS yami4cpp)
+set(YAMI4DEPS yami4cpp)
 link_directories(${CMAKE_SOURCE_DIR}/libs/3rdparty/yami4/lib)
 
 # common link libraries
