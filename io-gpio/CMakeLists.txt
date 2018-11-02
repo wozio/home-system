@@ -7,4 +7,5 @@ set(PROGRAM io-gpio)
 
 add_executable(${PROGRAM} ${SRCS})
 
-TARGET_LINK_LIBRARIES(${PROGRAM} ${LIBS} io)
+target_link_libraries(${PROGRAM} ${LIBS} io)
+add_dependencies(${PROGRAM} ${DEPS})

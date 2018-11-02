@@ -21,7 +21,19 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D__FILENAME__='\"$(subst ${CMAKE_SOURCE
 
 add_definitions(-DBOOST_ALL_DYN_LINK)
 
-# common link directories
+# YAMI4 dependency
+file(MAKE_DIRECTORY ${CMAKE_SOURCE_DIR}/libs/3rdparty/yami4/lib)
+
+add_custom_target(yami4core
+                  ALL COMMAND make
+                  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/libs/3rdparty/yami4/src/core/)
+
+add_custom_target(yami4cpp
+                  ALL COMMAND make
+                  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/libs/3rdparty/yami4/src/cpp/)
+add_dependencies(yami4cpp yami4core)
+
+set(DEPS yami4cpp)
 link_directories(${CMAKE_SOURCE_DIR}/libs/3rdparty/yami4/lib)
 
 # common link libraries
@@ -35,7 +47,7 @@ set(LIBS
     com
     utils
     pthread
-    PocoNet
+#    PocoNet
     yamicpp
     yamicore
     )
