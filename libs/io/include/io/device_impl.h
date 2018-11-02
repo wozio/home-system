@@ -21,13 +21,17 @@ class device_impl
 public:
   device_impl(io_id_t id, const std::string& type);
   
-
   void set_value(T v)
   {
     if (value_ != v)
     {
+      LOG(TRACE) << "IO: " << get_id() << " set to value=" << v;
       value_ = v;
       on_value_change(get_id());
+      if (value_ != wanted_value_)
+      {
+        exec_value_change();
+      }
     }
   }
 
@@ -42,8 +46,9 @@ public:
 
   void set_wanted_value(T v)
   {
-    if (wanted_value_)
+    if (wanted_value_ != v)
     {
+      LOG(TRACE) << "IO: " << get_id() << " set to wanted_value=" << v;
       wanted_value_ = v;
       on_wanted_value_change(get_id());
     }

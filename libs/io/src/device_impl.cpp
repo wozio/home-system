@@ -6,12 +6,16 @@ namespace io
 {
 
 template<> device_impl<long long>::device_impl(io_id_t id, const std::string& type)
-: device(id, io_data_type_t::integer, type)
+: device(id, io_data_type_t::integer, type),
+  value_(0),
+  wanted_value_(0)
 {
 }
 
 template<> device_impl<double>::device_impl(io_id_t id, const std::string& type)
-: device(id, io_data_type_t::double_float, type)
+: device(id, io_data_type_t::double_float, type),
+  value_(0.0),
+  wanted_value_(0.0)
 {
 }
 
