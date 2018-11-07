@@ -1,9 +1,10 @@
 #include "owtemp.h"
 #include "utils/logger.h"
+#include <fstream>
 
 using namespace std;
 
-temp::temp(uint64_t serial_num, boost::filesystem::path dev_path)
+temp::temp(uint64_t serial_num, const std::string& dev_path)
 : owdevice(serial_num, dev_path),
   home_system::io::device_float(serial_num, "temperature_input"),
   process_cnt_(14)
@@ -32,9 +33,9 @@ void temp::process()
 void temp::read_temp()
 {
   std::string line;
-  boost::filesystem::path fp(dev_path_);
-  fp /= boost::filesystem::path("/w1_slave");
-  std::ifstream myfile(fp.string());
+  std::string fp(dev_path_);
+  fp.append("/w1_slave");
+  std::ifstream myfile(fp);
   if (myfile.is_open())
   {
     while (std::getline(myfile,line))
@@ -80,6 +81,6 @@ void temp::read_temp()
   }
   else
   {
-    LOG(ERROR) << "Unable to open file: " << fp.string();
+    LOG(ERROR) << "Unable to open file: " << fp;
   }
 }

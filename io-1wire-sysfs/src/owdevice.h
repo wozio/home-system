@@ -1,12 +1,12 @@
 #pragma once
 
 #include <cstdint>
-#include <boost/filesystem.hpp>
+#include <string>
 
 class owdevice
 {
 public:
-  owdevice(uint64_t serial_num, boost::filesystem::path dev_path);
+  owdevice(uint64_t serial_num, const std::string& dev_path);
   ~owdevice();
 
   // called every second
@@ -14,7 +14,7 @@ public:
 
 protected:
   uint64_t serial_num_;
-  boost::filesystem::path dev_path_;
+  std::string dev_path_;
 
 private:
 };

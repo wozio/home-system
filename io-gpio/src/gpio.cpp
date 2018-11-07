@@ -61,6 +61,7 @@ gpio::~gpio()
 
 void gpio::read()
 {
+  LOG(TRACE) << "Reading GPIO port value " << port_;
   std::string fp;
   fp = "/sys/class/gpio/gpio" + std::to_string(port_) + "/value";
   std::ifstream f(fp);
@@ -79,7 +80,7 @@ void gpio::exec_value_change()
 {
   if (mode_ == gpio_mode::output)
   {
-    LOG(INFO) << "Executing GPIO GPIO port state change " << port_;
+    LOG(TRACE) << "Executing GPIO port value change " << port_;
     // set GPIO value
     std::string fp;
     fp = "/sys/class/gpio/gpio" + std::to_string(port_) + "/value";

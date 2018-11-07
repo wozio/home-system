@@ -8,7 +8,7 @@ class temp
   public home_system::io::device_float
 {
 public:
-  temp(uint64_t serial_num, boost::filesystem::path dev_path);
+  temp(uint64_t serial_num, const std::string& dev_path);
   ~temp();
   void process();
   

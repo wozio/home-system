@@ -3,6 +3,7 @@
 #include "utils/logger_init.h"
 #include "com/yamicontainer.h"
 #include "com/discovery.h"
+#include "utils/config.h"
 #include <boost/program_options.hpp>
 #include <iostream>
 

@@ -54,7 +54,7 @@ void ownet::list()
             {
             case 0x10:
             {
-              std::shared_ptr<temp> d(new temp(did, x.path()));
+              std::shared_ptr<temp> d(new temp(did, x.path().string()));
               ioservice_.add_device(d);
               devices_[did] = d;
               break;
