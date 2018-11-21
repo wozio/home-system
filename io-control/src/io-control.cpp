@@ -39,12 +39,28 @@ int main(int argc, char** argv)
 
 	LOG(INFO) << "Home System IO Control started";
 
-	app.run([&] () {
+  lua_State *lua;
+
+	app.run([&] ()
+  {
 		_config = home_system::utils::config::create(vm["config-file"].as<std::string>());
 		_yc = home_system::com::yami_container::create();
 		_discovery = home_system::com::discovery::create();
+
+    // initializing LUA
+    lua = lua_open();
+    luaL_openlibs(lua);
+
+    if (luaL_loadfile(lua, "io-control.lua"))
+    {
+        LOG(ERROR) << "Failed to load io-control.lua file: " << lua_tostring(lua, -1);
+        lua_pop(lua, 1);
+        lua_close(lua);
+        throw std::runtime_error("Error loading lua script");
+    }
+
 		_ios = ::ios::create();
-    _rules = ::rules::create();
+    _rules = ::rules::create(lua);
     _services = ::services::create();
 
     // now everything is created and connected its time to kickoff
@@ -52,10 +68,12 @@ int main(int argc, char** argv)
     // to receive state and value
     _ios->kickoff();
 	},
-	[&] () {
-        _services.reset();
-        _rules.reset();
+	[&] ()
+  {
+    _services.reset();
+    _rules.reset();
 		_ios.reset();
+    lua_close(lua);
 		_discovery.reset();
 		_yc.reset();
 		_config.reset();

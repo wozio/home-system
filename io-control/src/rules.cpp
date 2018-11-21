@@ -2,9 +2,19 @@
 #include "utils/logger.h"
 #include "rules.h"
 
-rules::rules()
-: ios_(4)
+rules::rules(lua_State *lua)
+: lua_(lua),
+  ios_(4)
 {
+  lua_getglobal(lua_, "register_rules");
+  if (lua_pcall(lua_, 0, 0, 0))
+  {
+    LOG(ERROR) << "Error running register_rules function: " << lua_tostring(lua_, -1);
+    lua_pop(lua_, 1);
+    throw std::runtime_error("Error running rule script");
+  }
+
+
     LOG(INFO) << "Reading configuration";
     auto &conf = CONFIG.get();
     auto i = conf.FindMember("rules");
