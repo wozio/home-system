@@ -25,7 +25,7 @@ public:
   {
     if (value_ != v)
     {
-      LOG(TRACE) << "IO: " << get_id() << " set to value=" << v;
+      LOG(TRACE) << "IO [" << get_id() << "]: set to value=" << v;
       value_ = v;
       on_value_change(get_id());
       if (value_ != wanted_value_)

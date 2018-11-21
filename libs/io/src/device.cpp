@@ -1,5 +1,6 @@
 #include "device.h"
 #include "service.h"
+#include "utils/logger.h"
 
 using namespace std;
 
@@ -42,14 +43,15 @@ io_state_t device::get_state()
 
 void device::set_state(io_state_t state)
 {
+  LOG(DEBUG) << "IO [" << id_ << "]: changed state to " << io_state_to_string(state);
   state_ = state;
   on_state_change(id_);
 }
 
 void device::set_state(long long state)
 {
-  state_ = static_cast<io_state_t>(state);
-  on_state_change(id_);
+  auto cnv_state = static_cast<io_state_t>(state);
+  set_state(cnv_state);
 }
 
 const char* io_state_to_string(io_state_t s)

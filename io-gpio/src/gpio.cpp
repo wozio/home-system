@@ -39,6 +39,8 @@ gpio::gpio(int port, gpio_mode mode)
   f << (mode == gpio_mode::input ? "in" : "out");
   f.close();
 
+  set_state(home_system::io::io_state_t::ok);
+
   read();
 }
 
@@ -61,9 +63,9 @@ gpio::~gpio()
 
 void gpio::read()
 {
-  LOG(TRACE) << "Reading GPIO port value " << port_;
-  std::string fp;
+  std::string fp, line;
   fp = "/sys/class/gpio/gpio" + std::to_string(port_) + "/value";
+  LOG(TRACE) << "Reading GPIO port value " << port_ << " from file: " << fp;
   std::ifstream f(fp);
   if (!f.is_open())
   {
@@ -71,7 +73,10 @@ void gpio::read()
     throw std::runtime_error("Unable to open GPIO value file");
   }
   int v;
-  f >> v;
+  std::getline(f, line);
+  LOG(DEBUG) << line;
+  v = std::stoi(line);
+  LOG(DEBUG) << v;
   set_value(v);
   f.close();
 }
