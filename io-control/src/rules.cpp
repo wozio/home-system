@@ -2,10 +2,25 @@
 #include "utils/logger.h"
 #include "rules.h"
 
+extern rules_t _rules;
+
+int register_rule(lua_State* L)
+{
+  return _rules->register_rule();
+}
+
 rules::rules(lua_State *lua)
 : lua_(lua),
   ios_(4)
 {
+  // callbacks definition
+  lua_pushcfunction(lua_, ::register_rule);
+  lua_setglobal(lua_, "register_rule");
+}
+
+void rules::init()
+{
+  // register_rules runs register_rule callback for each rule that has to be registered
   lua_getglobal(lua_, "register_rules");
   if (lua_pcall(lua_, 0, 0, 0))
   {
@@ -13,7 +28,18 @@ rules::rules(lua_State *lua)
     lua_pop(lua_, 1);
     throw std::runtime_error("Error running rule script");
   }
+}
 
+int rules::register_rule()
+{
+  const char *name = luaL_checkstring(lua_, 1);
+  // TODO some error handling
+
+  rules_[name] = std::make_shared<rule>(lua_, name, ios_);
+  return 0;
+}
+
+#if 0
 
     LOG(INFO) << "Reading configuration";
     auto &conf = CONFIG.get();
@@ -85,6 +111,8 @@ rules::rules(lua_State *lua)
         }
     }
 }
+
+#endif
 
 rules::~rules()
 {

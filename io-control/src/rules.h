@@ -16,11 +16,17 @@ public:
   }
   rules(lua_State *lua);
   ~rules();
+
+  void init();
+
+  int register_rule();
+
 private:
   home_system::utils::ios_wrapper ios_;
+
   lua_State *lua_;
+
   // rules are keyed by name
   typedef std::shared_ptr<rule> rule_t;
   std::map<std::string, rule_t> rules_;
-
 };

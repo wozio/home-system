@@ -48,7 +48,7 @@ int main(int argc, char** argv)
 		_discovery = home_system::com::discovery::create();
 
     // initializing LUA
-    lua = lua_open();
+    lua = luaL_newstate();
     luaL_openlibs(lua);
 
     if (luaL_loadfile(lua, "io-control.lua"))
@@ -58,10 +58,20 @@ int main(int argc, char** argv)
         lua_close(lua);
         throw std::runtime_error("Error loading lua script");
     }
+    // priming run
+    if (lua_pcall(lua, 0, 0, 0))
+    {
+        LOG(ERROR) << "Error in priming call: " << lua_tostring(lua, -1);
+        lua_pop(lua, 1);
+        throw std::runtime_error("Error in priming call");
+    }
 
-		_ios = ::ios::create();
+		_ios = ::ios::create(lua);
     _rules = ::rules::create(lua);
     _services = ::services::create();
+
+    _ios->init();
+    _rules->init();
 
     // now everything is created and connected its time to kickoff
     // it means that ios object will subscribe in IO remote drivers
