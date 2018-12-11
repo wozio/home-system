@@ -12,8 +12,8 @@ extern "C" {
 #include <memory>
 
 class ios;
-
 typedef std::unique_ptr<ios> ios_t;
+typedef std::shared_ptr<schedule> schedule_t;
 
 /// Owner of all IO devices objects and service for
 /// subscribing for notifications from IO device drivers
@@ -33,8 +33,13 @@ public:
 
   void init();
 
-  void add(const std::string& name, const std::string& service,
-    home_system::io::io_id_t id, home_system::io::device_t device);
+  void add_remote(const std::string& service, home_system::io::io_id_t id,
+    home_system::io::device_t device);
+
+  void add_schedule(const std::string& name, schedule_t schedule);
+
+  void add(const std::string& name, home_system::io::device_t device);
+    
   home_system::io::device_t get(const std::string& name);
 
   void kickoff();
@@ -43,13 +48,13 @@ private:
   // IO devices keyed by its local name
   std::map<std::string, home_system::io::device_t> io_devices_;
 
-  // IO devices keyed by
+  // Remote IO devices keyed by
   // service name and remote id
   typedef std::map<std::string, std::map<long long, home_system::io::device_t>> io_devices_by_service_t;
   io_devices_by_service_t io_devices_by_service_;
 
   // schedules container
-  std::list<std::shared_ptr<schedule>> schedules_;
+  std::map<std::string, schedule_t> schedules_;
 
   void on_msg(yami::incoming_message &im);
 };

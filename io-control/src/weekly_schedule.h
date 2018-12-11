@@ -9,9 +9,10 @@ class weekly_schedule
 : public schedule
 {
 public:
-  weekly_schedule(std::shared_ptr<IO_T> io, std::map<std::string, DATA_T> &triggers)
+  weekly_schedule(IO_T io)
   : io_(io)
   {
+#if 0    
     for (auto& trigger : triggers)
     {
       int hh, mm, ss, day;
@@ -24,7 +25,9 @@ public:
       int time = hh * 3600 + mm * 60 + ss;
       triggers_[day * 24 * 3600 + time] = trigger.second;
     }
+#endif
   }
+  
   void kickoff()
   {
     // this will write first value
@@ -33,7 +36,7 @@ public:
     io_->set_state(home_system::io::io_state_t::ok);
   }
 private:
-  std::shared_ptr<IO_T> io_;
+  IO_T io_;
   home_system::utils::timer timer_;
   std::map<int, DATA_T> triggers_;
   

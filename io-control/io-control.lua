@@ -3,7 +3,7 @@
 -- register_ios function is called at initialization to register known IO devices
 function register_ios()
   print("LUA: register_ios")
-  
+
   -- this is unique name of the io device, used to identify device in the system
   io_name = 'Temperatura salon'
   io_type = 'temperature'
@@ -36,6 +36,13 @@ function register_ios()
   io_id = 5
   io_mode = 1 -- this is output device
   register_io(io_name, io_data_type, io_type, io_service, io_id, io_mode)
+
+  -- schedule is empty at the beginning, triggers are added below
+  io_name = 'Timer tygodniowy'
+  io_type = 'weekly_schedule'
+  io_data_type = 1 -- integer data type
+  register_io(io_name, io_data_type, io_type)
+
 end
 
 -- register_rules function is called at initialization to register rules

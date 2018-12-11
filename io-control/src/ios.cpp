@@ -95,30 +95,56 @@ int set_io_value(lua_State* L)
 
 int register_io(lua_State* L)
 {
+  static int id = 0;
   std::string io_name = lua_tostring(L, 1);
   home_system::io::io_data_type_t io_data_type = static_cast<home_system::io::io_data_type_t>(lua_tointeger(L, 2));
   std::string io_type = lua_tostring(L, 3);
-  std::string io_service = lua_tostring(L, 4);
-  home_system::io::io_id_t io_id = lua_tointeger(L, 5);
-  home_system::io::io_mode_t io_mode = static_cast<home_system::io::io_mode_t>(lua_tointeger(L, 6));
 
   try
   {
-    LOG(DEBUG) << "Creating Remote IO: " << static_cast<int>(io_data_type) <<
-      " \"" << io_name << "\" " << io_service << ":" << io_id;
-
-    home_system::io::device_t new_io;
-    if (io_data_type == home_system::io::io_data_type_t::integer)
+    if (io_type == "weekly_schedule")
     {
-      new_io = std::make_shared<home_system::io::device_int>(io_id, io_type);
-    }
-    else if (io_data_type == home_system::io::io_data_type_t::double_float)
-    {
-      new_io = std::make_shared<home_system::io::device_float>(io_id, io_type);
-    }
+      LOG(DEBUG) << "Creating weekly schedule IO: " << static_cast<int>(io_data_type) <<
+        " \"" << io_name << "\"";
 
-    _ios->add(io_name, io_service, io_id, new_io);
-    
+      if (io_data_type == home_system::io::io_data_type_t::integer)
+      {
+        typedef std::shared_ptr<home_system::io::device_int> device_int_t;
+        device_int_t new_io = std::make_shared<home_system::io::device_int>(id++, io_type);
+
+        typedef weekly_schedule<device_int_t, long long> weekly_sch_int_t;
+        auto new_sch = std::make_shared<weekly_sch_int_t>(new_io);
+
+        _ios->add_schedule(io_name, new_sch);
+        _ios->add(io_name, new_io);
+      }
+      else if (io_data_type == home_system::io::io_data_type_t::double_float)
+      {
+      }
+    }
+    else
+    {
+      std::string io_service = lua_tostring(L, 4);
+      home_system::io::io_id_t io_id = lua_tointeger(L, 5);
+      home_system::io::io_mode_t io_mode = static_cast<home_system::io::io_mode_t>(lua_tointeger(L, 6));
+
+      LOG(DEBUG) << "Creating remote IO: " << io_type << " " << static_cast<int>(io_data_type) <<
+        " \"" << io_name << "\" " << io_service << ":" << io_id;
+
+      home_system::io::device_t new_io;
+
+      if (io_data_type == home_system::io::io_data_type_t::integer)
+      {
+        new_io = std::make_shared<home_system::io::device_int>(id++, io_type);
+      }
+      else if (io_data_type == home_system::io::io_data_type_t::double_float)
+      {
+        new_io = std::make_shared<home_system::io::device_float>(id++, io_type);
+      }
+
+      _ios->add_remote(io_service, io_id, new_io);
+      _ios->add(io_name, new_io);
+    }
   }
   catch (const std::runtime_error &e)
   {
@@ -396,11 +422,20 @@ void ios::on_msg(yami::incoming_message &im)
   }
 }
 
-void ios::add(const std::string& name, const std::string& service,
-  home_system::io::io_id_t id, home_system::io::device_t device)
+void ios::add_remote(const std::string& service, home_system::io::io_id_t id,
+    home_system::io::device_t device)
+{
+  io_devices_by_service_[service][id] = device;
+}
+
+void ios::add_schedule(const std::string& name, schedule_t schedule)
+{
+  schedules_[name] = schedule;
+}
+
+void ios::add(const std::string& name, home_system::io::device_t device)
 {
   io_devices_[name] = device;
-  io_devices_by_service_[service][id] = device;
 }
 
 home_system::io::device_t ios::get(const std::string &name)
