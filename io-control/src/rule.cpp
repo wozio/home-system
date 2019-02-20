@@ -73,6 +73,11 @@ void rule::init()
   }
 }
 
+void rule::add_trigger(const char* trigger)
+{
+
+}
+
 rule::~rule()
 {
     LOG(DEBUG) << "Destroying rule '"<< name_ << "'";

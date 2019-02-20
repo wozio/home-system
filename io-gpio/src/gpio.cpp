@@ -95,6 +95,7 @@ void gpio::exec_value_change()
       LOG(ERROR) << "Unable to open GPIO value file: " << fp;
       throw std::runtime_error("Unable to open GPIO value file");
     }
+    LOG(TRACE) << "Executing GPIO port value change to " << (get_wanted_value() == 0 ? "0" : "1");
     f << (get_wanted_value() == 0 ? "0" : "1");
     f.close();
   }

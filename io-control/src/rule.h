@@ -27,6 +27,8 @@ public:
 
     void enable();
     void disable();
+
+    void add_trigger(const char* trigger);
 private:
 
     void exec();

@@ -20,6 +20,7 @@ public:
   void init();
 
   int register_rule();
+  int add_trigger();
 
 private:
   home_system::utils::ios_wrapper ios_;
