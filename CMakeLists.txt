@@ -21,23 +21,6 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D__FILENAME__='\"$(subst ${CMAKE_SOURCE
 
 add_definitions(-DBOOST_ALL_DYN_LINK)
 
-# YAMI4 dependency
-file(MAKE_DIRECTORY ${CMAKE_SOURCE_DIR}/libs/3rdparty/yami4/lib)
-
-add_custom_target(yami4core
-                  COMMENT "Building YAMI4 CORE using COMPILER=${CMAKE_CXX_COMPILER}"
-                  COMMAND make COMPILER=${CMAKE_CXX_COMPILER}
-                  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/libs/3rdparty/yami4/src/core/)
-
-add_custom_target(yami4cpp
-                  COMMENT "Building YAMI4 CPP using COMPILER=${CMAKE_CXX_COMPILER}"
-                  COMMAND make COMPILER=${CMAKE_CXX_COMPILER}
-                  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/libs/3rdparty/yami4/src/cpp/)
-add_dependencies(yami4cpp yami4core)
-
-set(YAMI4DEPS yami4cpp)
-link_directories(${CMAKE_SOURCE_DIR}/libs/3rdparty/yami4/lib)
-
 # common link libraries
 set(LIBS
     boost_system
@@ -49,11 +32,11 @@ set(LIBS
     com
     utils
     pthread
-    PocoNet
     yamicpp
     yamicore
     )
-
+add_subdirectory(${CMAKE_SOURCE_DIR}/libs/3rdparty/yami4/src/core)
+add_subdirectory(${CMAKE_SOURCE_DIR}/libs/3rdparty/yami4/src/cpp)
 add_subdirectory(${CMAKE_SOURCE_DIR}/libs/utils)
 add_subdirectory(${CMAKE_SOURCE_DIR}/libs/com)
 add_subdirectory(${CMAKE_SOURCE_DIR}/libs/io)

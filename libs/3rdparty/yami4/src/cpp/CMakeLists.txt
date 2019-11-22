@@ -1,0 +1,6 @@
+include_directories(../core/posix)
+include_directories(../core)
+include_directories(../cpp/posix)
+file(GLOB SRCS posix/*.cpp)
+file(GLOB SRCS *.cpp)
+add_library(yamicpp STATIC ${SRCS})
