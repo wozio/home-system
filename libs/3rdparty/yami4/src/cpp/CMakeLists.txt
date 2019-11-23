@@ -1,6 +1,27 @@
 include_directories(../core/posix)
 include_directories(../core)
 include_directories(../cpp/posix)
-file(GLOB SRCS posix/*.cpp)
-file(GLOB SRCS *.cpp)
+set(SRCS
+    posix/delay.cpp
+    posix/flag.cpp
+    posix/semaphore.cpp
+    posix/start_thread.cpp
+    agent.cpp
+	  agent_impl.cpp
+    details.cpp
+    id_generator.cpp
+    incoming_message.cpp
+    incoming_message_queue.cpp
+    name_resolver.cpp
+    options.cpp
+    outgoing_message.cpp
+    outgoing_message_info.cpp
+    outgoing_message_manager.cpp
+    parameter_entry.cpp
+    parameters.cpp
+    raw_buffer_data_source.cpp
+    value_publisher.cpp
+    value_publisher_impl.cpp
+    version.cpp
+    water_flow_manager.cpp)
 add_library(yamicpp STATIC ${SRCS})

@@ -1,4 +1,25 @@
 include_directories(posix)
-file(GLOB SRCS posix/*.cpp)
-file(GLOB SRCS *.cpp)
+set(SRCS
+    posix/channel.cpp
+    posix/io_error_handler.cpp
+    posix/listener.cpp
+    posix/mutex.cpp
+    posix/network_utils.cpp
+    posix/selector.cpp
+    agent.cpp
+    allocator.cpp
+    c_interface.cpp
+    channel.cpp
+    channel_group.cpp
+    channel_holder.cpp
+    fatal_errors.cpp
+    listener.cpp
+    network_utils.cpp
+    options.cpp
+    parameter_entry.cpp
+    parameter_iterator.cpp
+    parameters-details.cpp
+    parameters.cpp
+    raw_buffer_data_source.cpp
+    serialization.cpp)
 add_library(yamicore STATIC ${SRCS})
