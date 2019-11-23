@@ -34,6 +34,7 @@ set(LIBS
     pthread
     yamicpp
     yamicore
+    PocoNet
     )
 add_subdirectory(${CMAKE_SOURCE_DIR}/libs/3rdparty/yami4/src/core)
 add_subdirectory(${CMAKE_SOURCE_DIR}/libs/3rdparty/yami4/src/cpp)
