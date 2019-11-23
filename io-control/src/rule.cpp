@@ -85,7 +85,6 @@ rule::~rule()
     {
         c.disconnect();
     }
-    lua_close(lua_);
 }
 
 void rule::exec()

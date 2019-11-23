@@ -50,7 +50,7 @@ function register_ios()
 end
 
 rule_ogrzewanie = 'ogrzewanie'
-rule_cyrk = 'cyrkulacja'
+rule_cyrkulacja = 'cyrkulacja'
 
 -- register_rules function is called at initialization to register rules
 function register_rules()
@@ -61,7 +61,7 @@ function register_rules()
   add_trigger(rule_ogrzewanie, io_temp_zewn)
   add_trigger(rule_ogrzewanie, io_kociol)
 
-  register_rule(rule_cyrk)
-  add_trigger(rule_cyrk, io_timer_tyg)
-  add_trigger(rule_cyrk, io_cyrk)
+  register_rule(rule_cyrkulacja)
+  add_trigger(rule_cyrkulacja, io_timer_tyg)
+  add_trigger(rule_cyrkulacja, io_cyrk)
 end

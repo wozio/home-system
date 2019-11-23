@@ -110,7 +110,15 @@ int app::run(std::function<void()> init_callback, std::function<void()> cleanup_
       LOG(ERROR) << "Unknown Exception";
     }
 
-    cleanup_callback();
+    try
+    {
+      cleanup_callback();
+    }
+    catch (...)
+    {
+      LOG(ERROR) << "Exception in cleanup callback, aborting...";
+      exit_init_loop = true;
+    }
 
     if (!exit_init_loop)
     {
@@ -121,6 +129,7 @@ int app::run(std::function<void()> init_callback, std::function<void()> cleanup_
       }
       else
       {
+        LOG(ERROR) << "Was trying 60 times, aborting...";
         exit_init_loop = true;
       }
     }

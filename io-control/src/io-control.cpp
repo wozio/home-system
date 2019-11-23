@@ -55,7 +55,6 @@ int main(int argc, char** argv)
     {
         LOG(ERROR) << "Failed to load io-control.lua file: " << lua_tostring(lua, -1);
         lua_pop(lua, 1);
-        lua_close(lua);
         throw std::runtime_error("Error loading lua script");
     }
     // priming run
@@ -91,5 +90,5 @@ int main(int argc, char** argv)
 
 	LOG(INFO) << "Home System IO Control quitting";
 
-    return 0;
+  return 0;
 }
