@@ -3,6 +3,7 @@ io_temp_zewn = 'Temperatura pole'
 io_kociol = 'Kocioł grzanie'
 io_cyrk = 'Pompa cyrkulacji CWU'
 io_timer_tyg = 'Timer tygodniowy'
+io_timer_sek = 'Timer sekundowy'
 
 -- register_ios function is called at initialization to register known IO devices
 function register_ios()
@@ -47,10 +48,17 @@ function register_ios()
   io_data_type = 1 -- integer data type
   register_io(io_name, io_data_type, io_type)
 
+  -- schedule is empty at the beginning, triggers are added below
+  io_name = io_timer_sek
+  io_type = 'interval_schedule'
+  io_data_type = 1 -- integer data type
+  register_io(io_name, io_data_type, io_type)
+
 end
 
 rule_ogrzewanie = 'ogrzewanie'
 rule_cyrkulacja = 'cyrkulacja'
+rule_test = "Test rule"
 
 -- register_rules function is called at initialization to register rules
 function register_rules()
@@ -64,4 +72,7 @@ function register_rules()
   register_rule(rule_cyrkulacja)
   add_trigger(rule_cyrkulacja, io_timer_tyg)
   add_trigger(rule_cyrkulacja, io_cyrk)
+
+  register_rule(rule_test)
+  add_trigger(rule_test, io_timer_sek)
 end

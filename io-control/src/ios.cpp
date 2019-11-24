@@ -7,6 +7,7 @@
 #include "io/device_float.h"
 #include "ios.h"
 #include "weekly_schedule.h"
+#include "interval_schedule.h"
 
 extern ios_t _ios;
 
@@ -122,6 +123,26 @@ int register_io(lua_State* L)
       {
       }
     }
+    else if (io_type == "interval_schedule")
+    {
+      LOG(DEBUG) << "Creating interval schedule IO: " << static_cast<int>(io_data_type) <<
+        " \"" << io_name << "\"";
+
+      if (io_data_type == home_system::io::io_data_type_t::integer)
+      {
+        typedef std::shared_ptr<home_system::io::device_int> device_int_t;
+        device_int_t new_io = std::make_shared<home_system::io::device_int>(id++, io_type);
+
+        typedef interval_schedule<device_int_t, long long> interval_sch_int_t;
+        auto new_sch = std::make_shared<interval_sch_int_t>(new_io);
+
+        _ios->add_schedule(io_name, new_sch);
+        _ios->add(io_name, new_io);
+      }
+      else if (io_data_type == home_system::io::io_data_type_t::double_float)
+      {
+      }
+    }
     else
     {
       std::string io_service = lua_tostring(L, 4);
@@ -167,184 +188,6 @@ ios::ios(lua_State *lua)
 
   lua_pushcfunction(lua_, register_io);
   lua_setglobal(lua_, "register_io");
-
-#if 0
-  LOG(INFO) << "Reading configuration";
-  auto &conf = CONFIG.get();
-  // first create known (written in configuration) io devices
-  if (conf.HasMember("ios"))
-  {
-    auto &a = conf["ios"];
-    for (auto itr = a.Begin(); itr != a.End(); ++itr)
-    {
-      if (itr->IsObject())
-      {
-        home_system::io::io_data_type_t data_type;
-        std::string name;
-        std::string type;
-        std::string service;
-        long long id;
-        home_system::io::io_mode_t mode;
-
-        if (itr->HasMember("type"))
-        {
-          auto &v = (*itr)["type"];
-          if (v.IsString())
-          {
-            type = v.GetString();
-          }
-        }
-        else
-        {
-          LOG(WARNING) << "IO definition without mandatory field 'type', ignoring...";
-          continue;
-        }
-
-        if (itr->HasMember("data_type"))
-        {
-          auto &v = (*itr)["data_type"];
-          if (v.IsInt())
-          {
-            data_type = static_cast<home_system::io::io_data_type_t>(v.GetInt());
-          }
-        }
-        else
-        {
-          LOG(WARNING) << "IO definition without mandatory field 'data_type', ignoring...";
-          continue;
-        }
-
-        if (itr->HasMember("name"))
-        {
-          auto &v = (*itr)["name"];
-          if (v.IsString())
-          {
-            name = v.GetString();
-          }
-        }
-        else
-        {
-          LOG(WARNING) << "IO definition without mandatory field 'name', ignoring...";
-          continue;
-        }
-
-        if (type == "weekly_schedule")
-        {
-          if (itr->HasMember("triggers"))
-          {
-            auto& triggers = (*itr)["triggers"];
-            std::map<std::string, long long> triggers_map;
-            for (auto iitr = triggers.Begin(); iitr != triggers.End(); ++iitr)
-            {
-              if (iitr->IsObject())
-              {
-                if (iitr->HasMember("time") && iitr->HasMember("value"))
-                {
-                  auto t = ((*iitr)["time"]).GetString();
-                  auto &v = (*iitr)["value"];
-                  switch (data_type)
-                  {
-                  case home_system::io::io_data_type_t::integer:
-                    triggers_map[t] = v.GetInt64();
-                    break;
-                  case home_system::io::io_data_type_t::double_float:
-                    triggers_map[t] = v.GetDouble();
-                    break;
-                  }
-                }
-              }
-            }
-            if (triggers_map.size() > 0)
-            {
-              try
-              {
-                LOG(DEBUG) << "Creating weekly schedule IO: " << static_cast<int>(data_type) << " '" << name << "'";
-                auto new_io = std::make_shared<home_system::io::device_int>(id, type);
-                typedef weekly_schedule<home_system::io::device_int, long long> weekly_sch_int_t;
-                auto new_sch = std::make_shared<weekly_sch_int_t>(new_io, triggers_map);
-                schedules_.push_back(new_sch);
-                io_devices_[name] = new_io;
-              }
-              catch (const std::runtime_error &e)
-              {
-                LOG(ERROR) << "Error while creating Weekly Schedule: " << e.what();
-              }
-            }
-            else
-            {
-              LOG(WARNING) << "Weekly schedule definition without any valid trigger, ignoring";
-            }
-          }
-          else
-          {
-            LOG(WARNING) << "Weekly schedule definition without triggers object, ignoring";
-          }
-        }
-        else
-        {
-          if (itr->HasMember("mode"))
-          {
-            auto &v = (*itr)["mode"];
-            if (v.IsInt())
-            {
-              mode = static_cast<home_system::io::io_mode_t>(v.GetInt());
-            }
-          }
-          else
-          {
-            mode = home_system::io::io_mode_t::input;
-          }
-          
-          if (itr->HasMember("service"))
-          {
-            auto &v = (*itr)["service"];
-            if (v.IsString())
-            {
-              service = v.GetString();
-            }
-          }
-
-          if (itr->HasMember("id"))
-          {
-            auto &v = (*itr)["id"];
-            if (v.IsInt64())
-            {
-              id = v.GetInt64();
-            }
-          }
-          if (name.length() > 0 && type.length() > 0 && service.length() > 0)
-          {
-            try
-            {
-              LOG(DEBUG) << "Creating Remote IO: " << static_cast<int>(data_type) <<
-                " \"" << name << "\" " << service << ":" << id;
-              home_system::io::device_t new_io;
-              if (data_type == home_system::io::io_data_type_t::integer)
-              {
-                new_io = std::make_shared<home_system::io::device_int>(id, type);
-              }
-              else if (data_type == home_system::io::io_data_type_t::double_float)
-              {
-                new_io = std::make_shared<home_system::io::device_float>(id, type);
-              }
-              io_devices_[name] = new_io;
-              io_devices_by_service_[service][id] = new_io;
-            }
-            catch (const std::runtime_error &e)
-            {
-              LOG(ERROR) << "Error while creating Remote IO: " << e.what();
-            }
-          }
-          else
-          {
-            LOG(WARNING) << "Remote IO definition without mandatory field, ignoring...";
-            continue;
-          }
-        }
-      }
-    }
-  }
-#endif
 }
 
 ios::~ios()
@@ -483,5 +326,11 @@ void ios::kickoff()
       }
     }
   });
+
+  // kickoff schedules
+  for (auto& s : schedules_)
+  {
+    s.second->kickoff();
+  }
 }
 
