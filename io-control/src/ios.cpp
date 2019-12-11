@@ -13,15 +13,15 @@ extern ios_t _ios;
 
 int get_io_state_value(lua_State* L)
 {
-  std::string io_name = lua_tostring(L, 1);
+  home_system::io::io_id_t io_id = lua_tointeger(L, 1);
   std::string rule_name = lua_tostring(L, 2);
 
-  LOG(TRACE) << "Get IO state and value: IO: " << io_name << " from rule " << rule_name;
+  LOG(TRACE) << "Get IO state and value: IO: " << io_id << " from rule " << rule_name;
 
   try
   {
     // get IO and its state
-    auto io = _ios->get(io_name);
+    auto io = _ios->get(io_id);
     auto s = io->get_state();
     // state is always returned
     lua_pushnumber(L, static_cast<int>(s));
@@ -61,14 +61,14 @@ int get_io_state_value(lua_State* L)
 
 int set_io_value(lua_State* L)
 {
-  std::string io_name = lua_tostring(L, 1);
+  home_system::io::io_id_t io_id = lua_tointeger(L, 1);
   std::string rule_name = lua_tostring(L, 2);
 
-  LOG(TRACE) << "Set IO value: IO: " << io_name << " from rule " << rule_name;
+  LOG(TRACE) << "Set IO value: IO: " << io_id << " from rule " << rule_name;
 
   try
   {
-    auto io = _ios->get(io_name);
+    auto io = _ios->get(io_id);
     
     // converting from proper type
     switch (io->get_data_type())
@@ -89,17 +89,19 @@ int set_io_value(lua_State* L)
   }
   catch (std::out_of_range)
   {
-    LOG(ERROR) << "Rule tried to set value of unknown IO device: " << io_name;
+    LOG(ERROR) << "Rule tried to set value of unknown IO device: " << io_id;
   }
   return 0;
 }
 
+
+
 int register_io(lua_State* L)
 {
-  static int id = 0;
-  std::string io_name = lua_tostring(L, 1);
-  home_system::io::io_data_type_t io_data_type = static_cast<home_system::io::io_data_type_t>(lua_tointeger(L, 2));
-  std::string io_type = lua_tostring(L, 3);
+  int id = lua_tointeger(L, 1);
+  std::string io_name = lua_tostring(L, 2);
+  home_system::io::io_data_type_t io_data_type = static_cast<home_system::io::io_data_type_t>(lua_tointeger(L, 3));
+  std::string io_type = lua_tostring(L, 4);
 
   try
   {
@@ -111,13 +113,13 @@ int register_io(lua_State* L)
       if (io_data_type == home_system::io::io_data_type_t::integer)
       {
         typedef std::shared_ptr<home_system::io::device_int> device_int_t;
-        device_int_t new_io = std::make_shared<home_system::io::device_int>(id++, io_type);
+        device_int_t new_device = std::make_shared<home_system::io::device_int>(id, io_type);
 
         typedef weekly_schedule<device_int_t, long long> weekly_sch_int_t;
-        auto new_sch = std::make_shared<weekly_sch_int_t>(new_io);
+        auto new_sch = std::make_shared<weekly_sch_int_t>(new_device);
 
-        _ios->add_schedule(io_name, new_sch);
-        _ios->add(io_name, new_io);
+        _ios->add_schedule(id, new_sch);
+        _ios->add(id, new_device);
       }
       else if (io_data_type == home_system::io::io_data_type_t::double_float)
       {
@@ -131,13 +133,13 @@ int register_io(lua_State* L)
       if (io_data_type == home_system::io::io_data_type_t::integer)
       {
         typedef std::shared_ptr<home_system::io::device_int> device_int_t;
-        device_int_t new_io = std::make_shared<home_system::io::device_int>(id++, io_type);
+        device_int_t new_device = std::make_shared<home_system::io::device_int>(id, io_type);
 
         typedef interval_schedule<device_int_t, long long> interval_sch_int_t;
-        auto new_sch = std::make_shared<interval_sch_int_t>(new_io);
+        auto new_sch = std::make_shared<interval_sch_int_t>(new_device);
 
-        _ios->add_schedule(io_name, new_sch);
-        _ios->add(io_name, new_io);
+        _ios->add_schedule(id, new_sch);
+        _ios->add(id, new_device);
       }
       else if (io_data_type == home_system::io::io_data_type_t::double_float)
       {
@@ -145,26 +147,30 @@ int register_io(lua_State* L)
     }
     else
     {
-      std::string io_service = lua_tostring(L, 4);
-      home_system::io::io_id_t io_id = lua_tointeger(L, 5);
-      home_system::io::io_mode_t io_mode = static_cast<home_system::io::io_mode_t>(lua_tointeger(L, 6));
+      luaL_checktype(L, 5, LUA_TTABLE);
+      lua_getfield(L, 5, "service");
+      lua_getfield(L, 5, "id");
+      lua_getfield(L, 5, "mode");
+      std::string io_service = luaL_checkstring(L, -3);
+      home_system::io::io_id_t io_id = lua_tointeger(L, -2);
+      home_system::io::io_mode_t io_mode = static_cast<home_system::io::io_mode_t>(lua_tointeger(L, -1));
 
       LOG(DEBUG) << "Creating remote IO: " << io_type << " " << static_cast<int>(io_data_type) <<
         " \"" << io_name << "\" " << io_service << ":" << io_id;
 
-      home_system::io::device_t new_io;
+      home_system::io::device_t new_device;
 
       if (io_data_type == home_system::io::io_data_type_t::integer)
       {
-        new_io = std::make_shared<home_system::io::device_int>(id++, io_type);
+        new_device = std::make_shared<home_system::io::device_int>(id, io_type);
       }
       else if (io_data_type == home_system::io::io_data_type_t::double_float)
       {
-        new_io = std::make_shared<home_system::io::device_float>(id++, io_type);
+        new_device = std::make_shared<home_system::io::device_float>(id, io_type);
       }
 
-      _ios->add_remote(io_service, io_id, new_io);
-      _ios->add(io_name, new_io);
+      _ios->add_remote(io_service, io_id, new_device);
+      _ios->add(id, new_device);
     }
   }
   catch (const std::runtime_error &e)
@@ -271,19 +277,19 @@ void ios::add_remote(const std::string& service, home_system::io::io_id_t id,
   io_devices_by_service_[service][id] = device;
 }
 
-void ios::add_schedule(const std::string& name, schedule_t schedule)
+void ios::add_schedule(home_system::io::io_id_t id, schedule_t schedule)
 {
-  schedules_[name] = schedule;
+  schedules_[id] = schedule;
 }
 
-void ios::add(const std::string& name, home_system::io::device_t device)
+void ios::add(home_system::io::io_id_t id, home_system::io::device_t device)
 {
-  io_devices_[name] = device;
+  io_devices_[id] = device;
 }
 
-home_system::io::device_t ios::get(const std::string &name)
+home_system::io::device_t ios::get(home_system::io::io_id_t id)
 {
-  return io_devices_.at(name);
+  return io_devices_.at(id);
 }
 
 void ios::kickoff()

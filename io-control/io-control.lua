@@ -1,78 +1,112 @@
-io_temp_salon = 'Temperatura salon'
-io_temp_zewn = 'Temperatura pole'
-io_kociol = 'Kocioł grzanie'
-io_cyrk = 'Pompa cyrkulacji CWU'
-io_timer_tyg = 'Timer tygodniowy'
-io_timer_sek = 'Timer sekundowy'
+ios =
+{
+  {
+    name = 'Temperatura salon',
+    data_type = 0,
+    type = 'temperature',
+    data = {
+      service = 'io.1wire-sysfs',
+      id = 34381576381,
+      mode = 0
+    }
+  },
+  {
+    name = 'Temperatura pole',
+    data_type = 0,
+    type = 'temperature',
+    data = {
+      service = 'io.1wire-sysfs',
+      id = 34381576877,
+      mode = 0
+    }
+  },
+  {
+    name = 'Kocioł grzanie',
+    data_type = 1,
+    type = 'binary_switch',
+    data = {
+      service = 'io.gpio',
+      id = 4,
+      mode = 1
+    }
+  },
+  {
+    name = 'Pompa cyrkulacji CWU',
+    data_type = 1,
+    type = 'binary_switch',
+    data =
+    {
+      service = 'io.gpio',
+      id = 5,
+      mode = 1
+    }
+  },
+  {
+    name = 'Timer tygodniowy',
+    type = 'weekly_schedule',
+    data_type = 1,
+    data =
+    {
+    }
+  },
+  {
+    name = 'Timer sekundowy',
+    type = 'interval_schedule',
+    data_type = 1,
+    data =
+    {
+      interval = 1000,
+      value_1st = 1,
+      value_1st = 0
+    }
+  }
+}
+
+rules =
+{
+  {
+    name = 'Ogrzewanie',
+    exec_func = 'heating_func',
+    triggers = {
+      1,
+      2,
+      3
+    }
+  },
+  {
+    name = 'Cyrkulacja CWU',
+    exec_func = 'circulation_func',
+    triggers = {
+      4,
+      5
+    }
+  },
+  {
+    name = 'Test rule',
+    exec_func = 'test_func',
+    triggers = {
+      6
+    }
+  }
+}
 
 -- register_ios function is called at initialization to register known IO devices
 function register_ios()
-  print("LUA: register_ios")
-
-  -- this is unique name of the io device, used to identify device in the system
-  io_name = io_temp_salon
-  io_type = 'temperature'
-  io_data_type = 0 -- float data type
-  io_service = 'io.1wire-sysfs'
-  io_id = 34381576381
-  io_mode = 0 -- this is input device
-  register_io(io_name, io_data_type, io_type, io_service, io_id, io_mode)
-
-  io_name = io_temp_zewn
-  io_type = 'temperature'
-  io_data_type = 0 -- float data type
-  io_service = 'io.1wire-sysfs'
-  io_id = 34381576877
-  io_mode = 0 -- this is input device
-  register_io(io_name, io_data_type, io_type, io_service, io_id, io_mode)
-
-  io_name = io_kociol
-  io_type = 'binary_switch'
-  io_data_type = 1 -- integer data type
-  io_service = 'io.gpio'
-  io_id = 4
-  io_mode = 1 -- this is output device
-  register_io(io_name, io_data_type, io_type, io_service, io_id, io_mode)
-
-  io_name = io_cyrk
-  io_type = 'binary_switch'
-  io_data_type = 1 -- integer data type
-  io_service = 'io.gpio'
-  io_id = 5
-  io_mode = 1 -- this is output device
-  register_io(io_name, io_data_type, io_type, io_service, io_id, io_mode)
-
-  -- schedule is empty at the beginning, triggers are added below
-  io_name = io_timer_tyg
-  io_type = 'weekly_schedule'
-  io_data_type = 1 -- integer data type
-  register_io(io_name, io_data_type, io_type)
-
-  -- schedule is empty at the beginning, triggers are added below
-  io_name = io_timer_sek
-  io_type = 'interval_schedule'
-  io_data_type = 1 -- integer data type
-  register_io(io_name, io_data_type, io_type)
-
+  for id, io in ipairs(ios) do
+    register_io(id,
+                io.name,
+                io.data_type,
+                io.type,
+                io.data)
+  end
 end
-
-rule_ogrzewanie = 'ogrzewanie'
-rule_cyrkulacja = 'cyrkulacja'
-rule_test = "Test rule"
 
 -- register_rules function is called at initialization to register rules
 function register_rules()
-  print('LUA: register_rules')
-
-  register_rule(rule_ogrzewanie)
-  add_trigger(rule_ogrzewanie, io_temp_salon)
-  add_trigger(rule_ogrzewanie, io_temp_zewn)
-  add_trigger(rule_ogrzewanie, io_kociol)
-
-  register_rule(rule_cyrkulacja)
-  add_trigger(rule_cyrkulacja, io_timer_tyg)
-  add_trigger(rule_cyrkulacja, io_cyrk)
-
-  register_rule(rule_test)
-  add_trigger(rule_test, io_timer_sek)
+  for rule_id, rule in ipairs(rules) do
+    register_rule(rule_id, rule.name, rule.exec_func)
+    for _, trigger_id in ipairs(rule.triggers) do
+      add_trigger(rule_id, trigger_id)
+    end
+  end
 end

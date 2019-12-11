@@ -29,5 +29,5 @@ private:
 
   // rules are keyed by name
   typedef std::shared_ptr<rule> rule_t;
-  std::map<std::string, rule_t> rules_;
+  std::map<id, rule_t> rules_;
 };

@@ -12,7 +12,7 @@ public:
   interval_schedule(IO_T io)
   : io_(io)
   {
-    interval_ = 1;
+    interval_ = 1000;
     value_1_ = 1;
     value_2_ = 0;
     current_value_ = value_2_;

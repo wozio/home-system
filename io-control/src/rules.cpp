@@ -39,25 +39,27 @@ void rules::init()
 
 int rules::register_rule()
 {
-  const char *name = luaL_checkstring(lua_, 1);
+  int rule_id = lua_tointeger(lua_, 1);
+  const char *name = luaL_checkstring(lua_, 2);
+  const char *exec_func = luaL_checkstring(lua_, 3);
   // TODO some error handling
 
-  LOG(INFO) << "Register rule: '" << name << "'";
+  LOG(INFO) << "Register rule: " << rule_id << " name: '" << name << "' exec_func: '" << exec_func << "'";
 
-  rules_[name] = std::make_shared<rule>(lua_, name, ios_);
+  rules_[rule_id] = std::make_shared<rule>(lua_, rule_id, name, exec_func, ios_);
   return 0;
 }
 
 int rules::add_trigger()
 {
-  const char *name = luaL_checkstring(lua_, 1);
-  const char *trigger = luaL_checkstring(lua_, 2);
+  int rule_id = lua_tointeger(lua_, 1);
+  home_system::io::io_id_t trigger_id = lua_tointeger(lua_, 2);
   // TODO some error handling
 
-  LOG(INFO) << "Add trigger to rule: '" << name << "': '" << trigger << "'";
+  LOG(INFO) << "Add trigger: "  << trigger_id < " to rule: '" << rule_id << "'";
 
-  // TODO name checking
-  rules_[name]->add_trigger(trigger);
+  // TODO range checking
+  rules_[rule_id]->add_trigger(trigger_id);
   return 0;
 }
 

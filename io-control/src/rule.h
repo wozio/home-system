@@ -6,6 +6,7 @@ extern "C" {
 #include <lua5.3/lualib.h>
 }
 
+#include "io/device.h"
 #include "utils/ios_wrapper.h"
 #include <boost/signals2.hpp>
 #include <memory>
@@ -15,20 +16,21 @@ extern "C" {
 class rule
 {
 public:
-    rule(lua_State *lua, const char* name, home_system::utils::ios_wrapper& ios);
+    rule(lua_State *lua, const int id, const char* name, const char* exec_func,
+      home_system::utils::ios_wrapper& ios);
     ~rule();
-
-    void init();
 
     void enable();
     void disable();
 
-    void add_trigger(const char* trigger);
+    void add_trigger(home_system::io::io_id_t id);
 private:
 
     void exec();
 
+    const int id_;
     const char* name_;
+    const char* exec_func_;
     bool enabled_;
     home_system::utils::ios_wrapper& ios_;
 

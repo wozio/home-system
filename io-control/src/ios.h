@@ -36,25 +36,25 @@ public:
   void add_remote(const std::string& service, home_system::io::io_id_t id,
     home_system::io::device_t device);
 
-  void add_schedule(const std::string& name, schedule_t schedule);
+  void add_schedule(home_system::io::io_id_t id, schedule_t schedule);
 
-  void add(const std::string& name, home_system::io::device_t device);
+  void add(home_system::io::io_id_t id, home_system::io::device_t device);
     
-  home_system::io::device_t get(const std::string& name);
+  home_system::io::device_t get(home_system::io::io_id_t id);
 
   void kickoff();
 private:
   lua_State *lua_;
-  // IO devices keyed by its local name
-  std::map<std::string, home_system::io::device_t> io_devices_;
+  // IO devices keyed by id
+  std::map<home_system::io::io_id_t, home_system::io::device_t> io_devices_;
 
   // Remote IO devices keyed by
   // service name and remote id
   typedef std::map<std::string, std::map<long long, home_system::io::device_t>> io_devices_by_service_t;
   io_devices_by_service_t io_devices_by_service_;
 
-  // schedules container
-  std::map<std::string, schedule_t> schedules_;
+  // schedules keyed by id
+  std::map<home_system::io::io_id_t, schedule_t> schedules_;
 
   void on_msg(yami::incoming_message &im);
 };

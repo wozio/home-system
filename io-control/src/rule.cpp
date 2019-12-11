@@ -1,42 +1,29 @@
 #include "utils/logger.h"
 #include "rule.h"
 #include "ios.h"
-#include "io/device_int.h"
-#include "io/device_float.h"
+
 
 extern ios_t _ios;
 
-rule::rule(lua_State *lua, const char* name, home_system::utils::ios_wrapper& ios)
+rule::rule(lua_State *lua, const int id, const char* name, const char* exec_func, home_system::utils::ios_wrapper& ios)
 : lua_(lua),
+  id_(id),
   name_(name),
+  exec_func_(exec_func),
   ios_(ios)
 {
-  LOG(INFO) << "Creating '" << name << "' rule";
+  LOG(INFO) << "Creating rule: " << id_ << " name: '" << name << "' exec_func: '" << exec_func << "'";
 }
 
-void rule::init()
-{
-  std::string fun("register_triggers_for_");
-  fun.append(name_);
-  // register_triggers_for_rule maps IO triggers to rule, rule is executed when IO is changed
-  lua_getglobal(lua_, fun.c_str());
-  if (lua_pcall(lua_, 0, 0, 0))
-  {
-    LOG(ERROR) << "Rule: " << name_ << ": Error running " << fun << " function: " << lua_tostring(lua_, -1);
-    lua_pop(lua_, 1);
-    throw std::runtime_error("Error running rule script");
-  }
-}
-
-void rule::add_trigger(const char* trigger)
+void rule::add_trigger(home_system::io::io_id_t trigger_id)
 {
   try
   {
-    auto t = _ios->get(trigger);
-    LOG(TRACE) << "Rule '" << name_ << "' registering for trigger '" << trigger << "':" << t->get_id();
+    auto t = _ios->get(trigger_id);
+    LOG(TRACE) << "Rule: " << id_ << " registering for trigger: " << trigger_id;
     boost::signals2::connection c = t->on_value_change.connect([this] (home_system::io::io_id_t io)
     {
-      LOG(TRACE) << "Rule '" << name_ << "' triggered from " << io;
+      LOG(TRACE) << "Rule: " << id_ << " triggered from " << io;
       // rule is executing in separate thread
       ios_.io_service().post([this]()
       {
@@ -54,13 +41,13 @@ void rule::add_trigger(const char* trigger)
   }
   catch (const std::out_of_range& e)
   {
-    LOG(ERROR) << "In rule '" << name_ << "' trigger is not defined: " << trigger;
+    LOG(ERROR) << "In rule: " << id_ << " trigger is not defined: " << trigger_id;
   }
 }
 
 rule::~rule()
 {
-  LOG(DEBUG) << "Destroying rule '"<< name_ << "'";
+  LOG(DEBUG) << "Destroying rule: "<< id_;
   for (auto& c : trigger_connections_)
   {
     c.disconnect();
@@ -71,11 +58,11 @@ void rule::exec()
 {
   if (enabled_)
   {
-    lua_getglobal(lua_, "exec");
+    lua_getglobal(lua_, exec_func_);
     if (lua_pcall(lua_, 0, 0, 0))
     {
       std::string e(lua_tostring(lua_, -1));
-      LOG(ERROR) << "In rule '" << name_ << "' error running exec function: " << e;
+      LOG(ERROR) << "In rule: " << id_ << " error running exec function: '" << exec_func_ << "' error: " << e;
       lua_pop(lua_, 1);
       throw std::runtime_error("Error running rule script");
     }
