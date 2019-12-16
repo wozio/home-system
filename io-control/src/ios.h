@@ -1,13 +1,9 @@
 #pragma once
 
+#include "ios_lua_callbacks.h"
 #include "io/device.h"
 #include "com/service.h"
 #include "schedule.h"
-extern "C" {
-#include <lua5.3/lua.h>
-#include <lua5.3/lauxlib.h>
-#include <lua5.3/lualib.h>
-}
 #include <map>
 #include <memory>
 
