@@ -57,7 +57,7 @@ ios =
     {
       interval = 1000,
       value_1st = 1,
-      value_1st = 0
+      value_2nd = 0
     }
   }
 }
@@ -66,7 +66,7 @@ rules =
 {
   {
     name = 'Ogrzewanie',
-    exec_func = 'heating_func',
+    exec_func = 'heating_exec_func',
     triggers = {
       1,
       2,
@@ -75,7 +75,7 @@ rules =
   },
   {
     name = 'Cyrkulacja CWU',
-    exec_func = 'circulation_func',
+    exec_func = 'circulation_exec_func',
     triggers = {
       4,
       5
@@ -83,7 +83,7 @@ rules =
   },
   {
     name = 'Test rule',
-    exec_func = 'test_func',
+    exec_func = 'test_exec_func',
     triggers = {
       6
     }
@@ -109,4 +109,8 @@ function register_rules()
       add_trigger(rule_id, trigger_id)
     end
   end
+end
+
+function test_exec_func(rule_id, trigger_id)
+  set_io_value(rule_id, 3, 1)
 end

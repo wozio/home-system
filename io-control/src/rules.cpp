@@ -56,7 +56,7 @@ int rules::add_trigger()
   home_system::io::io_id_t trigger_id = lua_tointeger(lua_, 2);
   // TODO some error handling
 
-  LOG(INFO) << "Add trigger: "  << trigger_id < " to rule: '" << rule_id << "'";
+  LOG(INFO) << "Add trigger: "  << trigger_id << " to rule: " << rule_id;
 
   // TODO range checking
   rules_[rule_id]->add_trigger(trigger_id);

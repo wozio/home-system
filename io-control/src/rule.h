@@ -23,10 +23,10 @@ public:
     void enable();
     void disable();
 
-    void add_trigger(home_system::io::io_id_t id);
+    void add_trigger(home_system::io::io_id_t trigger_id);
 private:
 
-    void exec();
+    void exec(home_system::io::io_id_t trigger_id);
 
     const int id_;
     const char* name_;

@@ -13,10 +13,10 @@ extern ios_t _ios;
 
 int get_io_state_value(lua_State* L)
 {
-  home_system::io::io_id_t io_id = lua_tointeger(L, 1);
-  std::string rule_name = lua_tostring(L, 2);
+  int rule_id = lua_tointeger(L, 1);
+  home_system::io::io_id_t io_id = lua_tointeger(L, 2);
 
-  LOG(TRACE) << "Get IO state and value: IO: " << io_id << " from rule " << rule_name;
+  LOG(TRACE) << "Get IO state and value: IO: " << io_id << " from rule " << rule_id;
 
   try
   {
@@ -61,10 +61,10 @@ int get_io_state_value(lua_State* L)
 
 int set_io_value(lua_State* L)
 {
-  home_system::io::io_id_t io_id = lua_tointeger(L, 1);
-  std::string rule_name = lua_tostring(L, 2);
+  int rule_id = lua_tointeger(L, 1);
+  home_system::io::io_id_t io_id = lua_tointeger(L, 2);
 
-  LOG(TRACE) << "Set IO value: IO: " << io_id << " from rule " << rule_name;
+  LOG(TRACE) << "Set IO value: IO: " << io_id << " from rule " << rule_id;
 
   try
   {
@@ -75,13 +75,13 @@ int set_io_value(lua_State* L)
     {
       case home_system::io::io_data_type_t::integer:
       {
-        auto v = static_cast<long long>(lua_tonumber(L, 2));
+        auto v = static_cast<long long>(lua_tonumber(L, 3));
         (std::dynamic_pointer_cast<home_system::io::device_int>(io))->set_wanted_value(v);
         break;
       }
       case home_system::io::io_data_type_t::double_float:
       {
-        auto v = static_cast<double>(lua_tonumber(L, 2));
+        auto v = static_cast<double>(lua_tonumber(L, 3));
         (std::dynamic_pointer_cast<home_system::io::device_float>(io))->set_wanted_value(v);
         break;
       }
