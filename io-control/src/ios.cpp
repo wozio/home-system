@@ -130,13 +130,23 @@ int register_io(lua_State* L)
       LOG(DEBUG) << "Creating interval schedule IO: " << static_cast<int>(io_data_type) <<
         " \"" << io_name << "\"";
 
+      luaL_checktype(L, 5, LUA_TTABLE);
+      lua_getfield(L, 5, "interval");
+      lua_getfield(L, 5, "value_1st");
+      lua_getfield(L, 5, "value_2nd");
+      int interval = lua_tointeger(L, -3);
+      
+
       if (io_data_type == home_system::io::io_data_type_t::integer)
       {
         typedef std::shared_ptr<home_system::io::device_int> device_int_t;
         device_int_t new_device = std::make_shared<home_system::io::device_int>(id, io_type);
 
+        int value_1st = lua_tointeger(L, -2);
+        int value_2nd = lua_tointeger(L, -1);
+
         typedef interval_schedule<device_int_t, long long> interval_sch_int_t;
-        auto new_sch = std::make_shared<interval_sch_int_t>(new_device);
+        auto new_sch = std::make_shared<interval_sch_int_t>(new_device, interval, value_1st, value_2nd);
 
         _ios->add_schedule(id, new_sch);
         _ios->add(id, new_device);

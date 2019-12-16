@@ -9,12 +9,12 @@ class interval_schedule
 : public schedule
 {
 public:
-  interval_schedule(IO_T io)
+  interval_schedule(IO_T io, int interval, DATA_T value_1, DATA_T value_2)
   : io_(io)
   {
-    interval_ = 1000;
-    value_1_ = 1;
-    value_2_ = 0;
+    interval_ = interval;
+    value_1_ = value_1;
+    value_2_ = value_2;
     current_value_ = value_2_;
   }
   

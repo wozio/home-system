@@ -55,9 +55,9 @@ ios =
     data_type = 1,
     data =
     {
-      interval = 1000,
-      value_1st = 1,
-      value_2nd = 0
+      interval = 500,
+      value_1st = 3,
+      value_2nd = 200
     }
   }
 }
