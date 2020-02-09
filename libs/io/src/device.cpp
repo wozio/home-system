@@ -64,6 +64,9 @@ const char* io_state_to_string(io_state_t s)
         return "ok";
     case io_state_t::faulty:
         return "faulty";
+    default:
+        throw std::runtime_error("Not known io_state_t value");
+
     }
 }
 
