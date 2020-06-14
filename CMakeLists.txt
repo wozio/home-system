@@ -47,7 +47,5 @@ add_subdirectory(${CMAKE_SOURCE_DIR}/io-1wire-sysfs)
 add_subdirectory(${CMAKE_SOURCE_DIR}/io-control)
 add_subdirectory(${CMAKE_SOURCE_DIR}/io-gpio)
 
-add_subdirectory(${CMAKE_SOURCE_DIR}/test)
-
 # 3rd party libraries
 add_subdirectory(${CMAKE_SOURCE_DIR}/libs/3rdparty/googletest)

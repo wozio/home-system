@@ -1,7 +1,9 @@
 #include "utils/config.h"
 #include "utils/logger.h"
 #include "rules.h"
+#include "ios.h"
 
+extern ios_t _ios;
 extern rules_t _rules;
 
 int register_rule(lua_State* L)
@@ -53,10 +55,12 @@ int rules::register_rule()
 int rules::add_trigger()
 {
   int rule_id = lua_tointeger(lua_, 1);
-  home_system::io::io_id_t trigger_id = lua_tointeger(lua_, 2);
+  const std::string trigger = luaL_checkstring(lua_, 2);
+
+  home_system::io::io_id_t trigger_id = _ios->get(trigger);
   // TODO some error handling
 
-  LOG(INFO) << "Add trigger: "  << trigger_id << " to rule: " << rule_id;
+  LOG(INFO) << "Add trigger: " << trigger << "[" << trigger_id << "] to rule: " << rule_id;
 
   // TODO range checking
   rules_[rule_id]->add_trigger(trigger_id);

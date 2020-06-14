@@ -14,9 +14,3 @@ target_link_libraries(${PROGRAM} ${LIBS} io lua5.3-c++)
 configure_file(io-control.conf ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/io-control.conf COPYONLY)
 configure_file(example_rule.lua ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/example_rule.lua COPYONLY)
 configure_file(io-control.lua ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/io-control.lua COPYONLY)
-
-# test
-include_directories(${CMAKE_SOURCE_DIR}/libs/3rdparty/googletest/googletest/include)
-add_executable(ioControlTest test/iocontrol_test.cpp)
-target_link_libraries(ioControlTest ${LIBS} gtest)
-add_test(NAME ioControlTest COMMAND ioControlTest)

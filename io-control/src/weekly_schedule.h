@@ -10,22 +10,15 @@ class weekly_schedule
 {
 public:
   weekly_schedule(IO_T io)
-  : io_(io)
+  : io_(io),
+    schedule(io)
   {
-#if 0    
-    for (auto& trigger : triggers)
-    {
-      int hh, mm, ss, day;
-      sscanf(trigger.first.c_str(), "%d:%d:%d:%d",
-        &day, &hh, &mm, &ss);
-      if (day < 0 || day > 6 || hh < 0 || hh > 23 || mm < 0 || mm > 59 || ss < 0 || ss > 59)
-      {
-        throw std::runtime_error("Incorrect time format");
-      }
-      int time = hh * 3600 + mm * 60 + ss;
-      triggers_[day * 24 * 3600 + time] = trigger.second;
-    }
-#endif
+  }
+
+  void add_trigger(int day, int hour, int minute, int second, DATA_T value)
+  {
+    int time = hour * 3600 + minute * 60 + second;
+    triggers_[day * 24 * 3600 + time] = value;
   }
   
   void kickoff()
@@ -38,7 +31,7 @@ public:
 private:
   IO_T io_;
   home_system::utils::timer timer_;
-  std::map<int, DATA_T> triggers_;
+  std::map<int, DATA_T> triggers_; // keyed by time of week in seconds
   
   void on_timer()
   {

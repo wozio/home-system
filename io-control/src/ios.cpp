@@ -17,6 +17,18 @@ ios::ios(lua_State *lua)
 
   lua_pushcfunction(lua_, register_io);
   lua_setglobal(lua_, "register_io");
+
+  lua_pushcfunction(lua_, register_interval_schedule);
+  lua_setglobal(lua_, "register_interval_schedule");
+  
+  lua_pushcfunction(lua_, add_value_to_interval_schedule);
+  lua_setglobal(lua_, "add_value_to_interval_schedule");
+
+  lua_pushcfunction(lua_, register_weekly_schedule);
+  lua_setglobal(lua_, "register_weekly_schedule");
+
+  lua_pushcfunction(lua_, add_trigger_to_weekly_schedule);
+  lua_setglobal(lua_, "add_trigger_to_weekly_schedule");
 }
 
 ios::~ios()
@@ -94,25 +106,46 @@ void ios::on_msg(yami::incoming_message &im)
   }
 }
 
-void ios::add_remote(const std::string& service, home_system::io::io_id_t id,
+void ios::add_remote_io(const std::string& service, home_system::io::io_id_t id,
     home_system::io::device_t device)
 {
   io_devices_by_service_[service][id] = device;
 }
 
-void ios::add_schedule(home_system::io::io_id_t id, schedule_t schedule)
+void ios::add_interval_schedule(home_system::io::io_id_t id, schedule_t schedule)
 {
-  schedules_[id] = schedule;
+  interval_schedules_[id] = schedule;
 }
 
-void ios::add(home_system::io::io_id_t id, home_system::io::device_t device)
+schedule_t ios::get_interval_schedule(home_system::io::io_id_t id)
+{
+  return interval_schedules_.at(id);
+}
+
+void ios::add_weekly_schedule(home_system::io::io_id_t id, schedule_t schedule)
+{
+  weekly_schedules_[id] = schedule;
+}
+
+schedule_t ios::get_weekly_schedule(home_system::io::io_id_t id)
+{
+  return weekly_schedules_.at(id);
+}
+
+void ios::add(home_system::io::io_id_t id, home_system::io::device_t device, const std::string& name)
 {
   io_devices_[id] = device;
+  io_devices_by_name_[name] = id;
 }
 
 home_system::io::device_t ios::get(home_system::io::io_id_t id)
 {
   return io_devices_.at(id);
+}
+
+home_system::io::io_id_t ios::get(const std::string& name)
+{
+  return io_devices_by_name_.at(name);
 }
 
 void ios::kickoff()
@@ -157,7 +190,11 @@ void ios::kickoff()
   });
 
   // kickoff schedules
-  for (auto& s : schedules_)
+  for (auto& s : interval_schedules_)
+  {
+    s.second->kickoff();
+  }
+  for (auto& s : weekly_schedules_)
   {
     s.second->kickoff();
   }
